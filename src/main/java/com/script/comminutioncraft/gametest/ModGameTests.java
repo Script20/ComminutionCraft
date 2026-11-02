@@ -1,15 +1,15 @@
 package com.script.comminutioncraft.gametest;
 
 import com.script.comminutioncraft.ComminutionCraft;
-import com.script.comminutioncraft.cable.CableConnection;
-import com.script.comminutioncraft.cable.EnergyCableBlock;
-import com.script.comminutioncraft.data.ModWorldGen;
-import com.script.comminutioncraft.machine.ElectricGeneratorBlockEntity;
-import com.script.comminutioncraft.machine.ElectricMachineBlockEntity;
-import com.script.comminutioncraft.machine.MachineBlock;
-import com.script.comminutioncraft.registry.ModBlocks;
-import com.script.comminutioncraft.registry.ModDataComponents;
-import com.script.comminutioncraft.registry.ModItems;
+import com.script.comminutioncraft.common.cable.CableConnection;
+import com.script.comminutioncraft.common.cable.EnergyCableBlock;
+import com.script.comminutioncraft.common.data.ModWorldGen;
+import com.script.comminutioncraft.common.machine.ElectricGeneratorBlockEntity;
+import com.script.comminutioncraft.common.machine.ElectricMachineBlockEntity;
+import com.script.comminutioncraft.common.machine.MachineBlock;
+import com.script.comminutioncraft.common.registry.ModBlocks;
+import com.script.comminutioncraft.common.registry.ModDataComponents;
+import com.script.comminutioncraft.common.registry.ModItems;
 import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

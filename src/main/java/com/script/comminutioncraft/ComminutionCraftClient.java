@@ -1,11 +1,11 @@
 package com.script.comminutioncraft;
 
-import com.script.comminutioncraft.client.CoalGranulatorScreen;
-import com.script.comminutioncraft.client.CoalSmelterScreen;
-import com.script.comminutioncraft.client.ElectricGeneratorScreen;
-import com.script.comminutioncraft.client.ElectricMachineScreen;
-import com.script.comminutioncraft.data.ModDataGenerators;
-import com.script.comminutioncraft.registry.ModMenus;
+import com.script.comminutioncraft.client.gui.CoalGranulatorScreen;
+import com.script.comminutioncraft.client.gui.CoalSmelterScreen;
+import com.script.comminutioncraft.client.gui.ElectricGeneratorScreen;
+import com.script.comminutioncraft.client.gui.ElectricMachineScreen;
+import com.script.comminutioncraft.common.data.ModDataGenerators;
+import com.script.comminutioncraft.common.registry.ModMenus;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
