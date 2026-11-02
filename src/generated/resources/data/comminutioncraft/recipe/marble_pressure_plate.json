@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "#": "comminutioncraft:marble"
+  },
+  "pattern": [
+    "##"
+  ],
+  "result": {
+    "id": "comminutioncraft:marble_pressure_plate"
+  }
+}

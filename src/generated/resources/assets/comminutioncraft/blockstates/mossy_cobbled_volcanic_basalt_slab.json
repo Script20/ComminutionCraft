@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "comminutioncraft:block/mossy_cobbled_volcanic_basalt_slab"
+    },
+    "type=double": {
+      "model": "comminutioncraft:block/mossy_cobbled_volcanic_basalt"
+    },
+    "type=top": {
+      "model": "comminutioncraft:block/mossy_cobbled_volcanic_basalt_slab_top"
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/stairs",
+  "textures": {
+    "bottom": "comminutioncraft:block/cobbled_marble",
+    "side": "comminutioncraft:block/cobbled_marble",
+    "top": "comminutioncraft:block/cobbled_marble"
+  }
+}

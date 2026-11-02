@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "comminutioncraft:polished_marble",
+  "result": {
+    "id": "comminutioncraft:marble_brick_wall"
+  }
+}

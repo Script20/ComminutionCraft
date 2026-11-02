@@ -9,6 +9,7 @@ import com.script.comminutioncraft.cable.EnergyCableBlock;
 import com.script.comminutioncraft.gametest.ModGameTests;
 import com.script.comminutioncraft.registry.ModCreativeTabs;
 import com.script.comminutioncraft.registry.ModDataComponents;
+import com.script.comminutioncraft.registry.ModFeatures;
 import com.script.comminutioncraft.registry.ModItems;
 import com.script.comminutioncraft.registry.ModMenus;
 import com.script.comminutioncraft.registry.ModRecipes;
@@ -30,6 +31,7 @@ public class ComminutionCraft {
         ModBlocks.BLOCKS.register(modEventBus);
         ModItems.ITEMS.register(modEventBus);
         ModDataComponents.DATA_COMPONENTS.register(modEventBus);
+        ModFeatures.FEATURES.register(modEventBus);
         ModBlockEntities.BLOCK_ENTITY_TYPES.register(modEventBus);
         ModMenus.MENUS.register(modEventBus);
         ModRecipes.RECIPE_TYPES.register(modEventBus);

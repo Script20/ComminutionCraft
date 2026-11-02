@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": "comminutioncraft:cobbled_volcanic_basalt"
+  },
+  "pattern": [
+    "###"
+  ],
+  "result": {
+    "count": 6,
+    "id": "comminutioncraft:cobbled_volcanic_basalt_slab"
+  }
+}

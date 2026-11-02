@@ -26,5 +26,10 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> ELECTRIC_GENERATOR = ITEMS.registerSimpleBlockItem("electric_generator", ModBlocks.ELECTRIC_GENERATOR);
     public static final DeferredItem<BlockItem> ENERGY_CABLE = ITEMS.registerSimpleBlockItem("energy_cable", ModBlocks.ENERGY_CABLE);
 
+    // Block items for every decorative stone block
+    static {
+        ModBlocks.STONE_SETS.forEach(set -> set.all().forEach(ITEMS::registerSimpleBlockItem));
+    }
+
     private ModItems() {}
 }

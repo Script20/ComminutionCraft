@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/wall_inventory",
+  "textures": {
+    "wall": "comminutioncraft:block/mossy_marble_bricks"
+  }
+}

@@ -1,11 +1,13 @@
 package com.script.comminutioncraft.data;
 
 import com.script.comminutioncraft.ComminutionCraft;
+import com.script.comminutioncraft.block.StoneSet;
 import com.script.comminutioncraft.registry.ModBlocks;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.BlockTags;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
 
 public class ModBlockTagsProvider extends BlockTagsProvider {
@@ -22,5 +24,18 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
                 .add(ModBlocks.ELECTRIC_SMELTER.get())
                 .add(ModBlocks.ELECTRIC_GENERATOR.get())
                 .add(ModBlocks.ENERGY_CABLE.get());
+
+        for (StoneSet set : ModBlocks.STONE_SETS) {
+            set.all().forEach(block -> tag(BlockTags.MINEABLE_WITH_PICKAXE).add(block.get()));
+            set.allStairs().forEach(block -> tag(BlockTags.STAIRS).add(block.get()));
+            set.allSlabs().forEach(block -> tag(BlockTags.SLABS).add(block.get()));
+            set.allWalls().forEach(block -> tag(BlockTags.WALLS).add(block.get()));
+            tag(BlockTags.STONE_BUTTONS).add(set.button.get());
+            tag(BlockTags.STONE_PRESSURE_PLATES).add(set.pressurePlate.get());
+            // Natural stone: caves carve it and ores/dirt/gravel blobs can replace it, like granite.
+            tag(BlockTags.BASE_STONE_OVERWORLD).add(set.stone.get());
+            tag(Tags.Blocks.STONES).add(set.stone.get());
+            tag(Tags.Blocks.COBBLESTONES).add(set.cobbled.get(), set.mossyCobbled.get());
+        }
     }
 }

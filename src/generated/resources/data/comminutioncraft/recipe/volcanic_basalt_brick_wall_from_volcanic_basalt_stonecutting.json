@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "comminutioncraft:volcanic_basalt",
+  "result": {
+    "id": "comminutioncraft:volcanic_basalt_brick_wall"
+  }
+}

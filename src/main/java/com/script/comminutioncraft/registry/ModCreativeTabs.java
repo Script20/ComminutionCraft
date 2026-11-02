@@ -26,6 +26,7 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.ELECTRIC_SMELTER.get());
                         output.accept(ModItems.ENERGY_CABLE.get());
                         output.accept(ModItems.WRENCH.get());
+                        ModBlocks.STONE_SETS.forEach(set -> set.all().forEach(block -> output.accept(block.get())));
                         output.accept(ModItems.GRANULATED_IRON.get());
                         output.accept(ModItems.GRANULATED_COPPER.get());
                         output.accept(ModItems.GRANULATED_GOLD.get());

@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "comminutioncraft:polished_volcanic_basalt",
+  "result": {
+    "id": "comminutioncraft:chiseled_volcanic_basalt"
+  }
+}

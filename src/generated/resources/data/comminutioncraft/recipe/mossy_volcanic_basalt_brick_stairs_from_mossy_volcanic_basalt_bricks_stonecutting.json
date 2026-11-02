@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "comminutioncraft:mossy_volcanic_basalt_bricks",
+  "result": {
+    "id": "comminutioncraft:mossy_volcanic_basalt_brick_stairs"
+  }
+}

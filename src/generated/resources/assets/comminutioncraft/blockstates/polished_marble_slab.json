@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "comminutioncraft:block/polished_marble_slab"
+    },
+    "type=double": {
+      "model": "comminutioncraft:block/polished_marble"
+    },
+    "type=top": {
+      "model": "comminutioncraft:block/polished_marble_slab_top"
+    }
+  }
+}

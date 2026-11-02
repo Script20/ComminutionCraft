@@ -1,0 +1,12 @@
+{
+  "type": "comminutioncraft:lava_crust",
+  "config": {
+    "crust": {
+      "Name": "comminutioncraft:volcanic_basalt"
+    },
+    "max_thickness": 3.0,
+    "min_thickness": 1.5,
+    "replaceable": "#minecraft:base_stone_overworld",
+    "search_radius": 8
+  }
+}

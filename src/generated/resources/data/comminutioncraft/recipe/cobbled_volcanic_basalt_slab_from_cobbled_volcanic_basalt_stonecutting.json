@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "comminutioncraft:cobbled_volcanic_basalt",
+  "result": {
+    "count": 2,
+    "id": "comminutioncraft:cobbled_volcanic_basalt_slab"
+  }
+}

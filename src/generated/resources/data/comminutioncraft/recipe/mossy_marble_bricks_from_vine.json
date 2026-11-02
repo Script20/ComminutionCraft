@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "group": "mossy_marble_bricks",
+  "ingredients": [
+    "comminutioncraft:marble_bricks",
+    "minecraft:vine"
+  ],
+  "result": {
+    "id": "comminutioncraft:mossy_marble_bricks"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "comminutioncraft:mossy_cobbled_marble",
+  "result": {
+    "id": "comminutioncraft:mossy_cobbled_marble_wall"
+  }
+}

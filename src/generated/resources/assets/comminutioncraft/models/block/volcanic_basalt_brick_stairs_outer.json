@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/outer_stairs",
+  "textures": {
+    "bottom": "comminutioncraft:block/volcanic_basalt_bricks",
+    "side": "comminutioncraft:block/volcanic_basalt_bricks",
+    "top": "comminutioncraft:block/volcanic_basalt_bricks"
+  }
+}

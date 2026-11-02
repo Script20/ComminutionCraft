@@ -1,5 +1,6 @@
 package com.script.comminutioncraft.data;
 
+import com.script.comminutioncraft.block.StoneSet;
 import com.script.comminutioncraft.registry.ModBlocks;
 import java.util.List;
 import java.util.Set;
@@ -30,6 +31,20 @@ public class ModLootTableProvider extends LootTableProvider {
             dropSelf(ModBlocks.ELECTRIC_SMELTER.get());
             dropSelf(ModBlocks.ELECTRIC_GENERATOR.get());
             dropSelf(ModBlocks.ENERGY_CABLE.get());
+
+            // Natural stone drops its cobbled form (silk touch keeps it); slabs drop 2 when doubled.
+            for (StoneSet set : ModBlocks.STONE_SETS) {
+                var slabs = set.allSlabs();
+                for (var block : set.all()) {
+                    if (block == set.stone) {
+                        add(block.get(), createSingleItemTableWithSilkTouch(block.get(), set.cobbled.get()));
+                    } else if (slabs.contains(block)) {
+                        add(block.get(), createSlabItemTable(block.get()));
+                    } else {
+                        dropSelf(block.get());
+                    }
+                }
+            }
         }
 
         /** Every block we register must have a loot table, or datagen fails (catches forgotten ones). */

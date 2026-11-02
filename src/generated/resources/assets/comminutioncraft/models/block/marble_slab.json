@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab",
+  "textures": {
+    "bottom": "comminutioncraft:block/marble",
+    "side": "comminutioncraft:block/marble",
+    "top": "comminutioncraft:block/marble"
+  }
+}

@@ -3,6 +3,7 @@ package com.script.comminutioncraft.gametest;
 import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.cable.CableConnection;
 import com.script.comminutioncraft.cable.EnergyCableBlock;
+import com.script.comminutioncraft.data.ModWorldGen;
 import com.script.comminutioncraft.machine.ElectricGeneratorBlockEntity;
 import com.script.comminutioncraft.machine.ElectricMachineBlockEntity;
 import com.script.comminutioncraft.machine.MachineBlock;
@@ -18,6 +19,7 @@ import net.minecraft.gametest.framework.FunctionGameTestInstance;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.TestData;
 import net.minecraft.gametest.framework.TestEnvironmentDefinition;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.Unit;
@@ -27,7 +29,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.RegisterGameTestsEvent;
@@ -50,6 +54,8 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("generator_powers_adjacent_granulator", () -> ModGameTests::generatorPowersAdjacentGranulator);
         TEST_FUNCTIONS.register("wrench_cuts_and_restores_cable", () -> ModGameTests::wrenchCutsAndRestoresCable);
         TEST_FUNCTIONS.register("wrench_rotates_machine", () -> ModGameTests::wrenchRotatesMachine);
+        TEST_FUNCTIONS.register("lava_gets_volcanic_basalt_crust", () -> ModGameTests::lavaGetsVolcanicBasaltCrust);
+        TEST_FUNCTIONS.register("no_crust_without_lava", () -> ModGameTests::noCrustWithoutLava);
     }
 
     public static void registerTests(RegisterGameTestsEvent event) {
@@ -147,7 +153,54 @@ public final class ModGameTests {
         helper.succeed();
     }
 
+    /** The world-gen crust feature turns stone next to lava into volcanic basalt, but not stone 3+ blocks away. */
+    private static void lavaGetsVolcanicBasaltCrust(GameTestHelper helper) {
+        fillWithStone(helper);
+        BlockPos lava = new BlockPos(2, 1, 2);
+        helper.setBlock(lava, Blocks.LAVA);
+        helper.assertTrue(placeCrust(helper, lava), "Crust feature reported nothing placed next to lava");
+
+        BlockState basalt = ModBlocks.VOLCANIC_BASALT.stone.get().defaultBlockState();
+        for (BlockPos touching : new BlockPos[] {new BlockPos(1, 1, 2), new BlockPos(3, 1, 2), new BlockPos(2, 1, 1),
+                new BlockPos(2, 1, 3), new BlockPos(2, 2, 2), new BlockPos(2, 0, 2)}) {
+            helper.assertBlockState(touching, state -> state == basalt, state -> Component.literal(
+                    "Stone touching the lava at " + touching + " should be volcanic basalt, but is " + state));
+        }
+        // (4, 2, 4) is exactly 3 blocks from the lava; the crust is always thinner than that.
+        helper.assertBlockState(new BlockPos(4, 2, 4), state -> state.is(Blocks.STONE),
+                state -> Component.literal("Stone 3 blocks from the lava should be untouched, but is " + state));
+        helper.assertBlockState(lava, state -> state.is(Blocks.LAVA), state -> Component.literal("The lava itself was replaced"));
+        helper.succeed();
+    }
+
+    /** With no lava within range the feature changes nothing. */
+    private static void noCrustWithoutLava(GameTestHelper helper) {
+        fillWithStone(helper);
+        BlockPos centre = new BlockPos(2, 1, 2);
+        helper.assertFalse(placeCrust(helper, centre), "Crust feature placed blocks with no lava nearby");
+        helper.assertBlockState(centre, state -> state.is(Blocks.STONE), state -> Component.literal("Stone changed without lava: " + state));
+        helper.succeed();
+    }
+
     // ---- Helpers ----
+
+    private static void fillWithStone(GameTestHelper helper) {
+        for (int x = 0; x < 5; x++) {
+            for (int y = 1; y < 3; y++) {
+                for (int z = 0; z < 5; z++) {
+                    helper.setBlock(new BlockPos(x, y, z), Blocks.STONE);
+                }
+            }
+        }
+    }
+
+    /** Runs the real, datagen'd volcanic basalt crust feature at a position in the test. */
+    private static boolean placeCrust(GameTestHelper helper, BlockPos pos) {
+        ConfiguredFeature<?, ?> crust = helper.getLevel().registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE)
+                .getOrThrow(ModWorldGen.VOLCANIC_BASALT_CRUST).value();
+        return crust.place(helper.getLevel(), helper.getLevel().getChunkSource().getGenerator(),
+                helper.getLevel().getRandom(), helper.absolutePos(pos));
+    }
 
     /** A generator at {@code from}, cables between, and an Electric Smelter at {@code to} (same row). */
     private static void buildLine(GameTestHelper helper, BlockPos from, BlockPos to) {

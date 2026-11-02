@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column_horizontal",
+  "textures": {
+    "end": "comminutioncraft:block/volcanic_basalt_pillar_top",
+    "side": "comminutioncraft:block/volcanic_basalt_pillar"
+  }
+}

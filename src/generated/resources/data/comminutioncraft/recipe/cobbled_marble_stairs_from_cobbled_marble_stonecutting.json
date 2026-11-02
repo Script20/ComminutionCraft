@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "comminutioncraft:cobbled_marble",
+  "result": {
+    "id": "comminutioncraft:cobbled_marble_stairs"
+  }
+}

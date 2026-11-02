@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "group": "mossy_cobbled_marble",
+  "ingredients": [
+    "comminutioncraft:cobbled_marble",
+    "minecraft:moss_block"
+  ],
+  "result": {
+    "id": "comminutioncraft:mossy_cobbled_marble"
+  }
+}

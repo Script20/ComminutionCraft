@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "group": "mossy_volcanic_basalt_bricks",
+  "ingredients": [
+    "comminutioncraft:volcanic_basalt_bricks",
+    "minecraft:moss_block"
+  ],
+  "result": {
+    "id": "comminutioncraft:mossy_volcanic_basalt_bricks"
+  }
+}

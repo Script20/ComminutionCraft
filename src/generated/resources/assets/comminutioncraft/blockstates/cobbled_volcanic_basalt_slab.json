@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "comminutioncraft:block/cobbled_volcanic_basalt_slab"
+    },
+    "type=double": {
+      "model": "comminutioncraft:block/cobbled_volcanic_basalt"
+    },
+    "type=top": {
+      "model": "comminutioncraft:block/cobbled_volcanic_basalt_slab_top"
+    }
+  }
+}

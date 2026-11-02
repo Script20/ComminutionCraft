@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#minecraft:is_overworld",
+  "features": "comminutioncraft:volcanic_basalt_crust",
+  "step": "underground_decoration"
+}

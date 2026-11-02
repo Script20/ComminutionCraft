@@ -1,7 +1,9 @@
 package com.script.comminutioncraft.data;
 
 import com.script.comminutioncraft.ComminutionCraft;
+import com.script.comminutioncraft.block.StoneSet;
 import com.script.comminutioncraft.recipe.GranulatingRecipe;
+import com.script.comminutioncraft.registry.ModBlocks;
 import com.script.comminutioncraft.registry.ModItems;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup;
@@ -11,7 +13,9 @@ import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.data.recipes.SingleItemRecipeBuilder;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
@@ -20,6 +24,9 @@ import net.minecraft.world.item.crafting.CookingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.SmeltingRecipe;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SlabBlock;
 
 public class ModRecipeProvider extends RecipeProvider {
     private static final int SMELTING_TIME = 200;
@@ -124,6 +131,71 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('C', tag(ProcessedMetal.commonItemTag("ingots/copper")))
                 .unlockedBy("has_iron", has(Items.IRON_INGOT))
                 .save(output, key("wrench"));
+
+        ModBlocks.STONE_SETS.forEach(this::stoneRecipes);
+    }
+
+    // ---- Decorative stone (same recipes as vanilla stone / granite / deepslate) ----
+
+    private void stoneRecipes(StoneSet set) {
+        // Stairs, slabs, walls, button, pressure plate, polished (2x2 stone), chiseled (2 brick slabs),
+        // cracked bricks (smelt bricks). Ids come from the result item, so they land in our namespace.
+        StoneFamilies.of(set).all().forEach(family -> generateRecipes(family, FeatureFlags.VANILLA_SET));
+
+        smeltingResultFromBase(set.stone.get(), set.cobbled.get());
+        smeltingResultFromBase(set.smooth.get(), set.stone.get());
+
+        shaped(RecipeCategory.BUILDING_BLOCKS, set.bricks.get(), 4)
+                .define('#', set.polished.get())
+                .pattern("##")
+                .pattern("##")
+                .unlockedBy(getHasName(set.polished.get()), has(set.polished.get()))
+                .save(output);
+        shaped(RecipeCategory.BUILDING_BLOCKS, set.pillar.get(), 2)
+                .define('#', set.polished.get())
+                .pattern("#")
+                .pattern("#")
+                .unlockedBy(getHasName(set.polished.get()), has(set.polished.get()))
+                .save(output);
+
+        mossy(set.mossyCobbled.get(), set.cobbled.get());
+        mossy(set.mossyBricks.get(), set.bricks.get());
+
+        // Stonecutter: every worked form can be cut from the rougher forms above it.
+        stonecutting(set.stone.get(), set.stairs.get(), set.slab.get(),
+                set.polished.get(), set.polishedStairs.get(), set.polishedSlab.get(),
+                set.bricks.get(), set.brickStairs.get(), set.brickSlab.get(), set.brickWall.get(),
+                set.chiseled.get(), set.pillar.get());
+        stonecutting(set.polished.get(), set.polishedStairs.get(), set.polishedSlab.get(),
+                set.bricks.get(), set.brickStairs.get(), set.brickSlab.get(), set.brickWall.get(),
+                set.chiseled.get(), set.pillar.get());
+        stonecutting(set.bricks.get(), set.brickStairs.get(), set.brickSlab.get(), set.brickWall.get(), set.chiseled.get());
+        stonecutting(set.cobbled.get(), set.cobbledStairs.get(), set.cobbledSlab.get(), set.cobbledWall.get());
+        stonecutting(set.mossyCobbled.get(), set.mossyCobbledStairs.get(), set.mossyCobbledSlab.get(), set.mossyCobbledWall.get());
+        stonecutting(set.mossyBricks.get(), set.mossyBrickStairs.get(), set.mossyBrickSlab.get(), set.mossyBrickWall.get());
+        stonecutting(set.smooth.get(), set.smoothSlab.get());
+    }
+
+    /** Mossy variant from the plain block plus a vine or a moss block (like vanilla's mossy cobblestone). */
+    private void mossy(Block result, Block base) {
+        for (ItemLike moss : new ItemLike[] {Items.VINE, Items.MOSS_BLOCK}) {
+            shapeless(RecipeCategory.BUILDING_BLOCKS, result)
+                    .requires(base)
+                    .requires(moss)
+                    .group(getItemName(result))
+                    .unlockedBy(getHasName(moss), has(moss))
+                    .save(output, key(getItemName(result) + "_from_" + getItemName(moss)));
+        }
+    }
+
+    /** One stonecutter recipe per result (2 for slabs). Vanilla's helper would put these in the minecraft namespace. */
+    private void stonecutting(Block base, Block... results) {
+        for (Block result : results) {
+            SingleItemRecipeBuilder.stonecutting(Ingredient.of(base), RecipeCategory.BUILDING_BLOCKS, result,
+                            result instanceof SlabBlock ? 2 : 1)
+                    .unlockedBy(getHasName(base), has(base))
+                    .save(output, key(getConversionRecipeName(result, base) + "_stonecutting"));
+        }
     }
 
     private static AbstractCookingRecipe.CookingBookInfo cookingInfo() {

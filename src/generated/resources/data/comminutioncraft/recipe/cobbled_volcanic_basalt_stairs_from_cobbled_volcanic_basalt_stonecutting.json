@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "comminutioncraft:cobbled_volcanic_basalt",
+  "result": {
+    "id": "comminutioncraft:cobbled_volcanic_basalt_stairs"
+  }
+}

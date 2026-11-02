@@ -2,6 +2,7 @@ package com.script.comminutioncraft.data;
 
 import com.mojang.math.Quadrant;
 import com.script.comminutioncraft.ComminutionCraft;
+import com.script.comminutioncraft.block.StoneSet;
 import com.script.comminutioncraft.cable.CableConnection;
 import com.script.comminutioncraft.cable.EnergyCableBlock;
 import com.script.comminutioncraft.registry.ModBlocks;
@@ -91,6 +92,11 @@ public class ModModelProvider extends ModelProvider {
         blockModels.createFurnace(ModBlocks.ELECTRIC_SMELTER.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         blockModels.createFurnace(ModBlocks.ELECTRIC_GENERATOR.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         energyCable(blockModels, itemModels);
+        for (StoneSet set : ModBlocks.STONE_SETS) {
+            StoneFamilies.of(set).all().forEach(family -> blockModels.family(family.getBaseBlock()).generateFor(family));
+            // Pillar: <name>_pillar on the sides, <name>_pillar_top on the ends (like quartz pillars)
+            blockModels.createRotatedPillarWithHorizontalVariant(set.pillar.get(), TexturedModel.COLUMN_ALT, TexturedModel.COLUMN_HORIZONTAL_ALT);
+        }
 
         for (ProcessedMetal metal : ProcessedMetal.ALL) {
             itemModels.generateFlatItem(metal.granulated().get(), ModelTemplates.FLAT_ITEM);

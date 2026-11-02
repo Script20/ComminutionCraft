@@ -1,6 +1,7 @@
 package com.script.comminutioncraft.registry;
 
 import com.script.comminutioncraft.ComminutionCraft;
+import com.script.comminutioncraft.block.StoneSet;
 import com.script.comminutioncraft.cable.EnergyCableBlock;
 import com.script.comminutioncraft.machine.CoalGranulatorBlock;
 import com.script.comminutioncraft.machine.CoalSmelterBlock;
@@ -8,6 +9,7 @@ import com.script.comminutioncraft.machine.ElectricGeneratorBlock;
 import com.script.comminutioncraft.machine.ElectricGranulatorBlock;
 import com.script.comminutioncraft.machine.ElectricSmelterBlock;
 import com.script.comminutioncraft.machine.MachineBlock;
+import java.util.List;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
@@ -40,6 +42,11 @@ public final class ModBlocks {
                     .strength(0.5F)
                     .sound(SoundType.COPPER)
                     .noOcclusion());
+
+    // Decorative stone (marble generates like granite; volcanic basalt crusts underground lava pools)
+    public static final StoneSet MARBLE = new StoneSet(BLOCKS, "marble", MapColor.QUARTZ, 1.5F, 6.0F, SoundType.STONE);
+    public static final StoneSet VOLCANIC_BASALT = new StoneSet(BLOCKS, "volcanic_basalt", MapColor.COLOR_BLACK, 2.0F, 6.0F, SoundType.BASALT);
+    public static final List<StoneSet> STONE_SETS = List.of(MARBLE, VOLCANIC_BASALT);
 
     /** Same feel as a vanilla furnace: needs a pickaxe, glows while burning. */
     private static BlockBehaviour.Properties tier1MachineProperties(BlockBehaviour.Properties properties) {

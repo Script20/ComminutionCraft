@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab_top",
+  "textures": {
+    "bottom": "comminutioncraft:block/smooth_volcanic_basalt",
+    "side": "comminutioncraft:block/smooth_volcanic_basalt",
+    "top": "comminutioncraft:block/smooth_volcanic_basalt"
+  }
+}
