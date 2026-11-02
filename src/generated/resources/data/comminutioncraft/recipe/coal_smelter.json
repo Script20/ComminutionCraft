@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": "minecraft:brick",
+    "C": "#c:cobblestones",
+    "X": "minecraft:furnace"
+  },
+  "pattern": [
+    "BBB",
+    "BXB",
+    "CCC"
+  ],
+  "result": {
+    "id": "comminutioncraft:coal_smelter"
+  }
+}

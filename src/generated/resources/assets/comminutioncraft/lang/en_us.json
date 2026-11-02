@@ -1,0 +1,8 @@
+{
+  "block.comminutioncraft.coal_granulator": "Coal Granulator",
+  "block.comminutioncraft.coal_smelter": "Coal Smelter",
+  "item.comminutioncraft.granulated_copper": "Granulated Copper",
+  "item.comminutioncraft.granulated_gold": "Granulated Gold",
+  "item.comminutioncraft.granulated_iron": "Granulated Iron",
+  "itemGroup.comminutioncraft": "ComminutionCraft"
+}
