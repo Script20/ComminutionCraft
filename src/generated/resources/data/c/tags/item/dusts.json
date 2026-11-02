@@ -2,6 +2,14 @@
   "values": [
     "#c:dusts/iron",
     "#c:dusts/copper",
-    "#c:dusts/gold"
+    "#c:dusts/gold",
+    "#c:dusts/tin",
+    "#c:dusts/lead",
+    "#c:dusts/silver",
+    "#c:dusts/nickel",
+    "#c:dusts/zinc",
+    "#c:dusts/aluminum",
+    "#c:dusts/osmium",
+    "#c:dusts/uranium"
   ]
 }

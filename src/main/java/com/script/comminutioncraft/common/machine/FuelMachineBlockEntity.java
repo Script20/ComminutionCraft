@@ -110,6 +110,16 @@ public abstract class FuelMachineBlockEntity extends BaseContainerBlockEntity
         return litTimeRemaining > 0;
     }
 
+    /** Ticks of work done on the current item (for tooltips like Jade). */
+    public int getProgress() {
+        return progress;
+    }
+
+    /** Ticks one item takes (for tooltips like Jade). */
+    public int getTotalProcessTime() {
+        return getProcessTime();
+    }
+
     @Override
     public void serverTick(ServerLevel level, BlockPos pos, BlockState state) {
         boolean wasLit = isLit();

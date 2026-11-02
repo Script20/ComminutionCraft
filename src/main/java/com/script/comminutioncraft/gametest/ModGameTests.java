@@ -10,6 +10,14 @@ import com.script.comminutioncraft.common.machine.MachineBlock;
 import com.script.comminutioncraft.common.registry.ModBlocks;
 import com.script.comminutioncraft.common.registry.ModDataComponents;
 import com.script.comminutioncraft.common.registry.ModItems;
+import com.script.comminutioncraft.common.data.ProcessedMetal;
+import com.script.comminutioncraft.common.recipe.TagResult;
+import com.script.comminutioncraft.common.recipe.TagSmeltingRecipe;
+import net.minecraft.data.recipes.RecipeBuilder;
+import net.minecraft.world.item.crafting.AbstractCookingRecipe;
+import net.minecraft.world.item.crafting.CookingBookCategory;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -56,6 +64,7 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("wrench_rotates_machine", () -> ModGameTests::wrenchRotatesMachine);
         TEST_FUNCTIONS.register("lava_gets_volcanic_basalt_crust", () -> ModGameTests::lavaGetsVolcanicBasaltCrust);
         TEST_FUNCTIONS.register("no_crust_without_lava", () -> ModGameTests::noCrustWithoutLava);
+        TEST_FUNCTIONS.register("tag_smelting_gives_tag_item", () -> ModGameTests::tagSmeltingGivesTagItem);
     }
 
     public static void registerTests(RegisterGameTestsEvent event) {
@@ -179,6 +188,21 @@ public final class ModGameTests {
         BlockPos centre = new BlockPos(2, 1, 2);
         helper.assertFalse(placeCrust(helper, centre), "Crust feature placed blocks with no lava nearby");
         helper.assertBlockState(centre, state -> state.is(Blocks.STONE), state -> Component.literal("Stone changed without lava: " + state));
+        helper.succeed();
+    }
+
+    /**
+     * Tag-result smelting (used for other mods' metals) gives the tag's item. Tested with c:ingots/iron, since
+     * modded metals don't exist in the test world. Also checks those metals correctly report themselves unavailable.
+     */
+    private static void tagSmeltingGivesTagItem(GameTestHelper helper) {
+        TagSmeltingRecipe recipe = new TagSmeltingRecipe(RecipeBuilder.createCraftingCommonInfo(true),
+                new AbstractCookingRecipe.CookingBookInfo(CookingBookCategory.MISC, ""),
+                Ingredient.of(ModItems.GRANULATED_IRON.get()), new TagResult(ProcessedMetal.commonItemTag("ingots/iron"), 2), 0.7F, 200);
+        ItemStack result = recipe.assemble(new SingleRecipeInput(new ItemStack(ModItems.GRANULATED_IRON.get())));
+        helper.assertTrue(result.is(Items.IRON_INGOT) && result.getCount() == 2, "Expected 2 iron ingots from c:ingots/iron, got " + result);
+        helper.assertTrue(ProcessedMetal.ALL.stream().filter(ProcessedMetal::fromOtherMods).noneMatch(ProcessedMetal::isAvailable),
+                "A modded metal reports itself available in a world without that mod");
         helper.succeed();
     }
 

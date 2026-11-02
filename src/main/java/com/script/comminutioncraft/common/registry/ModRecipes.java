@@ -2,6 +2,8 @@ package com.script.comminutioncraft.common.registry;
 
 import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.recipe.GranulatingRecipe;
+import com.script.comminutioncraft.common.recipe.TagBlastingRecipe;
+import com.script.comminutioncraft.common.recipe.TagSmeltingRecipe;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -21,6 +23,15 @@ public final class ModRecipes {
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<GranulatingRecipe>> GRANULATING_SERIALIZER =
             RECIPE_SERIALIZERS.register("granulating",
                     () -> new RecipeSerializer<>(GranulatingRecipe.CODEC, GranulatingRecipe.STREAM_CODEC));
+
+    /** Smelting / blasting whose result is an item tag, for other mods' metals (see TagResult). */
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<TagSmeltingRecipe>> TAG_SMELTING_SERIALIZER =
+            RECIPE_SERIALIZERS.register("tag_smelting",
+                    () -> new RecipeSerializer<>(TagSmeltingRecipe.MAP_CODEC, TagSmeltingRecipe.STREAM_CODEC));
+
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<TagBlastingRecipe>> TAG_BLASTING_SERIALIZER =
+            RECIPE_SERIALIZERS.register("tag_blasting",
+                    () -> new RecipeSerializer<>(TagBlastingRecipe.MAP_CODEC, TagBlastingRecipe.STREAM_CODEC));
 
     private ModRecipes() {}
 }

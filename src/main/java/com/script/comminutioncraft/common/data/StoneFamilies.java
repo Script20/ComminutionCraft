@@ -6,7 +6,7 @@ import net.minecraft.data.BlockFamily;
 
 /**
  * A {@link StoneSet} as vanilla {@link BlockFamily}s, which the model and recipe providers know how to expand
- * (stairs, slabs, walls, buttons, pressure plates, polished, chiseled, cracked).
+ * (stairs, slabs, walls, buttons, polished, chiseled, cracked).
  * <p>
  * Full blocks that are the base of their own family (cobbled, polished, bricks...) are deliberately not listed as
  * variants of another family, or vanilla's model generator would create their model twice.
@@ -17,6 +17,7 @@ public record StoneFamilies(BlockFamily stone, BlockFamily cobbled, BlockFamily 
         return new StoneFamilies(
                 new BlockFamily.Builder(set.stone.get())
                         .stairs(set.stairs.get()).slab(set.slab.get())
+                        .button(set.button.get())
                         .polished(set.polished.get())
                         .getFamily(),
                 new BlockFamily.Builder(set.cobbled.get())

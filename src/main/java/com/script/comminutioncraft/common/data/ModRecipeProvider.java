@@ -3,6 +3,9 @@ package com.script.comminutioncraft.common.data;
 import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.block.StoneSet;
 import com.script.comminutioncraft.common.recipe.GranulatingRecipe;
+import com.script.comminutioncraft.common.recipe.TagBlastingRecipe;
+import com.script.comminutioncraft.common.recipe.TagResult;
+import com.script.comminutioncraft.common.recipe.TagSmeltingRecipe;
 import com.script.comminutioncraft.common.registry.ModBlocks;
 import com.script.comminutioncraft.common.registry.ModItems;
 import java.util.concurrent.CompletableFuture;
@@ -27,6 +30,8 @@ import net.minecraft.world.item.crafting.SmeltingRecipe;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SlabBlock;
+import net.neoforged.neoforge.common.conditions.NotCondition;
+import net.neoforged.neoforge.common.conditions.TagEmptyCondition;
 
 public class ModRecipeProvider extends RecipeProvider {
     private static final int SMELTING_TIME = 200;
@@ -39,22 +44,32 @@ public class ModRecipeProvider extends RecipeProvider {
     @Override
     protected void buildRecipes() {
         for (ProcessedMetal metal : ProcessedMetal.ALL) {
+            // Other mods' metals: only load when some mod provides both the raw ore and the ingot.
+            RecipeOutput out = metal.fromOtherMods()
+                    ? output.withConditions(
+                            new NotCondition(new TagEmptyCondition<>(metal.rawTag())),
+                            new NotCondition(new TagEmptyCondition<>(metal.ingotTag())))
+                    : output;
+
             // raw ore -> 2 granulated ore
-            output.accept(key("granulating/raw_" + metal.name()),
+            out.accept(key("granulating/raw_" + metal.name()),
                     new GranulatingRecipe(tag(metal.rawTag()), new ItemStackTemplate(metal.granulated(), 2)),
                     null);
 
-            // granulated ore -> ingot (vanilla furnace, Coal Smelter, blast furnace)
+            // granulated ore -> ingot (vanilla furnace, Coal/Electric Smelter, blast furnace)
             Ingredient granulated = Ingredient.of(metal.granulated());
-            ItemStackTemplate ingot = new ItemStackTemplate(metal.ingot().builtInRegistryHolder(), 1);
-            output.accept(key("smelting/" + metal.name() + "_ingot_from_granulated"),
-                    new SmeltingRecipe(RecipeBuilder.createCraftingCommonInfo(true), cookingInfo(),
-                            granulated, ingot, metal.experience(), SMELTING_TIME),
-                    null);
-            output.accept(key("blasting/" + metal.name() + "_ingot_from_granulated"),
-                    new BlastingRecipe(RecipeBuilder.createCraftingCommonInfo(true), cookingInfo(),
-                            granulated, ingot, metal.experience(), BLASTING_TIME),
-                    null);
+            Recipe.CommonInfo info = RecipeBuilder.createCraftingCommonInfo(true);
+            ResourceKey<Recipe<?>> smeltingKey = key("smelting/" + metal.name() + "_ingot_from_granulated");
+            ResourceKey<Recipe<?>> blastingKey = key("blasting/" + metal.name() + "_ingot_from_granulated");
+            if (metal.fromOtherMods()) {
+                TagResult ingot = new TagResult(metal.ingotTag(), 1);
+                out.accept(smeltingKey, new TagSmeltingRecipe(info, cookingInfo(), granulated, ingot, metal.experience(), SMELTING_TIME), null);
+                out.accept(blastingKey, new TagBlastingRecipe(info, cookingInfo(), granulated, ingot, metal.experience(), BLASTING_TIME), null);
+            } else {
+                ItemStackTemplate ingot = new ItemStackTemplate(metal.ingot().builtInRegistryHolder(), 1);
+                out.accept(smeltingKey, new SmeltingRecipe(info, cookingInfo(), granulated, ingot, metal.experience(), SMELTING_TIME), null);
+                out.accept(blastingKey, new BlastingRecipe(info, cookingInfo(), granulated, ingot, metal.experience(), BLASTING_TIME), null);
+            }
         }
 
         shaped(RecipeCategory.MISC, ModItems.COAL_GRANULATOR.get())
@@ -138,7 +153,7 @@ public class ModRecipeProvider extends RecipeProvider {
     // ---- Decorative stone (same recipes as vanilla stone / granite / deepslate) ----
 
     private void stoneRecipes(StoneSet set) {
-        // Stairs, slabs, walls, button, pressure plate, polished (2x2 stone), chiseled (2 brick slabs),
+        // Stairs, slabs, walls, button, polished (2x2 stone), chiseled (2 brick slabs),
         // cracked bricks (smelt bricks). Ids come from the result item, so they land in our namespace.
         StoneFamilies.of(set).all().forEach(family -> generateRecipes(family, FeatureFlags.VANILLA_SET));
 

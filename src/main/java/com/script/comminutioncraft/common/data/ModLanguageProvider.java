@@ -35,6 +35,15 @@ public class ModLanguageProvider extends LanguageProvider {
 
         add("gui.comminutioncraft.energy", "%s / %s FE");
         add("gui.comminutioncraft.generating", "%s FE/t");
+
+        add("jei.comminutioncraft.granulating", "Granulating");
+        add("jei.comminutioncraft.time.coal_granulator", "Coal Granulator: %s");
+        add("jei.comminutioncraft.time.electric_granulator", "Electric Granulator: %s");
+
+        add("config.jade.plugin_comminutioncraft.machine", "ComminutionCraft machines");
+        add("config.jade.plugin_comminutioncraft.generator", "ComminutionCraft generator");
+        add("jade.comminutioncraft.generating", "Generating %s FE/t (%ss left)");
+        add("jade.comminutioncraft.idle", "Idle");
         for (ProcessedMetal metal : ProcessedMetal.ALL) {
             add(metal.granulated().get(), metal.displayName());
         }

@@ -1,6 +1,7 @@
 package com.script.comminutioncraft.common.registry;
 
 import com.script.comminutioncraft.ComminutionCraft;
+import com.script.comminutioncraft.common.data.ProcessedMetal;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -27,9 +28,10 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.ENERGY_CABLE.get());
                         output.accept(ModItems.WRENCH.get());
                         ModBlocks.STONE_SETS.forEach(set -> set.all().forEach(block -> output.accept(block.get())));
-                        output.accept(ModItems.GRANULATED_IRON.get());
-                        output.accept(ModItems.GRANULATED_COPPER.get());
-                        output.accept(ModItems.GRANULATED_GOLD.get());
+                        // Other mods' metals only appear when some installed mod adds that metal.
+                        ProcessedMetal.ALL.stream()
+                                .filter(ProcessedMetal::isAvailable)
+                                .forEach(metal -> output.accept(metal.granulated().get()));
                     })
                     .build());
 

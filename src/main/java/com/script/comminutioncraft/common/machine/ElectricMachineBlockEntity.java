@@ -106,6 +106,16 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
         return energy;
     }
 
+    /** Ticks of work done on the current item (for tooltips like Jade). */
+    public int getProgress() {
+        return progress;
+    }
+
+    /** Ticks one item takes (for tooltips like Jade). */
+    public int getTotalProcessTime() {
+        return getProcessTime();
+    }
+
     // ---- Ticking ----
 
     @Override

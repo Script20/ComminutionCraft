@@ -14,6 +14,15 @@ public final class ModItems {
     public static final DeferredItem<Item> GRANULATED_IRON = ITEMS.registerSimpleItem("granulated_iron");
     public static final DeferredItem<Item> GRANULATED_COPPER = ITEMS.registerSimpleItem("granulated_copper");
     public static final DeferredItem<Item> GRANULATED_GOLD = ITEMS.registerSimpleItem("granulated_gold");
+    // Other mods' metals: always registered, only shown/used when some mod adds that metal (see ProcessedMetal)
+    public static final DeferredItem<Item> GRANULATED_TIN = ITEMS.registerSimpleItem("granulated_tin");
+    public static final DeferredItem<Item> GRANULATED_LEAD = ITEMS.registerSimpleItem("granulated_lead");
+    public static final DeferredItem<Item> GRANULATED_SILVER = ITEMS.registerSimpleItem("granulated_silver");
+    public static final DeferredItem<Item> GRANULATED_NICKEL = ITEMS.registerSimpleItem("granulated_nickel");
+    public static final DeferredItem<Item> GRANULATED_ZINC = ITEMS.registerSimpleItem("granulated_zinc");
+    public static final DeferredItem<Item> GRANULATED_ALUMINUM = ITEMS.registerSimpleItem("granulated_aluminum");
+    public static final DeferredItem<Item> GRANULATED_OSMIUM = ITEMS.registerSimpleItem("granulated_osmium");
+    public static final DeferredItem<Item> GRANULATED_URANIUM = ITEMS.registerSimpleItem("granulated_uranium");
 
     // Tools
     public static final DeferredItem<WrenchItem> WRENCH = ITEMS.registerItem("wrench", WrenchItem::new, properties -> properties.stacksTo(1));

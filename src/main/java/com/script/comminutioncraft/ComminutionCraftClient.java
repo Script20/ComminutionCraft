@@ -1,6 +1,8 @@
 package com.script.comminutioncraft;
 
 import com.script.comminutioncraft.client.gui.CoalGranulatorScreen;
+import com.script.comminutioncraft.client.ClientRecipes;
+import net.neoforged.neoforge.common.NeoForge;
 import com.script.comminutioncraft.client.gui.CoalSmelterScreen;
 import com.script.comminutioncraft.client.gui.ElectricGeneratorScreen;
 import com.script.comminutioncraft.client.gui.ElectricMachineScreen;
@@ -17,6 +19,7 @@ public class ComminutionCraftClient {
     public ComminutionCraftClient(IEventBus modEventBus) {
         modEventBus.addListener(ComminutionCraftClient::registerScreens);
         modEventBus.addListener(ModDataGenerators::gatherData);
+        NeoForge.EVENT_BUS.addListener(ClientRecipes::onRecipesReceived);
     }
 
     private static void registerScreens(RegisterMenuScreensEvent event) {

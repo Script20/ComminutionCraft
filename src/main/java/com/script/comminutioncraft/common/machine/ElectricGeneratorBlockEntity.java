@@ -101,6 +101,11 @@ public class ElectricGeneratorBlockEntity extends BaseContainerBlockEntity imple
         return litTimeRemaining > 0;
     }
 
+    /** Burn ticks left on the current fuel item (for tooltips like Jade). */
+    public int getLitTimeRemaining() {
+        return litTimeRemaining;
+    }
+
     // ---- Ticking ----
 
     @Override

@@ -1,6 +1,8 @@
 package com.script.comminutioncraft;
 
 import com.mojang.logging.LogUtils;
+import com.script.comminutioncraft.common.recipe.RecipeSync;
+import net.neoforged.neoforge.common.NeoForge;
 import com.script.comminutioncraft.common.registry.ModBlockEntities;
 import com.script.comminutioncraft.common.registry.ModBlocks;
 import com.script.comminutioncraft.common.cable.CableConnection;
@@ -42,6 +44,8 @@ public class ComminutionCraft {
 
         modEventBus.addListener(this::registerCapabilities);
         modEventBus.addListener(ModGameTests::registerTests);
+
+        NeoForge.EVENT_BUS.addListener(RecipeSync::sendToClients);
     }
 
     /**

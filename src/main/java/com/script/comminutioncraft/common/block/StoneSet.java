@@ -22,7 +22,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 /**
  * Every block of one decorative stone, mirroring vanilla stone: the natural block (drops its cobbled form),
  * cobbled + mossy cobbled, polished, smooth, bricks + cracked/mossy/chiseled, a pillar, and the stairs, slabs,
- * walls, button and pressure plate that go with them. Ids follow vanilla naming, e.g. {@code marble_brick_stairs}.
+ * walls and button that go with them. Ids follow vanilla naming, e.g. {@code marble_brick_stairs}.
  * <p>
  * Datagen builds models, loot, tags, lang and recipes for all of it from {@link #all()}
  * (see {@code data/StoneFamilies}), so adding a stone is one line in {@code ModBlocks} plus its textures.
