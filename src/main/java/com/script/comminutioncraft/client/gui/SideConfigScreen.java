@@ -146,12 +146,16 @@ public class SideConfigScreen extends Screen {
         List<Projected> faces = visibleFaces();
         Projected hovered = faceAt(faces, mouseX, mouseY);
         for (Projected face : faces) {
-            drawFace(graphics, face, face == hovered);
+            drawFaceTexture(graphics, face);
+        }
+        // The GUI batches textured and plain quads separately; a new stratum makes sure the tints land on top.
+        graphics.nextStratum();
+        for (Projected face : faces) {
+            drawFaceTint(graphics, face, face == hovered);
         }
 
         drawLegend(graphics);
-        graphics.centeredText(font, Component.translatable("gui.comminutioncraft.side_config.help"),
-                left + WIDTH / 2, top + HEIGHT - 38, TEXT_COLOR);
+        drawHelp(graphics);
 
         if (hovered != null) {
             RelativeSide side = hovered.face().side();
@@ -160,23 +164,42 @@ public class SideConfigScreen extends Screen {
         }
     }
 
-    private void drawFace(GuiGraphicsExtractor graphics, Projected face, boolean hovered) {
-        RelativeSide side = face.face().side();
+    private void drawFaceTexture(GuiGraphicsExtractor graphics, Projected face) {
         // Faces turned away from the light are darker, so the cube reads as 3D.
         int light = Mth.clamp((int) (255 * (0.55 + 0.45 * face.facing())), 0, 255);
-        int tint = 0xFF000000 | light << 16 | light << 8 | light;
-        SideMode mode = controls.getSideMode(side);
+        int shade = 0xFF000000 | light << 16 | light << 8 | light;
+        pushFacePose(graphics, face);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, texture(face.face().side()), 0, 0, 0, 0, 16, 16, 16, 16, shade);
+        graphics.pose().popMatrix();
+    }
 
+    private void drawFaceTint(GuiGraphicsExtractor graphics, Projected face, boolean hovered) {
+        SideMode mode = controls.getSideMode(face.face().side());
+        pushFacePose(graphics, face);
+        graphics.fill(0, 0, 16, 16, (mode.color & 0x00FFFFFF) | (mode == SideMode.NONE ? 0x50000000 : 0x70000000));
+        if (hovered) {
+            graphics.fill(0, 0, 16, 16, 0x40FFFFFF);
+        }
+        graphics.pose().popMatrix();
+    }
+
+    /** Maps the 16x16 square onto the face's on-screen parallelogram. */
+    private static void pushFacePose(GuiGraphicsExtractor graphics, Projected face) {
         graphics.pose().pushMatrix();
         graphics.pose().mul(new Matrix3x2f(
                 (float) face.ux() / 16, (float) face.uy() / 16,
                 (float) face.vx() / 16, (float) face.vy() / 16,
                 (float) face.x(), (float) face.y()));
-        graphics.blit(RenderPipelines.GUI_TEXTURED, texture(side), 0, 0, 0, 0, 16, 16, 16, 16, tint);
-        graphics.fill(0, 0, 16, 16, (mode.color & 0x00FFFFFF) | (mode == SideMode.NONE ? 0x50000000 : 0x70000000));
-        if (hovered) {
-            graphics.fill(0, 0, 16, 16, 0x40FFFFFF);
-        }
+    }
+
+    /** The help line, at most 3/4 size and shrunk further if a translation is too long for the panel. */
+    private void drawHelp(GuiGraphicsExtractor graphics) {
+        Component help = Component.translatable("gui.comminutioncraft.side_config.help");
+        float scale = Math.min(0.75F, (WIDTH - 12) / (float) font.width(help));
+        graphics.pose().pushMatrix();
+        graphics.pose().translate(left + WIDTH / 2.0F, top + HEIGHT - 37);
+        graphics.pose().scale(scale, scale);
+        graphics.centeredText(font, help, 0, 0, TEXT_COLOR);
         graphics.pose().popMatrix();
     }
 
