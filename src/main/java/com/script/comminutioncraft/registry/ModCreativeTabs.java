@@ -21,6 +21,11 @@ public final class ModCreativeTabs {
                     .displayItems((parameters, output) -> {
                         output.accept(ModItems.COAL_GRANULATOR.get());
                         output.accept(ModItems.COAL_SMELTER.get());
+                        output.accept(ModItems.ELECTRIC_GENERATOR.get());
+                        output.accept(ModItems.ELECTRIC_GRANULATOR.get());
+                        output.accept(ModItems.ELECTRIC_SMELTER.get());
+                        output.accept(ModItems.ENERGY_CABLE.get());
+                        output.accept(ModItems.WRENCH.get());
                         output.accept(ModItems.GRANULATED_IRON.get());
                         output.accept(ModItems.GRANULATED_COPPER.get());
                         output.accept(ModItems.GRANULATED_GOLD.get());

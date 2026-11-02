@@ -8,8 +8,6 @@ from PIL import Image, ImageDraw, ImageFont
 
 from mekstyle_lib import Tex, mix, shade, clamp, fire, iso_block, up, FRAMES, TAU, ORE
 
-OUT = sys.argv[1]
-os.makedirs(OUT, exist_ok=True)
 
 K = dict(o=(16, 17, 20), d=(28, 30, 35), m=(42, 45, 52), l=(60, 64, 73), hi=(84, 89, 100))
 GLASS = (13, 14, 17)
@@ -340,67 +338,74 @@ VARIANTS = [
 ]
 
 # ================================================================ render
-font = ImageFont.load_default(size=21)
-small = ImageFont.load_default(size=14)
-BG = (38, 40, 48, 255)
-COL_W = 310
-sheet = Image.new('RGBA', (COL_W * 3 + 20, 600), BG)
-dr = ImageDraw.Draw(sheet)
-gif = [Image.new('RGBA', (COL_W * 3 + 20, 360), BG) for _ in range(FRAMES)]
+def render_preview(OUT):
+    """Preview sheet + gif of all three variants (python tools/dark_chassis_system.py <out_dir>)."""
+    os.makedirs(OUT, exist_ok=True)
+    font = ImageFont.load_default(size=21)
+    small = ImageFont.load_default(size=14)
+    BG = (38, 40, 48, 255)
+    COL_W = 310
+    sheet = Image.new('RGBA', (COL_W * 3 + 20, 600), BG)
+    dr = ImageDraw.Draw(sheet)
+    gif = [Image.new('RGBA', (COL_W * 3 + 20, 360), BG) for _ in range(FRAMES)]
 
-for i, (key, name, act_g, act_s, tc, te) in enumerate(VARIANTS):
-    x0 = 10 + i * COL_W
-    builds = {
-        'granulator': (top('coal'), side('coal'), lambda k=None: front(act_g, tc, 'coal', k)),
-        'smelter': (top('coal'), side('coal'), lambda k=None: front(act_s, tc, 'coal', k)),
-        'granulator T2': (top('electric'), side('electric'), lambda k=None: front(act_g, te, 'electric', k)),
-    }
-    folder = os.path.join(OUT, f'{key}')
-    os.makedirs(folder, exist_ok=True)
-    for bname, (tp, sd, fr) in builds.items():
-        stem = bname.replace(' ', '_').lower()
-        tp.img.save(os.path.join(folder, f'{stem}_top.png'))
-        sd.img.save(os.path.join(folder, f'{stem}_side.png'))
-        fr().img.save(os.path.join(folder, f'{stem}_front.png'))
-        strip = Image.new('RGBA', (16, 16 * FRAMES))
+    for i, (key, name, act_g, act_s, tc, te) in enumerate(VARIANTS):
+        x0 = 10 + i * COL_W
+        builds = {
+            'granulator': (top('coal'), side('coal'), lambda k=None: front(act_g, tc, 'coal', k)),
+            'smelter': (top('coal'), side('coal'), lambda k=None: front(act_s, tc, 'coal', k)),
+            'granulator T2': (top('electric'), side('electric'), lambda k=None: front(act_g, te, 'electric', k)),
+        }
+        folder = os.path.join(OUT, f'{key}')
+        os.makedirs(folder, exist_ok=True)
+        for bname, (tp, sd, fr) in builds.items():
+            stem = bname.replace(' ', '_').lower()
+            tp.img.save(os.path.join(folder, f'{stem}_top.png'))
+            sd.img.save(os.path.join(folder, f'{stem}_side.png'))
+            fr().img.save(os.path.join(folder, f'{stem}_front.png'))
+            strip = Image.new('RGBA', (16, 16 * FRAMES))
+            for k in range(FRAMES):
+                strip.paste(fr(k).img, (0, 16 * k))
+            strip.save(os.path.join(folder, f'{stem}_front_on.png'))
+
+        dr.text((x0 + 8, 10), f'{key}. {name}', font=font, fill=(235, 235, 240))
+        # three running blocks
+        for j, (bname, (tp, sd, fr)) in enumerate(builds.items()):
+            sheet.alpha_composite(iso_block(tp.img, fr(2).img, sd.img, 100), (x0 + j * 100, 42))
+            dr.text((x0 + 8 + j * 100, 145), bname, font=small, fill=(170, 170, 180))
+        # flat fronts
+        tp, sd, fr = builds['granulator']
+        flats = [('off', fr().img), ('on', fr(2).img), ('smelter', builds['smelter'][2](3).img),
+                 ('T2 on', builds['granulator T2'][2](2).img)]
+        for k, (lab, im) in enumerate(flats):
+            sheet.alpha_composite(up(im, 4), (x0 + 6 + k * 74, 172))
+            dr.text((x0 + 8 + k * 74, 240), lab, font=small, fill=(170, 170, 180))
         for k in range(FRAMES):
-            strip.paste(fr(k).img, (0, 16 * k))
-        strip.save(os.path.join(folder, f'{stem}_front_on.png'))
+            sheet.alpha_composite(up(fr(k).img, 2), (x0 + 6 + (k % 4) * 74, 266 + (k // 4) * 38))
+        dr.text((x0 + 8, 342), 'granulator frames', font=small, fill=(170, 170, 180))
+        # wall: casing row + machines in place
+        for gx in range(3):
+            sheet.alpha_composite(up(sd.img, 4), (x0 + 30 + gx * 70, 370))
+        sheet.alpha_composite(up(fr(2).img, 4), (x0 + 30, 440))
+        sheet.alpha_composite(up(builds['smelter'][2](4).img, 4), (x0 + 100, 440))
+        sheet.alpha_composite(up(sd.img, 4), (x0 + 170, 440))
+        dr.text((x0 + 8, 512), 'in a wall of casing', font=small, fill=(170, 170, 180))
 
-    dr.text((x0 + 8, 10), f'{key}. {name}', font=font, fill=(235, 235, 240))
-    # three running blocks
-    for j, (bname, (tp, sd, fr)) in enumerate(builds.items()):
-        sheet.alpha_composite(iso_block(tp.img, fr(2).img, sd.img, 100), (x0 + j * 100, 42))
-        dr.text((x0 + 8 + j * 100, 145), bname, font=small, fill=(170, 170, 180))
-    # flat fronts
-    tp, sd, fr = builds['granulator']
-    flats = [('off', fr().img), ('on', fr(2).img), ('smelter', builds['smelter'][2](3).img),
-             ('T2 on', builds['granulator T2'][2](2).img)]
-    for k, (lab, im) in enumerate(flats):
-        sheet.alpha_composite(up(im, 4), (x0 + 6 + k * 74, 172))
-        dr.text((x0 + 8 + k * 74, 240), lab, font=small, fill=(170, 170, 180))
-    for k in range(FRAMES):
-        sheet.alpha_composite(up(fr(k).img, 2), (x0 + 6 + (k % 4) * 74, 266 + (k // 4) * 38))
-    dr.text((x0 + 8, 342), 'granulator frames', font=small, fill=(170, 170, 180))
-    # wall: casing row + machines in place
-    for gx in range(3):
-        sheet.alpha_composite(up(sd.img, 4), (x0 + 30 + gx * 70, 370))
-    sheet.alpha_composite(up(fr(2).img, 4), (x0 + 30, 440))
-    sheet.alpha_composite(up(builds['smelter'][2](4).img, 4), (x0 + 100, 440))
-    sheet.alpha_composite(up(sd.img, 4), (x0 + 170, 440))
-    dr.text((x0 + 8, 512), 'in a wall of casing', font=small, fill=(170, 170, 180))
+        for k in range(FRAMES):
+            g = gif[k]
+            ImageDraw.Draw(g).text((x0 + 8, 10), f'{key}. {name}', font=font, fill=(235, 235, 240))
+            g.alpha_composite(iso_block(tp.img, fr(k).img, sd.img, 190), (x0 + 55, 36))
+            g.alpha_composite(iso_block(top('coal').img, builds['smelter'][2](k).img, side('coal').img, 120), (x0 + 20, 228))
+            g.alpha_composite(iso_block(top('electric').img, builds['granulator T2'][2](k).img, side('electric').img, 120), (x0 + 160, 228))
+            ImageDraw.Draw(g).text((x0 + 45, 340), 'smelter', font=small, fill=(170, 170, 180))
+            ImageDraw.Draw(g).text((x0 + 175, 340), 'tier 2 granulator', font=small, fill=(170, 170, 180))
 
-    for k in range(FRAMES):
-        g = gif[k]
-        ImageDraw.Draw(g).text((x0 + 8, 10), f'{key}. {name}', font=font, fill=(235, 235, 240))
-        g.alpha_composite(iso_block(tp.img, fr(k).img, sd.img, 190), (x0 + 55, 36))
-        g.alpha_composite(iso_block(top('coal').img, builds['smelter'][2](k).img, side('coal').img, 120), (x0 + 20, 228))
-        g.alpha_composite(iso_block(top('electric').img, builds['granulator T2'][2](k).img, side('electric').img, 120), (x0 + 160, 228))
-        ImageDraw.Draw(g).text((x0 + 45, 340), 'smelter', font=small, fill=(170, 170, 180))
-        ImageDraw.Draw(g).text((x0 + 175, 340), 'tier 2 granulator', font=small, fill=(170, 170, 180))
+    sheet = sheet.crop((0, 0, sheet.width, 540))
+    sheet.save(os.path.join(OUT, 'dark_chassis_system.png'))
+    pal = [g.convert('RGB').convert('P', palette=Image.ADAPTIVE, colors=255) for g in gif]
+    pal[0].save(os.path.join(OUT, 'dark_chassis_system_running.gif'), save_all=True, append_images=pal[1:], duration=110, loop=0)
+    print('ok')
 
-sheet = sheet.crop((0, 0, sheet.width, 540))
-sheet.save(os.path.join(OUT, 'dark_chassis_system.png'))
-pal = [g.convert('RGB').convert('P', palette=Image.ADAPTIVE, colors=255) for g in gif]
-pal[0].save(os.path.join(OUT, 'dark_chassis_system_running.gif'), save_all=True, append_images=pal[1:], duration=110, loop=0)
-print('ok')
+
+if __name__ == '__main__':
+    render_preview(sys.argv[1])

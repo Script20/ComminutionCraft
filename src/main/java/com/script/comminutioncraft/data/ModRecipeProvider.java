@@ -70,6 +70,60 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('X', Items.FURNACE)
                 .unlockedBy("has_furnace", has(Items.FURNACE))
                 .save(output, key("coal_smelter"));
+
+        // ---- Tier 2 ----
+
+        shaped(RecipeCategory.MISC, ModItems.ELECTRIC_GENERATOR.get())
+                .pattern("III")
+                .pattern("RFR")
+                .pattern("CCC")
+                .define('I', tag(ProcessedMetal.commonItemTag("ingots/iron")))
+                .define('R', tag(ProcessedMetal.commonItemTag("dusts/redstone")))
+                .define('F', Items.FURNACE)
+                .define('C', tag(ProcessedMetal.commonItemTag("ingots/copper")))
+                .unlockedBy("has_redstone", has(Items.REDSTONE))
+                .save(output, key("electric_generator"));
+
+        shaped(RecipeCategory.MISC, ModItems.ENERGY_CABLE.get(), 8)
+                .pattern("CCC")
+                .pattern("RRR")
+                .pattern("CCC")
+                .define('C', tag(ProcessedMetal.commonItemTag("ingots/copper")))
+                .define('R', tag(ProcessedMetal.commonItemTag("dusts/redstone")))
+                .unlockedBy("has_redstone", has(Items.REDSTONE))
+                .save(output, key("energy_cable"));
+
+        // Electric machines are upgrades of the coal ones
+        shaped(RecipeCategory.MISC, ModItems.ELECTRIC_GRANULATOR.get())
+                .pattern("IRI")
+                .pattern("CMC")
+                .pattern("IRI")
+                .define('I', tag(ProcessedMetal.commonItemTag("ingots/iron")))
+                .define('R', tag(ProcessedMetal.commonItemTag("dusts/redstone")))
+                .define('C', tag(ProcessedMetal.commonItemTag("ingots/copper")))
+                .define('M', ModItems.COAL_GRANULATOR.get())
+                .unlockedBy("has_coal_granulator", has(ModItems.COAL_GRANULATOR.get()))
+                .save(output, key("electric_granulator"));
+
+        shaped(RecipeCategory.MISC, ModItems.ELECTRIC_SMELTER.get())
+                .pattern("IRI")
+                .pattern("CMC")
+                .pattern("IRI")
+                .define('I', tag(ProcessedMetal.commonItemTag("ingots/iron")))
+                .define('R', tag(ProcessedMetal.commonItemTag("dusts/redstone")))
+                .define('C', tag(ProcessedMetal.commonItemTag("ingots/copper")))
+                .define('M', ModItems.COAL_SMELTER.get())
+                .unlockedBy("has_coal_smelter", has(ModItems.COAL_SMELTER.get()))
+                .save(output, key("electric_smelter"));
+
+        shaped(RecipeCategory.TOOLS, ModItems.WRENCH.get())
+                .pattern("I I")
+                .pattern(" C ")
+                .pattern(" I ")
+                .define('I', tag(ProcessedMetal.commonItemTag("ingots/iron")))
+                .define('C', tag(ProcessedMetal.commonItemTag("ingots/copper")))
+                .unlockedBy("has_iron", has(Items.IRON_INGOT))
+                .save(output, key("wrench"));
     }
 
     private static AbstractCookingRecipe.CookingBookInfo cookingInfo() {

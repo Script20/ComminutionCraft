@@ -17,6 +17,10 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
     protected void addTags(HolderLookup.Provider provider) {
         tag(BlockTags.MINEABLE_WITH_PICKAXE)
                 .add(ModBlocks.COAL_GRANULATOR.get())
-                .add(ModBlocks.COAL_SMELTER.get());
+                .add(ModBlocks.COAL_SMELTER.get())
+                .add(ModBlocks.ELECTRIC_GRANULATOR.get())
+                .add(ModBlocks.ELECTRIC_SMELTER.get())
+                .add(ModBlocks.ELECTRIC_GENERATOR.get())
+                .add(ModBlocks.ENERGY_CABLE.get());
     }
 }

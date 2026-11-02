@@ -2,7 +2,6 @@ package com.script.comminutioncraft.machine;
 
 import com.script.comminutioncraft.registry.ModMenus;
 import com.script.comminutioncraft.registry.ModRecipes;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -54,7 +53,7 @@ public class FuelMachineMenu extends AbstractContainerMenu {
 
         addSlot(new Slot(container, FuelMachineBlockEntity.SLOT_INPUT, 56, 17));
         addSlot(new FuelSlot(container, FuelMachineBlockEntity.SLOT_FUEL, 56, 53));
-        addSlot(new OutputSlot(inventory.player, container, FuelMachineBlockEntity.SLOT_OUTPUT, 116, 35));
+        addSlot(new MachineOutputSlot(inventory.player, container, FuelMachineBlockEntity.SLOT_OUTPUT, 116, 35));
 
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 9; col++) {
@@ -159,51 +158,6 @@ public class FuelMachineMenu extends AbstractContainerMenu {
         @Override
         public int getMaxStackSize(ItemStack stack) {
             return stack.is(Items.BUCKET) ? 1 : super.getMaxStackSize(stack);
-        }
-    }
-
-    /** Like vanilla's FurnaceResultSlot: taking items out pays the XP the machine has stored up. */
-    private static class OutputSlot extends Slot {
-        private final Player player;
-        private int removeCount;
-
-        OutputSlot(Player player, Container container, int slot, int x, int y) {
-            super(container, slot, x, y);
-            this.player = player;
-        }
-
-        @Override
-        public boolean mayPlace(ItemStack stack) {
-            return false;
-        }
-
-        @Override
-        public ItemStack remove(int amount) {
-            if (hasItem()) {
-                removeCount += Math.min(amount, getItem().getCount());
-            }
-            return super.remove(amount);
-        }
-
-        @Override
-        public void onTake(Player player, ItemStack carried) {
-            checkTakeAchievements(carried);
-            super.onTake(player, carried);
-        }
-
-        @Override
-        protected void onQuickCraft(ItemStack picked, int count) {
-            removeCount += count;
-            checkTakeAchievements(picked);
-        }
-
-        @Override
-        protected void checkTakeAchievements(ItemStack carried) {
-            carried.onCraftedBy(player, removeCount);
-            if (player instanceof ServerPlayer serverPlayer && container instanceof FuelMachineBlockEntity machine) {
-                machine.awardUsedRecipesAndPopExperience(serverPlayer);
-            }
-            removeCount = 0;
         }
     }
 }

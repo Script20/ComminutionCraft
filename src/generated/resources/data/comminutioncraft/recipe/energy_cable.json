@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": "#c:ingots/copper",
+    "R": "#c:dusts/redstone"
+  },
+  "pattern": [
+    "CCC",
+    "RRR",
+    "CCC"
+  ],
+  "result": {
+    "count": 8,
+    "id": "comminutioncraft:energy_cable"
+  }
+}

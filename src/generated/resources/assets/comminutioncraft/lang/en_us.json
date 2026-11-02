@@ -1,8 +1,22 @@
 {
   "block.comminutioncraft.coal_granulator": "Coal Granulator",
   "block.comminutioncraft.coal_smelter": "Coal Smelter",
+  "block.comminutioncraft.electric_generator": "Electric Generator",
+  "block.comminutioncraft.electric_granulator": "Electric Granulator",
+  "block.comminutioncraft.electric_smelter": "Electric Smelter",
+  "block.comminutioncraft.energy_cable": "Energy Cable",
+  "gui.comminutioncraft.energy": "%s / %s FE",
+  "gui.comminutioncraft.generating": "%s FE/t",
   "item.comminutioncraft.granulated_copper": "Granulated Copper",
   "item.comminutioncraft.granulated_gold": "Granulated Gold",
   "item.comminutioncraft.granulated_iron": "Granulated Iron",
-  "itemGroup.comminutioncraft": "ComminutionCraft"
+  "item.comminutioncraft.wrench": "Wrench",
+  "item.comminutioncraft.wrench.help.cable": "Right-click a cable's arm to cut or restore that connection",
+  "item.comminutioncraft.wrench.help.rotate": "Right-click a block to rotate it",
+  "item.comminutioncraft.wrench.help.switch": "Sneak + right-click to switch mode",
+  "item.comminutioncraft.wrench.mode.cable": "Mode: Cable",
+  "item.comminutioncraft.wrench.mode.rotate": "Mode: Rotate",
+  "itemGroup.comminutioncraft": "ComminutionCraft",
+  "message.comminutioncraft.wrench.cable_cut": "Cable connection cut",
+  "message.comminutioncraft.wrench.cable_restored": "Cable connection restored"
 }

@@ -1,6 +1,7 @@
 package com.script.comminutioncraft.registry;
 
 import com.script.comminutioncraft.ComminutionCraft;
+import com.script.comminutioncraft.item.WrenchItem;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -14,9 +15,16 @@ public final class ModItems {
     public static final DeferredItem<Item> GRANULATED_COPPER = ITEMS.registerSimpleItem("granulated_copper");
     public static final DeferredItem<Item> GRANULATED_GOLD = ITEMS.registerSimpleItem("granulated_gold");
 
+    // Tools
+    public static final DeferredItem<WrenchItem> WRENCH = ITEMS.registerItem("wrench", WrenchItem::new, properties -> properties.stacksTo(1));
+
     // Machine block items
     public static final DeferredItem<BlockItem> COAL_GRANULATOR = ITEMS.registerSimpleBlockItem("coal_granulator", ModBlocks.COAL_GRANULATOR);
     public static final DeferredItem<BlockItem> COAL_SMELTER = ITEMS.registerSimpleBlockItem("coal_smelter", ModBlocks.COAL_SMELTER);
+    public static final DeferredItem<BlockItem> ELECTRIC_GRANULATOR = ITEMS.registerSimpleBlockItem("electric_granulator", ModBlocks.ELECTRIC_GRANULATOR);
+    public static final DeferredItem<BlockItem> ELECTRIC_SMELTER = ITEMS.registerSimpleBlockItem("electric_smelter", ModBlocks.ELECTRIC_SMELTER);
+    public static final DeferredItem<BlockItem> ELECTRIC_GENERATOR = ITEMS.registerSimpleBlockItem("electric_generator", ModBlocks.ELECTRIC_GENERATOR);
+    public static final DeferredItem<BlockItem> ENERGY_CABLE = ITEMS.registerSimpleBlockItem("energy_cable", ModBlocks.ENERGY_CABLE);
 
     private ModItems() {}
 }

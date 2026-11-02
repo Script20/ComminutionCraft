@@ -1,6 +1,10 @@
 {
   "values": [
     "comminutioncraft:coal_granulator",
-    "comminutioncraft:coal_smelter"
+    "comminutioncraft:coal_smelter",
+    "comminutioncraft:electric_granulator",
+    "comminutioncraft:electric_smelter",
+    "comminutioncraft:electric_generator",
+    "comminutioncraft:energy_cable"
   ]
 }

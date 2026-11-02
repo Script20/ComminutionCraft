@@ -26,6 +26,10 @@ public class ModLootTableProvider extends LootTableProvider {
         protected void generate() {
             dropSelf(ModBlocks.COAL_GRANULATOR.get());
             dropSelf(ModBlocks.COAL_SMELTER.get());
+            dropSelf(ModBlocks.ELECTRIC_GRANULATOR.get());
+            dropSelf(ModBlocks.ELECTRIC_SMELTER.get());
+            dropSelf(ModBlocks.ELECTRIC_GENERATOR.get());
+            dropSelf(ModBlocks.ENERGY_CABLE.get());
         }
 
         /** Every block we register must have a loot table, or datagen fails (catches forgotten ones). */

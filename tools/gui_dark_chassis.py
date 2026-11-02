@@ -1,11 +1,12 @@
-"""Dark Chassis machine GUIs (tier-1 / coal). Writes straight into the mod's GUI texture folder.
+"""Dark Chassis machine GUIs (all tiers). Writes straight into the mod's GUI texture folder.
 
 Usage: python tools/gui_dark_chassis.py
 
-Sheet layout matches FuelMachineScreen (256x256):
-  background (0,0) 176x166, filled flame (176,0) 14x14, filled progress arrow (176,14) 24x17.
-Slot positions match FuelMachineMenu (vanilla furnace layout).
-The seam lines beside the title and the groove after "Inventory" are drawn in FuelMachineScreen,
+Sheet layout matches MachineScreen (256x256):
+  background (0,0) 176x166, filled flame (176,0) 14x14, filled progress arrow (176,14) 24x17,
+  energy bar fill (176,31) 10x52 (tier 2; drawn at (11,17) on the background).
+Slot positions match FuelMachineMenu (vanilla furnace layout), ElectricMachineMenu and ElectricGeneratorMenu.
+The seam lines beside the title and the groove after "Inventory" are drawn in MachineScreen,
 so they fit whatever width the (translated) labels have.
 """
 import os
@@ -24,6 +25,7 @@ K = dict(o=(16, 17, 20), d=(28, 30, 35), m=(42, 45, 52), l=(60, 64, 73), hi=(84,
 GLASS = (13, 14, 17)
 SLOT = (22, 24, 28)
 COAL = dict(off=(86, 56, 34), on=(255, 150, 40), hi=(255, 214, 120))
+ELEC = dict(off=(30, 66, 86), on=(64, 196, 255), hi=(190, 240, 255))
 MOLTEN = [(150, 50, 16), (226, 104, 28), (255, 168, 56), (255, 226, 140)]
 
 W, H = 176, 166
@@ -125,17 +127,48 @@ def slot(s, x, y, size=18, rim=None):
         s.vline(x + size, y - 1, y + size, rim)
 
 
-def silhouettes(s):
-    """Unlit flame and arrow, stamped into the panel so the coloured sprites fill over them."""
+# Unlit flame and arrow, stamped into the panel so the coloured sprites fill over them.
+def flame_silhouette(s, x0, y0):
     for y, row in enumerate(FLAME):
         for x, ch in enumerate(row):
             if ch == '#':
-                s.px(56 + x, 36 + y, K['d'])
+                s.px(x0 + x, y0 + y, K['d'])
+
+
+def arrow_silhouette(s, x0, y0):
     for y in range(17):
         for x in range(24):
             if arrow_mask(x, y):
                 edge = not (arrow_mask(x, y - 1) and arrow_mask(x, y + 1))
-                s.px(79 + x, 34 + y, K['o'] if edge else K['d'])
+                s.px(x0 + x, y0 + y, K['o'] if edge else K['d'])
+
+
+ENERGY_X, ENERGY_Y, ENERGY_W, ENERGY_H = 11, 17, 10, 52
+
+
+def energy_well(s):
+    """Recessed glass tube on the left with tick marks; the fill sprite is drawn over its inside."""
+    x0, y0, x1, y1 = ENERGY_X - 1, ENERGY_Y - 1, ENERGY_X + ENERGY_W, ENERGY_Y + ENERGY_H
+    s.rect(x0, y0, x1, y1, GLASS)
+    s.hline(x0, x1, y0, K['o'])
+    s.vline(x0, y0, y1, K['o'])
+    s.hline(x0, x1, y1, K['hi'])
+    s.vline(x1, y0, y1, K['hi'])
+    for y in range(ENERGY_Y + 3, ENERGY_Y + ENERGY_H, 4):
+        s.px(x1 + 1, y, K['hi'])  # scale ticks beside the tube
+        s.hline(ENERGY_X, ENERGY_X + ENERGY_W - 1, y, (18, 20, 24))
+
+
+def energy_sprite(s):
+    """Blue charge, brighter at the top, with the same segment lines as the empty tube."""
+    for y in range(ENERGY_H):
+        for x in range(ENERGY_W):
+            c = mix(ELEC['hi'], ELEC['on'], min(1.0, y / 12)) if y < 12 else mix(ELEC['on'], shade(ELEC['on'], 0.55), (y - 12) / (ENERGY_H - 12))
+            if x == 0 or x == ENERGY_W - 1:
+                c = shade(c, 0.75)
+            if (y - 3) % 4 == 0:
+                c = shade(c, 0.7)
+            s.px(176 + x, 31 + y, c)
 
 
 def flame_sprite(s):
@@ -169,25 +202,64 @@ def smelter_arrow(x, y):
     return mix(MOLTEN[i], MOLTEN[i + 1], t - i)
 
 
-def gui_sheet(arrow_colour):
-    s = Sheet()
-    body(s)
-    # machine slots (positions from FuelMachineMenu, minus 1 for the slot border)
-    slot(s, 55, 16)
-    slot(s, 55, 52)
-    slot(s, 111, 30, 26, rim=COAL['off'])
-    silhouettes(s)
+def electric_granulator_arrow(x, y):
+    """Blue tier glow broken into chevron segments."""
+    base = mix(ELEC['on'], ELEC['hi'], 0.15 + 0.35 * (1 - abs(y - 8) / 8))
+    return shade(base, 0.72) if (x + abs(y - 8)) % 6 == 0 else base
+
+
+def player_inventory(s):
     for row in range(3):
         for col in range(9):
             slot(s, 7 + col * 18, 83 + row * 18)
     for col in range(9):
         slot(s, 7 + col * 18, 141)
+
+
+# Slot positions below are the menu's slot positions minus 1 (the slot border).
+def coal_sheet(arrow_colour):
+    s = Sheet()
+    body(s)
+    slot(s, 55, 16)
+    slot(s, 55, 52)
+    slot(s, 111, 30, 26, rim=COAL['off'])
+    flame_silhouette(s, 56, 36)
+    arrow_silhouette(s, 79, 34)
+    player_inventory(s)
     flame_sprite(s)
     arrow_sprite(s, arrow_colour)
     return s.img
 
 
+def electric_sheet(arrow_colour):
+    s = Sheet()
+    body(s)
+    energy_well(s)
+    slot(s, 55, 34)
+    slot(s, 111, 30, 26, rim=ELEC['off'])
+    arrow_silhouette(s, 79, 34)
+    player_inventory(s)
+    arrow_sprite(s, arrow_colour)
+    energy_sprite(s)
+    return s.img
+
+
+def generator_sheet():
+    s = Sheet()
+    body(s)
+    energy_well(s)
+    slot(s, 79, 52, rim=ELEC['off'])
+    flame_silhouette(s, 81, 34)
+    player_inventory(s)
+    flame_sprite(s)
+    energy_sprite(s)
+    return s.img
+
+
 os.makedirs(OUT, exist_ok=True)
-gui_sheet(granulator_arrow).save(os.path.join(OUT, 'coal_granulator.png'))
-gui_sheet(smelter_arrow).save(os.path.join(OUT, 'coal_smelter.png'))
+coal_sheet(granulator_arrow).save(os.path.join(OUT, 'coal_granulator.png'))
+coal_sheet(smelter_arrow).save(os.path.join(OUT, 'coal_smelter.png'))
+electric_sheet(electric_granulator_arrow).save(os.path.join(OUT, 'electric_granulator.png'))
+electric_sheet(smelter_arrow).save(os.path.join(OUT, 'electric_smelter.png'))
+generator_sheet().save(os.path.join(OUT, 'electric_generator.png'))
 print('ok')

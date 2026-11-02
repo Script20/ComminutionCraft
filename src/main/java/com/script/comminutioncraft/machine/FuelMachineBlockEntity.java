@@ -1,33 +1,21 @@
 package com.script.comminutioncraft.machine;
 
-import com.mojang.serialization.Codec;
-import it.unimi.dsi.fastutil.objects.Reference2IntMap;
-import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Mth;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.WorldlyContainer;
-import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -42,7 +30,8 @@ import org.jspecify.annotations.Nullable;
  * one output slot. Works like a vanilla furnace, but the processing time and fuel
  * efficiency are set per machine instead of per recipe.
  */
-public abstract class FuelMachineBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer {
+public abstract class FuelMachineBlockEntity extends BaseContainerBlockEntity
+        implements WorldlyContainer, TickingMachine, MachineExperience.Holder {
     public static final int SLOT_INPUT = 0;
     public static final int SLOT_FUEL = 1;
     public static final int SLOT_OUTPUT = 2;
@@ -59,16 +48,12 @@ public abstract class FuelMachineBlockEntity extends BaseContainerBlockEntity im
     public static final int DATA_PROGRESS_TOTAL = 3;
     public static final int DATA_COUNT = 4;
 
-    private static final Codec<Map<ResourceKey<Recipe<?>>, Integer>> RECIPES_USED_CODEC =
-            Codec.unboundedMap(Recipe.KEY_CODEC, Codec.INT);
-
     protected NonNullList<ItemStack> items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
     private int litTimeRemaining;
     private int litTotalTime;
     private int progress;
     private @Nullable Item lastInputItem;
-    /** Recipes finished since a player last emptied the output; turned into XP like a vanilla furnace. */
-    private final Reference2IntOpenHashMap<ResourceKey<Recipe<?>>> recipesUsed = new Reference2IntOpenHashMap<>();
+    private final MachineExperience experience = new MachineExperience();
 
     protected final ContainerData dataAccess = new ContainerData() {
         @Override
@@ -125,68 +110,68 @@ public abstract class FuelMachineBlockEntity extends BaseContainerBlockEntity im
         return litTimeRemaining > 0;
     }
 
-    public static void serverTick(Level level, BlockPos pos, BlockState state, FuelMachineBlockEntity machine) {
-        ServerLevel serverLevel = (ServerLevel) level;
-        boolean wasLit = machine.isLit();
+    @Override
+    public void serverTick(ServerLevel level, BlockPos pos, BlockState state) {
+        boolean wasLit = isLit();
         boolean changed = false;
 
-        if (machine.isLit()) {
-            machine.litTimeRemaining--;
+        if (isLit()) {
+            litTimeRemaining--;
         }
 
-        ItemStack input = machine.items.get(SLOT_INPUT);
-        ItemStack fuel = machine.items.get(SLOT_FUEL);
+        ItemStack input = items.get(SLOT_INPUT);
+        ItemStack fuel = items.get(SLOT_FUEL);
 
         // Swapping the input item restarts progress, like a vanilla furnace.
         Item inputItem = input.isEmpty() ? null : input.getItem();
-        if (inputItem != machine.lastInputItem) {
-            machine.lastInputItem = inputItem;
-            machine.progress = 0;
+        if (inputItem != lastInputItem) {
+            lastInputItem = inputItem;
+            progress = 0;
         }
 
         boolean hasInput = !input.isEmpty();
         boolean hasFuel = !fuel.isEmpty();
 
-        if (machine.isLit() || (hasFuel && hasInput)) {
-            RecipeHolder<? extends Recipe<SingleRecipeInput>> recipe = hasInput ? machine.findRecipe(serverLevel, input).orElse(null) : null;
+        if (isLit() || (hasFuel && hasInput)) {
+            RecipeHolder<? extends Recipe<SingleRecipeInput>> recipe = hasInput ? findRecipe(level, input).orElse(null) : null;
             ItemStack result = recipe != null ? recipe.value().assemble(new SingleRecipeInput(input)) : ItemStack.EMPTY;
-            boolean canProcess = !result.isEmpty() && machine.canFitOutput(result);
+            boolean canProcess = !result.isEmpty() && MachineSlots.canFit(items, SLOT_OUTPUT, result, getMaxStackSize());
 
             // Light a new piece of fuel only when there's work to do.
-            if (!machine.isLit() && canProcess) {
-                int burnTime = machine.getScaledBurnTime(serverLevel, fuel);
-                machine.litTimeRemaining = burnTime;
-                machine.litTotalTime = burnTime;
-                if (machine.isLit()) {
+            if (!isLit() && canProcess) {
+                int burnTime = getScaledBurnTime(level, fuel);
+                litTimeRemaining = burnTime;
+                litTotalTime = burnTime;
+                if (isLit()) {
                     changed = true;
-                    consumeFuel(machine.items, fuel);
+                    MachineSlots.consumeFuel(items, SLOT_FUEL);
                 }
             }
 
-            if (machine.isLit() && canProcess) {
-                machine.progress++;
-                if (machine.progress >= machine.getProcessTime()) {
-                    machine.progress = 0;
-                    machine.finishProcessing(input, result);
-                    machine.recipesUsed.addTo(recipe.id(), 1);
+            if (isLit() && canProcess) {
+                progress++;
+                if (progress >= getProcessTime()) {
+                    progress = 0;
+                    MachineSlots.addTo(items, SLOT_OUTPUT, result);
+                    input.shrink(1);
+                    experience.recordRecipe(recipe);
                     changed = true;
                 }
             } else {
-                machine.progress = 0;
+                progress = 0;
             }
-        } else if (machine.progress > 0) {
+        } else if (progress > 0) {
             // Out of fuel: progress drains back down, like a vanilla furnace.
-            machine.progress = Math.max(0, machine.progress - 2);
+            progress = Math.max(0, progress - 2);
         }
 
-        if (wasLit != machine.isLit()) {
+        if (wasLit != isLit()) {
             changed = true;
-            state = state.setValue(FuelMachineBlock.LIT, machine.isLit());
-            level.setBlock(pos, state, Block.UPDATE_ALL);
+            level.setBlock(pos, state.setValue(MachineBlock.LIT, isLit()), Block.UPDATE_ALL);
         }
 
         if (changed) {
-            machine.setChanged();
+            setChanged();
         }
     }
 
@@ -198,75 +183,15 @@ public abstract class FuelMachineBlockEntity extends BaseContainerBlockEntity im
         return (int) Math.round(vanillaBurnTime * getBurnTimeMultiplier());
     }
 
-    private static void consumeFuel(NonNullList<ItemStack> items, ItemStack fuel) {
-        // Grab the remainder (e.g. empty bucket from a lava bucket) before shrinking.
-        ItemStackTemplate remainder = fuel.getCraftingRemainder();
-        fuel.shrink(1);
-        if (fuel.isEmpty()) {
-            items.set(SLOT_FUEL, remainder != null ? remainder.create() : ItemStack.EMPTY);
-        }
-    }
-
-    private boolean canFitOutput(ItemStack result) {
-        ItemStack output = items.get(SLOT_OUTPUT);
-        if (output.isEmpty()) {
-            return true;
-        }
-        if (!ItemStack.isSameItemSameComponents(output, result)) {
-            return false;
-        }
-        int max = Math.min(getMaxStackSize(output), output.getMaxStackSize());
-        return output.getCount() + result.getCount() <= max;
-    }
-
-    private void finishProcessing(ItemStack input, ItemStack result) {
-        ItemStack output = items.get(SLOT_OUTPUT);
-        if (output.isEmpty()) {
-            items.set(SLOT_OUTPUT, result.copy());
-        } else {
-            output.grow(result.getCount());
-        }
-        input.shrink(1);
-    }
-
     protected boolean isFuel(ItemStack stack) {
         return level != null && stack.getBurnTime(getFuelRecipeType(), level.fuelValues()) > 0;
     }
 
     // ---- Experience ----
 
-    /** Called when a player takes from the output slot: unlocks the recipes and drops their XP at the player. */
+    @Override
     public void awardUsedRecipesAndPopExperience(ServerPlayer player) {
-        List<RecipeHolder<?>> recipes = popExperience(player.level(), player.position());
-        player.awardRecipes(recipes);
-        for (RecipeHolder<?> recipe : recipes) {
-            player.triggerRecipeCrafted(recipe, items);
-        }
-    }
-
-    /** Drops XP for every recipe finished since the last pop. Only cooking recipes carry XP. */
-    private List<RecipeHolder<?>> popExperience(ServerLevel level, Vec3 position) {
-        List<RecipeHolder<?>> recipes = new ArrayList<>();
-        for (Reference2IntMap.Entry<ResourceKey<Recipe<?>>> entry : recipesUsed.reference2IntEntrySet()) {
-            level.recipeAccess().byKey(entry.getKey()).ifPresent(recipe -> {
-                recipes.add(recipe);
-                if (recipe.value() instanceof AbstractCookingRecipe cooking) {
-                    awardExperience(level, position, entry.getIntValue(), cooking.experience());
-                }
-            });
-        }
-        recipesUsed.clear();
-        return recipes;
-    }
-
-    private static void awardExperience(ServerLevel level, Vec3 position, int count, float perItem) {
-        float total = count * perItem;
-        int xp = Mth.floor(total);
-        // Fractional XP becomes a chance at one more point, like a vanilla furnace.
-        if (level.getRandom().nextFloat() < Mth.frac(total)) {
-            xp++;
-        }
-        ExperienceOrb.award(level, position, xp);
+        experience.award(player, items);
     }
 
     /** Breaking the machine drops any XP still stored in it. */
@@ -274,7 +199,7 @@ public abstract class FuelMachineBlockEntity extends BaseContainerBlockEntity im
     public void preRemoveSideEffects(BlockPos pos, BlockState state) {
         super.preRemoveSideEffects(pos, state);
         if (level instanceof ServerLevel serverLevel) {
-            popExperience(serverLevel, Vec3.atCenterOf(pos));
+            experience.pop(serverLevel, Vec3.atCenterOf(pos));
         }
     }
 
@@ -289,8 +214,7 @@ public abstract class FuelMachineBlockEntity extends BaseContainerBlockEntity im
         litTotalTime = input.getIntOr("lit_total_time", 0);
         progress = input.getIntOr("progress", 0);
         lastInputItem = items.get(SLOT_INPUT).isEmpty() ? null : items.get(SLOT_INPUT).getItem();
-        recipesUsed.clear();
-        recipesUsed.putAll(input.read("recipes_used", RECIPES_USED_CODEC).orElse(Map.of()));
+        experience.load(input);
     }
 
     @Override
@@ -300,7 +224,7 @@ public abstract class FuelMachineBlockEntity extends BaseContainerBlockEntity im
         output.putInt("lit_time_remaining", litTimeRemaining);
         output.putInt("lit_total_time", litTotalTime);
         output.putInt("progress", progress);
-        output.store("recipes_used", RECIPES_USED_CODEC, recipesUsed);
+        experience.save(output);
     }
 
     // ---- Container ----

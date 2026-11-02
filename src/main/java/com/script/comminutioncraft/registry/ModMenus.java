@@ -1,6 +1,8 @@
 package com.script.comminutioncraft.registry;
 
 import com.script.comminutioncraft.ComminutionCraft;
+import com.script.comminutioncraft.machine.ElectricGeneratorMenu;
+import com.script.comminutioncraft.machine.ElectricMachineMenu;
 import com.script.comminutioncraft.machine.FuelMachineMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.flag.FeatureFlags;
@@ -16,6 +18,15 @@ public final class ModMenus {
 
     public static final DeferredHolder<MenuType<?>, MenuType<FuelMachineMenu>> COAL_SMELTER =
             MENUS.register("coal_smelter", () -> new MenuType<>(FuelMachineMenu::clientSmelter, FeatureFlags.VANILLA_SET));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<ElectricMachineMenu>> ELECTRIC_GRANULATOR =
+            MENUS.register("electric_granulator", () -> new MenuType<>(ElectricMachineMenu::clientGranulator, FeatureFlags.VANILLA_SET));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<ElectricMachineMenu>> ELECTRIC_SMELTER =
+            MENUS.register("electric_smelter", () -> new MenuType<>(ElectricMachineMenu::clientSmelter, FeatureFlags.VANILLA_SET));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<ElectricGeneratorMenu>> ELECTRIC_GENERATOR =
+            MENUS.register("electric_generator", () -> new MenuType<>(ElectricGeneratorMenu::client, FeatureFlags.VANILLA_SET));
 
     private ModMenus() {}
 }
