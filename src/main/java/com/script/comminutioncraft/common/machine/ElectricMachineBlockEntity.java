@@ -2,6 +2,9 @@ package com.script.comminutioncraft.common.machine;
 
 import com.script.comminutioncraft.common.energy.EnergySync;
 import com.script.comminutioncraft.common.energy.MachineEnergyStorage;
+import com.script.comminutioncraft.common.machine.control.ControllableMachine;
+import com.script.comminutioncraft.common.machine.control.MachineControls;
+import com.script.comminutioncraft.common.machine.control.SideMode;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -31,13 +34,14 @@ import org.jspecify.annotations.Nullable;
  * Each tick of work costs {@link #getEnergyPerTick()} FE; without power the machine pauses (progress is kept).
  */
 public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntity
-        implements WorldlyContainer, TickingMachine, MachineExperience.Holder {
+        implements WorldlyContainer, TickingMachine, MachineExperience.Holder, ControllableMachine {
     public static final int SLOT_INPUT = 0;
     public static final int SLOT_OUTPUT = 1;
     public static final int SLOT_COUNT = 2;
 
     private static final int[] SLOTS_INPUT = {SLOT_INPUT};
     private static final int[] SLOTS_OUTPUT = {SLOT_OUTPUT};
+    private static final int[] SLOTS_NONE = {};
 
     // ContainerData indices, synced to the open GUI (energy split in two, see EnergySync)
     public static final int DATA_PROGRESS = 0;
@@ -46,7 +50,9 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
     public static final int DATA_ENERGY_HIGH = 3;
     public static final int DATA_CAPACITY_LOW = 4;
     public static final int DATA_CAPACITY_HIGH = 5;
-    public static final int DATA_COUNT = 6;
+    public static final int DATA_REDSTONE = 6;
+    public static final int DATA_SIDES = 7;
+    public static final int DATA_COUNT = 8;
 
     public static final int ENERGY_CAPACITY = 20_000;
     public static final int MAX_ENERGY_INPUT = 200;
@@ -59,6 +65,7 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
     private int litCooldown;
     private @Nullable Item lastInputItem;
     private final MachineExperience experience = new MachineExperience();
+    private final MachineControls controls = new MachineControls(MachineControls.outputBelow(), this::onControlsChanged);
 
     protected final ContainerData dataAccess = new ContainerData() {
         @Override
@@ -70,6 +77,8 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
                 case DATA_ENERGY_HIGH -> EnergySync.high(energy.getEnergy());
                 case DATA_CAPACITY_LOW -> EnergySync.low(energy.getCapacity());
                 case DATA_CAPACITY_HIGH -> EnergySync.high(energy.getCapacity());
+                case DATA_REDSTONE -> controls.redstone().ordinal();
+                case DATA_SIDES -> controls.packSides();
                 default -> 0;
             };
         }
@@ -119,7 +128,27 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
     // ---- Ticking ----
 
     @Override
+    public MachineControls getControls() {
+        return controls;
+    }
+
+    private void onControlsChanged() {
+        setChanged();
+        if (level != null) {
+            level.invalidateCapabilities(worldPosition); // hopper/pipe faces may have changed
+        }
+    }
+
+    @Override
     public void serverTick(ServerLevel level, BlockPos pos, BlockState state) {
+        // Switched off by redstone: pauses (progress kept); it still accepts power.
+        if (!controls.canRun(level, pos)) {
+            litCooldown = 0;
+            if (state.getValue(MachineBlock.LIT)) {
+                level.setBlock(pos, state.setValue(MachineBlock.LIT, false), Block.UPDATE_ALL);
+            }
+            return;
+        }
         boolean changed = false;
         ItemStack input = items.get(SLOT_INPUT);
 
@@ -188,6 +217,7 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
         progress = input.getIntOr("progress", 0);
         lastInputItem = items.get(SLOT_INPUT).isEmpty() ? null : items.get(SLOT_INPUT).getItem();
         experience.load(input);
+        controls.load(input);
     }
 
     @Override
@@ -197,6 +227,7 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
         energy.serialize(output);
         output.putInt("progress", progress);
         experience.save(output);
+        controls.save(output);
     }
 
     // ---- Container ----
@@ -224,20 +255,24 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
         return !(level instanceof ServerLevel serverLevel) || findRecipe(serverLevel, stack).isPresent();
     }
 
-    // ---- Sided automation (hoppers, pipes): bottom = output, every other side = input ----
+    // ---- Sided automation (hoppers, pipes): each face follows the side configuration ----
 
     @Override
     public int[] getSlotsForFace(Direction side) {
-        return side == Direction.DOWN ? SLOTS_OUTPUT : SLOTS_INPUT;
+        return switch (sideMode(side)) {
+            case INPUT -> SLOTS_INPUT;
+            case OUTPUT -> SLOTS_OUTPUT;
+            case NONE -> SLOTS_NONE;
+        };
     }
 
     @Override
     public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction side) {
-        return canPlaceItem(slot, stack);
+        return sideMode(side) == SideMode.INPUT && canPlaceItem(slot, stack);
     }
 
     @Override
     public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction side) {
-        return slot == SLOT_OUTPUT;
+        return slot == SLOT_OUTPUT && sideMode(side) == SideMode.OUTPUT;
     }
 }

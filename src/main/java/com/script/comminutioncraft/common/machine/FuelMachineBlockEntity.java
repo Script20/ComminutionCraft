@@ -1,5 +1,8 @@
 package com.script.comminutioncraft.common.machine;
 
+import com.script.comminutioncraft.common.machine.control.ControllableMachine;
+import com.script.comminutioncraft.common.machine.control.MachineControls;
+import com.script.comminutioncraft.common.machine.control.SideMode;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -31,22 +34,25 @@ import org.jspecify.annotations.Nullable;
  * efficiency are set per machine instead of per recipe.
  */
 public abstract class FuelMachineBlockEntity extends BaseContainerBlockEntity
-        implements WorldlyContainer, TickingMachine, MachineExperience.Holder {
+        implements WorldlyContainer, TickingMachine, MachineExperience.Holder, ControllableMachine {
     public static final int SLOT_INPUT = 0;
     public static final int SLOT_FUEL = 1;
     public static final int SLOT_OUTPUT = 2;
     public static final int SLOT_COUNT = 3;
 
-    private static final int[] SLOTS_TOP = {SLOT_INPUT};
-    private static final int[] SLOTS_BOTTOM = {SLOT_OUTPUT, SLOT_FUEL};
-    private static final int[] SLOTS_SIDES = {SLOT_FUEL};
+    // Faces set to input accept ores and fuel; output faces give results (and empty buckets from the fuel slot).
+    private static final int[] SLOTS_INPUT_FACE = {SLOT_INPUT, SLOT_FUEL};
+    private static final int[] SLOTS_OUTPUT_FACE = {SLOT_OUTPUT, SLOT_FUEL};
+    private static final int[] SLOTS_NONE = {};
 
     // ContainerData indices, synced to the open GUI
     public static final int DATA_LIT_TIME = 0;
     public static final int DATA_LIT_DURATION = 1;
     public static final int DATA_PROGRESS = 2;
     public static final int DATA_PROGRESS_TOTAL = 3;
-    public static final int DATA_COUNT = 4;
+    public static final int DATA_REDSTONE = 4;
+    public static final int DATA_SIDES = 5;
+    public static final int DATA_COUNT = 6;
 
     protected NonNullList<ItemStack> items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
     private int litTimeRemaining;
@@ -54,6 +60,7 @@ public abstract class FuelMachineBlockEntity extends BaseContainerBlockEntity
     private int progress;
     private @Nullable Item lastInputItem;
     private final MachineExperience experience = new MachineExperience();
+    private final MachineControls controls = new MachineControls(MachineControls.outputBelow(), this::onControlsChanged);
 
     protected final ContainerData dataAccess = new ContainerData() {
         @Override
@@ -63,6 +70,8 @@ public abstract class FuelMachineBlockEntity extends BaseContainerBlockEntity
                 case DATA_LIT_DURATION -> litTotalTime;
                 case DATA_PROGRESS -> progress;
                 case DATA_PROGRESS_TOTAL -> getProcessTime();
+                case DATA_REDSTONE -> controls.redstone().ordinal();
+                case DATA_SIDES -> controls.packSides();
                 default -> 0;
             };
         }
@@ -121,8 +130,26 @@ public abstract class FuelMachineBlockEntity extends BaseContainerBlockEntity
     }
 
     @Override
+    public MachineControls getControls() {
+        return controls;
+    }
+
+    private void onControlsChanged() {
+        setChanged();
+        if (level != null) {
+            level.invalidateCapabilities(worldPosition); // hopper/pipe faces may have changed
+        }
+    }
+
+    @Override
     public void serverTick(ServerLevel level, BlockPos pos, BlockState state) {
-        boolean wasLit = isLit();
+        // Switched off by redstone: everything pauses (fuel doesn't burn down, progress is kept).
+        if (!controls.canRun(level, pos)) {
+            if (state.getValue(MachineBlock.LIT)) {
+                level.setBlock(pos, state.setValue(MachineBlock.LIT, false), Block.UPDATE_ALL);
+            }
+            return;
+        }
         boolean changed = false;
 
         if (isLit()) {
@@ -175,7 +202,7 @@ public abstract class FuelMachineBlockEntity extends BaseContainerBlockEntity
             progress = Math.max(0, progress - 2);
         }
 
-        if (wasLit != isLit()) {
+        if (state.getValue(MachineBlock.LIT) != isLit()) {
             changed = true;
             level.setBlock(pos, state.setValue(MachineBlock.LIT, isLit()), Block.UPDATE_ALL);
         }
@@ -225,6 +252,7 @@ public abstract class FuelMachineBlockEntity extends BaseContainerBlockEntity
         progress = input.getIntOr("progress", 0);
         lastInputItem = items.get(SLOT_INPUT).isEmpty() ? null : items.get(SLOT_INPUT).getItem();
         experience.load(input);
+        controls.load(input);
     }
 
     @Override
@@ -235,6 +263,7 @@ public abstract class FuelMachineBlockEntity extends BaseContainerBlockEntity
         output.putInt("lit_total_time", litTotalTime);
         output.putInt("progress", progress);
         experience.save(output);
+        controls.save(output);
     }
 
     // ---- Container ----
@@ -263,25 +292,25 @@ public abstract class FuelMachineBlockEntity extends BaseContainerBlockEntity
         };
     }
 
-    // ---- Sided automation (hoppers, pipes) ----
+    // ---- Sided automation (hoppers, pipes): each face follows the side configuration ----
 
     @Override
     public int[] getSlotsForFace(Direction side) {
-        return switch (side) {
-            case DOWN -> SLOTS_BOTTOM;
-            case UP -> SLOTS_TOP;
-            default -> SLOTS_SIDES;
+        return switch (sideMode(side)) {
+            case INPUT -> SLOTS_INPUT_FACE;
+            case OUTPUT -> SLOTS_OUTPUT_FACE;
+            case NONE -> SLOTS_NONE;
         };
     }
 
     @Override
     public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction side) {
-        return canPlaceItem(slot, stack);
+        return slot != SLOT_OUTPUT && sideMode(side) == SideMode.INPUT && canPlaceItem(slot, stack);
     }
 
     @Override
     public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction side) {
-        // From the bottom you can take outputs, plus empty buckets left over in the fuel slot.
-        return slot == SLOT_OUTPUT || (slot == SLOT_FUEL && stack.is(Items.BUCKET));
+        // Output faces give results, plus empty buckets left over in the fuel slot.
+        return sideMode(side) == SideMode.OUTPUT && (slot == SLOT_OUTPUT || (slot == SLOT_FUEL && stack.is(Items.BUCKET)));
     }
 }

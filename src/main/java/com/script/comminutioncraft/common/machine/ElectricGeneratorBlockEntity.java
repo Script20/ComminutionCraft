@@ -2,6 +2,9 @@ package com.script.comminutioncraft.common.machine;
 
 import com.script.comminutioncraft.common.energy.EnergySync;
 import com.script.comminutioncraft.common.energy.MachineEnergyStorage;
+import com.script.comminutioncraft.common.machine.control.ControllableMachine;
+import com.script.comminutioncraft.common.machine.control.MachineControls;
+import com.script.comminutioncraft.common.machine.control.SideMode;
 import com.script.comminutioncraft.common.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -34,10 +37,12 @@ import org.jspecify.annotations.Nullable;
  * (1600 ticks in a furnace) burns 800 ticks = 32,000 FE. It only lights new fuel when its buffer has room,
  * and pauses (keeping the current fuel) while the buffer is full.
  */
-public class ElectricGeneratorBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer, TickingMachine {
+public class ElectricGeneratorBlockEntity extends BaseContainerBlockEntity
+        implements WorldlyContainer, TickingMachine, ControllableMachine {
     public static final int SLOT_FUEL = 0;
     public static final int SLOT_COUNT = 1;
     private static final int[] SLOTS_FUEL = {SLOT_FUEL};
+    private static final int[] SLOTS_NONE = {};
 
     public static final int ENERGY_PER_TICK = 40;
     public static final double BURN_TIME_MULTIPLIER = 0.5;
@@ -52,11 +57,14 @@ public class ElectricGeneratorBlockEntity extends BaseContainerBlockEntity imple
     public static final int DATA_ENERGY_HIGH = 3;
     public static final int DATA_CAPACITY_LOW = 4;
     public static final int DATA_CAPACITY_HIGH = 5;
-    public static final int DATA_COUNT = 6;
+    public static final int DATA_REDSTONE = 6;
+    public static final int DATA_SIDES = 7;
+    public static final int DATA_COUNT = 8;
 
     private NonNullList<ItemStack> items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
     // Nothing can be inserted from outside; extraction is what cables and machines pull through.
     private final MachineEnergyStorage energy = new MachineEnergyStorage(ENERGY_CAPACITY, 0, MAX_OUTPUT, this::setChanged);
+    private final MachineControls controls = new MachineControls(MachineControls.outputBelow(), this::onControlsChanged);
     private int litTimeRemaining;
     private int litTotalTime;
 
@@ -70,6 +78,8 @@ public class ElectricGeneratorBlockEntity extends BaseContainerBlockEntity imple
                 case DATA_ENERGY_HIGH -> EnergySync.high(energy.getEnergy());
                 case DATA_CAPACITY_LOW -> EnergySync.low(energy.getCapacity());
                 case DATA_CAPACITY_HIGH -> EnergySync.high(energy.getCapacity());
+                case DATA_REDSTONE -> controls.redstone().ordinal();
+                case DATA_SIDES -> controls.packSides();
                 default -> 0;
             };
         }
@@ -109,8 +119,26 @@ public class ElectricGeneratorBlockEntity extends BaseContainerBlockEntity imple
     // ---- Ticking ----
 
     @Override
+    public MachineControls getControls() {
+        return controls;
+    }
+
+    private void onControlsChanged() {
+        setChanged();
+        if (level != null) {
+            level.invalidateCapabilities(worldPosition); // hopper/pipe faces may have changed
+        }
+    }
+
+    @Override
     public void serverTick(ServerLevel level, BlockPos pos, BlockState state) {
-        boolean wasLit = isLit();
+        // Switched off by redstone: no burning and no power out (the fuel and stored FE are kept).
+        if (!controls.canRun(level, pos)) {
+            if (state.getValue(MachineBlock.LIT)) {
+                level.setBlock(pos, state.setValue(MachineBlock.LIT, false), Block.UPDATE_ALL);
+            }
+            return;
+        }
         boolean changed = false;
 
         if (isLit()) {
@@ -133,7 +161,7 @@ public class ElectricGeneratorBlockEntity extends BaseContainerBlockEntity imple
 
         pushEnergy(level, pos);
 
-        if (wasLit != isLit()) {
+        if (state.getValue(MachineBlock.LIT) != isLit()) {
             changed = true;
             level.setBlock(pos, state.setValue(MachineBlock.LIT, isLit()), Block.UPDATE_ALL);
         }
@@ -170,6 +198,7 @@ public class ElectricGeneratorBlockEntity extends BaseContainerBlockEntity imple
         energy.deserialize(input);
         litTimeRemaining = input.getIntOr("lit_time_remaining", 0);
         litTotalTime = input.getIntOr("lit_total_time", 0);
+        controls.load(input);
     }
 
     @Override
@@ -179,6 +208,7 @@ public class ElectricGeneratorBlockEntity extends BaseContainerBlockEntity imple
         energy.serialize(output);
         output.putInt("lit_time_remaining", litTimeRemaining);
         output.putInt("lit_total_time", litTotalTime);
+        controls.save(output);
     }
 
     // ---- Container ----
@@ -213,20 +243,20 @@ public class ElectricGeneratorBlockEntity extends BaseContainerBlockEntity imple
         return isFuel(stack) || (stack.is(Items.BUCKET) && !items.get(SLOT_FUEL).is(Items.BUCKET));
     }
 
-    // ---- Sided automation: fuel in from any side, empty buckets out of the bottom ----
+    // ---- Sided automation: input faces take fuel, output faces give back empty buckets ----
 
     @Override
     public int[] getSlotsForFace(Direction side) {
-        return SLOTS_FUEL;
+        return sideMode(side) == SideMode.NONE ? SLOTS_NONE : SLOTS_FUEL;
     }
 
     @Override
     public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction side) {
-        return canPlaceItem(slot, stack);
+        return sideMode(side) == SideMode.INPUT && canPlaceItem(slot, stack);
     }
 
     @Override
     public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction side) {
-        return side == Direction.DOWN && stack.is(Items.BUCKET);
+        return sideMode(side) == SideMode.OUTPUT && stack.is(Items.BUCKET);
     }
 }

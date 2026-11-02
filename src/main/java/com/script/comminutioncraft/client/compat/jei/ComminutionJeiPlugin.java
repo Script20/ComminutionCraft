@@ -6,6 +6,7 @@ import com.script.comminutioncraft.client.gui.CoalGranulatorScreen;
 import com.script.comminutioncraft.client.gui.CoalSmelterScreen;
 import com.script.comminutioncraft.client.gui.ElectricGeneratorScreen;
 import com.script.comminutioncraft.client.gui.ElectricMachineScreen;
+import com.script.comminutioncraft.client.gui.MachineScreen;
 import com.script.comminutioncraft.common.data.ProcessedMetal;
 import com.script.comminutioncraft.common.recipe.GranulatingRecipe;
 import com.script.comminutioncraft.common.registry.ModItems;
@@ -25,6 +26,7 @@ import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
@@ -87,6 +89,14 @@ public class ComminutionJeiPlugin implements IModPlugin {
         registration.addRecipeClickArea(CoalGranulatorScreen.class, 56, 36, 14, 14, RecipeTypes.SMELTING_FUEL);
         registration.addRecipeClickArea(CoalSmelterScreen.class, 56, 36, 14, 14, RecipeTypes.SMELTING_FUEL);
         registration.addRecipeClickArea(ElectricGeneratorScreen.class, 81, 34, 14, 14, RecipeTypes.SMELTING_FUEL);
+
+        // The redstone / side config tabs stick out of the GUI's right edge.
+        registration.addGenericGuiContainerHandler(MachineScreen.class, new IGuiContainerHandler<MachineScreen<?>>() {
+            @Override
+            public List<Rect2i> getGuiExtraAreas(MachineScreen<?> screen) {
+                return screen.getExtraAreas();
+            }
+        });
 
         // Both electric machines share one screen class, so pick the category from the menu type.
         registration.addGuiContainerHandler(ElectricMachineScreen.class, new IGuiContainerHandler<>() {

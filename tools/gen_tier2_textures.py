@@ -6,7 +6,7 @@ Usage: python tools/gen_tier2_textures.py
 - Electric Generator: top half is a firebox (it burns fuel), bottom half the battery meter.
 - Energy cable: one 16x16 sheet (core face u0-6 v0-6, connector plate u8-16 v0-8, arm strip u0-16 v8-12),
   matching the UVs in ModModelProvider.
-- Wrench: Rotate mode (copper grip) and Cable mode (blue grip + glowing jaw).
+- Wrench: Rotate mode (copper grip), Cable mode (blue grip + glowing jaw), Configure mode (green grip).
 """
 import json
 import math
@@ -24,6 +24,7 @@ ROOT = os.path.join(os.path.dirname(__file__), '..', 'src', 'main', 'resources',
 BLOCK = os.path.join(ROOT, 'block')
 ITEM = os.path.join(ROOT, 'item')
 ELEC = TIERS['electric']
+CONFIGURE = (96, 214, 120)  # wrench grip in Configure mode
 
 
 # ---------------------------------------------------------------- generator firebox (top half)
@@ -98,7 +99,7 @@ def cable_sheet():
 
 
 # ---------------------------------------------------------------- wrench
-def wrench(cable_mode):
+def wrench(cable_mode, configure_mode=False):
     """Open-end wrench lying diagonally: handle bottom-left, head top-right with its slot opening up-right."""
     head = (10.8, 5.2)
     handle_a, handle_b = (2.6, 13.4), (9.0, 7.0)
@@ -124,7 +125,12 @@ def wrench(cable_mode):
     def solid(x, y):
         return 0 <= x < 16 and 0 <= y < 16 and (in_head(x + 0.5, y + 0.5) or handle_t(x + 0.5, y + 0.5) is not None)
 
-    grip_hi, grip_lo = (ELEC['on'], shade(ELEC['on'], 0.6)) if cable_mode else (COPPER[3], COPPER[1])
+    if configure_mode:
+        grip_hi, grip_lo = CONFIGURE, shade(CONFIGURE, 0.6)
+    elif cable_mode:
+        grip_hi, grip_lo = ELEC['on'], shade(ELEC['on'], 0.6)
+    else:
+        grip_hi, grip_lo = COPPER[3], COPPER[1]
     img = Image.new('RGBA', (16, 16), (0, 0, 0, 0))
     for y in range(16):
         for x in range(16):
@@ -163,4 +169,5 @@ save_machine('electric_generator', act_firebox, tier_elec_meter)
 cable_sheet().save(os.path.join(BLOCK, 'energy_cable.png'))
 wrench(False).save(os.path.join(ITEM, 'wrench.png'))
 wrench(True).save(os.path.join(ITEM, 'wrench_cable.png'))
+wrench(False, configure_mode=True).save(os.path.join(ITEM, 'wrench_configure.png'))
 print('ok')

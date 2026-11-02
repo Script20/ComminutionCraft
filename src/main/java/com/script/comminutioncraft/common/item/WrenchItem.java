@@ -1,7 +1,11 @@
 package com.script.comminutioncraft.common.item;
 
 import com.script.comminutioncraft.common.cable.EnergyCableBlock;
+import com.script.comminutioncraft.common.machine.control.ControllableMachine;
+import com.script.comminutioncraft.common.machine.control.RelativeSide;
+import com.script.comminutioncraft.common.machine.control.SideMode;
 import com.script.comminutioncraft.common.registry.ModDataComponents;
+import com.script.comminutioncraft.common.registry.ModItems;
 import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -9,7 +13,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Unit;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -28,10 +31,11 @@ import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Two modes, switched with sneak + right-click:
+ * Three modes, cycled with sneak + right-click:
  * <ul>
  *   <li><b>Rotate</b> - right-click a block to turn it (machines and anything else with a facing/axis).</li>
  *   <li><b>Cable</b> - right-click an energy cable's arm to cut that connection; click again to restore it.</li>
+ *   <li><b>Configure</b> - right-click a machine face to cycle it between Input, Output and None.</li>
  * </ul>
  */
 public class WrenchItem extends Item {
@@ -39,8 +43,15 @@ public class WrenchItem extends Item {
         super(properties);
     }
 
-    public static boolean isCableMode(ItemStack stack) {
-        return stack.has(ModDataComponents.WRENCH_CABLE_MODE.get());
+    public static WrenchMode getMode(ItemStack stack) {
+        return stack.getOrDefault(ModDataComponents.WRENCH_MODE.get(), WrenchMode.ROTATE);
+    }
+
+    /** A wrench stack in the given mode (e.g. for GUI icons). */
+    public static ItemStack withMode(WrenchMode mode) {
+        ItemStack stack = new ItemStack(ModItems.WRENCH.get());
+        stack.set(ModDataComponents.WRENCH_MODE.get(), mode);
+        return stack;
     }
 
     @Override
@@ -63,25 +74,20 @@ public class WrenchItem extends Item {
         if (player != null && !player.mayUseItemAt(context.getClickedPos(), context.getClickedFace(), stack)) {
             return InteractionResult.FAIL;
         }
-        return isCableMode(stack) ? useOnCable(context) : rotate(context);
+        return switch (getMode(stack)) {
+            case ROTATE -> rotate(context);
+            case CABLE -> useOnCable(context);
+            case CONFIGURE -> configure(context);
+        };
     }
 
     private static void switchMode(Level level, Player player, ItemStack stack) {
         if (level.isClientSide()) {
             return;
         }
-        if (isCableMode(stack)) {
-            stack.remove(ModDataComponents.WRENCH_CABLE_MODE.get());
-        } else {
-            stack.set(ModDataComponents.WRENCH_CABLE_MODE.get(), Unit.INSTANCE);
-        }
-        player.sendOverlayMessage(modeName(stack));
+        stack.set(ModDataComponents.WRENCH_MODE.get(), getMode(stack).next());
+        player.sendOverlayMessage(getMode(stack).displayName());
         level.playSound(null, player.blockPosition(), SoundEvents.ITEM_FRAME_ROTATE_ITEM, SoundSource.PLAYERS, 0.6F, 1.4F);
-    }
-
-    private static Component modeName(ItemStack stack) {
-        return Component.translatable(isCableMode(stack)
-                ? "item.comminutioncraft.wrench.mode.cable" : "item.comminutioncraft.wrench.mode.rotate");
     }
 
     // ---- Cable mode ----
@@ -102,6 +108,27 @@ public class WrenchItem extends Item {
                         ? "message.comminutioncraft.wrench.cable_restored" : "message.comminutioncraft.wrench.cable_cut"));
             }
             level.playSound(null, pos, restored ? SoundEvents.COPPER_PLACE : SoundEvents.COPPER_BREAK, SoundSource.BLOCKS, 0.8F, 1.2F);
+        }
+        return InteractionResult.SUCCESS;
+    }
+
+    // ---- Configure mode ----
+
+    /** Cycles the clicked face of a machine between Input, Output and None (same as the GUI's side config). */
+    private static InteractionResult configure(UseOnContext context) {
+        Level level = context.getLevel();
+        BlockPos pos = context.getClickedPos();
+        if (!(level.getBlockEntity(pos) instanceof ControllableMachine machine)) {
+            return InteractionResult.PASS;
+        }
+        if (!level.isClientSide()) {
+            RelativeSide side = RelativeSide.of(machine.getFacing(), context.getClickedFace());
+            SideMode mode = machine.getControls().cycleSide(side);
+            if (context.getPlayer() != null) {
+                context.getPlayer().sendOverlayMessage(Component.translatable("gui.comminutioncraft.side_config.tooltip",
+                        side.displayName(), mode.displayName()));
+            }
+            level.playSound(null, pos, SoundEvents.UI_BUTTON_CLICK.value(), SoundSource.BLOCKS, 0.4F, 1.2F);
         }
         return InteractionResult.SUCCESS;
     }
@@ -162,10 +189,9 @@ public class WrenchItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display,
                                 Consumer<Component> builder, TooltipFlag flag) {
-        builder.accept(modeName(stack).copy().withStyle(ChatFormatting.AQUA));
-        builder.accept(Component.translatable(isCableMode(stack)
-                ? "item.comminutioncraft.wrench.help.cable" : "item.comminutioncraft.wrench.help.rotate")
-                .withStyle(ChatFormatting.GRAY));
+        WrenchMode mode = getMode(stack);
+        builder.accept(mode.displayName().copy().withStyle(ChatFormatting.AQUA));
+        builder.accept(mode.help().copy().withStyle(ChatFormatting.GRAY));
         builder.accept(Component.translatable("item.comminutioncraft.wrench.help.switch").withStyle(ChatFormatting.DARK_GRAY));
     }
 }

@@ -32,7 +32,8 @@ Tuning lives in the block entity classes:
 
 Items per coal = 1600 × multiplier ÷ process time.
 
-Hoppers and pipes: top = input, sides = fuel, bottom = output.
+Hoppers and pipes: by default the bottom is the output and every other side is an input
+(input sides take both ores and fuel). Change it per side, see "Machine settings" below.
 
 Like a vanilla furnace, the machines store the XP from smelting recipes. It drops when you
 take items out of the output slot, or when the machine is broken.
@@ -50,15 +51,28 @@ Machines hold 20,000 FE and pause (keeping their progress) when they run out.
 
 The generator pushes power out of every side, either straight into an adjacent machine or into
 **Energy Cables**. Cables join up automatically and share power evenly between every machine
-on the network (up to 1,000 FE per transfer). Electric machines take items from any side except
-the bottom, which is the output.
+on the network (up to 1,000 FE per transfer).
 
 ### Wrench
 
-Sneak + right-click to switch between two modes:
-- **Rotate:** right-click a block to turn it (machines, logs, observers, stairs...).
-- **Cable:** right-click one arm of a cable to cut that connection; right-click the same spot (or
-  the cable on the other side) to restore it.
+Sneak + right-click to switch between three modes:
+- **Rotate** (copper grip): right-click a block to turn it (machines, logs, observers, stairs...).
+- **Cable** (blue grip): right-click one arm of a cable to cut that connection; right-click the same
+  spot (or the cable on the other side) to restore it.
+- **Configure** (green grip): right-click a machine face to cycle it between Input, Output and None.
+
+## Machine settings
+
+Every machine has two tabs on the right of its GUI:
+
+- **Redstone** (gunpowder / redstone dust / redstone torch): **Ignore** always runs, **High** runs only
+  with a redstone signal, **Low** runs only without one. A machine switched off by redstone pauses:
+  fuel stops burning, progress is kept.
+- **Side configuration** (wrench icon): shows the machine as a cube. Left-click a face to cycle it
+  between **Input**, **Output** and **None** (for hoppers and pipes); right-drag to turn the cube,
+  or right-click to turn it a quarter. Sides are relative to the front, so they turn with the machine.
+
+The wrench's **Configure** mode does the same in the world: right-click a machine face to cycle it.
 
 ## Mod support
 

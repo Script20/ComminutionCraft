@@ -1,5 +1,10 @@
 package com.script.comminutioncraft.common.machine;
 
+import com.script.comminutioncraft.common.machine.control.ControllableMenu;
+import com.script.comminutioncraft.common.machine.control.MachineControls;
+import com.script.comminutioncraft.common.machine.control.RedstoneMode;
+import com.script.comminutioncraft.common.machine.control.RelativeSide;
+import com.script.comminutioncraft.common.machine.control.SideMode;
 import com.script.comminutioncraft.common.energy.EnergySync;
 import com.script.comminutioncraft.common.registry.ModMenus;
 import net.minecraft.world.Container;
@@ -14,7 +19,7 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 /** Menu shared by all tier-2 processing machines: input, output and an energy bar on the left. */
-public class ElectricMachineMenu extends AbstractContainerMenu {
+public class ElectricMachineMenu extends AbstractContainerMenu implements ControllableMenu {
     private static final int MACHINE_SLOTS = ElectricMachineBlockEntity.SLOT_COUNT;
     private static final int INV_START = MACHINE_SLOTS;
     private static final int INV_END = INV_START + 27;
@@ -45,6 +50,23 @@ public class ElectricMachineMenu extends AbstractContainerMenu {
         addSlot(new MachineOutputSlot(inventory.player, container, ElectricMachineBlockEntity.SLOT_OUTPUT, 116, 35));
         addStandardInventorySlots(inventory, 8, 84);
         addDataSlots(data);
+    }
+
+    // ---- Redstone / side settings (synced through data slots, changed with button clicks) ----
+
+    @Override
+    public boolean clickMenuButton(Player player, int buttonId) {
+        return MachineControls.handleMenuButton(container, buttonId);
+    }
+
+    @Override
+    public RedstoneMode getRedstoneMode() {
+        return RedstoneMode.byOrdinal(data.get(ElectricMachineBlockEntity.DATA_REDSTONE));
+    }
+
+    @Override
+    public SideMode getSideMode(RelativeSide side) {
+        return MachineControls.unpackSide(data.get(ElectricMachineBlockEntity.DATA_SIDES), side);
     }
 
     @Override

@@ -29,12 +29,34 @@ public class ModLanguageProvider extends LanguageProvider {
         add("item.comminutioncraft.wrench.mode.cable", "Mode: Cable");
         add("item.comminutioncraft.wrench.help.rotate", "Right-click a block to rotate it");
         add("item.comminutioncraft.wrench.help.cable", "Right-click a cable's arm to cut or restore that connection");
+        add("item.comminutioncraft.wrench.mode.configure", "Mode: Configure");
+        add("item.comminutioncraft.wrench.help.configure", "Right-click a machine face to cycle Input / Output / None");
         add("item.comminutioncraft.wrench.help.switch", "Sneak + right-click to switch mode");
         add("message.comminutioncraft.wrench.cable_cut", "Cable connection cut");
         add("message.comminutioncraft.wrench.cable_restored", "Cable connection restored");
 
         add("gui.comminutioncraft.energy", "%s / %s FE");
         add("gui.comminutioncraft.generating", "%s FE/t");
+
+        add("gui.comminutioncraft.redstone", "Redstone: %s");
+        add("gui.comminutioncraft.redstone.ignore", "Ignore");
+        add("gui.comminutioncraft.redstone.ignore.desc", "Always runs");
+        add("gui.comminutioncraft.redstone.high", "High");
+        add("gui.comminutioncraft.redstone.high.desc", "Runs only with a redstone signal");
+        add("gui.comminutioncraft.redstone.low", "Low");
+        add("gui.comminutioncraft.redstone.low.desc", "Runs only without a redstone signal");
+        add("gui.comminutioncraft.side_config", "Side Configuration");
+        add("gui.comminutioncraft.side_config.help", "Left-click: change · Right-drag: turn");
+        add("gui.comminutioncraft.side_config.tooltip", "%s: %s");
+        add("gui.comminutioncraft.side.front", "Front");
+        add("gui.comminutioncraft.side.back", "Back");
+        add("gui.comminutioncraft.side.left", "Left");
+        add("gui.comminutioncraft.side.right", "Right");
+        add("gui.comminutioncraft.side.top", "Top");
+        add("gui.comminutioncraft.side.bottom", "Bottom");
+        add("gui.comminutioncraft.side_mode.input", "Input");
+        add("gui.comminutioncraft.side_mode.output", "Output");
+        add("gui.comminutioncraft.side_mode.none", "None");
 
         add("jei.comminutioncraft.granulating", "Granulating");
         add("jei.comminutioncraft.time.coal_granulator", "Coal Granulator: %s");

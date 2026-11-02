@@ -1,15 +1,27 @@
 {
   "model": {
-    "type": "minecraft:condition",
-    "component": "comminutioncraft:wrench_cable_mode",
-    "on_false": {
+    "type": "minecraft:select",
+    "cases": [
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "comminutioncraft:item/wrench_cable"
+        },
+        "when": "cable"
+      },
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "comminutioncraft:item/wrench_configure"
+        },
+        "when": "configure"
+      }
+    ],
+    "component": "comminutioncraft:wrench_mode",
+    "fallback": {
       "type": "minecraft:model",
       "model": "comminutioncraft:item/wrench"
     },
-    "on_true": {
-      "type": "minecraft:model",
-      "model": "comminutioncraft:item/wrench_cable"
-    },
-    "property": "minecraft:has_component"
+    "property": "minecraft:component"
   }
 }

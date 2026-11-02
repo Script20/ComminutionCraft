@@ -30,7 +30,11 @@ import net.minecraft.gametest.framework.TestEnvironmentDefinition;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.util.Unit;
+import com.script.comminutioncraft.common.item.WrenchMode;
+import com.script.comminutioncraft.common.machine.FuelMachineBlockEntity;
+import com.script.comminutioncraft.common.machine.control.RedstoneMode;
+import com.script.comminutioncraft.common.machine.control.RelativeSide;
+import com.script.comminutioncraft.common.machine.control.SideMode;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -65,6 +69,9 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("lava_gets_volcanic_basalt_crust", () -> ModGameTests::lavaGetsVolcanicBasaltCrust);
         TEST_FUNCTIONS.register("no_crust_without_lava", () -> ModGameTests::noCrustWithoutLava);
         TEST_FUNCTIONS.register("tag_smelting_gives_tag_item", () -> ModGameTests::tagSmeltingGivesTagItem);
+        TEST_FUNCTIONS.register("redstone_high_waits_for_signal", () -> ModGameTests::redstoneHighWaitsForSignal);
+        TEST_FUNCTIONS.register("side_config_follows_rotation", () -> ModGameTests::sideConfigFollowsRotation);
+        TEST_FUNCTIONS.register("wrench_configure_cycles_face", () -> ModGameTests::wrenchConfigureCyclesFace);
     }
 
     public static void registerTests(RegisterGameTestsEvent event) {
@@ -125,7 +132,7 @@ public final class ModGameTests {
 
         Player player = helper.makeMockPlayer(GameType.CREATIVE);
         ItemStack wrench = new ItemStack(ModItems.WRENCH.get());
-        wrench.set(ModDataComponents.WRENCH_CABLE_MODE.get(), Unit.INSTANCE);
+        wrench.set(ModDataComponents.WRENCH_MODE.get(), WrenchMode.CABLE);
         useWrench(helper, player, wrench, middle, new Vec3(0.4, 0, 0), Direction.EAST);
 
         assertConnection(helper, middle, Direction.EAST, CableConnection.DISABLED);
@@ -203,6 +210,62 @@ public final class ModGameTests {
         helper.assertTrue(result.is(Items.IRON_INGOT) && result.getCount() == 2, "Expected 2 iron ingots from c:ingots/iron, got " + result);
         helper.assertTrue(ProcessedMetal.ALL.stream().filter(ProcessedMetal::fromOtherMods).noneMatch(ProcessedMetal::isAvailable),
                 "A modded metal reports itself available in a world without that mod");
+        helper.succeed();
+    }
+
+    /** Redstone mode High: a fuelled Coal Smelter does nothing until it gets a signal, then smelts. */
+    private static void redstoneHighWaitsForSignal(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, ModBlocks.COAL_SMELTER.get());
+        FuelMachineBlockEntity smelter = helper.getBlockEntity(pos, FuelMachineBlockEntity.class);
+        smelter.getControls().setRedstone(RedstoneMode.HIGH);
+        smelter.setItem(FuelMachineBlockEntity.SLOT_INPUT, new ItemStack(Items.RAW_IRON));
+        smelter.setItem(FuelMachineBlockEntity.SLOT_FUEL, new ItemStack(Items.COAL));
+
+        helper.runAfterDelay(120, () -> {
+            helper.assertTrue(smelter.getItem(FuelMachineBlockEntity.SLOT_OUTPUT).isEmpty(), "Smelted without a redstone signal on High");
+            helper.assertTrue(smelter.getItem(FuelMachineBlockEntity.SLOT_FUEL).is(Items.COAL), "Burned fuel without a redstone signal on High");
+            helper.setBlock(new BlockPos(3, 1, 2), Blocks.REDSTONE_BLOCK);
+            helper.succeedWhen(() -> helper.assertTrue(smelter.getItem(FuelMachineBlockEntity.SLOT_OUTPUT).is(Items.IRON_INGOT),
+                    "Powered smelter on High hasn't smelted yet"));
+        });
+    }
+
+    /** Side settings are relative to the front: a face set to None stays None after the machine is turned. */
+    private static void sideConfigFollowsRotation(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, ModBlocks.ELECTRIC_SMELTER.get().defaultBlockState().setValue(MachineBlock.FACING, Direction.NORTH));
+        ElectricMachineBlockEntity smelter = helper.getBlockEntity(pos, ElectricMachineBlockEntity.class);
+        // Defaults: output below, input elsewhere.
+        helper.assertTrue(java.util.Arrays.equals(smelter.getSlotsForFace(Direction.DOWN), new int[] {ElectricMachineBlockEntity.SLOT_OUTPUT}),
+                "Bottom should give the output slot by default");
+
+        // Facing north, the machine's left (as you look at its front) is east.
+        smelter.getControls().setSide(RelativeSide.LEFT, SideMode.NONE);
+        helper.assertTrue(smelter.getSlotsForFace(Direction.EAST).length == 0, "Left side set to None still exposes slots");
+        helper.assertFalse(smelter.canPlaceItemThroughFace(ElectricMachineBlockEntity.SLOT_INPUT, new ItemStack(Items.RAW_IRON), Direction.EAST),
+                "Items can go in through a None side");
+
+        // Turn it to face east: its left is now south, and east (now its front) is an input again.
+        helper.setBlock(pos, helper.getLevel().getBlockState(helper.absolutePos(pos)).setValue(MachineBlock.FACING, Direction.EAST));
+        helper.assertTrue(smelter.getSlotsForFace(Direction.SOUTH).length == 0, "None side didn't turn with the machine");
+        helper.assertTrue(smelter.canPlaceItemThroughFace(ElectricMachineBlockEntity.SLOT_INPUT, new ItemStack(Items.RAW_IRON), Direction.EAST),
+                "The new front should accept input");
+        helper.succeed();
+    }
+
+    /** Configure mode: right-clicking a machine's top cycles it Input -> Output. */
+    private static void wrenchConfigureCyclesFace(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, ModBlocks.ELECTRIC_GRANULATOR.get());
+        ElectricMachineBlockEntity granulator = helper.getBlockEntity(pos, ElectricMachineBlockEntity.class);
+        Player player = helper.makeMockPlayer(GameType.CREATIVE);
+        ItemStack wrench = new ItemStack(ModItems.WRENCH.get());
+        wrench.set(ModDataComponents.WRENCH_MODE.get(), WrenchMode.CONFIGURE);
+        useWrench(helper, player, wrench, pos, new Vec3(0, 0.5, 0), Direction.UP);
+
+        SideMode top = granulator.getControls().side(RelativeSide.TOP);
+        helper.assertTrue(top == SideMode.OUTPUT, "Top should be Output after one Configure click, but is " + top);
         helper.succeed();
     }
 

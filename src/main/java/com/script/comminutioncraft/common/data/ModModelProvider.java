@@ -6,6 +6,7 @@ import com.script.comminutioncraft.common.block.StoneSet;
 import com.script.comminutioncraft.common.cable.CableConnection;
 import com.script.comminutioncraft.common.cable.EnergyCableBlock;
 import com.script.comminutioncraft.common.registry.ModBlocks;
+import com.script.comminutioncraft.common.item.WrenchMode;
 import com.script.comminutioncraft.common.registry.ModDataComponents;
 import com.script.comminutioncraft.common.registry.ModItems;
 import net.minecraft.client.data.models.BlockModelGenerators;
@@ -20,6 +21,7 @@ import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.client.data.models.model.TexturedModel;
 import net.minecraft.client.renderer.block.dispatch.VariantMutator;
+import net.minecraft.client.renderer.item.properties.select.ComponentContents;
 import net.minecraft.core.Direction;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.Identifier;
@@ -133,14 +135,16 @@ public class ModModelProvider extends ModelProvider {
         itemModels.itemModelOutput.accept(ModItems.ENERGY_CABLE.get(), ItemModelUtils.plainModel(inventory));
     }
 
-    /** Two textures: the plain wrench (Rotate mode) and one with blue tips (Cable mode). */
+    /** One texture per mode: copper grip (Rotate), blue (Cable), green (Configure); no component = Rotate. */
     private static void wrench(ItemModelGenerators itemModels) {
         var wrench = ModItems.WRENCH.get();
         Identifier rotateModel = itemModels.createFlatItemModel(wrench, ModelTemplates.FLAT_HANDHELD_ITEM);
         Identifier cableModel = itemModels.createFlatItemModel(wrench, "_cable", ModelTemplates.FLAT_HANDHELD_ITEM);
-        itemModels.itemModelOutput.accept(wrench, ItemModelUtils.conditional(
-                ItemModelUtils.hasComponent(ModDataComponents.WRENCH_CABLE_MODE.get()),
-                ItemModelUtils.plainModel(cableModel),
-                ItemModelUtils.plainModel(rotateModel)));
+        Identifier configureModel = itemModels.createFlatItemModel(wrench, "_configure", ModelTemplates.FLAT_HANDHELD_ITEM);
+        itemModels.itemModelOutput.accept(wrench, ItemModelUtils.select(
+                new ComponentContents<>(ModDataComponents.WRENCH_MODE.get()),
+                ItemModelUtils.plainModel(rotateModel),
+                ItemModelUtils.when(WrenchMode.CABLE, ItemModelUtils.plainModel(cableModel)),
+                ItemModelUtils.when(WrenchMode.CONFIGURE, ItemModelUtils.plainModel(configureModel))));
     }
 }

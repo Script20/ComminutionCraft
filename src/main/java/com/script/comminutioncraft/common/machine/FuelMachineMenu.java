@@ -1,5 +1,10 @@
 package com.script.comminutioncraft.common.machine;
 
+import com.script.comminutioncraft.common.machine.control.ControllableMenu;
+import com.script.comminutioncraft.common.machine.control.MachineControls;
+import com.script.comminutioncraft.common.machine.control.RedstoneMode;
+import com.script.comminutioncraft.common.machine.control.RelativeSide;
+import com.script.comminutioncraft.common.machine.control.SideMode;
 import com.script.comminutioncraft.common.registry.ModMenus;
 import com.script.comminutioncraft.common.registry.ModRecipes;
 import net.minecraft.world.Container;
@@ -17,7 +22,7 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 
 /** Furnace-style menu shared by all tier-1 machines. Slot layout matches the vanilla furnace. */
-public class FuelMachineMenu extends AbstractContainerMenu {
+public class FuelMachineMenu extends AbstractContainerMenu implements ControllableMenu {
     private static final int MACHINE_SLOTS = FuelMachineBlockEntity.SLOT_COUNT;
     private static final int INV_START = MACHINE_SLOTS;
     private static final int INV_END = INV_START + 27;
@@ -65,6 +70,23 @@ public class FuelMachineMenu extends AbstractContainerMenu {
         }
 
         addDataSlots(data);
+    }
+
+    // ---- Redstone / side settings (synced through data slots, changed with button clicks) ----
+
+    @Override
+    public boolean clickMenuButton(Player player, int buttonId) {
+        return MachineControls.handleMenuButton(container, buttonId);
+    }
+
+    @Override
+    public RedstoneMode getRedstoneMode() {
+        return RedstoneMode.byOrdinal(data.get(FuelMachineBlockEntity.DATA_REDSTONE));
+    }
+
+    @Override
+    public SideMode getSideMode(RelativeSide side) {
+        return MachineControls.unpackSide(data.get(FuelMachineBlockEntity.DATA_SIDES), side);
     }
 
     @Override
