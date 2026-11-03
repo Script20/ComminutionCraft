@@ -7,6 +7,8 @@ Usage: python tools/gen_tier2_textures.py
 - Energy cable: one 16x16 sheet (core face u0-6 v0-6, connector plate u8-16 v0-8, arm strip u0-16 v8-12),
   matching the UVs in ModModelProvider.
 - Wrench: Rotate mode (copper grip), Cable mode (blue grip + glowing jaw), Configure mode (green grip).
+- Electronic Circuit item and the Energy Battery (front per charge level: _front_0.._front_6, plus _front = full
+  for the item model and the side config screen).
 """
 import json
 import math
@@ -18,7 +20,8 @@ from PIL import Image
 sys.path.insert(0, os.path.dirname(__file__))
 from mekstyle_lib import mix, shade, fire, FRAMES, TAU  # noqa: E402
 from dark_chassis_system import (K, TIERS, STEEL, COPPER, well, front, side, top,  # noqa: E402
-                                 act_conveyor, act_conveyor_smelt, tier_elec_meter)
+                                 act_conveyor, act_conveyor_smelt, tier_elec_meter,
+                                 circuit, battery_front, battery_side, battery_top, BATTERY_CELLS)
 
 ROOT = os.path.join(os.path.dirname(__file__), '..', 'src', 'main', 'resources', 'assets', 'comminutioncraft', 'textures')
 BLOCK = os.path.join(ROOT, 'block')
@@ -170,4 +173,10 @@ cable_sheet().save(os.path.join(BLOCK, 'energy_cable.png'))
 wrench(False).save(os.path.join(ITEM, 'wrench.png'))
 wrench(True).save(os.path.join(ITEM, 'wrench_cable.png'))
 wrench(False, configure_mode=True).save(os.path.join(ITEM, 'wrench_configure.png'))
+circuit('electric', COPPER).img.save(os.path.join(ITEM, 'electronic_circuit.png'))
+battery_top('electric').img.save(os.path.join(BLOCK, 'energy_battery_top.png'))
+battery_side('electric').img.save(os.path.join(BLOCK, 'energy_battery_side.png'))
+battery_front('electric', BATTERY_CELLS).img.save(os.path.join(BLOCK, 'energy_battery_front.png'))
+for level in range(BATTERY_CELLS + 1):
+    battery_front('electric', level).img.save(os.path.join(BLOCK, f'energy_battery_front_{level}.png'))
 print('ok')

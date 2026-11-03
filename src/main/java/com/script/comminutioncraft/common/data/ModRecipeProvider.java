@@ -95,16 +95,37 @@ public class ModRecipeProvider extends RecipeProvider {
 
         // ---- Tier 2 ----
 
-        shaped(RecipeCategory.MISC, ModItems.ELECTRIC_GENERATOR.get())
-                .pattern("III")
-                .pattern("RFR")
+        // The Electronic Circuit unlocks tier 2: every electric block except the cable needs one.
+        shaped(RecipeCategory.MISC, ModItems.ELECTRONIC_CIRCUIT.get())
+                .pattern(" R ")
                 .pattern("CCC")
-                .define('I', tag(ProcessedMetal.commonItemTag("ingots/iron")))
+                .pattern(" R ")
                 .define('R', tag(ProcessedMetal.commonItemTag("dusts/redstone")))
-                .define('F', Items.FURNACE)
                 .define('C', tag(ProcessedMetal.commonItemTag("ingots/copper")))
                 .unlockedBy("has_redstone", has(Items.REDSTONE))
+                .save(output, key("electronic_circuit"));
+
+        shaped(RecipeCategory.MISC, ModItems.ELECTRIC_GENERATOR.get())
+                .pattern("III")
+                .pattern("IFI")
+                .pattern("CEC")
+                .define('I', tag(ProcessedMetal.commonItemTag("ingots/iron")))
+                .define('F', Items.FURNACE)
+                .define('C', tag(ProcessedMetal.commonItemTag("ingots/copper")))
+                .define('E', ModItems.ELECTRONIC_CIRCUIT.get())
+                .unlockedBy("has_electronic_circuit", has(ModItems.ELECTRONIC_CIRCUIT.get()))
                 .save(output, key("electric_generator"));
+
+        shaped(RecipeCategory.MISC, ModItems.ENERGY_BATTERY.get())
+                .pattern("IRI")
+                .pattern("CEC")
+                .pattern("IRI")
+                .define('I', tag(ProcessedMetal.commonItemTag("ingots/iron")))
+                .define('R', tag(ProcessedMetal.commonItemTag("storage_blocks/redstone")))
+                .define('C', tag(ProcessedMetal.commonItemTag("ingots/copper")))
+                .define('E', ModItems.ELECTRONIC_CIRCUIT.get())
+                .unlockedBy("has_electronic_circuit", has(ModItems.ELECTRONIC_CIRCUIT.get()))
+                .save(output, key("energy_battery"));
 
         shaped(RecipeCategory.MISC, ModItems.ENERGY_CABLE.get(), 8)
                 .pattern("CCC")
@@ -117,22 +138,22 @@ public class ModRecipeProvider extends RecipeProvider {
 
         // Electric machines are upgrades of the coal ones
         shaped(RecipeCategory.MISC, ModItems.ELECTRIC_GRANULATOR.get())
-                .pattern("IRI")
+                .pattern("IEI")
                 .pattern("CMC")
-                .pattern("IRI")
+                .pattern("III")
                 .define('I', tag(ProcessedMetal.commonItemTag("ingots/iron")))
-                .define('R', tag(ProcessedMetal.commonItemTag("dusts/redstone")))
+                .define('E', ModItems.ELECTRONIC_CIRCUIT.get())
                 .define('C', tag(ProcessedMetal.commonItemTag("ingots/copper")))
                 .define('M', ModItems.COAL_GRANULATOR.get())
                 .unlockedBy("has_coal_granulator", has(ModItems.COAL_GRANULATOR.get()))
                 .save(output, key("electric_granulator"));
 
         shaped(RecipeCategory.MISC, ModItems.ELECTRIC_SMELTER.get())
-                .pattern("IRI")
+                .pattern("IEI")
                 .pattern("CMC")
-                .pattern("IRI")
+                .pattern("III")
                 .define('I', tag(ProcessedMetal.commonItemTag("ingots/iron")))
-                .define('R', tag(ProcessedMetal.commonItemTag("dusts/redstone")))
+                .define('E', ModItems.ELECTRONIC_CIRCUIT.get())
                 .define('C', tag(ProcessedMetal.commonItemTag("ingots/copper")))
                 .define('M', ModItems.COAL_SMELTER.get())
                 .unlockedBy("has_coal_smelter", has(ModItems.COAL_SMELTER.get()))

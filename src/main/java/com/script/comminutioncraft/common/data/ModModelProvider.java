@@ -5,6 +5,7 @@ import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.block.StoneSet;
 import com.script.comminutioncraft.common.cable.CableConnection;
 import com.script.comminutioncraft.common.cable.EnergyCableBlock;
+import com.script.comminutioncraft.common.machine.EnergyBatteryBlock;
 import com.script.comminutioncraft.common.registry.ModBlocks;
 import com.script.comminutioncraft.common.item.WrenchMode;
 import com.script.comminutioncraft.common.registry.ModDataComponents;
@@ -14,6 +15,8 @@ import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.ModelProvider;
 import net.minecraft.client.data.models.MultiVariant;
 import net.minecraft.client.data.models.blockstates.MultiPartGenerator;
+import net.minecraft.client.data.models.blockstates.MultiVariantGenerator;
+import net.minecraft.client.data.models.blockstates.PropertyDispatch;
 import net.minecraft.client.data.models.model.ItemModelUtils;
 import net.minecraft.client.data.models.model.ModelTemplate;
 import net.minecraft.client.data.models.model.ModelTemplates;
@@ -93,7 +96,9 @@ public class ModModelProvider extends ModelProvider {
         blockModels.createFurnace(ModBlocks.ELECTRIC_GRANULATOR.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         blockModels.createFurnace(ModBlocks.ELECTRIC_SMELTER.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         blockModels.createFurnace(ModBlocks.ELECTRIC_GENERATOR.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
+        energyBattery(blockModels);
         energyCable(blockModels, itemModels);
+        itemModels.generateFlatItem(ModItems.ELECTRONIC_CIRCUIT.get(), ModelTemplates.FLAT_ITEM);
         for (StoneSet set : ModBlocks.STONE_SETS) {
             StoneFamilies.of(set).all().forEach(family -> blockModels.family(family.getBaseBlock()).generateFor(family));
             // Pillar: <name>_pillar on the sides, <name>_pillar_top on the ends (like quartz pillars)
@@ -104,6 +109,21 @@ public class ModModelProvider extends ModelProvider {
             itemModels.generateFlatItem(metal.granulated().get(), ModelTemplates.FLAT_ITEM);
         }
         wrench(itemModels);
+    }
+
+    /**
+     * One model per charge level, each with its own front (<block>_front_0 .. _front_6). The plain model, with the
+     * full _front, is what the item (and the side config screen) shows.
+     */
+    private static void energyBattery(BlockModelGenerators blockModels) {
+        EnergyBatteryBlock battery = ModBlocks.ENERGY_BATTERY.get();
+        TexturedModel.ORIENTABLE_ONLY_TOP.create(battery, blockModels.modelOutput);
+        blockModels.blockStateOutput.accept(MultiVariantGenerator.dispatch(battery)
+                .with(PropertyDispatch.initial(EnergyBatteryBlock.CHARGE).generate(charge -> BlockModelGenerators.plainVariant(
+                        TexturedModel.ORIENTABLE_ONLY_TOP.get(battery)
+                                .updateTextures(t -> t.put(TextureSlot.FRONT, TextureMapping.getBlockTexture(battery, "_front_" + charge)))
+                                .createWithSuffix(battery, "_charge_" + charge, blockModels.modelOutput))))
+                .with(BlockModelGenerators.ROTATION_HORIZONTAL_FACING));
     }
 
     private static void energyCable(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {

@@ -8,6 +8,7 @@ import com.script.comminutioncraft.common.machine.CoalSmelterBlock;
 import com.script.comminutioncraft.common.machine.ElectricGeneratorBlock;
 import com.script.comminutioncraft.common.machine.ElectricGranulatorBlock;
 import com.script.comminutioncraft.common.machine.ElectricSmelterBlock;
+import com.script.comminutioncraft.common.machine.EnergyBatteryBlock;
 import com.script.comminutioncraft.common.machine.MachineBlock;
 import java.util.List;
 import net.minecraft.world.level.block.SoundType;
@@ -35,6 +36,9 @@ public final class ModBlocks {
 
     public static final DeferredBlock<ElectricGeneratorBlock> ELECTRIC_GENERATOR = BLOCKS.registerBlock(
             "electric_generator", ElectricGeneratorBlock::new, ModBlocks::tier2MachineProperties);
+
+    public static final DeferredBlock<EnergyBatteryBlock> ENERGY_BATTERY = BLOCKS.registerBlock(
+            "energy_battery", EnergyBatteryBlock::new, ModBlocks::tier2MachineProperties);
 
     public static final DeferredBlock<EnergyCableBlock> ENERGY_CABLE = BLOCKS.registerBlock(
             "energy_cable", EnergyCableBlock::new, properties -> properties

@@ -6,6 +6,8 @@ import com.script.comminutioncraft.common.cable.EnergyCableBlock;
 import com.script.comminutioncraft.common.data.ModWorldGen;
 import com.script.comminutioncraft.common.machine.ElectricGeneratorBlockEntity;
 import com.script.comminutioncraft.common.machine.ElectricMachineBlockEntity;
+import com.script.comminutioncraft.common.machine.EnergyBatteryBlock;
+import com.script.comminutioncraft.common.machine.EnergyBatteryBlockEntity;
 import com.script.comminutioncraft.common.machine.MachineBlock;
 import com.script.comminutioncraft.common.registry.ModBlocks;
 import com.script.comminutioncraft.common.registry.ModDataComponents;
@@ -36,6 +38,8 @@ import com.script.comminutioncraft.common.machine.control.RedstoneMode;
 import com.script.comminutioncraft.common.machine.control.RelativeSide;
 import com.script.comminutioncraft.common.machine.control.SideMode;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -72,6 +76,8 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("redstone_high_waits_for_signal", () -> ModGameTests::redstoneHighWaitsForSignal);
         TEST_FUNCTIONS.register("side_config_follows_rotation", () -> ModGameTests::sideConfigFollowsRotation);
         TEST_FUNCTIONS.register("wrench_configure_cycles_face", () -> ModGameTests::wrenchConfigureCyclesFace);
+        TEST_FUNCTIONS.register("battery_passes_power_on", () -> ModGameTests::batteryPassesPowerOn);
+        TEST_FUNCTIONS.register("battery_keeps_energy_when_broken", () -> ModGameTests::batteryKeepsEnergyWhenBroken);
     }
 
     public static void registerTests(RegisterGameTestsEvent event) {
@@ -267,6 +273,61 @@ public final class ModGameTests {
         SideMode top = granulator.getControls().side(RelativeSide.TOP);
         helper.assertTrue(top == SideMode.OUTPUT, "Top should be Output after one Configure click, but is " + top);
         helper.succeed();
+    }
+
+    /**
+     * Generator -> Energy Battery -> Electric Granulator, all touching: the generator charges the battery through
+     * an input face and the battery runs the granulator through the face set to Output. (The granulator doesn't
+     * touch the generator, so its power can only have come through the battery.)
+     */
+    private static void batteryPassesPowerOn(GameTestHelper helper) {
+        BlockPos generator = new BlockPos(1, 1, 2);
+        BlockPos battery = new BlockPos(2, 1, 2);
+        BlockPos granulator = new BlockPos(3, 1, 2);
+        helper.setBlock(generator, ModBlocks.ELECTRIC_GENERATOR.get());
+        helper.setBlock(battery, ModBlocks.ENERGY_BATTERY.get().defaultBlockState().setValue(MachineBlock.FACING, Direction.NORTH));
+        helper.setBlock(granulator, ModBlocks.ELECTRIC_GRANULATOR.get());
+        EnergyBatteryBlockEntity cell = helper.getBlockEntity(battery, EnergyBatteryBlockEntity.class);
+        // Facing north, the battery's left is east (towards the granulator).
+        cell.getControls().setSide(RelativeSide.LEFT, SideMode.OUTPUT);
+        helper.assertTrue(cell.getEnergyHandler(Direction.WEST) != null, "The battery's input face has no FE capability");
+
+        helper.getBlockEntity(generator, ElectricGeneratorBlockEntity.class).setItem(0, new ItemStack(Items.COAL));
+        helper.getBlockEntity(granulator, ElectricMachineBlockEntity.class).setItem(ElectricMachineBlockEntity.SLOT_INPUT, new ItemStack(Items.RAW_COPPER));
+
+        helper.succeedWhen(() -> {
+            ItemStack output = helper.getBlockEntity(granulator, ElectricMachineBlockEntity.class).getItem(ElectricMachineBlockEntity.SLOT_OUTPUT);
+            helper.assertTrue(output.is(ModItems.GRANULATED_COPPER.get()) && output.getCount() == 2,
+                    "Granulator hasn't produced 2 granulated copper through the battery yet (has " + output + ")");
+        });
+    }
+
+    /** A charged battery shows its charge, drops itself with the FE in it, and a battery placed from that item has it back. */
+    private static void batteryKeepsEnergyWhenBroken(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        int stored = EnergyBatteryBlockEntity.CAPACITY / 2;
+        helper.setBlock(pos, ModBlocks.ENERGY_BATTERY.get());
+        helper.getBlockEntity(pos, EnergyBatteryBlockEntity.class).setEnergy(stored);
+
+        helper.runAfterDelay(2, () -> {
+            int charge = helper.getLevel().getBlockState(helper.absolutePos(pos)).getValue(EnergyBatteryBlock.CHARGE);
+            helper.assertTrue(charge == 3, "A half-full battery should light 3 cells, but lights " + charge);
+
+            BlockPos absolute = helper.absolutePos(pos);
+            helper.getLevel().destroyBlock(absolute, true);
+            ItemStack drop = helper.getLevel().getEntitiesOfClass(ItemEntity.class, new AABB(absolute).inflate(1)).stream()
+                    .map(ItemEntity::getItem)
+                    .filter(stack -> stack.is(ModItems.ENERGY_BATTERY.get()))
+                    .findFirst().orElse(ItemStack.EMPTY);
+            Integer kept = drop.get(ModDataComponents.STORED_ENERGY.get());
+            helper.assertTrue(kept != null && kept == stored, "The dropped battery should hold " + stored + " FE, but holds " + kept);
+
+            helper.setBlock(pos, ModBlocks.ENERGY_BATTERY.get());
+            EnergyBatteryBlockEntity placed = helper.getBlockEntity(pos, EnergyBatteryBlockEntity.class);
+            placed.applyComponentsFromItemStack(drop);
+            helper.assertTrue(placed.getEnergy() == stored, "The placed battery has " + placed.getEnergy() + " FE, expected " + stored);
+            helper.succeed();
+        });
     }
 
     // ---- Helpers ----

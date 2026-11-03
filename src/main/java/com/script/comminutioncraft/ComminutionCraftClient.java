@@ -6,6 +6,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import com.script.comminutioncraft.client.gui.CoalSmelterScreen;
 import com.script.comminutioncraft.client.gui.ElectricGeneratorScreen;
 import com.script.comminutioncraft.client.gui.ElectricMachineScreen;
+import com.script.comminutioncraft.client.gui.EnergyBatteryScreen;
 import com.script.comminutioncraft.common.data.ModDataGenerators;
 import com.script.comminutioncraft.common.registry.ModMenus;
 import net.neoforged.api.distmarker.Dist;
@@ -28,5 +29,6 @@ public class ComminutionCraftClient {
         event.register(ModMenus.ELECTRIC_GRANULATOR.get(), ElectricMachineScreen::granulator);
         event.register(ModMenus.ELECTRIC_SMELTER.get(), ElectricMachineScreen::smelter);
         event.register(ModMenus.ELECTRIC_GENERATOR.get(), ElectricGeneratorScreen::new);
+        event.register(ModMenus.ENERGY_BATTERY.get(), EnergyBatteryScreen::new);
     }
 }

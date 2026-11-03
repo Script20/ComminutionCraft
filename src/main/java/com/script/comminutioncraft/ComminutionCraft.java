@@ -8,6 +8,7 @@ import com.script.comminutioncraft.common.registry.ModBlocks;
 import com.script.comminutioncraft.common.cable.CableConnection;
 import com.script.comminutioncraft.common.cable.CableEnergyHandler;
 import com.script.comminutioncraft.common.cable.EnergyCableBlock;
+import com.script.comminutioncraft.common.machine.EnergyBatteryBlockEntity;
 import com.script.comminutioncraft.gametest.ModGameTests;
 import com.script.comminutioncraft.common.registry.ModCreativeTabs;
 import com.script.comminutioncraft.common.registry.ModDataComponents;
@@ -52,8 +53,9 @@ public class ComminutionCraft {
      * Items: hoppers, pipes and other mods' item transport. Tier 1 works like a vanilla furnace
      * (top = input, sides = fuel, bottom = output); tier 2 is bottom = output, every other side = input;
      * the generator takes fuel from any side.
-     * Energy: tier-2 machines accept FE and the generator provides it on every side; cables on every side
-     * except ones cut with the wrench.
+     * Energy: tier-2 machines accept FE and the generator provides it on every side; batteries take FE on their
+     * input faces and give it on their output faces (none on None faces); cables on every side except ones cut
+     * with the wrench.
      */
     private void registerCapabilities(RegisterCapabilitiesEvent event) {
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.COAL_GRANULATOR.get(), WorldlyContainerWrapper::new);
@@ -65,6 +67,7 @@ public class ComminutionCraft {
         event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.ELECTRIC_GRANULATOR.get(), (machine, side) -> machine.getEnergyHandler());
         event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.ELECTRIC_SMELTER.get(), (machine, side) -> machine.getEnergyHandler());
         event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.ELECTRIC_GENERATOR.get(), (generator, side) -> generator.getEnergyHandler());
+        event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.ENERGY_BATTERY.get(), EnergyBatteryBlockEntity::getEnergyHandler);
         event.registerBlock(Capabilities.Energy.BLOCK, (level, pos, state, blockEntity, side) ->
                 side != null && state.getValue(EnergyCableBlock.CONNECTIONS.get(side)) == CableConnection.DISABLED
                         ? null : new CableEnergyHandler(level, pos, side),

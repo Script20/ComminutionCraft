@@ -337,6 +337,101 @@ VARIANTS = [
     ('C', 'Conveyor / Fire Door', act_conveyor, act_conveyor_smelt, tier_coal_door, tier_elec_meter),
 ]
 
+
+# ================================================================ circuits (items) and energy batteries
+def circuit(tier, metal):
+    """Circuit item: charcoal board with metal traces and edge fingers, a black chip glowing in the tier colour."""
+    T = TIERS[tier]
+    t = Tex()
+    x0, y0, x1, y1 = 1, 2, 14, 13
+    grad(t, K['l'], K['m'], (x0, y0, x1, y1))
+    t.hline(x0 + 1, x1 - 1, y0, K['hi'])
+    t.vline(x0, y0 + 1, y1 - 1, K['hi'])
+    t.hline(x0 + 1, x1 - 1, y1, K['o'])
+    t.vline(x1, y0 + 1, y1 - 1, K['o'])
+    for (x, y) in ((x0, y0), (x1, y0), (x0, y1), (x1, y1)):
+        t.img.putpixel((x, y), (0, 0, 0, 0))
+    for x in range(3, 13, 2):  # edge connector fingers
+        t.px(x, y1, metal[2])
+        t.px(x, y1 - 1, metal[1])
+    tr = metal[2]
+    t.hline(2, 4, 6, tr); t.hline(2, 4, 8, tr)
+    t.hline(11, 13, 6, tr); t.vline(13, 6, 9, tr); t.hline(11, 12, 8, tr)
+    t.vline(7, 3, 4, tr); t.hline(7, 12, 3, tr)
+    t.vline(6, 10, 11, tr); t.vline(9, 10, 11, tr)
+    t.px(2, 6, metal[3]); t.px(2, 8, metal[3]); t.px(12, 3, metal[3])  # vias
+    t.rect(2, 10, 3, 11, STEEL[3]); t.px(2, 10, STEEL[4])  # small component
+    t.rect(5, 5, 10, 9, GLASS)
+    t.hline(5, 10, 5, K['m'])
+    for x in (6, 8, 9):
+        t.px(x, 4, STEEL[3])
+    t.px(5, 10, STEEL[2]); t.px(10, 10, STEEL[2])
+    t.px(7, 7, T['hi']); t.px(8, 7, T['on']); t.px(7, 8, T['on']); t.px(8, 8, shade(T['on'], 0.6))
+    t.px(6, 6, K['l'])  # pin-1 dot
+    return t
+
+
+BATTERY_CELLS = 6
+
+
+def battery_front(tier, level):
+    """Tall window with a stack of cells, `level` (0..BATTERY_CELLS) lit from the bottom; side seams fill to match."""
+    T = TIERS[tier]
+    t = casing()
+    well(t, 3, 1, 12, 14)
+    for x in range(4, 12):
+        t.px(x, 2, STEEL[1])
+    t.vline(4, 3, 13, STEEL[0]); t.vline(11, 3, 13, STEEL[0])
+    for i in range(BATTERY_CELLS):
+        y = 13 - i * 2
+        on = i < level
+        for x in range(5, 11):
+            c = T['on'] if on else T['off']
+            if x == 5:
+                c = T['hi'] if on else shade(T['off'], 1.25)
+            elif x == 10:
+                c = shade(c, 0.7)
+            t.px(x, y, c)
+    seam(t, [(1, y) for y in range(2, 14)] + [(14, y) for y in range(2, 14)], tier, False, 0)
+    if level > 0:
+        for y in range(max(2, 14 - level * 2), 14):
+            t.px(1, y, T['on']); t.px(14, y, T['on'])
+    return t
+
+
+def battery_side(tier):
+    """Heat-sink fins with the tier seam across the middle."""
+    t = casing()
+    for x in range(2, 14):
+        for y in range(2, 14):
+            if y != 8:
+                t.px(x, y, mix(K['l'], K['m'], (y - 2) / 11) if x % 2 == 0 else K['d'])
+    t.hline(2, 13, 1, K['m']); t.hline(2, 13, 14, K['o'])
+    seam(t, [(x, 8) for x in range(1, 15)], tier, False, 0)
+    return t
+
+
+def battery_top(tier):
+    """Copper + and steel - terminals inside a tier-coloured ring."""
+    T = TIERS[tier]
+    t = casing()
+    ring = [(x, 2) for x in range(2, 14)] + [(x, 13) for x in range(2, 14)] + \
+           [(2, y) for y in range(3, 13)] + [(13, y) for y in range(3, 13)]
+    seam(t, ring, tier, False, 0)
+    t.rect(3, 3, 12, 12, K['d'])
+
+    def terminal(x0, metal):
+        t.rect(x0, 6, x0 + 3, 9, metal[1])
+        t.hline(x0, x0 + 3, 6, metal[3]); t.vline(x0, 6, 9, metal[2])
+        t.hline(x0, x0 + 3, 9, metal[0]); t.vline(x0 + 3, 6, 9, metal[0])
+        t.rect(x0 + 1, 7, x0 + 2, 8, metal[2])
+    terminal(3, COPPER)
+    terminal(9, STEEL[1:])
+    for (x, y) in ((4, 4), (5, 4), (6, 4), (5, 3), (5, 5)):
+        t.px(x, y, T['on'])
+    t.hline(10, 12, 4, T['on'])
+    return t
+
 # ================================================================ render
 def render_preview(OUT):
     """Preview sheet + gif of all three variants (python tools/dark_chassis_system.py <out_dir>)."""

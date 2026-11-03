@@ -20,9 +20,9 @@ python -m venv .venv
 | Script | Writes | Notes |
 |---|---|---|
 | `mekstyle_lib.py` | – | Shared helpers: 16x16 `Tex`, colour `mix`/`shade`, `fire()` ramp, `iso_block` previews. |
-| `dark_chassis_system.py` | – (or a preview with an argument) | **Dark Chassis** building blocks: casing palette `K`, `TIERS` colours, `casing/side/top/front`, machine tops `act_*`, tier bottoms `tier_*`. Importing it only defines functions; `dark_chassis_system.py <out_dir>` renders the original A/B/C comparison sheet (variant C was chosen). |
+| `dark_chassis_system.py` | – (or a preview with an argument) | **Dark Chassis** building blocks: casing palette `K`, `TIERS` colours, `casing/side/top/front`, machine tops `act_*`, tier bottoms `tier_*`, `circuit(tier, metal)` items and `battery_front/side/top(tier)`. Importing it only defines functions; `dark_chassis_system.py <out_dir>` renders the original A/B/C comparison sheet (variant C was chosen). |
 | `six_tiers.py <out_dir>` | `<out_dir>` only | All six tiers as granulators (+ plasma/fusion/antimatter/singularity bottoms and tier colours) and a preview sheet/GIF. Its output for tiers 1-6 is what `design/tier_textures/` holds. |
-| `gen_tier2_textures.py` | `textures/block/electric_*`, `energy_cable.png`, `textures/item/wrench*.png` | Electric Granulator/Smelter/Generator, cable sheet (UVs match `ModModelProvider`), wrench in 3 modes. |
+| `gen_tier2_textures.py` | `textures/block/electric_*`, `energy_cable.png`, `energy_battery_*`, `textures/item/wrench*.png`, `electronic_circuit.png` | Electric Granulator/Smelter/Generator, cable sheet (UVs match `ModModelProvider`), wrench in 3 modes, Energy Battery (one front per charge level `_front_0..6`, `_front` = full), Electronic Circuit. |
 | `gui_dark_chassis.py` | `textures/gui/container/*.png` | All machine GUI sheets (layout documented at the top; matches `MachineScreen`). |
 | `gen_stone_textures.py [preview.png]` | `textures/block/*marble*`, `*volcanic_basalt*` | Seamless 16x16 stone sets (periodic noise). Not Dark Chassis: vanilla-like pixel noise. |
 | `gen_granulated_textures.py [preview.png]` | `textures/item/granulated_<other metal>.png` | Recolours the hand-made `granulated_iron.png` for other mods' metals. Never touches iron/copper/gold. |

@@ -3,6 +3,7 @@ package com.script.comminutioncraft.common.registry;
 import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.machine.ElectricGeneratorMenu;
 import com.script.comminutioncraft.common.machine.ElectricMachineMenu;
+import com.script.comminutioncraft.common.machine.EnergyBatteryMenu;
 import com.script.comminutioncraft.common.machine.FuelMachineMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.flag.FeatureFlags;
@@ -27,6 +28,9 @@ public final class ModMenus {
 
     public static final DeferredHolder<MenuType<?>, MenuType<ElectricGeneratorMenu>> ELECTRIC_GENERATOR =
             MENUS.register("electric_generator", () -> new MenuType<>(ElectricGeneratorMenu::client, FeatureFlags.VANILLA_SET));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<EnergyBatteryMenu>> ENERGY_BATTERY =
+            MENUS.register("energy_battery", () -> new MenuType<>(EnergyBatteryMenu::client, FeatureFlags.VANILLA_SET));
 
     private ModMenus() {}
 }

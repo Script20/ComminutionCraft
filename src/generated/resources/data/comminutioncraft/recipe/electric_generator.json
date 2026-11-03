@@ -3,14 +3,14 @@
   "category": "misc",
   "key": {
     "C": "#c:ingots/copper",
+    "E": "comminutioncraft:electronic_circuit",
     "F": "minecraft:furnace",
-    "I": "#c:ingots/iron",
-    "R": "#c:dusts/redstone"
+    "I": "#c:ingots/iron"
   },
   "pattern": [
     "III",
-    "RFR",
-    "CCC"
+    "IFI",
+    "CEC"
   ],
   "result": {
     "id": "comminutioncraft:electric_generator"

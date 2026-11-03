@@ -3,14 +3,14 @@
   "category": "misc",
   "key": {
     "C": "#c:ingots/copper",
+    "E": "comminutioncraft:electronic_circuit",
     "I": "#c:ingots/iron",
-    "M": "comminutioncraft:coal_smelter",
-    "R": "#c:dusts/redstone"
+    "M": "comminutioncraft:coal_smelter"
   },
   "pattern": [
-    "IRI",
+    "IEI",
     "CMC",
-    "IRI"
+    "III"
   ],
   "result": {
     "id": "comminutioncraft:electric_smelter"

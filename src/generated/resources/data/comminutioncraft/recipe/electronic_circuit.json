@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": "#c:ingots/copper",
+    "R": "#c:dusts/redstone"
+  },
+  "pattern": [
+    " R ",
+    "CCC",
+    " R "
+  ],
+  "result": {
+    "id": "comminutioncraft:electronic_circuit"
+  }
+}

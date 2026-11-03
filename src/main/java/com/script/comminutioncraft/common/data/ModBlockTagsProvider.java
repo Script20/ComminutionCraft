@@ -23,6 +23,7 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
                 .add(ModBlocks.ELECTRIC_GRANULATOR.get())
                 .add(ModBlocks.ELECTRIC_SMELTER.get())
                 .add(ModBlocks.ELECTRIC_GENERATOR.get())
+                .add(ModBlocks.ENERGY_BATTERY.get())
                 .add(ModBlocks.ENERGY_CABLE.get());
 
         for (StoneSet set : ModBlocks.STONE_SETS) {

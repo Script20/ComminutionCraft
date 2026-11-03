@@ -22,6 +22,8 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModBlocks.ELECTRIC_SMELTER.get(), "Electric Smelter");
         add(ModBlocks.ELECTRIC_GENERATOR.get(), "Electric Generator");
         add(ModBlocks.ENERGY_CABLE.get(), "Energy Cable");
+        add(ModBlocks.ENERGY_BATTERY.get(), "Energy Battery");
+        add(ModItems.ELECTRONIC_CIRCUIT.get(), "Electronic Circuit");
         ModBlocks.STONE_SETS.forEach(set -> set.all().forEach(block -> add(block.get(), titleCase(block.getId().getPath()))));
 
         add(ModItems.WRENCH.get(), "Wrench");
@@ -37,6 +39,10 @@ public class ModLanguageProvider extends LanguageProvider {
 
         add("gui.comminutioncraft.energy", "%s / %s FE");
         add("gui.comminutioncraft.generating", "%s FE/t");
+        add("gui.comminutioncraft.battery.stored", "%s FE");
+        add("gui.comminutioncraft.battery.capacity", "of %s FE");
+        add("gui.comminutioncraft.battery.input", "In: %s FE/t");
+        add("gui.comminutioncraft.battery.output", "Out: %s FE/t");
 
         add("gui.comminutioncraft.redstone", "Redstone: %s");
         add("gui.comminutioncraft.redstone.ignore", "Ignore");
@@ -66,6 +72,8 @@ public class ModLanguageProvider extends LanguageProvider {
         add("config.jade.plugin_comminutioncraft.generator", "ComminutionCraft generator");
         add("jade.comminutioncraft.generating", "Generating %s FE/t (%ss left)");
         add("jade.comminutioncraft.idle", "Idle");
+        add("config.jade.plugin_comminutioncraft.battery", "ComminutionCraft energy battery");
+        add("jade.comminutioncraft.battery_flow", "In %s FE/t · Out %s FE/t");
         for (ProcessedMetal metal : ProcessedMetal.ALL) {
             add(metal.granulated().get(), metal.displayName());
         }

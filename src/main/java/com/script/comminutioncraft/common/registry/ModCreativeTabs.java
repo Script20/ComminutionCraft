@@ -25,7 +25,9 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.ELECTRIC_GENERATOR.get());
                         output.accept(ModItems.ELECTRIC_GRANULATOR.get());
                         output.accept(ModItems.ELECTRIC_SMELTER.get());
+                        output.accept(ModItems.ENERGY_BATTERY.get());
                         output.accept(ModItems.ENERGY_CABLE.get());
+                        output.accept(ModItems.ELECTRONIC_CIRCUIT.get());
                         output.accept(ModItems.WRENCH.get());
                         ModBlocks.STONE_SETS.forEach(set -> set.all().forEach(block -> output.accept(block.get())));
                         // Other mods' metals only appear when some installed mod adds that metal.

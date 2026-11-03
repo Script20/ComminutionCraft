@@ -4,6 +4,8 @@ import com.script.comminutioncraft.common.cable.EnergyCableBlock;
 import com.script.comminutioncraft.common.machine.ElectricGeneratorBlock;
 import com.script.comminutioncraft.common.machine.ElectricGeneratorBlockEntity;
 import com.script.comminutioncraft.common.machine.ElectricMachineBlockEntity;
+import com.script.comminutioncraft.common.machine.EnergyBatteryBlock;
+import com.script.comminutioncraft.common.machine.EnergyBatteryBlockEntity;
 import com.script.comminutioncraft.common.machine.FuelMachineBlockEntity;
 import com.script.comminutioncraft.common.machine.MachineBlock;
 import snownee.jade.api.IWailaClientRegistration;
@@ -13,7 +15,7 @@ import snownee.jade.api.WailaPlugin;
 import snownee.jade.api.view.HideThingsExtensionProvider;
 
 /**
- * Jade: furnace-style views for our machines, a status line for the generator. Stored FE comes from Jade's own
+ * Jade: furnace-style views for our machines, a status line for the generator, in/out rates for the battery. Stored FE comes from Jade's own
  * energy support (our FE capability). Found by Jade through {@link WailaPlugin}; Jade is compileOnly, so none of
  * this loads without it.
  */
@@ -24,6 +26,7 @@ public class ComminutionJadePlugin implements IWailaPlugin {
         registration.registerBlockDataProvider(MachineProvider.INSTANCE, FuelMachineBlockEntity.class);
         registration.registerBlockDataProvider(MachineProvider.INSTANCE, ElectricMachineBlockEntity.class);
         registration.registerBlockDataProvider(GeneratorProvider.INSTANCE, ElectricGeneratorBlockEntity.class);
+        registration.registerBlockDataProvider(BatteryProvider.INSTANCE, EnergyBatteryBlockEntity.class);
 
         // Our views already show the slots, so skip Jade's generic item list for them.
         registration.registerItemStorage(HideThingsExtensionProvider.instance(), FuelMachineBlockEntity.class);
@@ -37,5 +40,6 @@ public class ComminutionJadePlugin implements IWailaPlugin {
     public void registerClient(IWailaClientRegistration registration) {
         registration.registerBlockComponent(MachineProvider.Client.INSTANCE, MachineBlock.class);
         registration.registerBlockComponent(GeneratorProvider.Client.INSTANCE, ElectricGeneratorBlock.class);
+        registration.registerBlockComponent(BatteryProvider.Client.INSTANCE, EnergyBatteryBlock.class);
     }
 }

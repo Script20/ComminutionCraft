@@ -6,6 +6,7 @@ import com.script.comminutioncraft.common.machine.CoalSmelterBlockEntity;
 import com.script.comminutioncraft.common.machine.ElectricGeneratorBlockEntity;
 import com.script.comminutioncraft.common.machine.ElectricGranulatorBlockEntity;
 import com.script.comminutioncraft.common.machine.ElectricSmelterBlockEntity;
+import com.script.comminutioncraft.common.machine.EnergyBatteryBlockEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -34,6 +35,10 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ElectricGeneratorBlockEntity>> ELECTRIC_GENERATOR =
             BLOCK_ENTITY_TYPES.register("electric_generator",
                     () -> new BlockEntityType<>(ElectricGeneratorBlockEntity::new, ModBlocks.ELECTRIC_GENERATOR.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<EnergyBatteryBlockEntity>> ENERGY_BATTERY =
+            BLOCK_ENTITY_TYPES.register("energy_battery",
+                    () -> new BlockEntityType<>(EnergyBatteryBlockEntity::new, ModBlocks.ENERGY_BATTERY.get()));
 
     private ModBlockEntities() {}
 }

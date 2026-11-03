@@ -5,7 +5,8 @@ Usage: python tools/gui_dark_chassis.py
 Sheet layout matches MachineScreen (256x256):
   background (0,0) 176x166, filled flame (176,0) 14x14, filled progress arrow (176,14) 24x17,
   energy bar fill (176,31) 10x52 (tier 2; drawn at (11,17) on the background).
-Slot positions match FuelMachineMenu (vanilla furnace layout), ElectricMachineMenu and ElectricGeneratorMenu.
+Slot positions match FuelMachineMenu (vanilla furnace layout), ElectricMachineMenu, ElectricGeneratorMenu and
+EnergyBatteryMenu (player inventory only).
 The seam lines beside the title and the groove after "Inventory" are drawn in MachineScreen,
 so they fit whatever width the (translated) labels have.
 """
@@ -256,10 +257,21 @@ def generator_sheet():
     return s.img
 
 
+def battery_sheet():
+    """Energy Battery: only the energy tube; the screen writes stored FE and the in/out rates beside it."""
+    s = Sheet()
+    body(s)
+    energy_well(s)
+    player_inventory(s)
+    energy_sprite(s)
+    return s.img
+
+
 os.makedirs(OUT, exist_ok=True)
 coal_sheet(granulator_arrow).save(os.path.join(OUT, 'coal_granulator.png'))
 coal_sheet(smelter_arrow).save(os.path.join(OUT, 'coal_smelter.png'))
 electric_sheet(electric_granulator_arrow).save(os.path.join(OUT, 'electric_granulator.png'))
 electric_sheet(smelter_arrow).save(os.path.join(OUT, 'electric_smelter.png'))
 generator_sheet().save(os.path.join(OUT, 'electric_generator.png'))
+battery_sheet().save(os.path.join(OUT, 'energy_battery.png'))
 print('ok')
