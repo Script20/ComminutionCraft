@@ -50,7 +50,7 @@ public class ComminutionCraftClient {
     }
 
     private static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
-        event.registerBlockEntityRenderer(ModBlockEntities.FLUID_TANK.get(), context -> new FluidTankRenderer());
+        event.registerBlockEntityRenderer(ModBlockEntities.FLUID_TANK.get(), context -> new FluidTankRenderer(context.sprites()));
     }
 
     /** Plasma's textures (it has no world block, but tanks, GUIs and JEI draw it from this model). */
