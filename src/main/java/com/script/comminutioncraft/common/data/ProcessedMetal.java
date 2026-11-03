@@ -58,6 +58,11 @@ public record ProcessedMetal(String name, DeferredItem<Item> granulated, @Nullab
         return commonItemTag("raw_materials/" + name);
     }
 
+    /** c:ores/<metal> — ore blocks, which the Ore Washer also takes. */
+    public TagKey<Item> oreTag() {
+        return commonItemTag("ores/" + name);
+    }
+
     /** c:ingots/<metal> — what other mods' metals smelt into. */
     public TagKey<Item> ingotTag() {
         return commonItemTag("ingots/" + name);

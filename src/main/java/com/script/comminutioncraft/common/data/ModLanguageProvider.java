@@ -33,6 +33,9 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModBlocks.PLASMA_ENERGY_BATTERY.get(), "Plasma Energy Battery");
         add(ModBlocks.PLASMA_CABLE.get(), "Plasma Cable");
         add(ModItems.PLASMA_CIRCUIT.get(), "Plasma Circuit");
+        add(ModBlocks.CIRCUIT_ASSEMBLER.get(), "Circuit Assembler");
+        add(ModBlocks.ORE_WASHER.get(), "Ore Washer");
+        add("gui.comminutioncraft.water", "Water: %s / %s mB");
         add("fluid_type.comminutioncraft.plasma", "Plasma");
         ModBlocks.STONE_SETS.forEach(set -> set.all().forEach(block -> add(block.get(), titleCase(block.getId().getPath()))));
 
@@ -87,6 +90,12 @@ public class ModLanguageProvider extends LanguageProvider {
         add("jei.comminutioncraft.time.coal_granulator", "Coal Granulator: %s");
         add("jei.comminutioncraft.time.electric_granulator", "Electric Granulator: %s");
         add("jei.comminutioncraft.time.plasma_granulator", "Plasma Granulator: %s");
+        add("jei.comminutioncraft.assembling", "Circuit Assembling");
+        add("jei.comminutioncraft.time.circuit_assembler", "Circuit Assembler: %s");
+        add("jei.comminutioncraft.uses_plasma", "Uses %s mB plasma");
+        add("jei.comminutioncraft.washing", "Ore Washing");
+        add("jei.comminutioncraft.time.ore_washer", "Ore Washer: %s");
+        add("jei.comminutioncraft.uses_water_plasma", "Uses %s mB water and %s mB plasma");
 
         add("config.jade.plugin_comminutioncraft.machine", "Comminution Craft machines");
         add("config.jade.plugin_comminutioncraft.generator", "Comminution Craft generator");

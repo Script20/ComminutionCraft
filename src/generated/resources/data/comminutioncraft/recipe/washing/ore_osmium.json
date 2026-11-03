@@ -1,0 +1,31 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:raw_materials/osmium"
+      }
+    },
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ingots/osmium"
+      }
+    },
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ores/osmium"
+      }
+    }
+  ],
+  "type": "comminutioncraft:washing",
+  "ingredient": "#c:ores/osmium",
+  "result": {
+    "count": 3,
+    "id": "comminutioncraft:granulated_osmium"
+  }
+}

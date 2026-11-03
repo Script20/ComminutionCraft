@@ -7,6 +7,7 @@ import com.script.comminutioncraft.common.machine.EnergyBatteryMenu;
 import com.script.comminutioncraft.common.machine.FuelMachineMenu;
 import com.script.comminutioncraft.common.machine.PlasmaGeneratorMenu;
 import com.script.comminutioncraft.common.machine.PlasmaMachineMenu;
+import com.script.comminutioncraft.common.machine.OreWasherMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.MenuType;
@@ -45,6 +46,12 @@ public final class ModMenus {
 
     public static final DeferredHolder<MenuType<?>, MenuType<EnergyBatteryMenu>> PLASMA_ENERGY_BATTERY =
             MENUS.register("plasma_energy_battery", () -> new MenuType<>(EnergyBatteryMenu::clientPlasma, FeatureFlags.VANILLA_SET));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<PlasmaMachineMenu>> CIRCUIT_ASSEMBLER =
+            MENUS.register("circuit_assembler", () -> new MenuType<>(PlasmaMachineMenu::clientAssembler, FeatureFlags.VANILLA_SET));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<OreWasherMenu>> ORE_WASHER =
+            MENUS.register("ore_washer", () -> new MenuType<>(OreWasherMenu::client, FeatureFlags.VANILLA_SET));
 
     private ModMenus() {}
 }

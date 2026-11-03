@@ -30,6 +30,8 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
                 .add(ModBlocks.ENERGY_CABLE.get())
                 .add(ModBlocks.PLASMA_GRANULATOR.get())
                 .add(ModBlocks.PLASMA_SMELTER.get())
+                .add(ModBlocks.CIRCUIT_ASSEMBLER.get())
+                .add(ModBlocks.ORE_WASHER.get())
                 .add(ModBlocks.PLASMA_ENERGY_BATTERY.get())
                 .add(ModBlocks.PLASMA_CABLE.get());
 

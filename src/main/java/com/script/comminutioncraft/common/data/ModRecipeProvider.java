@@ -2,7 +2,9 @@ package com.script.comminutioncraft.common.data;
 
 import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.block.StoneSet;
+import com.script.comminutioncraft.common.recipe.AssemblingRecipe;
 import com.script.comminutioncraft.common.recipe.GranulatingRecipe;
+import com.script.comminutioncraft.common.recipe.WashingRecipe;
 import com.script.comminutioncraft.common.recipe.TagBlastingRecipe;
 import com.script.comminutioncraft.common.recipe.TagResult;
 import com.script.comminutioncraft.common.recipe.TagSmeltingRecipe;
@@ -54,6 +56,14 @@ public class ModRecipeProvider extends RecipeProvider {
             // raw ore -> 2 granulated ore
             out.accept(key("granulating/raw_" + metal.name()),
                     new GranulatingRecipe(tag(metal.rawTag()), new ItemStackTemplate(metal.granulated(), 2)),
+                    null);
+
+            // raw ore or ore block -> 3 granulated ore (Ore Washer); ore blocks only count when some mod has them
+            out.accept(key("washing/raw_" + metal.name()),
+                    new WashingRecipe(tag(metal.rawTag()), new ItemStackTemplate(metal.granulated(), 3)),
+                    null);
+            out.withConditions(new NotCondition(new TagEmptyCondition<>(metal.oreTag()))).accept(key("washing/ore_" + metal.name()),
+                    new WashingRecipe(tag(metal.oreTag()), new ItemStackTemplate(metal.granulated(), 3)),
                     null);
 
             // granulated ore -> ingot (vanilla furnace, Coal/Electric Smelter, blast furnace)
@@ -172,6 +182,34 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('C', tag(ProcessedMetal.commonItemTag("ingots/copper")))
                 .unlockedBy("has_electric_generator", has(ModItems.ELECTRIC_GENERATOR.get()))
                 .save(output, key("plasma_generator"));
+
+        // The Circuit Assembler makes Plasma Circuits, so it can't need one itself.
+        output.accept(key("assembling/plasma_circuit"),
+                new AssemblingRecipe(Ingredient.of(ModItems.ELECTRONIC_CIRCUIT.get()), new ItemStackTemplate(ModItems.PLASMA_CIRCUIT.get())),
+                null);
+
+        shaped(RecipeCategory.MISC, ModItems.CIRCUIT_ASSEMBLER.get())
+                .pattern("IPI")
+                .pattern("EXE")
+                .pattern("IGI")
+                .define('I', tag(ProcessedMetal.commonItemTag("ingots/iron")))
+                .define('P', Items.PISTON)
+                .define('E', ModItems.ELECTRONIC_CIRCUIT.get())
+                .define('X', Items.CRAFTING_TABLE)
+                .define('G', tag(ProcessedMetal.commonItemTag("glass_blocks")))
+                .unlockedBy("has_plasma_generator", has(ModItems.PLASMA_GENERATOR.get()))
+                .save(output, key("circuit_assembler"));
+
+        shaped(RecipeCategory.MISC, ModItems.ORE_WASHER.get())
+                .pattern("IBI")
+                .pattern("PMP")
+                .pattern("III")
+                .define('I', tag(ProcessedMetal.commonItemTag("ingots/iron")))
+                .define('B', Items.WATER_BUCKET)
+                .define('P', ModItems.PLASMA_CIRCUIT.get())
+                .define('M', ModItems.PLASMA_GRANULATOR.get())
+                .unlockedBy("has_plasma_granulator", has(ModItems.PLASMA_GRANULATOR.get()))
+                .save(output, key("ore_washer"));
 
         // Tier-3 blocks are upgrades of the tier-2 ones and need Plasma Circuits (made in the Circuit Assembler)
         shaped(RecipeCategory.MISC, ModItems.PLASMA_GRANULATOR.get())

@@ -8,6 +8,7 @@ import com.script.comminutioncraft.common.machine.FluidTankBlockEntity;
 import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlockEntity;
 import com.script.comminutioncraft.common.machine.PlasmaGranulatorBlockEntity;
 import com.script.comminutioncraft.common.machine.PlasmaMachineBlockEntity;
+import com.script.comminutioncraft.common.machine.OreWasherBlockEntity;
 import com.script.comminutioncraft.common.energy.MachineEnergyStorage;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.transfer.energy.EnergyHandler;
@@ -105,6 +106,8 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("plasma_granulator_needs_plasma", () -> ModGameTests::plasmaGranulatorNeedsPlasma);
         TEST_FUNCTIONS.register("plasma_cable_caps_per_tick", () -> ModGameTests::plasmaCableCapsPerTick);
         TEST_FUNCTIONS.register("cable_tiers_dont_join", () -> ModGameTests::cableTiersDontJoin);
+        TEST_FUNCTIONS.register("circuit_assembler_makes_plasma_circuit", () -> ModGameTests::circuitAssemblerMakesPlasmaCircuit);
+        TEST_FUNCTIONS.register("ore_washer_triples_with_water", () -> ModGameTests::oreWasherTriplesWithWater);
     }
 
     public static void registerTests(RegisterGameTestsEvent event) {
@@ -595,6 +598,44 @@ public final class ModGameTests {
         assertConnection(helper, energy, Direction.EAST, CableConnection.NONE);
         assertConnection(helper, plasma, Direction.WEST, CableConnection.NONE);
         helper.succeed();
+    }
+
+    /** Electronic Circuit + 100 mB plasma -> Plasma Circuit. */
+    private static void circuitAssemblerMakesPlasmaCircuit(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, ModBlocks.CIRCUIT_ASSEMBLER.get());
+        PlasmaMachineBlockEntity machine = helper.getBlockEntity(pos, PlasmaMachineBlockEntity.class);
+        ((MachineEnergyStorage) machine.getEnergyHandler()).set(PlasmaMachineBlockEntity.ENERGY_CAPACITY);
+        machine.getTank().fill(FluidResource.of(ModFluids.PLASMA.get()), 150);
+        machine.setItem(ElectricMachineBlockEntity.SLOT_INPUT, new ItemStack(ModItems.ELECTRONIC_CIRCUIT.get()));
+        helper.succeedWhen(() -> {
+            ItemStack output = machine.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT);
+            helper.assertTrue(output.is(ModItems.PLASMA_CIRCUIT.get()), "No Plasma Circuit yet (has " + output + ")");
+            helper.assertTrue(machine.getTank().getAmount() == 50, "Expected 50 mB plasma left, has " + machine.getTank().getAmount());
+        });
+    }
+
+    /**
+     * Without water the Ore Washer waits; with a water source block next to it, it fills its water tank by itself and
+     * washes raw iron into 3 granulated iron.
+     */
+    private static void oreWasherTriplesWithWater(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, ModBlocks.ORE_WASHER.get());
+        OreWasherBlockEntity washer = helper.getBlockEntity(pos, OreWasherBlockEntity.class);
+        ((MachineEnergyStorage) washer.getEnergyHandler()).set(PlasmaMachineBlockEntity.ENERGY_CAPACITY);
+        washer.getTank().fill(FluidResource.of(ModFluids.PLASMA.get()), 100);
+        washer.setItem(ElectricMachineBlockEntity.SLOT_INPUT, new ItemStack(Items.RAW_IRON));
+
+        helper.runAfterDelay(OreWasherBlockEntity.PROCESS_TIME + 10, () -> {
+            helper.assertTrue(washer.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT).isEmpty(), "The washer ran without water");
+            helper.setBlock(new BlockPos(2, 1, 3), Blocks.WATER);
+            helper.succeedWhen(() -> {
+                ItemStack output = washer.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT);
+                helper.assertTrue(output.is(ModItems.GRANULATED_IRON.get()) && output.getCount() == 3,
+                        "Expected 3 granulated iron, got " + output);
+            });
+        });
     }
 
     // ---- Helpers ----

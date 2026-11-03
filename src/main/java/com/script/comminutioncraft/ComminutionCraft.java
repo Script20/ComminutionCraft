@@ -101,6 +101,13 @@ public class ComminutionCraft {
         event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.PLASMA_GRANULATOR.get(), PlasmaMachineBlockEntity::getFluidHandler);
         event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.PLASMA_SMELTER.get(), PlasmaMachineBlockEntity::getFluidHandler);
         event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.PLASMA_ENERGY_BATTERY.get(), EnergyBatteryBlockEntity::getEnergyHandler);
+        // Circuit Assembler and Ore Washer: same as the other tier-3 machines (the washer's fluid faces take water too)
+        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.CIRCUIT_ASSEMBLER.get(), WorldlyContainerWrapper::new);
+        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.ORE_WASHER.get(), WorldlyContainerWrapper::new);
+        event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.CIRCUIT_ASSEMBLER.get(), (machine, side) -> machine.getEnergyHandler());
+        event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.ORE_WASHER.get(), (machine, side) -> machine.getEnergyHandler());
+        event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.CIRCUIT_ASSEMBLER.get(), PlasmaMachineBlockEntity::getFluidHandler);
+        event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.ORE_WASHER.get(), PlasmaMachineBlockEntity::getFluidHandler);
     }
 
     public static Identifier id(String path) {

@@ -34,6 +34,8 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.AIR_FILTER.get());
                         output.accept(ModItems.PLASMA_GRANULATOR.get());
                         output.accept(ModItems.PLASMA_SMELTER.get());
+                        output.accept(ModItems.ORE_WASHER.get());
+                        output.accept(ModItems.CIRCUIT_ASSEMBLER.get());
                         output.accept(ModItems.PLASMA_ENERGY_BATTERY.get());
                         output.accept(ModItems.PLASMA_CABLE.get());
                         output.accept(ModItems.PLASMA_CIRCUIT.get());

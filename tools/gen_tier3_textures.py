@@ -14,6 +14,10 @@ Phase C1 (approved preview: design/previews/phase_c.png):
 - Plasma Cable (same UV layout as the energy cable: magenta core, steel bands, double-ringed plate).
 - Plasma Circuit item (the circuit board with gold traces and a magenta chip).
 - Plasma Energy Battery (battery faces in magenta, _front_0.._front_6 + _front).
+
+Phase C2 (same approved preview):
+- Circuit Assembler: a press stamping Electronic Circuits into Plasma Circuits over the plasma tube.
+- Ore Washer: a slatted drum under spray nozzles; its sides have a blue-ringed water inlet.
 """
 import math
 import os
@@ -29,12 +33,15 @@ from mekstyle_lib import Tex, mix, shade, FRAMES, TAU  # noqa: E402
 import dark_chassis_system as dcs  # noqa: E402
 from dark_chassis_system import K, GLASS, STEEL, COPPER, casing, seam, well  # noqa: E402
 from dark_chassis_system import (front, side, top, act_conveyor, act_conveyor_smelt, mix as _mix,  # noqa: E402,F401
-                                 circuit, battery_front, battery_side, battery_top, BATTERY_CELLS)
+                                 circuit, battery_front, battery_side, battery_top, BATTERY_CELLS, cylinder_row)
+from mekstyle_lib import ORE  # noqa: E402
 
 dcs.TIERS['plasma'] = dict(off=(92, 34, 84), on=(255, 80, 210), hi=(255, 196, 244))
 P = dcs.TIERS['plasma']
 AIR = (196, 218, 236)
 GOLD = [(120, 84, 20), (180, 132, 36), (232, 186, 64), (255, 230, 130)]
+WATER = [(24, 52, 120), (40, 92, 186), (86, 150, 228), (190, 226, 250)]
+E = dcs.TIERS['electric']
 
 # tier_plasma (the approved tier-3 bottom) lives in six_tiers.py; pull just that function in.
 _src = open(os.path.join(TOOLS, 'six_tiers.py')).read()
@@ -245,6 +252,78 @@ def tank_side_cutout():
     return t
 
 
+# ================================================================ Circuit Assembler (top half)
+def act_assembler(t, f, lit):
+    """A press head over the belt: Electronic Circuit (blue chip) in, a plasma-fed stamp, Plasma Circuit (magenta) out."""
+    ff = f if lit else 0
+    for x in range(2, 14):  # belt
+        t.px(x, 6, (50, 52, 58) if (x - ff) % 3 else (30, 32, 36))
+    t.rect(5, 2, 10, 2, STEEL[1])  # gantry + plasma feed line
+    t.hline(5, 10, 2, STEEL[2])
+    t.px(7, 2, P['on'] if lit else P['off']); t.px(8, 2, P['on'] if lit else P['off'])
+    stroke = (0, 0, 1, 1, 1, 0, 0, 0)[ff % FRAMES] if lit else 0  # press comes down, holds, lifts
+    for y in range(3, 4 + stroke):  # piston
+        t.px(7, y, STEEL[3]); t.px(8, y, STEEL[2])
+    hy = 4 + stroke
+    t.hline(6, 9, hy, STEEL[3]); t.px(6, hy, STEEL[4]); t.px(9, hy, STEEL[1])  # stamp
+    if lit and stroke:
+        t.px(7, hy + 1 if hy < 5 else hy, P['hi'])  # plasma flash under the stamp
+        t.px(5, 5, shade(P['on'], 0.6)); t.px(10, 5, shade(P['on'], 0.6))
+    t.vline(4, 3, 5, K['d']); t.vline(11, 3, 5, K['d'])  # gantry legs
+    # boards on the belt: blue chips in from the left, magenta chips out on the right
+    bx = 2 + (ff // 2) % 2
+    t.hline(bx, bx + 1, 5, K['hi']); t.px(bx, 5, E['on'])
+    ox = 12 + (ff // 2) % 2
+    if ox < 14:
+        t.hline(ox, min(13, ox + 1), 5, K['hi']); t.px(ox, 5, P['on'] if lit else P['off'])
+
+
+# ================================================================ Ore Washer (top half)
+def act_washer(t, f, lit):
+    """A slotted drum turning under spray nozzles; water falls through, clean grit drops out the bottom right."""
+    ff = f if lit else 0
+    for x in range(3, 13):  # spray bar
+        t.px(x, 2, STEEL[1] if x % 3 else STEEL[3])
+    for y in range(3, 7):  # drum
+        for x in range(4, 12):
+            c = cylinder_row(y, 3, 6, STEEL[3], STEEL[0])
+            if (x + ff) % 3 == 0:
+                c = shade(c, 0.55)  # slats turning
+            t.px(x, y, c)
+    for (x, y) in ((5, 4), (8, 5), (10, 4)):  # ore inside the drum
+        xx = 4 + (x - 4 + ff) % 8
+        t.px(xx, y, ORE[(x + y) % 3])
+    if lit:  # water drops from every nozzle, splashing on the drum
+        for k, x in enumerate((3, 6, 9, 12)):
+            y = 3 + (ff + k * 2) % 4
+            if t.img.getpixel((x, y))[:3] == GLASS or x in (3, 12):
+                t.px(x, y, WATER[2])
+            t.px(x, 3, WATER[3])
+        t.px(4 + ff % 8, 6, WATER[3])  # spray off the bottom of the drum
+    else:
+        for x in (3, 6, 9, 12):
+            t.px(x, 3, WATER[0])
+    t.vline(2, 3, 6, WATER[1] if lit else WATER[0])  # water in (left), level glows
+    t.px(13, 6, ORE[(ff // 2) % 3])  # clean grit out
+
+
+def washer_side():
+    """Water inlet port above the seam (blue-ringed), grille below: shows where pipes and tanks connect."""
+    t = casing()
+    well(t, 4, 2, 11, 6, K['d'])
+    for x in range(5, 11):
+        t.px(x, 3, WATER[0]); t.px(x, 5, WATER[0])
+    t.px(5, 4, WATER[0]); t.px(10, 4, WATER[0])
+    t.rect(6, 4, 9, 4, (14, 16, 20))
+    t.px(7, 4, WATER[2]); t.px(8, 4, WATER[1])
+    seam(t, [(x, 8) for x in range(1, 15)], 'plasma', False, 0)
+    t.rect(2, 10, 13, 13, K['m'])
+    t.hline(2, 13, 10, K['hi']); t.hline(2, 13, 13, K['o'])
+    for x in range(4, 12, 2):
+        t.vline(x, 11, 12, K['d'])
+    return t
+
+
 # ================================================================ Plasma Cable (same UVs as the energy cable)
 def plasma_cable_sheet():
     """Like the energy cable but magenta, with steel bands on the arm and a double ring on the plate (heavier duty)."""
@@ -326,6 +405,13 @@ if __name__ == '__main__':
         front(act, tier_plasma, 'plasma').img.save(os.path.join(BLOCK, f'{name}_front.png'))
         save_strip(os.path.join(BLOCK, f'{name}_front_on.png'), lambda k, act=act: front(act, tier_plasma, 'plasma', k))
     plasma_cable_sheet().save(os.path.join(BLOCK, 'plasma_cable.png'))
+    # phase C2
+    for name, act, side_fn in (('circuit_assembler', act_assembler, lambda: side('plasma')),
+                               ('ore_washer', act_washer, washer_side)):
+        top('plasma').img.save(os.path.join(BLOCK, f'{name}_top.png'))
+        side_fn().img.save(os.path.join(BLOCK, f'{name}_side.png'))
+        front(act, tier_plasma, 'plasma').img.save(os.path.join(BLOCK, f'{name}_front.png'))
+        save_strip(os.path.join(BLOCK, f'{name}_front_on.png'), lambda k, act=act: front(act, tier_plasma, 'plasma', k))
     circuit('plasma', GOLD).img.save(os.path.join(ITEM, 'plasma_circuit.png'))
     battery_top('plasma').img.save(os.path.join(BLOCK, 'plasma_energy_battery_top.png'))
     battery_side('plasma').img.save(os.path.join(BLOCK, 'plasma_energy_battery_side.png'))

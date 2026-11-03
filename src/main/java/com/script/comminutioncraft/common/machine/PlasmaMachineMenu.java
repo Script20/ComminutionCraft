@@ -23,6 +23,11 @@ public class PlasmaMachineMenu extends ElectricMachineMenu {
                 new SimpleContainer(ElectricMachineBlockEntity.SLOT_COUNT), new SimpleContainerData(PlasmaMachineBlockEntity.DATA_COUNT));
     }
 
+    public static PlasmaMachineMenu clientAssembler(int containerId, Inventory inventory) {
+        return new PlasmaMachineMenu(ModMenus.CIRCUIT_ASSEMBLER.get(), containerId, inventory,
+                new SimpleContainer(ElectricMachineBlockEntity.SLOT_COUNT), new SimpleContainerData(PlasmaMachineBlockEntity.DATA_COUNT));
+    }
+
     public PlasmaMachineMenu(MenuType<?> type, int containerId, Inventory inventory, Container container, ContainerData data) {
         super(type, containerId, inventory, container, data);
         checkContainerDataCount(data, PlasmaMachineBlockEntity.DATA_COUNT);

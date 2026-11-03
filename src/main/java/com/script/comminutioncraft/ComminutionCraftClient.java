@@ -11,6 +11,9 @@ import com.script.comminutioncraft.client.gui.ElectricMachineScreen;
 import com.script.comminutioncraft.client.gui.EnergyBatteryScreen;
 import com.script.comminutioncraft.client.gui.PlasmaGeneratorScreen;
 import com.script.comminutioncraft.client.gui.PlasmaMachineScreen;
+import com.script.comminutioncraft.client.gui.OreWasherScreen;
+import com.script.comminutioncraft.common.machine.OreWasherMenu;
+import com.script.comminutioncraft.common.machine.PlasmaMachineMenu;
 import com.script.comminutioncraft.client.render.FluidTankRenderer;
 import com.script.comminutioncraft.common.registry.ModBlockEntities;
 import com.script.comminutioncraft.common.registry.ModFluids;
@@ -51,6 +54,9 @@ public class ComminutionCraftClient {
         event.register(ModMenus.PLASMA_GRANULATOR.get(), PlasmaMachineScreen::granulator);
         event.register(ModMenus.PLASMA_SMELTER.get(), PlasmaMachineScreen::smelter);
         event.register(ModMenus.PLASMA_ENERGY_BATTERY.get(), EnergyBatteryScreen::plasma);
+        event.register(ModMenus.CIRCUIT_ASSEMBLER.get(), PlasmaMachineScreen::assembler);
+        event.<PlasmaMachineMenu, OreWasherScreen>register(ModMenus.ORE_WASHER.get(),
+                (menu, inventory, title) -> new OreWasherScreen((OreWasherMenu) menu, inventory, title));
     }
 
     private static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {

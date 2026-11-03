@@ -8,7 +8,16 @@ import com.script.comminutioncraft.client.gui.ElectricGeneratorScreen;
 import com.script.comminutioncraft.client.gui.ElectricMachineScreen;
 import com.script.comminutioncraft.client.gui.MachineScreen;
 import com.script.comminutioncraft.common.data.ProcessedMetal;
+import com.script.comminutioncraft.common.recipe.AssemblingRecipe;
 import com.script.comminutioncraft.common.recipe.GranulatingRecipe;
+import com.script.comminutioncraft.common.recipe.WashingRecipe;
+import com.script.comminutioncraft.client.gui.PlasmaMachineScreen;
+import com.script.comminutioncraft.common.machine.CircuitAssemblerBlockEntity;
+import com.script.comminutioncraft.common.machine.CoalGranulatorBlockEntity;
+import com.script.comminutioncraft.common.machine.ElectricGranulatorBlockEntity;
+import com.script.comminutioncraft.common.machine.OreWasherBlockEntity;
+import com.script.comminutioncraft.common.machine.PlasmaGranulatorBlockEntity;
+import net.minecraft.network.chat.Component;
 import com.script.comminutioncraft.common.registry.ModItems;
 import com.script.comminutioncraft.common.registry.ModMenus;
 import com.script.comminutioncraft.common.registry.ModRecipes;
@@ -21,6 +30,7 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.recipe.types.IRecipeHolderType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
@@ -39,6 +49,10 @@ import net.minecraft.world.item.ItemStack;
 public class ComminutionJeiPlugin implements IModPlugin {
     public static final Supplier<IRecipeHolderType<GranulatingRecipe>> GRANULATING =
             IRecipeHolderType.createDeferred(ModRecipes.GRANULATING_TYPE::get);
+    public static final Supplier<IRecipeHolderType<AssemblingRecipe>> ASSEMBLING =
+            IRecipeHolderType.createDeferred(ModRecipes.ASSEMBLING_TYPE::get);
+    public static final Supplier<IRecipeHolderType<WashingRecipe>> WASHING =
+            IRecipeHolderType.createDeferred(ModRecipes.WASHING_TYPE::get);
 
     // Positions match the GUI textures (see MachineScreen)
     private static final int ARROW_X = 79;
@@ -53,12 +67,30 @@ public class ComminutionJeiPlugin implements IModPlugin {
 
     @Override
     public void registerCategories(IRecipeCategoryRegistration registration) {
-        registration.addRecipeCategories(new GranulatingCategory(registration.getJeiHelpers().getGuiHelper()));
+        var gui = registration.getJeiHelpers().getGuiHelper();
+        registration.addRecipeCategories(
+                new ProcessingCategory<>(gui, GRANULATING.get(), Component.translatable("jei.comminutioncraft.granulating"),
+                        ModItems.COAL_GRANULATOR.get(), List.of(
+                        new ProcessingCategory.Station("jei.comminutioncraft.time.coal_granulator", CoalGranulatorBlockEntity.PROCESS_TIME),
+                        new ProcessingCategory.Station("jei.comminutioncraft.time.electric_granulator", ElectricGranulatorBlockEntity.PROCESS_TIME),
+                        new ProcessingCategory.Station("jei.comminutioncraft.time.plasma_granulator", PlasmaGranulatorBlockEntity.PROCESS_TIME)),
+                        List.of()),
+                new ProcessingCategory<>(gui, ASSEMBLING.get(), Component.translatable("jei.comminutioncraft.assembling"),
+                        ModItems.CIRCUIT_ASSEMBLER.get(), List.of(
+                        new ProcessingCategory.Station("jei.comminutioncraft.time.circuit_assembler", CircuitAssemblerBlockEntity.PROCESS_TIME)),
+                        List.of(Component.translatable("jei.comminutioncraft.uses_plasma", CircuitAssemblerBlockEntity.PLASMA_PER_OPERATION))),
+                new ProcessingCategory<>(gui, WASHING.get(), Component.translatable("jei.comminutioncraft.washing"),
+                        ModItems.ORE_WASHER.get(), List.of(
+                        new ProcessingCategory.Station("jei.comminutioncraft.time.ore_washer", OreWasherBlockEntity.PROCESS_TIME)),
+                        List.of(Component.translatable("jei.comminutioncraft.uses_water_plasma",
+                                OreWasherBlockEntity.WATER_PER_OPERATION, OreWasherBlockEntity.PLASMA_PER_OPERATION))));
     }
 
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
         registration.addRecipes(GRANULATING.get(), ClientRecipes.granulating());
+        registration.addRecipes(ASSEMBLING.get(), ClientRecipes.assembling());
+        registration.addRecipes(WASHING.get(), ClientRecipes.washing());
     }
 
     @Override
@@ -67,6 +99,8 @@ public class ComminutionJeiPlugin implements IModPlugin {
                 ModItems.COAL_GRANULATOR.get(), ModItems.ELECTRIC_GRANULATOR.get(), ModItems.PLASMA_GRANULATOR.get());
         registration.addCraftingStation(RecipeTypes.SMELTING,
                 ModItems.COAL_SMELTER.get(), ModItems.ELECTRIC_SMELTER.get(), ModItems.PLASMA_SMELTER.get());
+        registration.addCraftingStation(ASSEMBLING.get(), ModItems.CIRCUIT_ASSEMBLER.get());
+        registration.addCraftingStation(WASHING.get(), ModItems.ORE_WASHER.get());
         // Everything that burns furnace fuel
         registration.addCraftingStation(RecipeTypes.SMELTING_FUEL,
                 ModItems.COAL_GRANULATOR.get(), ModItems.COAL_SMELTER.get(), ModItems.ELECTRIC_GENERATOR.get());
@@ -105,6 +139,25 @@ public class ComminutionJeiPlugin implements IModPlugin {
             @Override
             public List<IGuiClickableArea> getGuiClickableAreas(ElectricMachineScreen screen, double mouseX, double mouseY) {
                 var type = screen.getMenu().getType() == ModMenus.ELECTRIC_GRANULATOR.get() ? GRANULATING.get() : RecipeTypes.SMELTING;
+                return List.of(IGuiClickableArea.createBasic(ARROW_X, ARROW_Y, ARROW_W, ARROW_H, type));
+            }
+        });
+
+        // Tier-3 machines share one screen class too.
+        registration.addGuiContainerHandler(PlasmaMachineScreen.class, new IGuiContainerHandler<>() {
+            @Override
+            public List<IGuiClickableArea> getGuiClickableAreas(PlasmaMachineScreen screen, double mouseX, double mouseY) {
+                var menuType = screen.getMenu().getType();
+                IRecipeType<?> type;
+                if (menuType == ModMenus.PLASMA_GRANULATOR.get()) {
+                    type = GRANULATING.get();
+                } else if (menuType == ModMenus.CIRCUIT_ASSEMBLER.get()) {
+                    type = ASSEMBLING.get();
+                } else if (menuType == ModMenus.ORE_WASHER.get()) {
+                    type = WASHING.get();
+                } else {
+                    type = RecipeTypes.SMELTING;
+                }
                 return List.of(IGuiClickableArea.createBasic(ARROW_X, ARROW_Y, ARROW_W, ARROW_H, type));
             }
         });

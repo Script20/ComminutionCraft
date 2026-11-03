@@ -10,6 +10,8 @@ import com.script.comminutioncraft.common.machine.EnergyBatteryBlockEntity;
 import com.script.comminutioncraft.common.machine.FluidTankBlockEntity;
 import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlockEntity;
 import com.script.comminutioncraft.common.machine.PlasmaGranulatorBlockEntity;
+import com.script.comminutioncraft.common.machine.CircuitAssemblerBlockEntity;
+import com.script.comminutioncraft.common.machine.OreWasherBlockEntity;
 import com.script.comminutioncraft.common.machine.PlasmaSmelterBlockEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -63,6 +65,14 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<EnergyBatteryBlockEntity>> PLASMA_ENERGY_BATTERY =
             BLOCK_ENTITY_TYPES.register("plasma_energy_battery",
                     () -> new BlockEntityType<>(EnergyBatteryBlockEntity::plasma, ModBlocks.PLASMA_ENERGY_BATTERY.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CircuitAssemblerBlockEntity>> CIRCUIT_ASSEMBLER =
+            BLOCK_ENTITY_TYPES.register("circuit_assembler",
+                    () -> new BlockEntityType<>(CircuitAssemblerBlockEntity::new, ModBlocks.CIRCUIT_ASSEMBLER.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<OreWasherBlockEntity>> ORE_WASHER =
+            BLOCK_ENTITY_TYPES.register("ore_washer",
+                    () -> new BlockEntityType<>(OreWasherBlockEntity::new, ModBlocks.ORE_WASHER.get()));
 
     private ModBlockEntities() {}
 }

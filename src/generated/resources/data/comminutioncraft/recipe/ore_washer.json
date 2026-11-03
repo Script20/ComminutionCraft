@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": "minecraft:water_bucket",
+    "I": "#c:ingots/iron",
+    "M": "comminutioncraft:plasma_granulator",
+    "P": "comminutioncraft:plasma_circuit"
+  },
+  "pattern": [
+    "IBI",
+    "PMP",
+    "III"
+  ],
+  "result": {
+    "id": "comminutioncraft:ore_washer"
+  }
+}

@@ -342,6 +342,51 @@ def plasma_machine_sheet(arrow_colour):
     return s.img
 
 
+WATER_X = 141
+WATER = [(24, 52, 120), (40, 92, 186), (86, 150, 228), (190, 226, 250)]
+
+
+def water_well(s):
+    """A second tube left of the plasma one (Ore Washer); the water fill sprite is drawn over its inside."""
+    x0, y0, x1, y1 = WATER_X - 1, ENERGY_Y - 1, WATER_X + ENERGY_W, ENERGY_Y + ENERGY_H
+    s.rect(x0, y0, x1, y1, GLASS)
+    s.hline(x0, x1, y0, K['o'])
+    s.vline(x0, y0, y1, K['o'])
+    s.hline(x0, x1, y1, K['hi'])
+    s.vline(x1, y0, y1, K['hi'])
+    for y in range(ENERGY_Y + 3, ENERGY_Y + ENERGY_H, 4):
+        s.hline(WATER_X, WATER_X + ENERGY_W - 1, y, (18, 20, 24))
+
+
+def water_sprite(s):
+    """Blue water, light at the surface, at (196, 31) on the sheet."""
+    import math
+    for y in range(ENERGY_H):
+        for x in range(ENERGY_W):
+            base = mix(WATER[3], WATER[2], min(1.0, y / 6)) if y < 6 else mix(WATER[2], WATER[0], (y - 6) / (ENERGY_H - 6))
+            c = mix(base, WATER[3], 0.12 * (0.5 + 0.5 * math.sin(x * 1.1 + y * 0.5))) if y >= 6 else base
+            if x == 0 or x == ENERGY_W - 1:
+                c = shade(c, 0.75)
+            if (y - 3) % 4 == 0:
+                c = shade(c, 0.78)
+            s.px(196 + x, 31 + y, c)
+
+
+def washer_arrow(x, y):
+    """Water blue fading into the magenta tier colour towards the tip."""
+    base = mix(WATER[2], PLASMA['on'], x / 23)
+    return shade(base, 0.72) if (x + abs(y - 8)) % 6 == 0 else base
+
+
+def ore_washer_sheet():
+    img = plasma_machine_sheet(washer_arrow)
+    s = Sheet()
+    s.img = img
+    water_well(s)
+    water_sprite(s)
+    return s.img
+
+
 os.makedirs(OUT, exist_ok=True)
 coal_sheet(granulator_arrow).save(os.path.join(OUT, 'coal_granulator.png'))
 coal_sheet(smelter_arrow).save(os.path.join(OUT, 'coal_smelter.png'))
@@ -352,4 +397,6 @@ battery_sheet().save(os.path.join(OUT, 'energy_battery.png'))
 plasma_generator_sheet().save(os.path.join(OUT, 'plasma_generator.png'))
 plasma_machine_sheet(plasma_granulator_arrow).save(os.path.join(OUT, 'plasma_granulator.png'))
 plasma_machine_sheet(smelter_arrow).save(os.path.join(OUT, 'plasma_smelter.png'))
+plasma_machine_sheet(plasma_granulator_arrow).save(os.path.join(OUT, 'circuit_assembler.png'))
+ore_washer_sheet().save(os.path.join(OUT, 'ore_washer.png'))
 print('ok')

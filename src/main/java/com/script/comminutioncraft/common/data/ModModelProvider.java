@@ -107,6 +107,8 @@ public class ModModelProvider extends ModelProvider {
         itemModels.generateFlatItem(ModItems.ELECTRONIC_CIRCUIT.get(), ModelTemplates.FLAT_ITEM);
         blockModels.createFurnace(ModBlocks.PLASMA_GRANULATOR.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         blockModels.createFurnace(ModBlocks.PLASMA_SMELTER.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
+        blockModels.createFurnace(ModBlocks.CIRCUIT_ASSEMBLER.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
+        blockModels.createFurnace(ModBlocks.ORE_WASHER.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         energyBattery(blockModels, ModBlocks.PLASMA_ENERGY_BATTERY.get());
         conduit(blockModels, itemModels, ModBlocks.PLASMA_CABLE.get(), ModItems.PLASMA_CABLE.get());
         itemModels.generateFlatItem(ModItems.PLASMA_CIRCUIT.get(), ModelTemplates.FLAT_ITEM);

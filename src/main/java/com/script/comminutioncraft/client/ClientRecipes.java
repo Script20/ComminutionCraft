@@ -1,6 +1,8 @@
 package com.script.comminutioncraft.client;
 
+import com.script.comminutioncraft.common.recipe.AssemblingRecipe;
 import com.script.comminutioncraft.common.recipe.GranulatingRecipe;
+import com.script.comminutioncraft.common.recipe.WashingRecipe;
 import com.script.comminutioncraft.common.registry.ModRecipes;
 import java.util.List;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -17,6 +19,14 @@ public final class ClientRecipes {
 
     public static List<RecipeHolder<GranulatingRecipe>> granulating() {
         return List.copyOf(recipes.byType(ModRecipes.GRANULATING_TYPE.get()));
+    }
+
+    public static List<RecipeHolder<AssemblingRecipe>> assembling() {
+        return List.copyOf(recipes.byType(ModRecipes.ASSEMBLING_TYPE.get()));
+    }
+
+    public static List<RecipeHolder<WashingRecipe>> washing() {
+        return List.copyOf(recipes.byType(ModRecipes.WASHING_TYPE.get()));
     }
 
     private ClientRecipes() {}

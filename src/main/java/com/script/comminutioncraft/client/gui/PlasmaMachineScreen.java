@@ -21,6 +21,10 @@ public class PlasmaMachineScreen extends MachineScreen<PlasmaMachineMenu> {
         return new PlasmaMachineScreen(menu, inventory, title, ComminutionCraft.id("textures/gui/container/plasma_smelter.png"));
     }
 
+    public static PlasmaMachineScreen assembler(PlasmaMachineMenu menu, Inventory inventory, Component title) {
+        return new PlasmaMachineScreen(menu, inventory, title, ComminutionCraft.id("textures/gui/container/circuit_assembler.png"));
+    }
+
     @Override
     protected boolean isActive() {
         return menu.isWorking();

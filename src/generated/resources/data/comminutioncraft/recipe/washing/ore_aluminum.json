@@ -1,0 +1,31 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:raw_materials/aluminum"
+      }
+    },
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ingots/aluminum"
+      }
+    },
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ores/aluminum"
+      }
+    }
+  ],
+  "type": "comminutioncraft:washing",
+  "ingredient": "#c:ores/aluminum",
+  "result": {
+    "count": 3,
+    "id": "comminutioncraft:granulated_aluminum"
+  }
+}

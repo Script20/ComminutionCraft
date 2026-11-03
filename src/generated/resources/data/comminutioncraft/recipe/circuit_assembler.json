@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "E": "comminutioncraft:electronic_circuit",
+    "G": "#c:glass_blocks",
+    "I": "#c:ingots/iron",
+    "P": "minecraft:piston",
+    "X": "minecraft:crafting_table"
+  },
+  "pattern": [
+    "IPI",
+    "EXE",
+    "IGI"
+  ],
+  "result": {
+    "id": "comminutioncraft:circuit_assembler"
+  }
+}

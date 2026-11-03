@@ -14,6 +14,8 @@ import com.script.comminutioncraft.common.machine.FluidTankBlock;
 import com.script.comminutioncraft.common.machine.MachineBlock;
 import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlock;
 import com.script.comminutioncraft.common.machine.PlasmaGranulatorBlock;
+import com.script.comminutioncraft.common.machine.CircuitAssemblerBlock;
+import com.script.comminutioncraft.common.machine.OreWasherBlock;
 import com.script.comminutioncraft.common.machine.PlasmaSmelterBlock;
 import java.util.List;
 import net.minecraft.world.level.block.SoundType;
@@ -62,6 +64,12 @@ public final class ModBlocks {
 
     public static final DeferredBlock<PlasmaSmelterBlock> PLASMA_SMELTER = BLOCKS.registerBlock(
             "plasma_smelter", PlasmaSmelterBlock::new, ModBlocks::tier2MachineProperties);
+
+    public static final DeferredBlock<CircuitAssemblerBlock> CIRCUIT_ASSEMBLER = BLOCKS.registerBlock(
+            "circuit_assembler", CircuitAssemblerBlock::new, ModBlocks::tier2MachineProperties);
+
+    public static final DeferredBlock<OreWasherBlock> ORE_WASHER = BLOCKS.registerBlock(
+            "ore_washer", OreWasherBlock::new, ModBlocks::tier2MachineProperties);
 
     public static final DeferredBlock<EnergyBatteryBlock> PLASMA_ENERGY_BATTERY = BLOCKS.registerBlock(
             "plasma_energy_battery", properties -> new EnergyBatteryBlock(properties, () -> ModBlockEntities.PLASMA_ENERGY_BATTERY.get()),
