@@ -1,9 +1,12 @@
 package com.script.comminutioncraft.common.machine.control;
 
+import com.script.comminutioncraft.common.registry.ModDataComponents;
 import java.util.EnumMap;
 import java.util.Map;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponentGetter;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.world.Container;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
@@ -114,6 +117,26 @@ public final class MachineControls {
     /** For menus' {@code clickMenuButton}: on the server the menu's container is the machine itself. */
     public static boolean handleMenuButton(Container container, int id) {
         return container instanceof ControllableMachine machine && machine.getControls().handleButton(id);
+    }
+
+    // ---- Kept on the item when picked up with the wrench ----
+
+    public MachineSettings settings() {
+        return new MachineSettings(redstone, packSides());
+    }
+
+    public void saveTo(DataComponentMap.Builder components) {
+        components.set(ModDataComponents.MACHINE_SETTINGS.get(), settings());
+    }
+
+    /** Restores the settings from the item the machine was placed from, if it has any. */
+    public void loadFrom(DataComponentGetter components) {
+        MachineSettings saved = components.get(ModDataComponents.MACHINE_SETTINGS.get());
+        if (saved != null) {
+            redstone = saved.redstone();
+            unpackSides(saved.sides());
+            onChanged.run();
+        }
     }
 
     // ---- Saving ----

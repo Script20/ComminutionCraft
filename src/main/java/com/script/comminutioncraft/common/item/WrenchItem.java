@@ -4,16 +4,17 @@ import com.script.comminutioncraft.common.cable.EnergyCableBlock;
 import com.script.comminutioncraft.common.machine.control.ControllableMachine;
 import com.script.comminutioncraft.common.machine.control.RelativeSide;
 import com.script.comminutioncraft.common.machine.control.SideMode;
+import com.script.comminutioncraft.common.network.SwitchWrenchModePayload;
 import com.script.comminutioncraft.common.registry.ModDataComponents;
 import com.script.comminutioncraft.common.registry.ModItems;
 import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -24,6 +25,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.ChestType;
@@ -31,14 +33,19 @@ import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Three modes, cycled with sneak + right-click:
+ * Three modes, cycled with the "Switch Wrench Mode" key (V by default, see {@link SwitchWrenchModePayload}):
  * <ul>
  *   <li><b>Rotate</b> - right-click a block to turn it (machines and anything else with a facing/axis).</li>
  *   <li><b>Cable</b> - right-click an energy cable's arm to cut that connection; click again to restore it.</li>
- *   <li><b>Configure</b> - right-click a machine face to cycle it between Input, Output and None.</li>
+ *   <li><b>Configure</b> - right-click a machine face to cycle it between Input, Output and None;
+ *       sneak + right-click picks the machine up, keeping its settings and stored FE.</li>
  * </ul>
+ * The wrench acts in {@link #onItemUseFirst}, before the block's own right-click, so machines don't open their GUI.
  */
 public class WrenchItem extends Item {
+    /** Key mapping name (registered on the client), also used for the "press V" tooltip. */
+    public static final String MODE_KEY = "key.comminutioncraft.wrench_mode";
+
     public WrenchItem(Properties properties) {
         super(properties);
     }
@@ -54,37 +61,22 @@ public class WrenchItem extends Item {
         return stack;
     }
 
+    /** Runs before the clicked block's own right-click; PASS (nothing to do here) lets the block handle it as usual. */
     @Override
-    public InteractionResult use(Level level, Player player, InteractionHand hand) {
-        if (!player.isSecondaryUseActive()) {
-            return InteractionResult.PASS;
-        }
-        switchMode(level, player, player.getItemInHand(hand));
-        return InteractionResult.SUCCESS;
-    }
-
-    @Override
-    public InteractionResult useOn(UseOnContext context) {
+    public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
         Player player = context.getPlayer();
-        ItemStack stack = context.getItemInHand();
-        if (player != null && player.isSecondaryUseActive()) {
-            switchMode(context.getLevel(), player, stack);
-            return InteractionResult.SUCCESS;
-        }
         if (player != null && !player.mayUseItemAt(context.getClickedPos(), context.getClickedFace(), stack)) {
             return InteractionResult.FAIL;
         }
         return switch (getMode(stack)) {
             case ROTATE -> rotate(context);
             case CABLE -> useOnCable(context);
-            case CONFIGURE -> configure(context);
+            case CONFIGURE -> player != null && player.isSecondaryUseActive() ? pickUp(context, player) : configure(context);
         };
     }
 
-    private static void switchMode(Level level, Player player, ItemStack stack) {
-        if (level.isClientSide()) {
-            return;
-        }
+    /** Server side: the next mode (sent by the client when the mode key is pressed). */
+    public static void switchMode(Level level, Player player, ItemStack stack) {
         stack.set(ModDataComponents.WRENCH_MODE.get(), getMode(stack).next());
         player.sendOverlayMessage(getMode(stack).displayName());
         level.playSound(null, player.blockPosition(), SoundEvents.ITEM_FRAME_ROTATE_ITEM, SoundSource.PLAYERS, 0.6F, 1.4F);
@@ -129,6 +121,30 @@ public class WrenchItem extends Item {
                         side.displayName(), mode.displayName()));
             }
             level.playSound(null, pos, SoundEvents.UI_BUTTON_CLICK.value(), SoundSource.BLOCKS, 0.4F, 1.2F);
+        }
+        return InteractionResult.SUCCESS;
+    }
+
+    /**
+     * Sneak + right-click in Configure mode: the machine goes straight into the player's inventory with its settings
+     * and stored FE on the item. Its slots and stored XP drop as if it were mined (only a pickaxe drop forgets the rest).
+     */
+    private static InteractionResult pickUp(UseOnContext context, Player player) {
+        Level level = context.getLevel();
+        BlockPos pos = context.getClickedPos();
+        if (!(level.getBlockEntity(pos) instanceof BlockEntity machine) || !(machine instanceof ControllableMachine)) {
+            return InteractionResult.PASS;
+        }
+        if (!level.isClientSide()) {
+            BlockState state = level.getBlockState(pos);
+            ItemStack item = new ItemStack(state.getBlock());
+            // The contents drop on removal below, so they mustn't be copied onto the item too.
+            item.applyComponents(machine.collectComponents().filter(type -> type != DataComponents.CONTAINER));
+            level.removeBlock(pos, false);
+            if (!player.getInventory().add(item)) {
+                player.drop(item, false);
+            }
+            level.playSound(null, pos, state.getSoundType(level, pos, player).getBreakSound(), SoundSource.BLOCKS, 0.8F, 1.0F);
         }
         return InteractionResult.SUCCESS;
     }
@@ -192,6 +208,7 @@ public class WrenchItem extends Item {
         WrenchMode mode = getMode(stack);
         builder.accept(mode.displayName().copy().withStyle(ChatFormatting.AQUA));
         builder.accept(mode.help().copy().withStyle(ChatFormatting.GRAY));
-        builder.accept(Component.translatable("item.comminutioncraft.wrench.help.switch").withStyle(ChatFormatting.DARK_GRAY));
+        builder.accept(Component.translatable("item.comminutioncraft.wrench.help.switch", Component.keybind(MODE_KEY))
+                .withStyle(ChatFormatting.DARK_GRAY));
     }
 }

@@ -7,6 +7,8 @@ import com.script.comminutioncraft.common.machine.control.MachineControls;
 import com.script.comminutioncraft.common.machine.control.SideMode;
 import com.script.comminutioncraft.common.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponentGetter;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
@@ -186,6 +188,22 @@ public class ElectricGeneratorBlockEntity extends BaseContainerBlockEntity
 
     private boolean isFuel(ItemStack stack) {
         return level != null && stack.getBurnTime(RecipeType.SMELTING, level.fuelValues()) > 0;
+    }
+
+    // ---- Wrench pickup: the item keeps the settings and stored FE (see WrenchItem) ----
+
+    @Override
+    protected void collectImplicitComponents(DataComponentMap.Builder components) {
+        super.collectImplicitComponents(components);
+        energy.saveTo(components);
+        controls.saveTo(components);
+    }
+
+    @Override
+    protected void applyImplicitComponents(DataComponentGetter components) {
+        super.applyImplicitComponents(components);
+        energy.loadFrom(components);
+        controls.loadFrom(components);
     }
 
     // ---- Saving ----

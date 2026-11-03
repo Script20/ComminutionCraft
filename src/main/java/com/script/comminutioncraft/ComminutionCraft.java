@@ -9,6 +9,7 @@ import com.script.comminutioncraft.common.cable.CableConnection;
 import com.script.comminutioncraft.common.cable.CableEnergyHandler;
 import com.script.comminutioncraft.common.cable.EnergyCableBlock;
 import com.script.comminutioncraft.common.machine.EnergyBatteryBlockEntity;
+import com.script.comminutioncraft.common.network.SwitchWrenchModePayload;
 import com.script.comminutioncraft.gametest.ModGameTests;
 import com.script.comminutioncraft.common.registry.ModCreativeTabs;
 import com.script.comminutioncraft.common.registry.ModDataComponents;
@@ -45,6 +46,7 @@ public class ComminutionCraft {
 
         modEventBus.addListener(this::registerCapabilities);
         modEventBus.addListener(ModGameTests::registerTests);
+        modEventBus.addListener(SwitchWrenchModePayload::register);
 
         NeoForge.EVENT_BUS.addListener(RecipeSync::sendToClients);
     }

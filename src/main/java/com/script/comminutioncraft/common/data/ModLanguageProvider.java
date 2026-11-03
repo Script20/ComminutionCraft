@@ -32,8 +32,11 @@ public class ModLanguageProvider extends LanguageProvider {
         add("item.comminutioncraft.wrench.help.rotate", "Right-click a block to rotate it");
         add("item.comminutioncraft.wrench.help.cable", "Right-click a cable's arm to cut or restore that connection");
         add("item.comminutioncraft.wrench.mode.configure", "Mode: Configure");
-        add("item.comminutioncraft.wrench.help.configure", "Right-click a machine face to cycle Input / Output / None");
-        add("item.comminutioncraft.wrench.help.switch", "Sneak + right-click to switch mode");
+        add("item.comminutioncraft.wrench.help.configure", "Right-click a machine face to cycle Input / Output / None; sneak + right-click to pick the machine up");
+        add("item.comminutioncraft.wrench.help.switch", "Press %s to switch mode");
+        add("key.category.comminutioncraft.main", "Comminution Craft");
+        add("key.comminutioncraft.wrench_mode", "Switch Wrench Mode");
+        add("tooltip.comminutioncraft.machine_settings", "Keeps its side and redstone settings");
         add("message.comminutioncraft.wrench.cable_cut", "Cable connection cut");
         add("message.comminutioncraft.wrench.cable_restored", "Cable connection restored");
 

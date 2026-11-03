@@ -37,7 +37,10 @@ import com.script.comminutioncraft.common.machine.FuelMachineBlockEntity;
 import com.script.comminutioncraft.common.machine.control.RedstoneMode;
 import com.script.comminutioncraft.common.machine.control.RelativeSide;
 import com.script.comminutioncraft.common.machine.control.SideMode;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import com.script.comminutioncraft.common.item.WrenchItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.entity.player.Player;
@@ -77,7 +80,9 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("side_config_follows_rotation", () -> ModGameTests::sideConfigFollowsRotation);
         TEST_FUNCTIONS.register("wrench_configure_cycles_face", () -> ModGameTests::wrenchConfigureCyclesFace);
         TEST_FUNCTIONS.register("battery_passes_power_on", () -> ModGameTests::batteryPassesPowerOn);
-        TEST_FUNCTIONS.register("battery_keeps_energy_when_broken", () -> ModGameTests::batteryKeepsEnergyWhenBroken);
+        TEST_FUNCTIONS.register("pickaxe_drop_forgets_settings", () -> ModGameTests::pickaxeDropForgetsSettings);
+        TEST_FUNCTIONS.register("wrench_pickup_keeps_settings", () -> ModGameTests::wrenchPickupKeepsSettings);
+        TEST_FUNCTIONS.register("wrench_acts_before_machine_gui", () -> ModGameTests::wrenchActsBeforeMachineGui);
     }
 
     public static void registerTests(RegisterGameTestsEvent event) {
@@ -302,12 +307,13 @@ public final class ModGameTests {
         });
     }
 
-    /** A charged battery shows its charge, drops itself with the FE in it, and a battery placed from that item has it back. */
-    private static void batteryKeepsEnergyWhenBroken(GameTestHelper helper) {
+    /** A half-charged, configured battery shows 3 cells; broken normally (not with the wrench) it drops a plain battery. */
+    private static void pickaxeDropForgetsSettings(GameTestHelper helper) {
         BlockPos pos = new BlockPos(2, 1, 2);
-        int stored = EnergyBatteryBlockEntity.CAPACITY / 2;
         helper.setBlock(pos, ModBlocks.ENERGY_BATTERY.get());
-        helper.getBlockEntity(pos, EnergyBatteryBlockEntity.class).setEnergy(stored);
+        EnergyBatteryBlockEntity battery = helper.getBlockEntity(pos, EnergyBatteryBlockEntity.class);
+        battery.setEnergy(EnergyBatteryBlockEntity.CAPACITY / 2);
+        battery.getControls().setSide(RelativeSide.TOP, SideMode.NONE);
 
         helper.runAfterDelay(2, () -> {
             int charge = helper.getLevel().getBlockState(helper.absolutePos(pos)).getValue(EnergyBatteryBlock.CHARGE);
@@ -315,21 +321,80 @@ public final class ModGameTests {
 
             BlockPos absolute = helper.absolutePos(pos);
             helper.getLevel().destroyBlock(absolute, true);
-            ItemStack drop = helper.getLevel().getEntitiesOfClass(ItemEntity.class, new AABB(absolute).inflate(1)).stream()
-                    .map(ItemEntity::getItem)
-                    .filter(stack -> stack.is(ModItems.ENERGY_BATTERY.get()))
-                    .findFirst().orElse(ItemStack.EMPTY);
-            Integer kept = drop.get(ModDataComponents.STORED_ENERGY.get());
-            helper.assertTrue(kept != null && kept == stored, "The dropped battery should hold " + stored + " FE, but holds " + kept);
-
-            helper.setBlock(pos, ModBlocks.ENERGY_BATTERY.get());
-            EnergyBatteryBlockEntity placed = helper.getBlockEntity(pos, EnergyBatteryBlockEntity.class);
-            placed.applyComponentsFromItemStack(drop);
-            helper.assertTrue(placed.getEnergy() == stored, "The placed battery has " + placed.getEnergy() + " FE, expected " + stored);
+            ItemStack drop = droppedItem(helper, pos, ModItems.ENERGY_BATTERY.get().asItem());
+            helper.assertFalse(drop.isEmpty(), "Breaking the battery dropped nothing");
+            helper.assertTrue(!drop.has(ModDataComponents.STORED_ENERGY.get()) && !drop.has(ModDataComponents.MACHINE_SETTINGS.get()),
+                    "A battery broken without the wrench should forget its charge and settings, but drops " + drop.getComponentsPatch());
             helper.succeed();
         });
     }
 
+    /**
+     * Wrench in Configure mode + sneak + right-click: the battery goes into the player's inventory with its FE, side
+     * and redstone settings, and a battery placed from that item has them all back. A granulator picked up the same
+     * way drops the ore that was in it.
+     */
+    private static void wrenchPickupKeepsSettings(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(1, 1, 2);
+        BlockPos granulatorPos = new BlockPos(3, 1, 2);
+        int stored = 123_456;
+        helper.setBlock(pos, ModBlocks.ENERGY_BATTERY.get());
+        EnergyBatteryBlockEntity battery = helper.getBlockEntity(pos, EnergyBatteryBlockEntity.class);
+        battery.setEnergy(stored);
+        battery.getControls().setSide(RelativeSide.LEFT, SideMode.NONE);
+        battery.getControls().setRedstone(RedstoneMode.HIGH);
+        helper.setBlock(granulatorPos, ModBlocks.ELECTRIC_GRANULATOR.get());
+        helper.getBlockEntity(granulatorPos, ElectricMachineBlockEntity.class).setItem(ElectricMachineBlockEntity.SLOT_INPUT, new ItemStack(Items.RAW_IRON, 5));
+
+        Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+        player.setShiftKeyDown(true);
+        ItemStack wrench = WrenchItem.withMode(WrenchMode.CONFIGURE);
+        useWrench(helper, player, wrench, pos, new Vec3(0, 0.5, 0), Direction.UP);
+        useWrench(helper, player, wrench, granulatorPos, new Vec3(0, 0.5, 0), Direction.UP);
+
+        helper.assertBlockNotPresent(ModBlocks.ENERGY_BATTERY.get(), pos);
+        helper.assertBlockNotPresent(ModBlocks.ELECTRIC_GRANULATOR.get(), granulatorPos);
+        ItemStack item = ItemStack.EMPTY;
+        for (ItemStack stack : player.getInventory()) {
+            if (stack.is(ModItems.ENERGY_BATTERY.get())) {
+                item = stack;
+            }
+        }
+        helper.assertFalse(item.isEmpty(), "The picked-up battery isn't in the player's inventory");
+        ItemStack ore = droppedItem(helper, granulatorPos, Items.RAW_IRON);
+        helper.assertTrue(ore.getCount() == 5, "The granulator's 5 raw iron should drop when it's picked up, found " + ore);
+
+        helper.setBlock(pos, ModBlocks.ENERGY_BATTERY.get());
+        EnergyBatteryBlockEntity placed = helper.getBlockEntity(pos, EnergyBatteryBlockEntity.class);
+        placed.applyComponentsFromItemStack(item);
+        helper.assertTrue(placed.getEnergy() == stored, "The placed battery has " + placed.getEnergy() + " FE, expected " + stored);
+        helper.assertTrue(placed.getControls().side(RelativeSide.LEFT) == SideMode.NONE, "The placed battery lost its side config");
+        helper.assertTrue(placed.getControls().redstone() == RedstoneMode.HIGH, "The placed battery lost its redstone mode");
+        helper.succeed();
+    }
+
+    /**
+     * Through the real right-click path (as a player clicking in game): the wrench configures the machine's face
+     * instead of the machine opening its GUI.
+     */
+    @SuppressWarnings("removal") // makeMockServerPlayerInLevel: vanilla has no replacement yet
+    private static void wrenchActsBeforeMachineGui(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, ModBlocks.ELECTRIC_GRANULATOR.get());
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ItemStack wrench = WrenchItem.withMode(WrenchMode.CONFIGURE);
+        player.setItemInHand(InteractionHand.MAIN_HAND, wrench);
+        BlockPos absolute = helper.absolutePos(pos);
+        player.gameMode.useItemOn(player, helper.getLevel(), wrench, InteractionHand.MAIN_HAND,
+                new BlockHitResult(Vec3.atCenterOf(absolute).add(0, 0.5, 0), Direction.UP, absolute, false));
+
+        SideMode top = helper.getBlockEntity(pos, ElectricMachineBlockEntity.class).getControls().side(RelativeSide.TOP);
+        helper.assertTrue(top == SideMode.OUTPUT, "Top should be Output after one Configure click, but is " + top);
+        helper.assertTrue(player.containerMenu == player.inventoryMenu, "Right-clicking with the wrench opened the machine's GUI");
+        helper.succeed();
+    }
+
+    // ---- Helpers ----
     // ---- Helpers ----
 
     private static void fillWithStone(GameTestHelper helper) {
@@ -373,8 +438,16 @@ public final class ModGameTests {
         player.setItemInHand(InteractionHand.MAIN_HAND, wrench);
         BlockPos absolute = helper.absolutePos(pos);
         Vec3 hit = Vec3.atCenterOf(absolute).add(offsetFromCentre);
-        wrench.useOn(new UseOnContext(helper.getLevel(), player, InteractionHand.MAIN_HAND, wrench,
+        wrench.onItemUseFirst(new UseOnContext(helper.getLevel(), player, InteractionHand.MAIN_HAND, wrench,
                 new BlockHitResult(hit, face, absolute, false)));
+    }
+
+    /** An item entity of this item lying around the given test position, or EMPTY. */
+    private static ItemStack droppedItem(GameTestHelper helper, BlockPos pos, Item item) {
+        return helper.getLevel().getEntitiesOfClass(ItemEntity.class, new AABB(helper.absolutePos(pos)).inflate(1)).stream()
+                .map(ItemEntity::getItem)
+                .filter(stack -> stack.is(item))
+                .findFirst().orElse(ItemStack.EMPTY);
     }
 
     private static void assertConnection(GameTestHelper helper, BlockPos cable, Direction side, CableConnection expected) {

@@ -5,7 +5,6 @@ import com.script.comminutioncraft.common.energy.MachineEnergyStorage;
 import com.script.comminutioncraft.common.machine.control.ControllableMachine;
 import com.script.comminutioncraft.common.machine.control.MachineControls;
 import com.script.comminutioncraft.common.registry.ModBlockEntities;
-import com.script.comminutioncraft.common.registry.ModDataComponents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponentGetter;
@@ -33,7 +32,7 @@ import org.jspecify.annotations.Nullable;
  * every tick it pushes up to {@link #TRANSFER_RATE} FE in total out of its output faces (into cables or straight
  * into machines). None faces don't connect at all. Redstone-off stops the output but it keeps charging.
  * <p>
- * Breaking it keeps the charge on the item ({@code comminutioncraft:stored_energy}).
+ * Mined with a pickaxe it forgets everything; picked up with the wrench it keeps its charge and settings.
  */
 public class EnergyBatteryBlockEntity extends BlockEntity implements TickingMachine, ControllableMachine, MenuProvider {
     public static final int CAPACITY = 1_000_000;
@@ -178,20 +177,20 @@ public class EnergyBatteryBlockEntity extends BlockEntity implements TickingMach
         return moved;
     }
 
-    // ---- Keeping the charge on the item ----
+    // ---- Wrench pickup: the item keeps the settings and stored FE (see WrenchItem) ----
 
     @Override
     protected void collectImplicitComponents(DataComponentMap.Builder components) {
         super.collectImplicitComponents(components);
-        if (energy.getEnergy() > 0) {
-            components.set(ModDataComponents.STORED_ENERGY.get(), energy.getEnergy());
-        }
+        energy.saveTo(components);
+        controls.saveTo(components);
     }
 
     @Override
     protected void applyImplicitComponents(DataComponentGetter components) {
         super.applyImplicitComponents(components);
-        setEnergy(components.getOrDefault(ModDataComponents.STORED_ENERGY.get(), 0));
+        energy.loadFrom(components);
+        controls.loadFrom(components);
         energyAfterLastTick = energy.getEnergy();
     }
 

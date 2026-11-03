@@ -2,6 +2,7 @@ package com.script.comminutioncraft.common.registry;
 
 import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.item.WrenchMode;
+import com.script.comminutioncraft.common.machine.control.MachineSettings;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -19,7 +20,13 @@ public final class ModDataComponents {
                     .persistent(WrenchMode.CODEC)
                     .networkSynchronized(WrenchMode.STREAM_CODEC));
 
-    /** FE kept in a broken Energy Battery; placing the item puts it back. */
+    /** Redstone + side settings of a machine picked up with the wrench; placing the item puts them back. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<MachineSettings>> MACHINE_SETTINGS =
+            DATA_COMPONENTS.registerComponentType("machine_settings", builder -> builder
+                    .persistent(MachineSettings.CODEC)
+                    .networkSynchronized(MachineSettings.STREAM_CODEC));
+
+    /** FE in a machine picked up with the wrench; placing the item puts it back. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> STORED_ENERGY =
             DATA_COMPONENTS.registerComponentType("stored_energy", builder -> builder
                     .persistent(ExtraCodecs.NON_NEGATIVE_INT)

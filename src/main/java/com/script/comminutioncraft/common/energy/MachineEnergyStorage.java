@@ -1,5 +1,8 @@
 package com.script.comminutioncraft.common.energy;
 
+import com.script.comminutioncraft.common.registry.ModDataComponents;
+import net.minecraft.core.component.DataComponentGetter;
+import net.minecraft.core.component.DataComponentMap;
 import net.neoforged.neoforge.transfer.energy.SimpleEnergyHandler;
 
 /**
@@ -29,6 +32,21 @@ public class MachineEnergyStorage extends SimpleEnergyHandler {
 
     public int getSpace() {
         return capacity - energy;
+    }
+
+    /** Puts the stored FE on the item a machine becomes when picked up with the wrench. */
+    public void saveTo(DataComponentMap.Builder components) {
+        if (energy > 0) {
+            components.set(ModDataComponents.STORED_ENERGY.get(), energy);
+        }
+    }
+
+    /** Restores the FE from the item the machine was placed from, if it has any. */
+    public void loadFrom(DataComponentGetter components) {
+        Integer saved = components.get(ModDataComponents.STORED_ENERGY.get());
+        if (saved != null) {
+            set(Math.clamp(saved, 0, capacity));
+        }
     }
 
     /** Uses {@code amount} FE if it's all there; otherwise uses nothing. Call outside of transactions (e.g. in a tick). */

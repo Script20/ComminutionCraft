@@ -7,7 +7,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.StringRepresentable;
 
-/** The wrench's modes, cycled with sneak + right-click. Stored in the {@code comminutioncraft:wrench_mode} component. */
+/** The wrench's modes, cycled with the mode key (V by default). Stored in the {@code comminutioncraft:wrench_mode} component. */
 public enum WrenchMode implements StringRepresentable {
     /** Turn blocks. */
     ROTATE("rotate"),

@@ -5,6 +5,8 @@ import com.script.comminutioncraft.common.machine.control.MachineControls;
 import com.script.comminutioncraft.common.machine.control.SideMode;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponentGetter;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.server.level.ServerLevel;
@@ -238,6 +240,20 @@ public abstract class FuelMachineBlockEntity extends BaseContainerBlockEntity
         if (level instanceof ServerLevel serverLevel) {
             experience.pop(serverLevel, Vec3.atCenterOf(pos));
         }
+    }
+
+    // ---- Wrench pickup: the item keeps the settings (see WrenchItem) ----
+
+    @Override
+    protected void collectImplicitComponents(DataComponentMap.Builder components) {
+        super.collectImplicitComponents(components);
+        controls.saveTo(components);
+    }
+
+    @Override
+    protected void applyImplicitComponents(DataComponentGetter components) {
+        super.applyImplicitComponents(components);
+        controls.loadFrom(components);
     }
 
     // ---- Saving ----
