@@ -63,6 +63,6 @@ root = struct.pack('>b', TAG_COMPOUND) + name('') + compound([
 ])
 
 os.makedirs(os.path.dirname(OUT), exist_ok=True)
-with gzip.open(OUT, 'wb') as fh:
+with gzip.GzipFile(OUT, "wb", mtime=0) as fh:  # mtime=0: same bytes on every run
     fh.write(root)
 print('ok')
