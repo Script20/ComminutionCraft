@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": "minecraft:bucket",
+    "G": "#c:glass_blocks",
+    "I": "#c:ingots/iron"
+  },
+  "pattern": [
+    "IGI",
+    "GBG",
+    "IGI"
+  ],
+  "result": {
+    "id": "comminutioncraft:fluid_tank"
+  }
+}

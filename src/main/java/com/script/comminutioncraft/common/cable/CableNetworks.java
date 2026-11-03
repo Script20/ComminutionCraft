@@ -12,10 +12,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
- * Finds and caches groups of connected cables. A network is rebuilt lazily the next time power flows through it;
+ * Finds and caches groups of connected conduits (cables or pipes; a network is one conduit block). A network is rebuilt lazily the next time power flows through it;
  * any cable change anywhere in the level simply throws that level's cache away, which keeps this simple and correct.
  */
 public final class CableNetworks {
@@ -61,6 +62,7 @@ public final class CableNetworks {
     }
 
     private static Network build(Level level, BlockPos start, Set<BlockPos> cables) {
+        Block conduit = level.getBlockState(start).getBlock();
         List<Endpoint> endpoints = new ArrayList<>();
         ArrayDeque<BlockPos> queue = new ArrayDeque<>();
         queue.add(start);
@@ -68,11 +70,11 @@ public final class CableNetworks {
         while (!queue.isEmpty() && cables.size() < MAX_CABLES) {
             BlockPos pos = queue.poll();
             BlockState state = level.getBlockState(pos);
-            if (!(state.getBlock() instanceof EnergyCableBlock)) {
+            if (!(conduit instanceof ConduitBlock) || !state.is(conduit)) {
                 continue;
             }
             for (Direction direction : Direction.values()) {
-                CableConnection connection = state.getValue(EnergyCableBlock.CONNECTIONS.get(direction));
+                CableConnection connection = state.getValue(ConduitBlock.CONNECTIONS.get(direction));
                 BlockPos next = pos.relative(direction);
                 if (connection == CableConnection.CABLE && level.isLoaded(next) && cables.add(next)) {
                     queue.add(next);

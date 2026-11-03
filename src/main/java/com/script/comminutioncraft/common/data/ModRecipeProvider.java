@@ -159,6 +159,48 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_coal_smelter", has(ModItems.COAL_SMELTER.get()))
                 .save(output, key("electric_smelter"));
 
+        // ---- Tier 3 ----
+
+        shaped(RecipeCategory.MISC, ModItems.PLASMA_GENERATOR.get())
+                .pattern("IGI")
+                .pattern("EXE")
+                .pattern("ICI")
+                .define('I', tag(ProcessedMetal.commonItemTag("ingots/iron")))
+                .define('G', tag(ProcessedMetal.commonItemTag("glass_blocks")))
+                .define('E', ModItems.ELECTRONIC_CIRCUIT.get())
+                .define('X', ModItems.ELECTRIC_GENERATOR.get())
+                .define('C', tag(ProcessedMetal.commonItemTag("ingots/copper")))
+                .unlockedBy("has_electric_generator", has(ModItems.ELECTRIC_GENERATOR.get()))
+                .save(output, key("plasma_generator"));
+
+        shaped(RecipeCategory.MISC, ModItems.AIR_FILTER.get())
+                .pattern(" P ")
+                .pattern("PCP")
+                .pattern(" P ")
+                .define('P', Items.PAPER)
+                .define('C', Items.CHARCOAL)
+                .unlockedBy("has_charcoal", has(Items.CHARCOAL))
+                .save(output, key("air_filter"));
+
+        shaped(RecipeCategory.MISC, ModItems.FLUID_PIPE.get(), 8)
+                .pattern("III")
+                .pattern("GGG")
+                .pattern("III")
+                .define('I', tag(ProcessedMetal.commonItemTag("ingots/iron")))
+                .define('G', tag(ProcessedMetal.commonItemTag("glass_blocks")))
+                .unlockedBy("has_plasma_generator", has(ModItems.PLASMA_GENERATOR.get()))
+                .save(output, key("fluid_pipe"));
+
+        shaped(RecipeCategory.MISC, ModItems.FLUID_TANK.get())
+                .pattern("IGI")
+                .pattern("GBG")
+                .pattern("IGI")
+                .define('I', tag(ProcessedMetal.commonItemTag("ingots/iron")))
+                .define('G', tag(ProcessedMetal.commonItemTag("glass_blocks")))
+                .define('B', Items.BUCKET)
+                .unlockedBy("has_bucket", has(Items.BUCKET))
+                .save(output, key("fluid_tank"));
+
         shaped(RecipeCategory.TOOLS, ModItems.WRENCH.get())
                 .pattern("I I")
                 .pattern(" C ")

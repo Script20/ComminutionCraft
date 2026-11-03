@@ -2,7 +2,13 @@ package com.script.comminutioncraft.gametest;
 
 import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.cable.CableConnection;
+import com.script.comminutioncraft.common.cable.ConduitBlock;
 import com.script.comminutioncraft.common.cable.EnergyCableBlock;
+import com.script.comminutioncraft.common.machine.FluidTankBlockEntity;
+import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlockEntity;
+import com.script.comminutioncraft.common.registry.ModFluids;
+import net.minecraft.world.level.material.Fluids;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import com.script.comminutioncraft.common.data.ModWorldGen;
 import com.script.comminutioncraft.common.machine.ElectricGeneratorBlockEntity;
 import com.script.comminutioncraft.common.machine.ElectricMachineBlockEntity;
@@ -83,6 +89,13 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("pickaxe_drop_forgets_settings", () -> ModGameTests::pickaxeDropForgetsSettings);
         TEST_FUNCTIONS.register("wrench_pickup_keeps_settings", () -> ModGameTests::wrenchPickupKeepsSettings);
         TEST_FUNCTIONS.register("wrench_acts_before_machine_gui", () -> ModGameTests::wrenchActsBeforeMachineGui);
+        TEST_FUNCTIONS.register("plasma_generator_breathes", () -> ModGameTests::plasmaGeneratorBreathes);
+        TEST_FUNCTIONS.register("walled_in_generator_makes_nothing", () -> ModGameTests::walledInGeneratorMakesNothing);
+        TEST_FUNCTIONS.register("no_filter_half_speed", () -> ModGameTests::noFilterHalfSpeed);
+        TEST_FUNCTIONS.register("pipe_carries_plasma_to_tank", () -> ModGameTests::pipeCarriesPlasmaToTank);
+        TEST_FUNCTIONS.register("wrench_pickup_keeps_tank_fluid", () -> ModGameTests::wrenchPickupKeepsTankFluid);
+        TEST_FUNCTIONS.register("pipes_and_cables_dont_join", () -> ModGameTests::pipesAndCablesDontJoin);
+        TEST_FUNCTIONS.register("side_change_reconnects_cable", () -> ModGameTests::sideChangeReconnectsCable);
     }
 
     public static void registerTests(RegisterGameTestsEvent event) {
@@ -394,8 +407,146 @@ public final class ModGameTests {
         helper.succeed();
     }
 
+    /** On the floor with nothing else around, 5 faces breathe: 5 mB/t, and the filter wears 1 per mB made. */
+    private static void plasmaGeneratorBreathes(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        PlasmaGeneratorBlockEntity generator = placePlasmaGenerator(helper, pos, true);
+
+        helper.runAfterDelay(20, () -> {
+            helper.assertTrue(generator.getIntake() == 5, "On the floor in open air the intake should be 5/6, but is " + generator.getIntake());
+            int made = generator.getTank().getAmount();
+            helper.assertTrue(made >= 5 * 15, "Expected about 5 mB/t of plasma, only " + made + " mB after 20 ticks");
+            int wear = generator.getItem(PlasmaGeneratorBlockEntity.SLOT_FILTER).getDamageValue();
+            helper.assertTrue(wear == made, "The filter should wear 1 per mB (" + made + "), but wore " + wear);
+            helper.succeed();
+        });
+    }
+
+    /** Stone on every side: no intake, no plasma, even with power and a filter. */
+    private static void walledInGeneratorMakesNothing(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        PlasmaGeneratorBlockEntity generator = placePlasmaGenerator(helper, pos, true);
+        for (Direction direction : Direction.values()) {
+            if (direction != Direction.DOWN) {
+                helper.setBlock(pos.relative(direction), Blocks.STONE);
+            }
+        }
+        helper.runAfterDelay(30, () -> {
+            helper.assertTrue(generator.getIntake() == 0, "A walled-in generator should have no intake, but has " + generator.getIntake());
+            helper.assertTrue(generator.getTank().getAmount() == 0, "A walled-in generator made " + generator.getTank().getAmount() + " mB");
+            helper.succeed();
+        });
+    }
+
+    /** Two generators in the same open air: the one without a filter makes half as much plasma. */
+    private static void noFilterHalfSpeed(GameTestHelper helper) {
+        PlasmaGeneratorBlockEntity filtered = placePlasmaGenerator(helper, new BlockPos(1, 1, 1), true);
+        PlasmaGeneratorBlockEntity bare = placePlasmaGenerator(helper, new BlockPos(3, 1, 3), false);
+        helper.runAfterDelay(40, () -> {
+            int full = filtered.getTank().getAmount();
+            int half = bare.getTank().getAmount();
+            helper.assertTrue(full > 0 && Math.abs(half * 2 - full) <= 10,
+                    "Without a filter it should make half as much: " + half + " mB vs " + full + " mB with one");
+            helper.succeed();
+        });
+    }
+
+    /** Generator (output to the east) -> 2 fluid pipes -> Fluid Tank: plasma ends up in the tank. */
+    private static void pipeCarriesPlasmaToTank(GameTestHelper helper) {
+        BlockPos generatorPos = new BlockPos(0, 1, 2);
+        BlockPos tankPos = new BlockPos(3, 1, 2);
+        PlasmaGeneratorBlockEntity generator = placePlasmaGenerator(helper, generatorPos, true);
+        // Facing north, the generator's left is east (towards the pipes).
+        generator.getControls().setSide(RelativeSide.LEFT, SideMode.OUTPUT);
+        helper.setBlock(tankPos, ModBlocks.FLUID_TANK.get());
+        placeConduit(helper, new BlockPos(1, 1, 2), ModBlocks.FLUID_PIPE.get());
+        placeConduit(helper, new BlockPos(2, 1, 2), ModBlocks.FLUID_PIPE.get());
+        assertConnection(helper, new BlockPos(1, 1, 2), Direction.WEST, CableConnection.MACHINE);
+        assertConnection(helper, new BlockPos(2, 1, 2), Direction.EAST, CableConnection.MACHINE);
+
+        FluidTankBlockEntity tank = helper.getBlockEntity(tankPos, FluidTankBlockEntity.class);
+        helper.succeedWhen(() -> helper.assertTrue(tank.getTank().getAmount() >= 100 && tank.getTank().getFluid().is(ModFluids.PLASMA_TYPE.get()),
+                "The tank should be filling with plasma, it has " + tank.getTank().getAmount() + " mB"));
+    }
+
+    /** A tank picked up with the wrench keeps its fluid; one placed from that item has it back. */
+    private static void wrenchPickupKeepsTankFluid(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, ModBlocks.FLUID_TANK.get());
+        helper.getBlockEntity(pos, FluidTankBlockEntity.class).getTank().fill(FluidResource.of(Fluids.WATER), 5_000);
+
+        Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+        player.setShiftKeyDown(true);
+        useWrench(helper, player, WrenchItem.withMode(WrenchMode.CONFIGURE), pos, new Vec3(0, 0.5, 0), Direction.UP);
+        helper.assertBlockNotPresent(ModBlocks.FLUID_TANK.get(), pos);
+        ItemStack item = ItemStack.EMPTY;
+        for (ItemStack stack : player.getInventory()) {
+            if (stack.is(ModItems.FLUID_TANK.get())) {
+                item = stack;
+            }
+        }
+        helper.assertFalse(item.isEmpty(), "The picked-up tank isn't in the player's inventory");
+
+        helper.setBlock(pos, ModBlocks.FLUID_TANK.get());
+        FluidTankBlockEntity placed = helper.getBlockEntity(pos, FluidTankBlockEntity.class);
+        placed.applyComponentsFromItemStack(item);
+        helper.assertTrue(placed.getTank().getAmount() == 5_000 && placed.getTank().getFluid().is(Fluids.WATER.getFluidType()),
+                "The placed tank should hold 5,000 mB of water, it has " + placed.getTank().getStack());
+        helper.succeed();
+    }
+
+    /** A pipe next to a cable doesn't connect to it (and vice versa). */
+    private static void pipesAndCablesDontJoin(GameTestHelper helper) {
+        BlockPos cable = new BlockPos(1, 1, 2);
+        BlockPos pipe = new BlockPos(2, 1, 2);
+        placeConduit(helper, cable, ModBlocks.ENERGY_CABLE.get());
+        placeConduit(helper, pipe, ModBlocks.FLUID_PIPE.get());
+        assertConnection(helper, cable, Direction.EAST, CableConnection.NONE);
+        assertConnection(helper, pipe, Direction.WEST, CableConnection.NONE);
+        helper.succeed();
+    }
+
+    /** Setting a battery face to None drops the cable's arm there; setting it back reconnects it. */
+    private static void sideChangeReconnectsCable(GameTestHelper helper) {
+        BlockPos battery = new BlockPos(2, 1, 2);
+        BlockPos cable = new BlockPos(3, 1, 2);
+        helper.setBlock(battery, ModBlocks.ENERGY_BATTERY.get().defaultBlockState().setValue(MachineBlock.FACING, Direction.NORTH));
+        placeConduit(helper, cable, ModBlocks.ENERGY_CABLE.get());
+        assertConnection(helper, cable, Direction.WEST, CableConnection.MACHINE);
+
+        EnergyBatteryBlockEntity cell = helper.getBlockEntity(battery, EnergyBatteryBlockEntity.class);
+        // Facing north, the battery's left is east (towards the cable).
+        cell.getControls().setSide(RelativeSide.LEFT, SideMode.NONE);
+        assertConnection(helper, cable, Direction.WEST, CableConnection.NONE);
+        cell.getControls().setSide(RelativeSide.LEFT, SideMode.INPUT);
+        assertConnection(helper, cable, Direction.WEST, CableConnection.MACHINE);
+        helper.succeed();
+    }
+
     // ---- Helpers ----
-    // ---- Helpers ----
+
+    /** A Plasma Generator facing north with a full FE buffer and, optionally, an Air Filter. */
+    private static PlasmaGeneratorBlockEntity placePlasmaGenerator(GameTestHelper helper, BlockPos pos, boolean filter) {
+        helper.setBlock(pos, ModBlocks.PLASMA_GENERATOR.get().defaultBlockState().setValue(MachineBlock.FACING, Direction.NORTH));
+        PlasmaGeneratorBlockEntity generator = helper.getBlockEntity(pos, PlasmaGeneratorBlockEntity.class);
+        generator.setEnergy(PlasmaGeneratorBlockEntity.ENERGY_CAPACITY);
+        if (filter) {
+            generator.setItem(PlasmaGeneratorBlockEntity.SLOT_FILTER, new ItemStack(ModItems.AIR_FILTER.get()));
+        }
+        return generator;
+    }
+
+    /** Places a cable or pipe and lets it work out its connections like a placed one (setBlock skips placement logic). */
+    private static void placeConduit(GameTestHelper helper, BlockPos pos, ConduitBlock conduit) {
+        helper.setBlock(pos, conduit.defaultBlockState());
+        BlockPos absolute = helper.absolutePos(pos);
+        BlockState updated = conduit.defaultBlockState();
+        for (Direction direction : Direction.values()) {
+            updated = updated.setValue(ConduitBlock.CONNECTIONS.get(direction),
+                    conduit.connectionTo(helper.getLevel(), absolute, direction, CableConnection.NONE));
+        }
+        helper.setBlock(pos, updated);
+    }
 
     private static void fillWithStone(GameTestHelper helper) {
         for (int x = 0; x < 5; x++) {
@@ -420,17 +571,7 @@ public final class ModGameTests {
         helper.setBlock(from, ModBlocks.ELECTRIC_GENERATOR.get());
         helper.setBlock(to, ModBlocks.ELECTRIC_SMELTER.get());
         for (int x = from.getX() + 1; x < to.getX(); x++) {
-            BlockPos pos = new BlockPos(x, from.getY(), from.getZ());
-            BlockState cable = ModBlocks.ENERGY_CABLE.get().defaultBlockState();
-            helper.setBlock(pos, cable);
-            // setBlock doesn't run placement logic, so let the cable work out its connections like a placed one.
-            BlockPos absolute = helper.absolutePos(pos);
-            BlockState updated = cable;
-            for (Direction direction : Direction.values()) {
-                updated = updated.setValue(EnergyCableBlock.CONNECTIONS.get(direction),
-                        EnergyCableBlock.connectionTo(helper.getLevel(), absolute, direction, CableConnection.NONE));
-            }
-            helper.setBlock(pos, updated);
+            placeConduit(helper, new BlockPos(x, from.getY(), from.getZ()), ModBlocks.ENERGY_CABLE.get());
         }
     }
 

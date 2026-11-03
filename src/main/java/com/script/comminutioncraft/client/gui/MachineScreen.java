@@ -39,7 +39,8 @@ public abstract class MachineScreen<M extends AbstractContainerMenu & Controllab
     /** Seam colours per tier (see CLAUDE.md "Dark Chassis"). */
     public enum Tier {
         COAL(0xFF56381F, 0xFFFF9628, 0x60FF9628),
-        ELECTRIC(0xFF1E4256, 0xFF40C4FF, 0x6040C4FF);
+        ELECTRIC(0xFF1E4256, 0xFF40C4FF, 0x6040C4FF),
+        PLASMA(0xFF5C2254, 0xFFFF50D2, 0x60FF50D2);
 
         final int seamOff;
         final int seamOn;

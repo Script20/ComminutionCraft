@@ -32,6 +32,9 @@ public class ModLootTableProvider extends LootTableProvider {
             dropSelf(ModBlocks.ELECTRIC_GENERATOR.get());
             dropSelf(ModBlocks.ENERGY_CABLE.get());
             dropSelf(ModBlocks.ENERGY_BATTERY.get());
+            dropSelf(ModBlocks.PLASMA_GENERATOR.get());
+            dropSelf(ModBlocks.FLUID_PIPE.get());
+            dropSelf(ModBlocks.FLUID_TANK.get());
 
             // Natural stone drops its cobbled form (silk touch keeps it); slabs drop 2 when doubled.
             for (StoneSet set : ModBlocks.STONE_SETS) {

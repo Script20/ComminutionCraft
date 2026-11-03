@@ -7,6 +7,8 @@ import com.script.comminutioncraft.common.machine.ElectricGeneratorBlockEntity;
 import com.script.comminutioncraft.common.machine.ElectricGranulatorBlockEntity;
 import com.script.comminutioncraft.common.machine.ElectricSmelterBlockEntity;
 import com.script.comminutioncraft.common.machine.EnergyBatteryBlockEntity;
+import com.script.comminutioncraft.common.machine.FluidTankBlockEntity;
+import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlockEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -39,6 +41,14 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<EnergyBatteryBlockEntity>> ENERGY_BATTERY =
             BLOCK_ENTITY_TYPES.register("energy_battery",
                     () -> new BlockEntityType<>(EnergyBatteryBlockEntity::new, ModBlocks.ENERGY_BATTERY.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PlasmaGeneratorBlockEntity>> PLASMA_GENERATOR =
+            BLOCK_ENTITY_TYPES.register("plasma_generator",
+                    () -> new BlockEntityType<>(PlasmaGeneratorBlockEntity::new, ModBlocks.PLASMA_GENERATOR.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FluidTankBlockEntity>> FLUID_TANK =
+            BLOCK_ENTITY_TYPES.register("fluid_tank",
+                    () -> new BlockEntityType<>(FluidTankBlockEntity::new, ModBlocks.FLUID_TANK.get()));
 
     private ModBlockEntities() {}
 }

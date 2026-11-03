@@ -1,6 +1,6 @@
 package com.script.comminutioncraft.common.item;
 
-import com.script.comminutioncraft.common.cable.EnergyCableBlock;
+import com.script.comminutioncraft.common.cable.ConduitBlock;
 import com.script.comminutioncraft.common.machine.control.ControllableMachine;
 import com.script.comminutioncraft.common.machine.control.RelativeSide;
 import com.script.comminutioncraft.common.machine.control.SideMode;
@@ -36,7 +36,7 @@ import org.jspecify.annotations.Nullable;
  * Three modes, cycled with the "Switch Wrench Mode" key (V by default, see {@link SwitchWrenchModePayload}):
  * <ul>
  *   <li><b>Rotate</b> - right-click a block to turn it (machines and anything else with a facing/axis).</li>
- *   <li><b>Cable</b> - right-click an energy cable's arm to cut that connection; click again to restore it.</li>
+ *   <li><b>Cable</b> - right-click a cable's or pipe's arm to cut that connection; click again to restore it.</li>
  *   <li><b>Configure</b> - right-click a machine face to cycle it between Input, Output and None;
  *       sneak + right-click picks the machine up, keeping its settings and stored FE.</li>
  * </ul>
@@ -87,14 +87,14 @@ public class WrenchItem extends Item {
     private static InteractionResult useOnCable(UseOnContext context) {
         Level level = context.getLevel();
         BlockPos pos = context.getClickedPos();
-        if (!(level.getBlockState(pos).getBlock() instanceof EnergyCableBlock)) {
+        if (!(level.getBlockState(pos).getBlock() instanceof ConduitBlock)) {
             return InteractionResult.PASS;
         }
         // The arm (or core face) that was clicked: whichever way the hit point sticks out from the centre most.
         Vec3 offset = context.getClickLocation().subtract(Vec3.atCenterOf(pos));
         Direction side = Direction.getApproximateNearest(offset.x, offset.y, offset.z);
         if (!level.isClientSide()) {
-            boolean restored = EnergyCableBlock.toggleSide(level, pos, side);
+            boolean restored = ConduitBlock.toggleSide(level, pos, side);
             if (context.getPlayer() != null) {
                 context.getPlayer().sendOverlayMessage(Component.translatable(restored
                         ? "message.comminutioncraft.wrench.cable_restored" : "message.comminutioncraft.wrench.cable_cut"));

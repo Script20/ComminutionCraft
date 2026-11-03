@@ -4,7 +4,8 @@ Usage: python tools/gui_dark_chassis.py
 
 Sheet layout matches MachineScreen (256x256):
   background (0,0) 176x166, filled flame (176,0) 14x14, filled progress arrow (176,14) 24x17,
-  energy bar fill (176,31) 10x52 (tier 2; drawn at (11,17) on the background).
+  energy bar fill (176,31) 10x52 (tier 2; drawn at (11,17) on the background),
+  plasma gauge fill (186,31) 10x52 (tier 3; drawn at (155,17)).
 Slot positions match FuelMachineMenu (vanilla furnace layout), ElectricMachineMenu, ElectricGeneratorMenu and
 EnergyBatteryMenu (player inventory only).
 The seam lines beside the title and the groove after "Inventory" are drawn in MachineScreen,
@@ -27,6 +28,7 @@ GLASS = (13, 14, 17)
 SLOT = (22, 24, 28)
 COAL = dict(off=(86, 56, 34), on=(255, 150, 40), hi=(255, 214, 120))
 ELEC = dict(off=(30, 66, 86), on=(64, 196, 255), hi=(190, 240, 255))
+PLASMA = dict(off=(92, 34, 84), on=(255, 80, 210), hi=(255, 196, 244))
 MOLTEN = [(150, 50, 16), (226, 104, 28), (255, 168, 56), (255, 226, 140)]
 
 W, H = 176, 166
@@ -267,6 +269,57 @@ def battery_sheet():
     return s.img
 
 
+PLASMA_X = 155
+
+
+def plasma_well(s):
+    """Recessed tube on the right, mirroring the energy tube; the plasma fill sprite is drawn over its inside."""
+    x0, y0, x1, y1 = PLASMA_X - 1, ENERGY_Y - 1, PLASMA_X + ENERGY_W, ENERGY_Y + ENERGY_H
+    s.rect(x0, y0, x1, y1, GLASS)
+    s.hline(x0, x1, y0, K['o'])
+    s.vline(x0, y0, y1, K['o'])
+    s.hline(x0, x1, y1, K['hi'])
+    s.vline(x1, y0, y1, K['hi'])
+    for y in range(ENERGY_Y + 3, ENERGY_Y + ENERGY_H, 4):
+        s.px(x0 - 1, y, K['hi'])
+        s.hline(PLASMA_X, PLASMA_X + ENERGY_W - 1, y, (18, 20, 24))
+
+
+def plasma_sprite(s):
+    """Magenta plasma, bright at the surface, with soft swirl bands."""
+    import math
+    for y in range(ENERGY_H):
+        for x in range(ENERGY_W):
+            base = mix(PLASMA['hi'], PLASMA['on'], min(1.0, y / 8)) if y < 8 else                 mix(PLASMA['on'], (120, 20, 110), (y - 8) / (ENERGY_H - 8))
+            swirl = 0.5 + 0.5 * math.sin(x * 0.9 + y * 0.45)
+            c = mix(base, PLASMA['hi'], 0.18 * swirl) if y >= 8 else base
+            if x == 0 or x == ENERGY_W - 1:
+                c = shade(c, 0.75)
+            if (y - 3) % 4 == 0:
+                c = shade(c, 0.78)
+            s.px(186 + x, 31 + y, c)
+
+
+def plasma_generator_sheet():
+    """Plasma Generator: energy left, plasma right, Air Filter slot, and air -> plasma intake dots
+    (3 dots at x 66/74/82, the plasma dot at x 102, y 30-33; PlasmaGeneratorScreen lights them)."""
+    s = Sheet()
+    body(s)
+    energy_well(s)
+    plasma_well(s)
+    slot(s, 79, 52, rim=PLASMA['off'])
+    for i in range(3):
+        s.rect(66 + i * 8, 30, 69 + i * 8, 33, K['d'])
+    s.rect(102, 30, 105, 33, K['d'])
+    for x in range(91, 99):
+        s.px(x, 31, K['hi']); s.px(x, 32, K['hi'])
+    s.px(99, 30, K['hi']); s.px(99, 33, K['hi'])
+    player_inventory(s)
+    energy_sprite(s)
+    plasma_sprite(s)
+    return s.img
+
+
 os.makedirs(OUT, exist_ok=True)
 coal_sheet(granulator_arrow).save(os.path.join(OUT, 'coal_granulator.png'))
 coal_sheet(smelter_arrow).save(os.path.join(OUT, 'coal_smelter.png'))
@@ -274,4 +327,5 @@ electric_sheet(electric_granulator_arrow).save(os.path.join(OUT, 'electric_granu
 electric_sheet(smelter_arrow).save(os.path.join(OUT, 'electric_smelter.png'))
 generator_sheet().save(os.path.join(OUT, 'electric_generator.png'))
 battery_sheet().save(os.path.join(OUT, 'energy_battery.png'))
+plasma_generator_sheet().save(os.path.join(OUT, 'plasma_generator.png'))
 print('ok')

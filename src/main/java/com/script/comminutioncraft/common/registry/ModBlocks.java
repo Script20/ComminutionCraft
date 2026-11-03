@@ -3,13 +3,16 @@ package com.script.comminutioncraft.common.registry;
 import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.block.StoneSet;
 import com.script.comminutioncraft.common.cable.EnergyCableBlock;
+import com.script.comminutioncraft.common.cable.FluidPipeBlock;
 import com.script.comminutioncraft.common.machine.CoalGranulatorBlock;
 import com.script.comminutioncraft.common.machine.CoalSmelterBlock;
 import com.script.comminutioncraft.common.machine.ElectricGeneratorBlock;
 import com.script.comminutioncraft.common.machine.ElectricGranulatorBlock;
 import com.script.comminutioncraft.common.machine.ElectricSmelterBlock;
 import com.script.comminutioncraft.common.machine.EnergyBatteryBlock;
+import com.script.comminutioncraft.common.machine.FluidTankBlock;
 import com.script.comminutioncraft.common.machine.MachineBlock;
+import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlock;
 import java.util.List;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -46,6 +49,25 @@ public final class ModBlocks {
                     .strength(0.5F)
                     .sound(SoundType.COPPER)
                     .noOcclusion());
+
+    // Tier 3 (plasma)
+    public static final DeferredBlock<PlasmaGeneratorBlock> PLASMA_GENERATOR = BLOCKS.registerBlock(
+            "plasma_generator", PlasmaGeneratorBlock::new, ModBlocks::tier2MachineProperties);
+
+    public static final DeferredBlock<FluidPipeBlock> FLUID_PIPE = BLOCKS.registerBlock(
+            "fluid_pipe", FluidPipeBlock::new, properties -> properties
+                    .mapColor(MapColor.METAL)
+                    .strength(0.5F)
+                    .sound(SoundType.COPPER)
+                    .noOcclusion());
+
+    /** See-through (cutout) window, so it mustn't hide its neighbours' faces or suffocate. */
+    public static final DeferredBlock<FluidTankBlock> FLUID_TANK = BLOCKS.registerBlock(
+            "fluid_tank", FluidTankBlock::new, properties -> tier2MachineProperties(properties)
+                    .noOcclusion()
+                    .isViewBlocking((state, level, pos) -> false)
+                    .isSuffocating((state, level, pos) -> false)
+                    .isRedstoneConductor((state, level, pos) -> false));
 
     // Decorative stone (marble generates like granite; volcanic basalt crusts underground lava pools)
     public static final StoneSet MARBLE = new StoneSet(BLOCKS, "marble", MapColor.QUARTZ, 1.5F, 6.0F, SoundType.STONE);

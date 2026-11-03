@@ -127,9 +127,7 @@ public class ElectricGeneratorBlockEntity extends BaseContainerBlockEntity
 
     private void onControlsChanged() {
         setChanged();
-        if (level != null) {
-            level.invalidateCapabilities(worldPosition); // hopper/pipe faces may have changed
-        }
+        refreshFaces();
     }
 
     @Override

@@ -7,9 +7,11 @@ import java.util.Locale;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 
-/** Tooltip lines for a machine picked up with the wrench: its stored FE and that it kept its settings. */
+/** Tooltip lines for a machine picked up with the wrench: its stored FE / fluid and that it kept its settings. */
 public final class SavedMachineTooltip {
     public static void onTooltip(ItemTooltipEvent event) {
         ItemStack stack = event.getItemStack();
@@ -20,6 +22,12 @@ public final class SavedMachineTooltip {
         if (energy != null && !(stack.getItem() instanceof EnergyBatteryItem)) {
             lines.add(at++, Component.translatable("gui.comminutioncraft.battery.stored", String.format(Locale.ROOT, "%,d", energy))
                     .withStyle(ChatFormatting.GRAY));
+        }
+        SimpleFluidContent fluid = stack.get(ModDataComponents.STORED_FLUID.get());
+        if (fluid != null && !fluid.isEmpty()) {
+            FluidStack contents = fluid.copy();
+            lines.add(at++, Component.translatable("tooltip.comminutioncraft.stored_fluid", contents.getHoverName(),
+                    String.format(Locale.ROOT, "%,d", contents.getAmount())).withStyle(ChatFormatting.GRAY));
         }
         if (stack.has(ModDataComponents.MACHINE_SETTINGS.get())) {
             lines.add(at, Component.translatable("tooltip.comminutioncraft.machine_settings").withStyle(ChatFormatting.GRAY));

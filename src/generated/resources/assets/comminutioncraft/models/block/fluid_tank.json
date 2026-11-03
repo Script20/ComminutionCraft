@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "comminutioncraft:block/fluid_tank_top",
+    "side": "comminutioncraft:block/fluid_tank_side"
+  }
+}

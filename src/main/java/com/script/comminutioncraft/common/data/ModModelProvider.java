@@ -4,7 +4,7 @@ import com.mojang.math.Quadrant;
 import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.block.StoneSet;
 import com.script.comminutioncraft.common.cable.CableConnection;
-import com.script.comminutioncraft.common.cable.EnergyCableBlock;
+import com.script.comminutioncraft.common.cable.ConduitBlock;
 import com.script.comminutioncraft.common.machine.EnergyBatteryBlock;
 import com.script.comminutioncraft.common.registry.ModBlocks;
 import com.script.comminutioncraft.common.item.WrenchMode;
@@ -28,6 +28,7 @@ import net.minecraft.client.renderer.item.properties.select.ComponentContents;
 import net.minecraft.core.Direction;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.client.model.generators.template.ExtendedModelTemplateBuilder;
 
 /**
@@ -36,7 +37,7 @@ import net.neoforged.neoforge.client.model.generators.template.ExtendedModelTemp
  */
 public class ModModelProvider extends ModelProvider {
     /**
-     * Energy cable texture layout (16x16): core face at u0-6 v0-6, connector plate at u8-16 v0-8,
+     * Cable / pipe texture layout (16x16): core face at u0-6 v0-6, connector plate at u8-16 v0-8,
      * arm side strip (along the arm) at u0-16 v8-12.
      */
     private static final TextureSlot CABLE = TextureSlot.create("cable");
@@ -97,7 +98,12 @@ public class ModModelProvider extends ModelProvider {
         blockModels.createFurnace(ModBlocks.ELECTRIC_SMELTER.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         blockModels.createFurnace(ModBlocks.ELECTRIC_GENERATOR.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         energyBattery(blockModels);
-        energyCable(blockModels, itemModels);
+        conduit(blockModels, itemModels, ModBlocks.ENERGY_CABLE.get(), ModItems.ENERGY_CABLE.get());
+        blockModels.createFurnace(ModBlocks.PLASMA_GENERATOR.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
+        conduit(blockModels, itemModels, ModBlocks.FLUID_PIPE.get(), ModItems.FLUID_PIPE.get());
+        // fluid_tank_side has a transparent window, so the model renders cutout; the contents are a renderer
+        blockModels.createTrivialBlock(ModBlocks.FLUID_TANK.get(), TexturedModel.COLUMN);
+        itemModels.generateFlatItem(ModItems.AIR_FILTER.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.ELECTRONIC_CIRCUIT.get(), ModelTemplates.FLAT_ITEM);
         for (StoneSet set : ModBlocks.STONE_SETS) {
             StoneFamilies.of(set).all().forEach(family -> blockModels.family(family.getBaseBlock()).generateFor(family));
@@ -126,8 +132,8 @@ public class ModModelProvider extends ModelProvider {
                 .with(BlockModelGenerators.ROTATION_HORIZONTAL_FACING));
     }
 
-    private static void energyCable(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
-        EnergyCableBlock cable = ModBlocks.ENERGY_CABLE.get();
+    /** Cables and pipes: core + one arm per connected side + a plate where it meets a machine (same UV sheet layout). */
+    private static void conduit(BlockModelGenerators blockModels, ItemModelGenerators itemModels, ConduitBlock cable, Item item) {
         TextureMapping textures = new TextureMapping()
                 .put(CABLE, TextureMapping.getBlockTexture(cable))
                 .put(TextureSlot.PARTICLE, TextureMapping.getBlockTexture(cable));
@@ -145,14 +151,14 @@ public class ModModelProvider extends ModelProvider {
                 case UP -> BlockModelGenerators.X_ROT_270;
                 case DOWN -> BlockModelGenerators.X_ROT_90;
             };
-            var property = EnergyCableBlock.CONNECTIONS.get(direction);
+            var property = ConduitBlock.CONNECTIONS.get(direction);
             generator.with(BlockModelGenerators.condition().term(property, CableConnection.CABLE, CableConnection.MACHINE), arm.with(rotation));
             generator.with(BlockModelGenerators.condition().term(property, CableConnection.MACHINE), plate.with(rotation));
         }
         blockModels.blockStateOutput.accept(generator);
 
         Identifier inventory = CABLE_INVENTORY.createWithSuffix(cable, "_inventory", textures, blockModels.modelOutput);
-        itemModels.itemModelOutput.accept(ModItems.ENERGY_CABLE.get(), ItemModelUtils.plainModel(inventory));
+        itemModels.itemModelOutput.accept(item, ItemModelUtils.plainModel(inventory));
     }
 
     /** One texture per mode: copper grip (Rotate), blue (Cable), green (Configure); no component = Rotate. */

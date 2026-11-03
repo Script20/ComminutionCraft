@@ -1,6 +1,9 @@
 package com.script.comminutioncraft.common.compat.jade;
 
 import com.script.comminutioncraft.common.cable.EnergyCableBlock;
+import com.script.comminutioncraft.common.cable.FluidPipeBlock;
+import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlock;
+import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlockEntity;
 import com.script.comminutioncraft.common.machine.ElectricGeneratorBlock;
 import com.script.comminutioncraft.common.machine.ElectricGeneratorBlockEntity;
 import com.script.comminutioncraft.common.machine.ElectricMachineBlockEntity;
@@ -27,13 +30,15 @@ public class ComminutionJadePlugin implements IWailaPlugin {
         registration.registerBlockDataProvider(MachineProvider.INSTANCE, ElectricMachineBlockEntity.class);
         registration.registerBlockDataProvider(GeneratorProvider.INSTANCE, ElectricGeneratorBlockEntity.class);
         registration.registerBlockDataProvider(BatteryProvider.INSTANCE, EnergyBatteryBlockEntity.class);
+        registration.registerBlockDataProvider(PlasmaGeneratorProvider.INSTANCE, PlasmaGeneratorBlockEntity.class);
 
         // Our views already show the slots, so skip Jade's generic item list for them.
         registration.registerItemStorage(HideThingsExtensionProvider.instance(), FuelMachineBlockEntity.class);
         registration.registerItemStorage(HideThingsExtensionProvider.instance(), ElectricMachineBlockEntity.class);
         registration.registerItemStorage(HideThingsExtensionProvider.instance(), ElectricGeneratorBlockEntity.class);
-        // Cables pass power on and store none; a "0 / 1,000 FE" bar would only confuse.
+        // Cables and pipes pass things on and store none; a "0 / 1,000" bar would only confuse.
         registration.registerEnergyStorage(HideThingsExtensionProvider.instance(), EnergyCableBlock.class);
+        registration.registerFluidStorage(HideThingsExtensionProvider.instance(), FluidPipeBlock.class);
     }
 
     @Override
@@ -41,5 +46,6 @@ public class ComminutionJadePlugin implements IWailaPlugin {
         registration.registerBlockComponent(MachineProvider.Client.INSTANCE, MachineBlock.class);
         registration.registerBlockComponent(GeneratorProvider.Client.INSTANCE, ElectricGeneratorBlock.class);
         registration.registerBlockComponent(BatteryProvider.Client.INSTANCE, EnergyBatteryBlock.class);
+        registration.registerBlockComponent(PlasmaGeneratorProvider.Client.INSTANCE, PlasmaGeneratorBlock.class);
     }
 }

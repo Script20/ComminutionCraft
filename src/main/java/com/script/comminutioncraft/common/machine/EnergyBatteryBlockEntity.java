@@ -135,9 +135,7 @@ public class EnergyBatteryBlockEntity extends BlockEntity implements TickingMach
 
     private void onControlsChanged() {
         setChanged();
-        if (level != null) {
-            level.invalidateCapabilities(worldPosition); // energy faces may have changed
-        }
+        refreshFaces();
     }
 
     @Override

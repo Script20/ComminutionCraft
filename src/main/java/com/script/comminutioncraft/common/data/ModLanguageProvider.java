@@ -24,13 +24,18 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModBlocks.ENERGY_CABLE.get(), "Energy Cable");
         add(ModBlocks.ENERGY_BATTERY.get(), "Energy Battery");
         add(ModItems.ELECTRONIC_CIRCUIT.get(), "Electronic Circuit");
+        add(ModBlocks.PLASMA_GENERATOR.get(), "Plasma Generator");
+        add(ModBlocks.FLUID_PIPE.get(), "Fluid Pipe");
+        add(ModBlocks.FLUID_TANK.get(), "Fluid Tank");
+        add(ModItems.AIR_FILTER.get(), "Air Filter");
+        add("fluid_type.comminutioncraft.plasma", "Plasma");
         ModBlocks.STONE_SETS.forEach(set -> set.all().forEach(block -> add(block.get(), titleCase(block.getId().getPath()))));
 
         add(ModItems.WRENCH.get(), "Wrench");
         add("item.comminutioncraft.wrench.mode.rotate", "Mode: Rotate");
-        add("item.comminutioncraft.wrench.mode.cable", "Mode: Cable");
+        add("item.comminutioncraft.wrench.mode.cable", "Mode: Cables/Pipes");
         add("item.comminutioncraft.wrench.help.rotate", "Right-click a block to rotate it");
-        add("item.comminutioncraft.wrench.help.cable", "Right-click a cable's arm to cut or restore that connection");
+        add("item.comminutioncraft.wrench.help.cable", "Right-click a cable's or pipe's arm to cut or restore that connection");
         add("item.comminutioncraft.wrench.mode.configure", "Mode: Configure");
         add("item.comminutioncraft.wrench.help.configure", "Right-click a machine face to cycle Input / Output / None; sneak + right-click to pick the machine up");
         add("item.comminutioncraft.wrench.help.switch", "Press %s to switch mode");
@@ -43,6 +48,12 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.comminutioncraft.energy", "%s / %s FE");
         add("gui.comminutioncraft.generating", "%s FE/t");
         add("gui.comminutioncraft.battery.stored", "%s FE");
+        add("gui.comminutioncraft.intake", "Intake: %s/6");
+        add("gui.comminutioncraft.plasma_rate", "%s mB/t");
+        add("gui.comminutioncraft.plasma", "Plasma: %s / %s mB");
+        add("gui.comminutioncraft.no_filter", "No filter");
+        add("gui.comminutioncraft.no_filter.desc", "Without an Air Filter it makes plasma at half speed");
+        add("tooltip.comminutioncraft.stored_fluid", "%s: %s mB");
         add("gui.comminutioncraft.battery.capacity", "of %s FE");
         add("gui.comminutioncraft.battery.input", "In: %s FE/t");
         add("gui.comminutioncraft.battery.output", "Out: %s FE/t");
@@ -77,6 +88,9 @@ public class ModLanguageProvider extends LanguageProvider {
         add("jade.comminutioncraft.idle", "Idle");
         add("config.jade.plugin_comminutioncraft.battery", "ComminutionCraft energy battery");
         add("jade.comminutioncraft.battery_flow", "In %s FE/t · Out %s FE/t");
+        add("config.jade.plugin_comminutioncraft.plasma_generator", "ComminutionCraft plasma generator");
+        add("jade.comminutioncraft.plasma_generator", "Intake %s/6 · %s mB/t");
+        add("jade.comminutioncraft.no_filter", "No Air Filter (half speed)");
         for (ProcessedMetal metal : ProcessedMetal.ALL) {
             add(metal.granulated().get(), metal.displayName());
         }
