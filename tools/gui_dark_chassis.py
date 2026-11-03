@@ -320,6 +320,28 @@ def plasma_generator_sheet():
     return s.img
 
 
+def plasma_granulator_arrow(x, y):
+    """Magenta tier glow broken into chevron segments."""
+    base = mix(PLASMA['on'], PLASMA['hi'], 0.15 + 0.35 * (1 - abs(y - 8) / 8))
+    return shade(base, 0.72) if (x + abs(y - 8)) % 6 == 0 else base
+
+
+def plasma_machine_sheet(arrow_colour):
+    """Tier-3 processing machines: the electric layout (energy left, input, arrow, output) plus the plasma tube right."""
+    s = Sheet()
+    body(s)
+    energy_well(s)
+    plasma_well(s)
+    slot(s, 55, 34)
+    slot(s, 111, 30, 26, rim=PLASMA['off'])
+    arrow_silhouette(s, 79, 34)
+    player_inventory(s)
+    arrow_sprite(s, arrow_colour)
+    energy_sprite(s)
+    plasma_sprite(s)
+    return s.img
+
+
 os.makedirs(OUT, exist_ok=True)
 coal_sheet(granulator_arrow).save(os.path.join(OUT, 'coal_granulator.png'))
 coal_sheet(smelter_arrow).save(os.path.join(OUT, 'coal_smelter.png'))
@@ -328,4 +350,6 @@ electric_sheet(smelter_arrow).save(os.path.join(OUT, 'electric_smelter.png'))
 generator_sheet().save(os.path.join(OUT, 'electric_generator.png'))
 battery_sheet().save(os.path.join(OUT, 'energy_battery.png'))
 plasma_generator_sheet().save(os.path.join(OUT, 'plasma_generator.png'))
+plasma_machine_sheet(plasma_granulator_arrow).save(os.path.join(OUT, 'plasma_granulator.png'))
+plasma_machine_sheet(smelter_arrow).save(os.path.join(OUT, 'plasma_smelter.png'))
 print('ok')

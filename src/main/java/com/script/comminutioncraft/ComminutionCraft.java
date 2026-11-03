@@ -7,6 +7,7 @@ import com.script.comminutioncraft.common.registry.ModBlockEntities;
 import com.script.comminutioncraft.common.registry.ModBlocks;
 import com.script.comminutioncraft.common.cable.CableConnection;
 import com.script.comminutioncraft.common.cable.CableEnergyHandler;
+import com.script.comminutioncraft.common.machine.PlasmaMachineBlockEntity;
 import com.script.comminutioncraft.common.cable.ConduitBlock;
 import com.script.comminutioncraft.common.cable.EnergyCableBlock;
 import com.script.comminutioncraft.common.cable.PipeFluidHandler;
@@ -89,8 +90,17 @@ public class ComminutionCraft {
                 ModBlocks.FLUID_PIPE.get());
         event.registerBlock(Capabilities.Energy.BLOCK, (level, pos, state, blockEntity, side) ->
                 side != null && state.getValue(EnergyCableBlock.CONNECTIONS.get(side)) == CableConnection.DISABLED
-                        ? null : new CableEnergyHandler(level, pos, side),
-                ModBlocks.ENERGY_CABLE.get());
+                        ? null : new CableEnergyHandler(level, pos, side, ((EnergyCableBlock) state.getBlock()).getTransferRate()),
+                ModBlocks.ENERGY_CABLE.get(), ModBlocks.PLASMA_CABLE.get());
+
+        // Tier 3 machines: FE and items like tier 2, plasma in through Input faces
+        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.PLASMA_GRANULATOR.get(), WorldlyContainerWrapper::new);
+        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.PLASMA_SMELTER.get(), WorldlyContainerWrapper::new);
+        event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.PLASMA_GRANULATOR.get(), (machine, side) -> machine.getEnergyHandler());
+        event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.PLASMA_SMELTER.get(), (machine, side) -> machine.getEnergyHandler());
+        event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.PLASMA_GRANULATOR.get(), PlasmaMachineBlockEntity::getFluidHandler);
+        event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.PLASMA_SMELTER.get(), PlasmaMachineBlockEntity::getFluidHandler);
+        event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.PLASMA_ENERGY_BATTERY.get(), EnergyBatteryBlockEntity::getEnergyHandler);
     }
 
     public static Identifier id(String path) {

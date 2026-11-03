@@ -29,6 +29,8 @@ public final class ModItems {
 
     // Crafting components
     public static final DeferredItem<Item> ELECTRONIC_CIRCUIT = ITEMS.registerSimpleItem("electronic_circuit");
+    /** Tier-3 recipes use it; the Circuit Assembler (phase C2) makes it from an Electronic Circuit and plasma. */
+    public static final DeferredItem<Item> PLASMA_CIRCUIT = ITEMS.registerSimpleItem("plasma_circuit");
     /** Wears down by 1 per mB of plasma made in a Plasma Generator. */
     public static final DeferredItem<Item> AIR_FILTER = ITEMS.registerSimpleItem("air_filter",
             properties -> properties.durability(PlasmaGeneratorBlockEntity.FILTER_DURABILITY));
@@ -43,9 +45,15 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> ELECTRIC_SMELTER = ITEMS.registerSimpleBlockItem("electric_smelter", ModBlocks.ELECTRIC_SMELTER);
     public static final DeferredItem<BlockItem> ELECTRIC_GENERATOR = ITEMS.registerSimpleBlockItem("electric_generator", ModBlocks.ELECTRIC_GENERATOR);
     public static final DeferredItem<EnergyBatteryItem> ENERGY_BATTERY = ITEMS.registerItem("energy_battery",
-            properties -> new EnergyBatteryItem(ModBlocks.ENERGY_BATTERY.get(), properties, EnergyBatteryBlockEntity.CAPACITY),
+            properties -> new EnergyBatteryItem(ModBlocks.ENERGY_BATTERY.get(), properties, EnergyBatteryBlockEntity.CAPACITY, 0x40C4FF),
             properties -> properties.useBlockDescriptionPrefix());
     public static final DeferredItem<BlockItem> PLASMA_GENERATOR = ITEMS.registerSimpleBlockItem("plasma_generator", ModBlocks.PLASMA_GENERATOR);
+    public static final DeferredItem<BlockItem> PLASMA_GRANULATOR = ITEMS.registerSimpleBlockItem("plasma_granulator", ModBlocks.PLASMA_GRANULATOR);
+    public static final DeferredItem<BlockItem> PLASMA_SMELTER = ITEMS.registerSimpleBlockItem("plasma_smelter", ModBlocks.PLASMA_SMELTER);
+    public static final DeferredItem<EnergyBatteryItem> PLASMA_ENERGY_BATTERY = ITEMS.registerItem("plasma_energy_battery",
+            properties -> new EnergyBatteryItem(ModBlocks.PLASMA_ENERGY_BATTERY.get(), properties, EnergyBatteryBlockEntity.PLASMA_CAPACITY, 0xFF50D2),
+            properties -> properties.useBlockDescriptionPrefix());
+    public static final DeferredItem<BlockItem> PLASMA_CABLE = ITEMS.registerSimpleBlockItem("plasma_cable", ModBlocks.PLASMA_CABLE);
     public static final DeferredItem<BlockItem> FLUID_PIPE = ITEMS.registerSimpleBlockItem("fluid_pipe", ModBlocks.FLUID_PIPE);
     public static final DeferredItem<BlockItem> FLUID_TANK = ITEMS.registerSimpleBlockItem("fluid_tank", ModBlocks.FLUID_TANK);
     public static final DeferredItem<BlockItem> ENERGY_CABLE = ITEMS.registerSimpleBlockItem("energy_cable", ModBlocks.ENERGY_CABLE);

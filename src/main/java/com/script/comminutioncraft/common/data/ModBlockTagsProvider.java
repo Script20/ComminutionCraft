@@ -27,7 +27,11 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
                 .add(ModBlocks.PLASMA_GENERATOR.get())
                 .add(ModBlocks.FLUID_PIPE.get())
                 .add(ModBlocks.FLUID_TANK.get())
-                .add(ModBlocks.ENERGY_CABLE.get());
+                .add(ModBlocks.ENERGY_CABLE.get())
+                .add(ModBlocks.PLASMA_GRANULATOR.get())
+                .add(ModBlocks.PLASMA_SMELTER.get())
+                .add(ModBlocks.PLASMA_ENERGY_BATTERY.get())
+                .add(ModBlocks.PLASMA_CABLE.get());
 
         for (StoneSet set : ModBlocks.STONE_SETS) {
             set.all().forEach(block -> tag(BlockTags.MINEABLE_WITH_PICKAXE).add(block.get()));

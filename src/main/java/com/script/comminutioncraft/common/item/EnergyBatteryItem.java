@@ -14,13 +14,14 @@ import net.minecraft.world.level.block.Block;
 
 /** Battery block item: a charge bar and "Stored: x / y FE" for the FE kept from a broken battery. */
 public class EnergyBatteryItem extends BlockItem {
-    private static final int BAR_COLOR = 0x40C4FF;
-
     private final int capacity;
+    private final int barColor;
 
-    public EnergyBatteryItem(Block block, Properties properties, int capacity) {
+    /** {@code barColor} is the tier colour (RGB). */
+    public EnergyBatteryItem(Block block, Properties properties, int capacity, int barColor) {
         super(block, properties);
         this.capacity = capacity;
+        this.barColor = barColor;
     }
 
     private static int stored(ItemStack stack) {
@@ -39,7 +40,7 @@ public class EnergyBatteryItem extends BlockItem {
 
     @Override
     public int getBarColor(ItemStack stack) {
-        return BAR_COLOR;
+        return barColor;
     }
 
     @Override

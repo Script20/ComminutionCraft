@@ -6,6 +6,7 @@ import com.script.comminutioncraft.common.machine.ElectricMachineMenu;
 import com.script.comminutioncraft.common.machine.EnergyBatteryMenu;
 import com.script.comminutioncraft.common.machine.FuelMachineMenu;
 import com.script.comminutioncraft.common.machine.PlasmaGeneratorMenu;
+import com.script.comminutioncraft.common.machine.PlasmaMachineMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.MenuType;
@@ -35,6 +36,15 @@ public final class ModMenus {
 
     public static final DeferredHolder<MenuType<?>, MenuType<PlasmaGeneratorMenu>> PLASMA_GENERATOR =
             MENUS.register("plasma_generator", () -> new MenuType<>(PlasmaGeneratorMenu::client, FeatureFlags.VANILLA_SET));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<PlasmaMachineMenu>> PLASMA_GRANULATOR =
+            MENUS.register("plasma_granulator", () -> new MenuType<>(PlasmaMachineMenu::clientGranulator, FeatureFlags.VANILLA_SET));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<PlasmaMachineMenu>> PLASMA_SMELTER =
+            MENUS.register("plasma_smelter", () -> new MenuType<>(PlasmaMachineMenu::clientSmelter, FeatureFlags.VANILLA_SET));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<EnergyBatteryMenu>> PLASMA_ENERGY_BATTERY =
+            MENUS.register("plasma_energy_battery", () -> new MenuType<>(EnergyBatteryMenu::clientPlasma, FeatureFlags.VANILLA_SET));
 
     private ModMenus() {}
 }

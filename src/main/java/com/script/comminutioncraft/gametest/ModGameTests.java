@@ -6,6 +6,12 @@ import com.script.comminutioncraft.common.cable.ConduitBlock;
 import com.script.comminutioncraft.common.cable.EnergyCableBlock;
 import com.script.comminutioncraft.common.machine.FluidTankBlockEntity;
 import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlockEntity;
+import com.script.comminutioncraft.common.machine.PlasmaGranulatorBlockEntity;
+import com.script.comminutioncraft.common.machine.PlasmaMachineBlockEntity;
+import com.script.comminutioncraft.common.energy.MachineEnergyStorage;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.transfer.energy.EnergyHandler;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import com.script.comminutioncraft.common.registry.ModFluids;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
@@ -96,6 +102,9 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("wrench_pickup_keeps_tank_fluid", () -> ModGameTests::wrenchPickupKeepsTankFluid);
         TEST_FUNCTIONS.register("pipes_and_cables_dont_join", () -> ModGameTests::pipesAndCablesDontJoin);
         TEST_FUNCTIONS.register("side_change_reconnects_cable", () -> ModGameTests::sideChangeReconnectsCable);
+        TEST_FUNCTIONS.register("plasma_granulator_needs_plasma", () -> ModGameTests::plasmaGranulatorNeedsPlasma);
+        TEST_FUNCTIONS.register("plasma_cable_caps_per_tick", () -> ModGameTests::plasmaCableCapsPerTick);
+        TEST_FUNCTIONS.register("cable_tiers_dont_join", () -> ModGameTests::cableTiersDontJoin);
     }
 
     public static void registerTests(RegisterGameTestsEvent event) {
@@ -523,7 +532,80 @@ public final class ModGameTests {
         helper.succeed();
     }
 
+    /**
+     * A powered Plasma Granulator with raw iron does nothing without plasma; given 15 mB it runs one operation
+     * (10 mB) and then waits again with 5 mB left.
+     */
+    private static void plasmaGranulatorNeedsPlasma(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, ModBlocks.PLASMA_GRANULATOR.get());
+        PlasmaMachineBlockEntity machine = helper.getBlockEntity(pos, PlasmaMachineBlockEntity.class);
+        ((MachineEnergyStorage) machine.getEnergyHandler()).set(PlasmaMachineBlockEntity.ENERGY_CAPACITY);
+        machine.setItem(ElectricMachineBlockEntity.SLOT_INPUT, new ItemStack(Items.RAW_IRON, 2));
+
+        helper.runAfterDelay(PlasmaGranulatorBlockEntity.PROCESS_TIME + 10, () -> {
+            helper.assertTrue(machine.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT).isEmpty() && machine.getProgress() == 0,
+                    "The granulator ran without plasma");
+            machine.getTank().fill(FluidResource.of(ModFluids.PLASMA.get()), 15);
+            helper.runAfterDelay(PlasmaGranulatorBlockEntity.PROCESS_TIME * 3, () -> {
+                ItemStack output = machine.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT);
+                helper.assertTrue(output.is(ModItems.GRANULATED_IRON.get()) && output.getCount() == 2,
+                        "Expected one operation (2 granulated iron), got " + output);
+                helper.assertTrue(machine.getTank().getAmount() == 5, "Expected 5 mB left, has " + machine.getTank().getAmount());
+                helper.succeed();
+            });
+        });
+    }
+
+    /**
+     * A Plasma Cable network moves at most 8,000 FE per tick however many inserts there are, a cancelled
+     * (simulated) insert doesn't use any of that, and the next tick the full amount is available again.
+     */
+    private static void plasmaCableCapsPerTick(GameTestHelper helper) {
+        BlockPos battery = new BlockPos(1, 1, 2);
+        BlockPos cable = new BlockPos(2, 1, 2);
+        helper.setBlock(battery, ModBlocks.PLASMA_ENERGY_BATTERY.get().defaultBlockState().setValue(MachineBlock.FACING, Direction.NORTH));
+        placeConduit(helper, cable, ModBlocks.PLASMA_CABLE.get());
+        assertConnection(helper, cable, Direction.WEST, CableConnection.MACHINE);
+        EnergyHandler handler = helper.getLevel().getCapability(Capabilities.Energy.BLOCK, helper.absolutePos(cable), Direction.EAST);
+        helper.assertTrue(handler != null, "The plasma cable has no FE capability");
+        EnergyBatteryBlockEntity cell = helper.getBlockEntity(battery, EnergyBatteryBlockEntity.class);
+
+        try (Transaction simulation = Transaction.openRoot()) {
+            handler.insert(6_000, simulation); // not committed
+        }
+        int first = insertCommitted(handler, 6_000);
+        int second = insertCommitted(handler, 6_000);
+        helper.assertTrue(first == 6_000 && second == 2_000,
+                "Expected 6,000 then 2,000 FE this tick, got " + first + " then " + second);
+        helper.assertTrue(cell.getEnergy() == EnergyCableBlock.PLASMA_CABLE_RATE, "The battery should hold 8,000 FE, has " + cell.getEnergy());
+        helper.runAfterDelay(1, () -> {
+            int next = insertCommitted(handler, 6_000);
+            helper.assertTrue(next == 6_000, "Next tick the cable should carry 6,000 FE again, carried " + next);
+            helper.succeed();
+        });
+    }
+
+    /** An Energy Cable next to a Plasma Cable doesn't connect to it either way (each tier is its own network). */
+    private static void cableTiersDontJoin(GameTestHelper helper) {
+        BlockPos energy = new BlockPos(1, 1, 2);
+        BlockPos plasma = new BlockPos(2, 1, 2);
+        placeConduit(helper, energy, ModBlocks.ENERGY_CABLE.get());
+        placeConduit(helper, plasma, ModBlocks.PLASMA_CABLE.get());
+        assertConnection(helper, energy, Direction.EAST, CableConnection.NONE);
+        assertConnection(helper, plasma, Direction.WEST, CableConnection.NONE);
+        helper.succeed();
+    }
+
     // ---- Helpers ----
+
+    private static int insertCommitted(EnergyHandler handler, int amount) {
+        try (Transaction transaction = Transaction.openRoot()) {
+            int inserted = handler.insert(amount, transaction);
+            transaction.commit();
+            return inserted;
+        }
+    }
 
     /** A Plasma Generator facing north with a full FE buffer and, optionally, an Air Filter. */
     private static PlasmaGeneratorBlockEntity placePlasmaGenerator(GameTestHelper helper, BlockPos pos, boolean filter) {

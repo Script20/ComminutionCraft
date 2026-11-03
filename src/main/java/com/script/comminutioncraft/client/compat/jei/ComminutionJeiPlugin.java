@@ -63,8 +63,10 @@ public class ComminutionJeiPlugin implements IModPlugin {
 
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
-        registration.addCraftingStation(GRANULATING.get(), ModItems.COAL_GRANULATOR.get(), ModItems.ELECTRIC_GRANULATOR.get());
-        registration.addCraftingStation(RecipeTypes.SMELTING, ModItems.COAL_SMELTER.get(), ModItems.ELECTRIC_SMELTER.get());
+        registration.addCraftingStation(GRANULATING.get(),
+                ModItems.COAL_GRANULATOR.get(), ModItems.ELECTRIC_GRANULATOR.get(), ModItems.PLASMA_GRANULATOR.get());
+        registration.addCraftingStation(RecipeTypes.SMELTING,
+                ModItems.COAL_SMELTER.get(), ModItems.ELECTRIC_SMELTER.get(), ModItems.PLASMA_SMELTER.get());
         // Everything that burns furnace fuel
         registration.addCraftingStation(RecipeTypes.SMELTING_FUEL,
                 ModItems.COAL_GRANULATOR.get(), ModItems.COAL_SMELTER.get(), ModItems.ELECTRIC_GENERATOR.get());

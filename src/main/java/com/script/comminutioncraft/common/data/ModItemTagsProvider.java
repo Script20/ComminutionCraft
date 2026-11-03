@@ -26,6 +26,7 @@ public class ModItemTagsProvider extends ItemTagsProvider {
         tag(Tags.Items.TOOLS_WRENCH).add(ModItems.WRENCH.get());
         // Other mods' recipes that take "a basic circuit" accept ours.
         tag(ProcessedMetal.commonItemTag("circuits/basic")).add(ModItems.ELECTRONIC_CIRCUIT.get());
+        tag(ProcessedMetal.commonItemTag("circuits/advanced")).add(ModItems.PLASMA_CIRCUIT.get());
 
         for (StoneSet set : ModBlocks.STONE_SETS) {
             set.allStairs().forEach(block -> tag(ItemTags.STAIRS).add(block.get().asItem()));

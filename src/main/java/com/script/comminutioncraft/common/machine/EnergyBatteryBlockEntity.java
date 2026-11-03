@@ -5,6 +5,7 @@ import com.script.comminutioncraft.common.energy.MachineEnergyStorage;
 import com.script.comminutioncraft.common.machine.control.ControllableMachine;
 import com.script.comminutioncraft.common.machine.control.MachineControls;
 import com.script.comminutioncraft.common.registry.ModBlockEntities;
+import com.script.comminutioncraft.common.registry.ModMenus;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponentGetter;
@@ -16,8 +17,10 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -28,15 +31,18 @@ import net.neoforged.neoforge.transfer.energy.LimitingEnergyHandler;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Tier 2 Energy Battery: stores 1,000,000 FE. Input faces accept up to {@link #TRANSFER_RATE} FE per insert;
- * every tick it pushes up to {@link #TRANSFER_RATE} FE in total out of its output faces (into cables or straight
- * into machines). None faces don't connect at all. Redstone-off stops the output but it keeps charging.
+ * Energy Battery. Tier 2 stores {@link #CAPACITY} FE and moves {@link #TRANSFER_RATE} FE/t; the tier-3 Plasma Energy
+ * Battery stores {@link #PLASMA_CAPACITY} and moves {@link #PLASMA_TRANSFER_RATE}. Input faces accept up to the rate
+ * per insert; every tick it pushes up to the rate in total out of its output faces (into cables or straight into
+ * machines). None faces don't connect at all. Redstone-off stops the output but it keeps charging.
  * <p>
  * Mined with a pickaxe it forgets everything; picked up with the wrench it keeps its charge and settings.
  */
 public class EnergyBatteryBlockEntity extends BlockEntity implements TickingMachine, ControllableMachine, MenuProvider {
     public static final int CAPACITY = 1_000_000;
     public static final int TRANSFER_RATE = 1_000;
+    public static final int PLASMA_CAPACITY = 8_000_000;
+    public static final int PLASMA_TRANSFER_RATE = 8_000;
     /** Charge cells on the front texture (blockstate {@code charge} 0..CELLS). */
     public static final int CELLS = 6;
 
@@ -51,9 +57,12 @@ public class EnergyBatteryBlockEntity extends BlockEntity implements TickingMach
     public static final int DATA_SENT = 7;
     public static final int DATA_COUNT = 8;
 
-    private final MachineEnergyStorage energy = new MachineEnergyStorage(CAPACITY, TRANSFER_RATE, TRANSFER_RATE, this::setChanged);
-    private final EnergyHandler inputFace = new LimitingEnergyHandler(energy, TRANSFER_RATE, 0);
-    private final EnergyHandler outputFace = new LimitingEnergyHandler(energy, 0, TRANSFER_RATE);
+    private final int capacity;
+    private final int transferRate;
+    private final MenuType<EnergyBatteryMenu> menuType;
+    private final MachineEnergyStorage energy;
+    private final EnergyHandler inputFace;
+    private final EnergyHandler outputFace;
     private final MachineControls controls = new MachineControls(MachineControls.outputBelow(), this::onControlsChanged);
     /** FE that came in / went out during the last tick (for the GUI and Jade). */
     private int received;
@@ -86,8 +95,30 @@ public class EnergyBatteryBlockEntity extends BlockEntity implements TickingMach
         }
     };
 
+    /** Tier 2 Energy Battery. */
     public EnergyBatteryBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.ENERGY_BATTERY.get(), pos, state);
+        this(ModBlockEntities.ENERGY_BATTERY.get(), ModMenus.ENERGY_BATTERY.get(), pos, state, CAPACITY, TRANSFER_RATE);
+    }
+
+    /** Tier 3 Plasma Energy Battery. */
+    public static EnergyBatteryBlockEntity plasma(BlockPos pos, BlockState state) {
+        return new EnergyBatteryBlockEntity(ModBlockEntities.PLASMA_ENERGY_BATTERY.get(), ModMenus.PLASMA_ENERGY_BATTERY.get(),
+                pos, state, PLASMA_CAPACITY, PLASMA_TRANSFER_RATE);
+    }
+
+    private EnergyBatteryBlockEntity(BlockEntityType<?> type, MenuType<EnergyBatteryMenu> menuType, BlockPos pos,
+                                     BlockState state, int capacity, int transferRate) {
+        super(type, pos, state);
+        this.capacity = capacity;
+        this.transferRate = transferRate;
+        this.menuType = menuType;
+        energy = new MachineEnergyStorage(capacity, transferRate, transferRate, this::setChanged);
+        inputFace = new LimitingEnergyHandler(energy, transferRate, 0);
+        outputFace = new LimitingEnergyHandler(energy, 0, transferRate);
+    }
+
+    public int getCapacity() {
+        return capacity;
     }
 
     /** The FE capability on a face: insert-only on input faces, extract-only on output faces, none on None faces. */
@@ -105,7 +136,7 @@ public class EnergyBatteryBlockEntity extends BlockEntity implements TickingMach
 
     /** Sets the stored FE directly (creative/testing). */
     public void setEnergy(int amount) {
-        energy.set(Math.clamp(amount, 0, CAPACITY));
+        energy.set(Math.clamp(amount, 0, capacity));
     }
 
     public int getReceived() {
@@ -118,12 +149,12 @@ public class EnergyBatteryBlockEntity extends BlockEntity implements TickingMach
 
     public int getComparatorSignal() {
         int stored = energy.getEnergy();
-        return stored <= 0 ? 0 : 1 + (int) ((long) (stored - 1) * 14 / CAPACITY);
+        return stored <= 0 ? 0 : 1 + (int) ((long) (stored - 1) * 14 / capacity);
     }
 
     /** How many front cells are lit: 0 only when empty, all of them only above 5/6 full. */
-    static int chargeLevel(int stored) {
-        return stored <= 0 ? 0 : Math.min(CELLS, 1 + (int) ((long) (stored - 1) * CELLS / CAPACITY));
+    int chargeLevel(int stored) {
+        return stored <= 0 ? 0 : Math.min(CELLS, 1 + (int) ((long) (stored - 1) * CELLS / capacity));
     }
 
     // ---- Ticking ----
@@ -156,9 +187,9 @@ public class EnergyBatteryBlockEntity extends BlockEntity implements TickingMach
         }
     }
 
-    /** Offers energy to every neighbour on an output face, up to {@link #TRANSFER_RATE} per tick in total. */
+    /** Offers energy to every neighbour on an output face, up to the transfer rate per tick in total. */
     private int pushEnergy(ServerLevel level, BlockPos pos) {
-        int budget = Math.min(TRANSFER_RATE, energy.getEnergy());
+        int budget = Math.min(transferRate, energy.getEnergy());
         int moved = 0;
         for (Direction direction : Direction.values()) {
             if (moved >= budget) {
@@ -218,6 +249,6 @@ public class EnergyBatteryBlockEntity extends BlockEntity implements TickingMach
 
     @Override
     public AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player player) {
-        return new EnergyBatteryMenu(containerId, inventory, this, dataAccess);
+        return new EnergyBatteryMenu(menuType, containerId, inventory, this, dataAccess);
     }
 }

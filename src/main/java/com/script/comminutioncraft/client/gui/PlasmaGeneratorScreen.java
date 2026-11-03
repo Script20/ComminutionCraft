@@ -4,7 +4,6 @@ import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlockEntity;
 import com.script.comminutioncraft.common.machine.PlasmaGeneratorMenu;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
@@ -20,7 +19,6 @@ public class PlasmaGeneratorScreen extends MachineScreen<PlasmaGeneratorMenu> {
     private static final int WARNING_COLOR = 0xFFFFB04A;
     private static final int AIR_COLOR = 0xFFC4DAEC;
     private static final int PLASMA_COLOR = 0xFFFF50D2;
-    private static final int PLASMA_X = 155;
 
     public PlasmaGeneratorScreen(PlasmaGeneratorMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title, TEXTURE, Tier.PLASMA);
@@ -35,7 +33,7 @@ public class PlasmaGeneratorScreen extends MachineScreen<PlasmaGeneratorMenu> {
     public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         super.extractBackground(graphics, mouseX, mouseY, partialTick);
         drawEnergyBar(graphics, menu.getEnergy(), menu.getEnergyCapacity());
-        drawPlasmaGauge(graphics);
+        drawPlasmaGauge(graphics, menu.getPlasma(), menu.getPlasmaCapacity());
         int litDots = Math.round(menu.getIntake() / 2.0F);
         for (int i = 0; i < 3; i++) {
             if (i < litDots) {
@@ -45,19 +43,6 @@ public class PlasmaGeneratorScreen extends MachineScreen<PlasmaGeneratorMenu> {
         if (menu.getRate() > 0) {
             graphics.fill(leftPos + 103, topPos + 31, leftPos + 105, topPos + 33, PLASMA_COLOR);
         }
-    }
-
-    private void drawPlasmaGauge(GuiGraphicsExtractor graphics) {
-        int capacity = menu.getPlasmaCapacity();
-        int amount = menu.getPlasma();
-        if (capacity <= 0 || amount <= 0) {
-            return;
-        }
-        int height = Math.max(1, Math.round((float) ENERGY_H * Math.min(amount, capacity) / capacity));
-        graphics.blit(RenderPipelines.GUI_TEXTURED, texture,
-                leftPos + PLASMA_X, topPos + ENERGY_Y + ENERGY_H - height,
-                186, 31 + ENERGY_H - height,
-                ENERGY_W, height, TEX_SIZE, TEX_SIZE);
     }
 
     @Override
@@ -76,10 +61,7 @@ public class PlasmaGeneratorScreen extends MachineScreen<PlasmaGeneratorMenu> {
     protected void extractTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         super.extractTooltip(graphics, mouseX, mouseY);
         energyTooltip(graphics, mouseX, mouseY, menu.getEnergy(), menu.getEnergyCapacity());
-        if (isHovering(PLASMA_X, ENERGY_Y, ENERGY_W, ENERGY_H, mouseX, mouseY)) {
-            graphics.setTooltipForNextFrame(Component.translatable("gui.comminutioncraft.plasma",
-                    formatFe(menu.getPlasma()), formatFe(menu.getPlasmaCapacity())), mouseX, mouseY);
-        }
+        plasmaTooltip(graphics, mouseX, mouseY, menu.getPlasma(), menu.getPlasmaCapacity());
         if (!menu.hasFilter() && isHovering(79, 52, 18, 18, mouseX, mouseY)) {
             graphics.setTooltipForNextFrame(Component.translatable("gui.comminutioncraft.no_filter.desc"), mouseX, mouseY);
         }

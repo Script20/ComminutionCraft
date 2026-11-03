@@ -8,6 +8,12 @@ Usage: python tools/gen_tier3_textures.py
   Fluid Tank (the side has a fully transparent window: the block renders cutout and FluidTankRenderer draws the
   contents); plasma_still / plasma_flow (8-frame strips, used by the plasma fluid model).
 The phase B preview sheet (design/previews/phase_b.png) was drawn from these same functions.
+
+Phase C1 (approved preview: design/previews/phase_c.png):
+- Plasma Granulator / Smelter: the electric machines' top halves over the plasma tube; tier-3 top and side.
+- Plasma Cable (same UV layout as the energy cable: magenta core, steel bands, double-ringed plate).
+- Plasma Circuit item (the circuit board with gold traces and a magenta chip).
+- Plasma Energy Battery (battery faces in magenta, _front_0.._front_6 + _front).
 """
 import math
 import os
@@ -22,10 +28,13 @@ sys.path.insert(0, TOOLS)
 from mekstyle_lib import Tex, mix, shade, FRAMES, TAU  # noqa: E402
 import dark_chassis_system as dcs  # noqa: E402
 from dark_chassis_system import K, GLASS, STEEL, COPPER, casing, seam, well  # noqa: E402
+from dark_chassis_system import (front, side, top, act_conveyor, act_conveyor_smelt, mix as _mix,  # noqa: E402,F401
+                                 circuit, battery_front, battery_side, battery_top, BATTERY_CELLS)
 
 dcs.TIERS['plasma'] = dict(off=(92, 34, 84), on=(255, 80, 210), hi=(255, 196, 244))
 P = dcs.TIERS['plasma']
 AIR = (196, 218, 236)
+GOLD = [(120, 84, 20), (180, 132, 36), (232, 186, 64), (255, 230, 130)]
 
 # tier_plasma (the approved tier-3 bottom) lives in six_tiers.py; pull just that function in.
 _src = open(os.path.join(TOOLS, 'six_tiers.py')).read()
@@ -236,6 +245,52 @@ def tank_side_cutout():
     return t
 
 
+# ================================================================ Plasma Cable (same UVs as the energy cable)
+def plasma_cable_sheet():
+    """Like the energy cable but magenta, with steel bands on the arm and a double ring on the plate (heavier duty)."""
+    img = Image.new('RGBA', (16, 16), (0, 0, 0, 0))
+
+    def px(x, y, c):
+        img.putpixel((x, y), tuple(c[:3]) + (255,))
+
+    for y in range(6):
+        for x in range(6):
+            edge = x in (0, 5) or y in (0, 5)
+            px(x, y, K['o'] if edge else mix(K['l'], K['m'], y / 5))
+    for (x, y) in ((2, 2), (3, 2), (2, 3), (3, 3)):
+        px(x, y, P['hi'] if (x, y) == (2, 2) else P['on'])
+    for (x, y) in ((1, 1), (4, 1), (1, 4), (4, 4)):
+        px(x, y, STEEL[2])
+    for y in range(8):
+        for x in range(8):
+            c = mix(K['l'], K['d'], y / 7)
+            if y == 0 or x == 0:
+                c = K['hi']
+            if y == 7 or x == 7:
+                c = K['o']
+            px(8 + x, y, c)
+    for y in range(1, 7):
+        for x in range(1, 7):
+            outer = x in (1, 6) or y in (1, 6)
+            inner = x in (2, 5) or y in (2, 5)
+            if outer:
+                px(8 + x, y, STEEL[1])
+            elif inner:
+                px(8 + x, y, shade(P['on'], 0.8))
+            else:
+                px(8 + x, y, (14, 10, 16))
+    px(8 + 3, 3, P['hi'])
+    rows = [K['l'], P['on'], shade(P['on'], 0.62), K['o']]
+    for x in range(16):
+        for y, c in enumerate(rows):
+            if x % 8 in (0, 1):
+                c = STEEL[3] if y == 0 else (STEEL[2] if y < 3 else STEEL[0])  # steel bands
+            elif y == 1 and x % 8 == 4:
+                c = P['hi']
+            px(x, 8 + y, c)
+    return img
+
+
 ROOT = os.path.join(TOOLS, '..', 'src', 'main', 'resources', 'assets', 'comminutioncraft', 'textures')
 BLOCK = os.path.join(ROOT, 'block')
 ITEM = os.path.join(ROOT, 'item')
@@ -264,4 +319,17 @@ if __name__ == '__main__':
     tank_top().img.save(os.path.join(BLOCK, 'fluid_tank_top.png'))
     save_strip(os.path.join(BLOCK, 'plasma_still.png'), plasma_still)
     save_strip(os.path.join(BLOCK, 'plasma_flow.png'), lambda k: plasma_still(k, flow=True))
+    # phase C1
+    for name, act in (('plasma_granulator', act_conveyor), ('plasma_smelter', act_conveyor_smelt)):
+        top('plasma').img.save(os.path.join(BLOCK, f'{name}_top.png'))
+        side('plasma').img.save(os.path.join(BLOCK, f'{name}_side.png'))
+        front(act, tier_plasma, 'plasma').img.save(os.path.join(BLOCK, f'{name}_front.png'))
+        save_strip(os.path.join(BLOCK, f'{name}_front_on.png'), lambda k, act=act: front(act, tier_plasma, 'plasma', k))
+    plasma_cable_sheet().save(os.path.join(BLOCK, 'plasma_cable.png'))
+    circuit('plasma', GOLD).img.save(os.path.join(ITEM, 'plasma_circuit.png'))
+    battery_top('plasma').img.save(os.path.join(BLOCK, 'plasma_energy_battery_top.png'))
+    battery_side('plasma').img.save(os.path.join(BLOCK, 'plasma_energy_battery_side.png'))
+    battery_front('plasma', BATTERY_CELLS).img.save(os.path.join(BLOCK, 'plasma_energy_battery_front.png'))
+    for level in range(BATTERY_CELLS + 1):
+        battery_front('plasma', level).img.save(os.path.join(BLOCK, f'plasma_energy_battery_front_{level}.png'))
     print('ok')

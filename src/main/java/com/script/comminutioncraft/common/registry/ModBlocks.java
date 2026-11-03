@@ -13,6 +13,8 @@ import com.script.comminutioncraft.common.machine.EnergyBatteryBlock;
 import com.script.comminutioncraft.common.machine.FluidTankBlock;
 import com.script.comminutioncraft.common.machine.MachineBlock;
 import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlock;
+import com.script.comminutioncraft.common.machine.PlasmaGranulatorBlock;
+import com.script.comminutioncraft.common.machine.PlasmaSmelterBlock;
 import java.util.List;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -41,10 +43,11 @@ public final class ModBlocks {
             "electric_generator", ElectricGeneratorBlock::new, ModBlocks::tier2MachineProperties);
 
     public static final DeferredBlock<EnergyBatteryBlock> ENERGY_BATTERY = BLOCKS.registerBlock(
-            "energy_battery", EnergyBatteryBlock::new, ModBlocks::tier2MachineProperties);
+            "energy_battery", properties -> new EnergyBatteryBlock(properties, () -> ModBlockEntities.ENERGY_BATTERY.get()),
+            ModBlocks::tier2MachineProperties);
 
     public static final DeferredBlock<EnergyCableBlock> ENERGY_CABLE = BLOCKS.registerBlock(
-            "energy_cable", EnergyCableBlock::new, properties -> properties
+            "energy_cable", properties -> new EnergyCableBlock(properties, EnergyCableBlock.ENERGY_CABLE_RATE), properties -> properties
                     .mapColor(MapColor.COLOR_GRAY)
                     .strength(0.5F)
                     .sound(SoundType.COPPER)
@@ -53,6 +56,24 @@ public final class ModBlocks {
     // Tier 3 (plasma)
     public static final DeferredBlock<PlasmaGeneratorBlock> PLASMA_GENERATOR = BLOCKS.registerBlock(
             "plasma_generator", PlasmaGeneratorBlock::new, ModBlocks::tier2MachineProperties);
+
+    public static final DeferredBlock<PlasmaGranulatorBlock> PLASMA_GRANULATOR = BLOCKS.registerBlock(
+            "plasma_granulator", PlasmaGranulatorBlock::new, ModBlocks::tier2MachineProperties);
+
+    public static final DeferredBlock<PlasmaSmelterBlock> PLASMA_SMELTER = BLOCKS.registerBlock(
+            "plasma_smelter", PlasmaSmelterBlock::new, ModBlocks::tier2MachineProperties);
+
+    public static final DeferredBlock<EnergyBatteryBlock> PLASMA_ENERGY_BATTERY = BLOCKS.registerBlock(
+            "plasma_energy_battery", properties -> new EnergyBatteryBlock(properties, () -> ModBlockEntities.PLASMA_ENERGY_BATTERY.get()),
+            ModBlocks::tier2MachineProperties);
+
+    /** Its own network: never joins Energy Cables. */
+    public static final DeferredBlock<EnergyCableBlock> PLASMA_CABLE = BLOCKS.registerBlock(
+            "plasma_cable", properties -> new EnergyCableBlock(properties, EnergyCableBlock.PLASMA_CABLE_RATE), properties -> properties
+                    .mapColor(MapColor.COLOR_MAGENTA)
+                    .strength(0.5F)
+                    .sound(SoundType.COPPER)
+                    .noOcclusion());
 
     public static final DeferredBlock<FluidPipeBlock> FLUID_PIPE = BLOCKS.registerBlock(
             "fluid_pipe", FluidPipeBlock::new, properties -> properties

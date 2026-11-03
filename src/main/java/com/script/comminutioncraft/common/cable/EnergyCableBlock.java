@@ -5,14 +5,30 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.Capabilities;
 
-/** Energy cable: connects to anything with FE on that side. Power moves through {@link CableEnergyHandler}. */
+/**
+ * Energy cable: connects to anything with FE on that side, except other kinds of cable (each tier is its own
+ * network). Power moves through {@link CableEnergyHandler}, at most {@link #getTransferRate()} FE per tick per network.
+ */
 public class EnergyCableBlock extends ConduitBlock {
-    public EnergyCableBlock(Properties properties) {
+    /** Tier 2 Energy Cable. */
+    public static final int ENERGY_CABLE_RATE = 1_000;
+    /** Tier 3 Plasma Cable. */
+    public static final int PLASMA_CABLE_RATE = 8_000;
+
+    private final int transferRate;
+
+    public EnergyCableBlock(Properties properties, int transferRate) {
         super(properties);
+        this.transferRate = transferRate;
+    }
+
+    public int getTransferRate() {
+        return transferRate;
     }
 
     @Override
     protected boolean connectsTo(Level level, BlockPos neighbourPos, Direction side) {
-        return level.getCapability(Capabilities.Energy.BLOCK, neighbourPos, side) != null;
+        return !(level.getBlockState(neighbourPos).getBlock() instanceof ConduitBlock)
+                && level.getCapability(Capabilities.Energy.BLOCK, neighbourPos, side) != null;
     }
 }

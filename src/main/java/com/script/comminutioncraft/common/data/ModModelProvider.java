@@ -97,7 +97,7 @@ public class ModModelProvider extends ModelProvider {
         blockModels.createFurnace(ModBlocks.ELECTRIC_GRANULATOR.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         blockModels.createFurnace(ModBlocks.ELECTRIC_SMELTER.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         blockModels.createFurnace(ModBlocks.ELECTRIC_GENERATOR.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
-        energyBattery(blockModels);
+        energyBattery(blockModels, ModBlocks.ENERGY_BATTERY.get());
         conduit(blockModels, itemModels, ModBlocks.ENERGY_CABLE.get(), ModItems.ENERGY_CABLE.get());
         blockModels.createFurnace(ModBlocks.PLASMA_GENERATOR.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         conduit(blockModels, itemModels, ModBlocks.FLUID_PIPE.get(), ModItems.FLUID_PIPE.get());
@@ -105,6 +105,11 @@ public class ModModelProvider extends ModelProvider {
         blockModels.createTrivialBlock(ModBlocks.FLUID_TANK.get(), TexturedModel.COLUMN);
         itemModels.generateFlatItem(ModItems.AIR_FILTER.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.ELECTRONIC_CIRCUIT.get(), ModelTemplates.FLAT_ITEM);
+        blockModels.createFurnace(ModBlocks.PLASMA_GRANULATOR.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
+        blockModels.createFurnace(ModBlocks.PLASMA_SMELTER.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
+        energyBattery(blockModels, ModBlocks.PLASMA_ENERGY_BATTERY.get());
+        conduit(blockModels, itemModels, ModBlocks.PLASMA_CABLE.get(), ModItems.PLASMA_CABLE.get());
+        itemModels.generateFlatItem(ModItems.PLASMA_CIRCUIT.get(), ModelTemplates.FLAT_ITEM);
         for (StoneSet set : ModBlocks.STONE_SETS) {
             StoneFamilies.of(set).all().forEach(family -> blockModels.family(family.getBaseBlock()).generateFor(family));
             // Pillar: <name>_pillar on the sides, <name>_pillar_top on the ends (like quartz pillars)
@@ -121,8 +126,7 @@ public class ModModelProvider extends ModelProvider {
      * One model per charge level, each with its own front (<block>_front_0 .. _front_6). The plain model, with the
      * full _front, is what the item (and the side config screen) shows.
      */
-    private static void energyBattery(BlockModelGenerators blockModels) {
-        EnergyBatteryBlock battery = ModBlocks.ENERGY_BATTERY.get();
+    private static void energyBattery(BlockModelGenerators blockModels, EnergyBatteryBlock battery) {
         TexturedModel.ORIENTABLE_ONLY_TOP.create(battery, blockModels.modelOutput);
         blockModels.blockStateOutput.accept(MultiVariantGenerator.dispatch(battery)
                 .with(PropertyDispatch.initial(EnergyBatteryBlock.CHARGE).generate(charge -> BlockModelGenerators.plainVariant(

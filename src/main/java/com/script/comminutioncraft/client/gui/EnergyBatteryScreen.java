@@ -7,15 +7,23 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 
-/** GUI for the Energy Battery: energy bar, stored FE and what flowed in and out last tick. */
+/** GUI for both Energy Batteries: energy bar, stored FE and what flowed in and out last tick (seams in the tier colour). */
 public class EnergyBatteryScreen extends MachineScreen<EnergyBatteryMenu> {
     private static final Identifier TEXTURE = ComminutionCraft.id("textures/gui/container/energy_battery.png");
     private static final int VALUE_COLOR = 0xFFE4E6EC;
     private static final int LABEL_COLOR = 0xFF9EA4B0;
     private static final int TEXT_X = 32;
 
-    public EnergyBatteryScreen(EnergyBatteryMenu menu, Inventory inventory, Component title) {
-        super(menu, inventory, title, TEXTURE, Tier.ELECTRIC);
+    public EnergyBatteryScreen(EnergyBatteryMenu menu, Inventory inventory, Component title, Tier tier) {
+        super(menu, inventory, title, TEXTURE, tier);
+    }
+
+    public static EnergyBatteryScreen electric(EnergyBatteryMenu menu, Inventory inventory, Component title) {
+        return new EnergyBatteryScreen(menu, inventory, title, Tier.ELECTRIC);
+    }
+
+    public static EnergyBatteryScreen plasma(EnergyBatteryMenu menu, Inventory inventory, Component title) {
+        return new EnergyBatteryScreen(menu, inventory, title, Tier.PLASMA);
     }
 
     @Override

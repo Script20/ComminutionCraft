@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": "#c:ingots/gold",
+    "I": "#c:ingots/iron",
+    "M": "comminutioncraft:electric_granulator",
+    "P": "comminutioncraft:plasma_circuit"
+  },
+  "pattern": [
+    "IPI",
+    "GMG",
+    "IPI"
+  ],
+  "result": {
+    "id": "comminutioncraft:plasma_granulator"
+  }
+}

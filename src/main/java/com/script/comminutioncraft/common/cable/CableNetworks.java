@@ -14,6 +14,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
  * Finds and caches groups of connected conduits (cables or pipes; a network is one conduit block). A network is rebuilt lazily the next time power flows through it;
@@ -32,6 +34,8 @@ public final class CableNetworks {
         private final List<Endpoint> endpoints;
         /** Set while power is being handed out, so a machine that pushes straight back can't recurse. */
         boolean busy;
+        /** What has gone through this network this tick (energy cables cap it per tick). */
+        final TickBudget budget = new TickBudget();
 
         Network(List<Endpoint> endpoints) {
             this.endpoints = endpoints;
@@ -39,6 +43,43 @@ public final class CableNetworks {
 
         public List<Endpoint> endpoints() {
             return endpoints;
+        }
+    }
+
+    /**
+     * Amount moved through a network during one game tick. It's a transaction journal, so a simulated or cancelled
+     * insert gives its share back.
+     */
+    public static final class TickBudget extends SnapshotJournal<long[]> {
+        private long tick = Long.MIN_VALUE;
+        private int used;
+
+        /** How much of {@code limit} is left this tick. */
+        public int remaining(long gameTime, int limit) {
+            return tick == gameTime ? Math.max(0, limit - used) : limit;
+        }
+
+        public void use(long gameTime, int amount, TransactionContext transaction) {
+            if (amount <= 0) {
+                return;
+            }
+            updateSnapshots(transaction);
+            if (tick != gameTime) {
+                tick = gameTime;
+                used = 0;
+            }
+            used += amount;
+        }
+
+        @Override
+        protected long[] createSnapshot() {
+            return new long[] {tick, used};
+        }
+
+        @Override
+        protected void revertToSnapshot(long[] snapshot) {
+            tick = snapshot[0];
+            used = (int) snapshot[1];
         }
     }
 

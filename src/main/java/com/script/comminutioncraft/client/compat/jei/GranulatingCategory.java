@@ -2,6 +2,7 @@ package com.script.comminutioncraft.client.compat.jei;
 
 import com.script.comminutioncraft.common.machine.CoalGranulatorBlockEntity;
 import com.script.comminutioncraft.common.machine.ElectricGranulatorBlockEntity;
+import com.script.comminutioncraft.common.machine.PlasmaGranulatorBlockEntity;
 import com.script.comminutioncraft.common.recipe.GranulatingRecipe;
 import com.script.comminutioncraft.common.registry.ModItems;
 import java.text.DecimalFormat;
@@ -42,13 +43,15 @@ public class GranulatingCategory extends AbstractRecipeCategory<RecipeHolder<Gra
         builder.addAnimatedRecipeArrowWidget(CoalGranulatorBlockEntity.PROCESS_TIME).setPosition(26, 5);
         String coal = seconds(CoalGranulatorBlockEntity.PROCESS_TIME);
         String electric = seconds(ElectricGranulatorBlockEntity.PROCESS_TIME);
-        builder.addText(Component.literal(coal + " · " + electric), WIDTH, 10)
+        String plasma = seconds(PlasmaGranulatorBlockEntity.PROCESS_TIME);
+        builder.addText(Component.literal(coal + " · " + electric + " · " + plasma), WIDTH, 10)
                 .setPosition(0, 28)
                 .setTextAlignment(HorizontalAlignment.CENTER)
                 .setColor(0xFF808080)
                 .setTooltip(List.of(
                         Component.translatable("jei.comminutioncraft.time.coal_granulator", coal),
-                        Component.translatable("jei.comminutioncraft.time.electric_granulator", electric)));
+                        Component.translatable("jei.comminutioncraft.time.electric_granulator", electric),
+                        Component.translatable("jei.comminutioncraft.time.plasma_granulator", plasma)));
     }
 
     /** 150 -> "7.5s", 75 -> "3.75s" */

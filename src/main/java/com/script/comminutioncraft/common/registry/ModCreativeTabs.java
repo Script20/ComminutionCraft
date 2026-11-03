@@ -32,6 +32,11 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.FLUID_PIPE.get());
                         output.accept(ModItems.FLUID_TANK.get());
                         output.accept(ModItems.AIR_FILTER.get());
+                        output.accept(ModItems.PLASMA_GRANULATOR.get());
+                        output.accept(ModItems.PLASMA_SMELTER.get());
+                        output.accept(ModItems.PLASMA_ENERGY_BATTERY.get());
+                        output.accept(ModItems.PLASMA_CABLE.get());
+                        output.accept(ModItems.PLASMA_CIRCUIT.get());
                         output.accept(ModItems.WRENCH.get());
                         ModBlocks.STONE_SETS.forEach(set -> set.all().forEach(block -> output.accept(block.get())));
                         // Other mods' metals only appear when some installed mod adds that metal.

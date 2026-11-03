@@ -14,11 +14,10 @@ import org.jspecify.annotations.Nullable;
 /**
  * What a cable exposes as its FE capability. Cables store nothing: energy inserted into any cable is handed
  * straight to every FE block on the same network (except the one it came from), split evenly.
- * Each insert carries at most {@link #TRANSFER_RATE} FE.
+ * A whole network carries at most {@code transferRate} FE per tick, however many blocks push into it
+ * (see {@link CableNetworks.Network#budget}); the rate comes from the cable block ({@link EnergyCableBlock}).
  */
-public record CableEnergyHandler(Level level, BlockPos pos, @Nullable Direction side) implements EnergyHandler {
-    public static final int TRANSFER_RATE = 1000;
-
+public record CableEnergyHandler(Level level, BlockPos pos, @Nullable Direction side, int transferRate) implements EnergyHandler {
     @Override
     public long getAmountAsLong() {
         return 0;
@@ -26,7 +25,7 @@ public record CableEnergyHandler(Level level, BlockPos pos, @Nullable Direction 
 
     @Override
     public long getCapacityAsLong() {
-        return TRANSFER_RATE;
+        return transferRate;
     }
 
     @Override
@@ -41,15 +40,21 @@ public record CableEnergyHandler(Level level, BlockPos pos, @Nullable Direction 
         }
         network.busy = true;
         try {
+            CableNetworks.TickBudget budget = network.budget;
+            int offered = Math.min(amount, budget.remaining(level.getGameTime(), transferRate));
+            if (offered <= 0) {
+                return 0;
+            }
             List<EnergyHandler> targets = findTargets(network);
-            int offered = Math.min(amount, TRANSFER_RATE);
             int remaining = offered;
             for (int i = 0; i < targets.size() && remaining > 0; i++) {
                 // Even split; whatever one target refuses is offered to the ones after it.
                 int share = Math.ceilDiv(remaining, targets.size() - i);
                 remaining -= targets.get(i).insert(share, transaction);
             }
-            return offered - remaining;
+            int moved = offered - remaining;
+            budget.use(level.getGameTime(), moved, transaction);
+            return moved;
         } finally {
             network.busy = false;
         }

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": "comminutioncraft:energy_cable",
+    "G": "#c:ingots/gold",
+    "P": "comminutioncraft:plasma_circuit"
+  },
+  "pattern": [
+    "CCC",
+    "GPG",
+    "CCC"
+  ],
+  "result": {
+    "count": 8,
+    "id": "comminutioncraft:plasma_cable"
+  }
+}

@@ -32,8 +32,9 @@ import net.neoforged.neoforge.transfer.energy.EnergyHandler;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Shared logic for every tier-2 (electric) processing machine: one input slot, one output slot and an FE buffer.
- * Each tick of work costs {@link #getEnergyPerTick()} FE; without power the machine pauses (progress is kept).
+ * Shared logic for every FE processing machine (tier 2, and tier 3 via {@link PlasmaMachineBlockEntity}): one input
+ * slot, one output slot and an FE buffer. Each tick of work costs {@link #getEnergyPerTick()} FE; without power (or
+ * whatever else {@link #hasOperationResources()} asks for) the machine pauses (progress is kept).
  */
 public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntity
         implements WorldlyContainer, TickingMachine, MachineExperience.Holder, ControllableMachine {
@@ -62,7 +63,7 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
     private static final int LIT_COOLDOWN = 10;
 
     protected NonNullList<ItemStack> items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
-    private final MachineEnergyStorage energy = new MachineEnergyStorage(ENERGY_CAPACITY, MAX_ENERGY_INPUT, 0, this::setChanged);
+    private final MachineEnergyStorage energy;
     private int progress;
     private int litCooldown;
     private @Nullable Item lastInputItem;
@@ -72,17 +73,7 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
     protected final ContainerData dataAccess = new ContainerData() {
         @Override
         public int get(int index) {
-            return switch (index) {
-                case DATA_PROGRESS -> progress;
-                case DATA_PROGRESS_TOTAL -> getProcessTime();
-                case DATA_ENERGY_LOW -> EnergySync.low(energy.getEnergy());
-                case DATA_ENERGY_HIGH -> EnergySync.high(energy.getEnergy());
-                case DATA_CAPACITY_LOW -> EnergySync.low(energy.getCapacity());
-                case DATA_CAPACITY_HIGH -> EnergySync.high(energy.getCapacity());
-                case DATA_REDSTONE -> controls.redstone().ordinal();
-                case DATA_SIDES -> controls.packSides();
-                default -> 0;
-            };
+            return getData(index);
         }
 
         @Override
@@ -94,12 +85,37 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
 
         @Override
         public int getCount() {
-            return DATA_COUNT;
+            return getDataCount();
         }
     };
 
     protected ElectricMachineBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        this(type, pos, state, ENERGY_CAPACITY, MAX_ENERGY_INPUT);
+    }
+
+    protected ElectricMachineBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state,
+                                         int energyCapacity, int maxEnergyInput) {
         super(type, pos, state);
+        energy = new MachineEnergyStorage(energyCapacity, maxEnergyInput, 0, this::setChanged);
+    }
+
+    /** One synced GUI value (see the DATA_ constants); subclasses add theirs after {@link #DATA_COUNT}. */
+    protected int getData(int index) {
+        return switch (index) {
+            case DATA_PROGRESS -> progress;
+            case DATA_PROGRESS_TOTAL -> getProcessTime();
+            case DATA_ENERGY_LOW -> EnergySync.low(energy.getEnergy());
+            case DATA_ENERGY_HIGH -> EnergySync.high(energy.getEnergy());
+            case DATA_CAPACITY_LOW -> EnergySync.low(energy.getCapacity());
+            case DATA_CAPACITY_HIGH -> EnergySync.high(energy.getCapacity());
+            case DATA_REDSTONE -> controls.redstone().ordinal();
+            case DATA_SIDES -> controls.packSides();
+            default -> 0;
+        };
+    }
+
+    protected int getDataCount() {
+        return DATA_COUNT;
     }
 
     // ---- Per-machine tuning ----
@@ -109,6 +125,14 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
 
     /** FE used per tick of work. One operation costs process time x this. */
     protected abstract int getEnergyPerTick();
+
+    /** Anything besides FE a tick of work needs (tier 3: enough plasma for the operation). */
+    protected boolean hasOperationResources() {
+        return true;
+    }
+
+    /** Called when an operation finishes (tier 3 uses up its plasma here). */
+    protected void onOperationDone() {}
 
     /** The recipe this machine would run on this input, or empty if it can't process it. */
     protected abstract Optional<? extends RecipeHolder<? extends Recipe<SingleRecipeInput>>> findRecipe(ServerLevel level, ItemStack input);
@@ -165,7 +189,7 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
 
         if (!canProcess) {
             progress = 0;
-        } else if (energy.consume(getEnergyPerTick())) {
+        } else if (hasOperationResources() && energy.consume(getEnergyPerTick())) {
             litCooldown = LIT_COOLDOWN;
             progress++;
             if (progress >= getProcessTime()) {
@@ -173,6 +197,7 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
                 MachineSlots.addTo(items, SLOT_OUTPUT, result);
                 input.shrink(1);
                 experience.recordRecipe(recipe);
+                onOperationDone();
                 changed = true;
             }
         }

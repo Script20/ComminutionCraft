@@ -12,6 +12,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -26,13 +27,20 @@ public class EnergyBatteryMenu extends AbstractContainerMenu implements Controll
     private final @Nullable EnergyBatteryBlockEntity battery;
     private final ContainerData data;
 
-    // Client-side constructor (called when the server tells the client to open the GUI)
+    // Client-side constructors (called when the server tells the client to open the GUI)
     public static EnergyBatteryMenu client(int containerId, Inventory inventory) {
-        return new EnergyBatteryMenu(containerId, inventory, null, new SimpleContainerData(EnergyBatteryBlockEntity.DATA_COUNT));
+        return new EnergyBatteryMenu(ModMenus.ENERGY_BATTERY.get(), containerId, inventory, null,
+                new SimpleContainerData(EnergyBatteryBlockEntity.DATA_COUNT));
     }
 
-    public EnergyBatteryMenu(int containerId, Inventory inventory, @Nullable EnergyBatteryBlockEntity battery, ContainerData data) {
-        super(ModMenus.ENERGY_BATTERY.get(), containerId);
+    public static EnergyBatteryMenu clientPlasma(int containerId, Inventory inventory) {
+        return new EnergyBatteryMenu(ModMenus.PLASMA_ENERGY_BATTERY.get(), containerId, inventory, null,
+                new SimpleContainerData(EnergyBatteryBlockEntity.DATA_COUNT));
+    }
+
+    public EnergyBatteryMenu(MenuType<?> type, int containerId, Inventory inventory, @Nullable EnergyBatteryBlockEntity battery,
+                             ContainerData data) {
+        super(type, containerId);
         checkContainerDataCount(data, EnergyBatteryBlockEntity.DATA_COUNT);
         this.battery = battery;
         this.data = data;

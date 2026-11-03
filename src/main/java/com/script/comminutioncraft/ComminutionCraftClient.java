@@ -10,6 +10,7 @@ import com.script.comminutioncraft.client.gui.ElectricGeneratorScreen;
 import com.script.comminutioncraft.client.gui.ElectricMachineScreen;
 import com.script.comminutioncraft.client.gui.EnergyBatteryScreen;
 import com.script.comminutioncraft.client.gui.PlasmaGeneratorScreen;
+import com.script.comminutioncraft.client.gui.PlasmaMachineScreen;
 import com.script.comminutioncraft.client.render.FluidTankRenderer;
 import com.script.comminutioncraft.common.registry.ModBlockEntities;
 import com.script.comminutioncraft.common.registry.ModFluids;
@@ -45,8 +46,11 @@ public class ComminutionCraftClient {
         event.register(ModMenus.ELECTRIC_GRANULATOR.get(), ElectricMachineScreen::granulator);
         event.register(ModMenus.ELECTRIC_SMELTER.get(), ElectricMachineScreen::smelter);
         event.register(ModMenus.ELECTRIC_GENERATOR.get(), ElectricGeneratorScreen::new);
-        event.register(ModMenus.ENERGY_BATTERY.get(), EnergyBatteryScreen::new);
+        event.register(ModMenus.ENERGY_BATTERY.get(), EnergyBatteryScreen::electric);
         event.register(ModMenus.PLASMA_GENERATOR.get(), PlasmaGeneratorScreen::new);
+        event.register(ModMenus.PLASMA_GRANULATOR.get(), PlasmaMachineScreen::granulator);
+        event.register(ModMenus.PLASMA_SMELTER.get(), PlasmaMachineScreen::smelter);
+        event.register(ModMenus.PLASMA_ENERGY_BATTERY.get(), EnergyBatteryScreen::plasma);
     }
 
     private static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {

@@ -28,6 +28,11 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModBlocks.FLUID_PIPE.get(), "Fluid Pipe");
         add(ModBlocks.FLUID_TANK.get(), "Fluid Tank");
         add(ModItems.AIR_FILTER.get(), "Air Filter");
+        add(ModBlocks.PLASMA_GRANULATOR.get(), "Plasma Granulator");
+        add(ModBlocks.PLASMA_SMELTER.get(), "Plasma Smelter");
+        add(ModBlocks.PLASMA_ENERGY_BATTERY.get(), "Plasma Energy Battery");
+        add(ModBlocks.PLASMA_CABLE.get(), "Plasma Cable");
+        add(ModItems.PLASMA_CIRCUIT.get(), "Plasma Circuit");
         add("fluid_type.comminutioncraft.plasma", "Plasma");
         ModBlocks.STONE_SETS.forEach(set -> set.all().forEach(block -> add(block.get(), titleCase(block.getId().getPath()))));
 
@@ -81,14 +86,15 @@ public class ModLanguageProvider extends LanguageProvider {
         add("jei.comminutioncraft.granulating", "Granulating");
         add("jei.comminutioncraft.time.coal_granulator", "Coal Granulator: %s");
         add("jei.comminutioncraft.time.electric_granulator", "Electric Granulator: %s");
+        add("jei.comminutioncraft.time.plasma_granulator", "Plasma Granulator: %s");
 
-        add("config.jade.plugin_comminutioncraft.machine", "ComminutionCraft machines");
-        add("config.jade.plugin_comminutioncraft.generator", "ComminutionCraft generator");
+        add("config.jade.plugin_comminutioncraft.machine", "Comminution Craft machines");
+        add("config.jade.plugin_comminutioncraft.generator", "Comminution Craft generator");
         add("jade.comminutioncraft.generating", "Generating %s FE/t (%ss left)");
         add("jade.comminutioncraft.idle", "Idle");
-        add("config.jade.plugin_comminutioncraft.battery", "ComminutionCraft energy battery");
+        add("config.jade.plugin_comminutioncraft.battery", "Comminution Craft energy battery");
         add("jade.comminutioncraft.battery_flow", "In %s FE/t · Out %s FE/t");
-        add("config.jade.plugin_comminutioncraft.plasma_generator", "ComminutionCraft plasma generator");
+        add("config.jade.plugin_comminutioncraft.plasma_generator", "Comminution Craft plasma generator");
         add("jade.comminutioncraft.plasma_generator", "Intake %s/6 · %s mB/t");
         add("jade.comminutioncraft.no_filter", "No Air Filter (half speed)");
         for (ProcessedMetal metal : ProcessedMetal.ALL) {

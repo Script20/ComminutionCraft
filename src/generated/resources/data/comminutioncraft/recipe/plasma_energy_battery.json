@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": "comminutioncraft:energy_battery",
+    "D": "#c:gems/diamond",
+    "P": "comminutioncraft:plasma_circuit",
+    "X": "#c:storage_blocks/redstone"
+  },
+  "pattern": [
+    "BPB",
+    "DXD",
+    "BPB"
+  ],
+  "result": {
+    "id": "comminutioncraft:plasma_energy_battery"
+  }
+}

@@ -1,6 +1,6 @@
 package com.script.comminutioncraft.common.machine;
 
-import com.script.comminutioncraft.common.registry.ModBlockEntities;
+import java.util.function.Supplier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
@@ -17,14 +17,18 @@ import net.minecraft.world.level.block.state.properties.IntegerProperty;
 public class EnergyBatteryBlock extends MachineBlock {
     public static final IntegerProperty CHARGE = IntegerProperty.create("charge", 0, EnergyBatteryBlockEntity.CELLS);
 
-    public EnergyBatteryBlock(Properties properties) {
+    private final Supplier<BlockEntityType<EnergyBatteryBlockEntity>> blockEntityType;
+
+    /** Used for both tiers; {@code blockEntityType} decides which battery (capacity, rate) it is. */
+    public EnergyBatteryBlock(Properties properties, Supplier<BlockEntityType<EnergyBatteryBlockEntity>> blockEntityType) {
         super(properties);
+        this.blockEntityType = blockEntityType;
         registerDefaultState(defaultBlockState().setValue(CHARGE, 0));
     }
 
     @Override
     protected BlockEntityType<EnergyBatteryBlockEntity> getBlockEntityType() {
-        return ModBlockEntities.ENERGY_BATTERY.get();
+        return blockEntityType.get();
     }
 
     @Override

@@ -173,6 +173,50 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_electric_generator", has(ModItems.ELECTRIC_GENERATOR.get()))
                 .save(output, key("plasma_generator"));
 
+        // Tier-3 blocks are upgrades of the tier-2 ones and need Plasma Circuits (made in the Circuit Assembler)
+        shaped(RecipeCategory.MISC, ModItems.PLASMA_GRANULATOR.get())
+                .pattern("IPI")
+                .pattern("GMG")
+                .pattern("IPI")
+                .define('I', tag(ProcessedMetal.commonItemTag("ingots/iron")))
+                .define('P', ModItems.PLASMA_CIRCUIT.get())
+                .define('G', tag(ProcessedMetal.commonItemTag("ingots/gold")))
+                .define('M', ModItems.ELECTRIC_GRANULATOR.get())
+                .unlockedBy("has_plasma_circuit", has(ModItems.PLASMA_CIRCUIT.get()))
+                .save(output, key("plasma_granulator"));
+
+        shaped(RecipeCategory.MISC, ModItems.PLASMA_SMELTER.get())
+                .pattern("IPI")
+                .pattern("GMG")
+                .pattern("IPI")
+                .define('I', tag(ProcessedMetal.commonItemTag("ingots/iron")))
+                .define('P', ModItems.PLASMA_CIRCUIT.get())
+                .define('G', tag(ProcessedMetal.commonItemTag("ingots/gold")))
+                .define('M', ModItems.ELECTRIC_SMELTER.get())
+                .unlockedBy("has_plasma_circuit", has(ModItems.PLASMA_CIRCUIT.get()))
+                .save(output, key("plasma_smelter"));
+
+        shaped(RecipeCategory.MISC, ModItems.PLASMA_ENERGY_BATTERY.get())
+                .pattern("BPB")
+                .pattern("DXD")
+                .pattern("BPB")
+                .define('B', ModItems.ENERGY_BATTERY.get())
+                .define('P', ModItems.PLASMA_CIRCUIT.get())
+                .define('D', tag(ProcessedMetal.commonItemTag("gems/diamond")))
+                .define('X', tag(ProcessedMetal.commonItemTag("storage_blocks/redstone")))
+                .unlockedBy("has_plasma_circuit", has(ModItems.PLASMA_CIRCUIT.get()))
+                .save(output, key("plasma_energy_battery"));
+
+        shaped(RecipeCategory.MISC, ModItems.PLASMA_CABLE.get(), 8)
+                .pattern("CCC")
+                .pattern("GPG")
+                .pattern("CCC")
+                .define('C', ModItems.ENERGY_CABLE.get())
+                .define('G', tag(ProcessedMetal.commonItemTag("ingots/gold")))
+                .define('P', ModItems.PLASMA_CIRCUIT.get())
+                .unlockedBy("has_plasma_circuit", has(ModItems.PLASMA_CIRCUIT.get()))
+                .save(output, key("plasma_cable"));
+
         shaped(RecipeCategory.MISC, ModItems.AIR_FILTER.get())
                 .pattern(" P ")
                 .pattern("PCP")
