@@ -31,6 +31,17 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModBlocks.ISOTOPE_SEPARATOR.get(), "Isotope Separator");
         add(ModBlocks.TRITIUM_BREEDER.get(), "Tritium Breeder");
         add(ModBlocks.PELLET_PRESS.get(), "Pellet Press");
+        add(ModBlocks.REACTOR_CASING.get(), "Reactor Casing");
+        add(ModBlocks.REACTOR_GLASS.get(), "Reactor Glass");
+        add(ModBlocks.REACTOR_PORT.get(), "Reactor Port");
+        add(ModBlocks.REACTOR_CONTROLLER.get(), "Fusion Reactor Controller");
+        add(ModBlocks.FUSION_CABLE.get(), "Fusion Cable");
+        add(ModBlocks.FUSION_ENERGY_BATTERY.get(), "Fusion Energy Battery");
+        add("gui.comminutioncraft.reactor.not_formed", "Not formed");
+        add("gui.comminutioncraft.reactor.running", "Running");
+        add("gui.comminutioncraft.reactor.heating", "Heating: %s%%");
+        add("gui.comminutioncraft.reactor.idle", "Idle");
+        add("gui.comminutioncraft.reactor.heat", "Core heat: %s%%");
         add(ModItems.FUSION_CIRCUIT.get(), "Fusion Circuit");
         add(ModItems.REACTOR_PLATING.get(), "Reactor Plating");
         add(ModItems.FUSION_FUEL_PELLET.get(), "Fusion Fuel Pellet");

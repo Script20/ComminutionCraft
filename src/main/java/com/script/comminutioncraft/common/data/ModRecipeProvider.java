@@ -272,6 +272,63 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_fusion_circuit", has(ModItems.FUSION_CIRCUIT.get()))
                 .save(output, key("pellet_press"));
 
+        // The Fusion Reactor and the fast power blocks
+        shaped(RecipeCategory.MISC, ModItems.REACTOR_CASING.get(), 2)
+                .pattern("PP")
+                .pattern("PP")
+                .define('P', ModItems.REACTOR_PLATING.get())
+                .unlockedBy("has_reactor_plating", has(ModItems.REACTOR_PLATING.get()))
+                .save(output, key("reactor_casing"));
+
+        shaped(RecipeCategory.MISC, ModItems.REACTOR_GLASS.get(), 2)
+                .pattern("GPG")
+                .define('G', tag(ProcessedMetal.commonItemTag("glass_blocks")))
+                .define('P', ModItems.REACTOR_PLATING.get())
+                .unlockedBy("has_reactor_plating", has(ModItems.REACTOR_PLATING.get()))
+                .save(output, key("reactor_glass"));
+
+        shaped(RecipeCategory.MISC, ModItems.REACTOR_PORT.get())
+                .pattern(" H ")
+                .pattern("FCF")
+                .pattern(" B ")
+                .define('H', Items.HOPPER)
+                .define('F', ModItems.FUSION_CIRCUIT.get())
+                .define('C', ModItems.REACTOR_CASING.get())
+                .define('B', Items.BUCKET)
+                .unlockedBy("has_reactor_casing", has(ModItems.REACTOR_CASING.get()))
+                .save(output, key("reactor_port"));
+
+        shaped(RecipeCategory.MISC, ModItems.REACTOR_CONTROLLER.get())
+                .pattern("CFC")
+                .pattern("FMF")
+                .pattern("CFC")
+                .define('C', ModItems.REACTOR_CASING.get())
+                .define('F', ModItems.FUSION_CIRCUIT.get())
+                .define('M', ModItems.MHD_GENERATOR.get())
+                .unlockedBy("has_reactor_casing", has(ModItems.REACTOR_CASING.get()))
+                .save(output, key("reactor_controller"));
+
+        shaped(RecipeCategory.MISC, ModItems.FUSION_CABLE.get(), 8)
+                .pattern("CCC")
+                .pattern("GFG")
+                .pattern("CCC")
+                .define('C', ModItems.ENERGY_CABLE.get())
+                .define('G', tag(ProcessedMetal.commonItemTag("ingots/gold")))
+                .define('F', ModItems.FUSION_CIRCUIT.get())
+                .unlockedBy("has_fusion_circuit", has(ModItems.FUSION_CIRCUIT.get()))
+                .save(output, key("fusion_cable"));
+
+        shaped(RecipeCategory.MISC, ModItems.FUSION_ENERGY_BATTERY.get())
+                .pattern("BFB")
+                .pattern("RXR")
+                .pattern("BFB")
+                .define('B', ModItems.PLASMA_ENERGY_BATTERY.get())
+                .define('F', ModItems.FUSION_CIRCUIT.get())
+                .define('R', ModItems.REACTOR_PLATING.get())
+                .define('X', tag(ProcessedMetal.commonItemTag("storage_blocks/redstone")))
+                .unlockedBy("has_fusion_circuit", has(ModItems.FUSION_CIRCUIT.get()))
+                .save(output, key("fusion_energy_battery"));
+
         // The Circuit Assembler makes Plasma Circuits, so it can't need one itself.
         output.accept(key("assembling/plasma_circuit"),
                 new AssemblingRecipe(Ingredient.of(ModItems.ELECTRONIC_CIRCUIT.get()), new ItemStackTemplate(ModItems.PLASMA_CIRCUIT.get())),

@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "comminutioncraft:block/fusion_energy_battery_front",
+    "side": "comminutioncraft:block/fusion_energy_battery_side",
+    "top": "comminutioncraft:block/fusion_energy_battery_top"
+  }
+}

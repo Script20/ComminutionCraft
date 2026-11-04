@@ -29,6 +29,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.client.model.generators.template.ExtendedModelTemplateBuilder;
 
 /**
@@ -106,6 +108,14 @@ public class ModModelProvider extends ModelProvider {
         blockModels.createFurnace(ModBlocks.ISOTOPE_SEPARATOR.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         blockModels.createFurnace(ModBlocks.TRITIUM_BREEDER.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         blockModels.createFurnace(ModBlocks.PELLET_PRESS.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
+        // Fusion Reactor: casing and ports glow while it burns (an _on texture); the glass is cutout; the controller is
+        // a furnace-style front over casing sides.
+        litCube(blockModels, ModBlocks.REACTOR_CASING.get());
+        litCube(blockModels, ModBlocks.REACTOR_PORT.get());
+        blockModels.createTrivialCube(ModBlocks.REACTOR_GLASS.get());
+        blockModels.createFurnace(ModBlocks.REACTOR_CONTROLLER.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
+        conduit(blockModels, itemModels, ModBlocks.FUSION_CABLE.get(), ModItems.FUSION_CABLE.get());
+        energyBattery(blockModels, ModBlocks.FUSION_ENERGY_BATTERY.get());
         itemModels.generateFlatItem(ModItems.FUSION_CIRCUIT.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.REACTOR_PLATING.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.FUSION_FUEL_PELLET.get(), ModelTemplates.FLAT_ITEM);
@@ -146,6 +156,17 @@ public class ModModelProvider extends ModelProvider {
                                 .updateTextures(t -> t.put(TextureSlot.FRONT, TextureMapping.getBlockTexture(battery, "_front_" + charge)))
                                 .createWithSuffix(battery, "_charge_" + charge, blockModels.modelOutput))))
                 .with(BlockModelGenerators.ROTATION_HORIZONTAL_FACING));
+    }
+
+    /** A cube with one texture on every face, swapped for {@code <block>_on} while {@code lit}. */
+    private static void litCube(BlockModelGenerators blockModels, Block block) {
+        Identifier off = TexturedModel.CUBE.create(block, blockModels.modelOutput);
+        Identifier on = TexturedModel.CUBE.get(block)
+                .updateTextures(t -> t.put(TextureSlot.ALL, TextureMapping.getBlockTexture(block, "_on")))
+                .createWithSuffix(block, "_on", blockModels.modelOutput);
+        blockModels.blockStateOutput.accept(MultiVariantGenerator.dispatch(block)
+                .with(BlockModelGenerators.createBooleanModelDispatch(BlockStateProperties.LIT,
+                        BlockModelGenerators.plainVariant(on), BlockModelGenerators.plainVariant(off))));
     }
 
     /** Cables and pipes: core + one arm per connected side + a plate where it meets a machine (same UV sheet layout). */

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "comminutioncraft:block/reactor_casing"
+    },
+    "lit=true": {
+      "model": "comminutioncraft:block/reactor_casing_on"
+    }
+  }
+}

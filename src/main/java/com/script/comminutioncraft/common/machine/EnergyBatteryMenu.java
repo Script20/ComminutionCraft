@@ -38,6 +38,11 @@ public class EnergyBatteryMenu extends AbstractContainerMenu implements Controll
                 new SimpleContainerData(EnergyBatteryBlockEntity.DATA_COUNT));
     }
 
+    public static EnergyBatteryMenu clientFusion(int containerId, Inventory inventory) {
+        return new EnergyBatteryMenu(ModMenus.FUSION_ENERGY_BATTERY.get(), containerId, inventory, null,
+                new SimpleContainerData(EnergyBatteryBlockEntity.DATA_COUNT));
+    }
+
     public EnergyBatteryMenu(MenuType<?> type, int containerId, Inventory inventory, @Nullable EnergyBatteryBlockEntity battery,
                              ContainerData data) {
         super(type, containerId);

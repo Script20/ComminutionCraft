@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": "comminutioncraft:reactor_casing",
+    "F": "comminutioncraft:fusion_circuit",
+    "M": "comminutioncraft:mhd_generator"
+  },
+  "pattern": [
+    "CFC",
+    "FMF",
+    "CFC"
+  ],
+  "result": {
+    "id": "comminutioncraft:reactor_controller"
+  }
+}

@@ -26,6 +26,10 @@ public class EnergyBatteryScreen extends MachineScreen<EnergyBatteryMenu> {
         return new EnergyBatteryScreen(menu, inventory, title, Tier.PLASMA);
     }
 
+    public static EnergyBatteryScreen fusion(EnergyBatteryMenu menu, Inventory inventory, Component title) {
+        return new EnergyBatteryScreen(menu, inventory, title, Tier.FUSION);
+    }
+
     @Override
     protected boolean isActive() {
         return menu.getReceived() > 0 || menu.getSent() > 0;

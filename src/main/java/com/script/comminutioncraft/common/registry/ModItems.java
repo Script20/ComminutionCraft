@@ -79,6 +79,14 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> ISOTOPE_SEPARATOR = ITEMS.registerSimpleBlockItem("isotope_separator", ModBlocks.ISOTOPE_SEPARATOR);
     public static final DeferredItem<BlockItem> TRITIUM_BREEDER = ITEMS.registerSimpleBlockItem("tritium_breeder", ModBlocks.TRITIUM_BREEDER);
     public static final DeferredItem<BlockItem> PELLET_PRESS = ITEMS.registerSimpleBlockItem("pellet_press", ModBlocks.PELLET_PRESS);
+    public static final DeferredItem<BlockItem> REACTOR_CASING = ITEMS.registerSimpleBlockItem("reactor_casing", ModBlocks.REACTOR_CASING);
+    public static final DeferredItem<BlockItem> REACTOR_GLASS = ITEMS.registerSimpleBlockItem("reactor_glass", ModBlocks.REACTOR_GLASS);
+    public static final DeferredItem<BlockItem> REACTOR_PORT = ITEMS.registerSimpleBlockItem("reactor_port", ModBlocks.REACTOR_PORT);
+    public static final DeferredItem<BlockItem> REACTOR_CONTROLLER = ITEMS.registerSimpleBlockItem("reactor_controller", ModBlocks.REACTOR_CONTROLLER);
+    public static final DeferredItem<BlockItem> FUSION_CABLE = ITEMS.registerSimpleBlockItem("fusion_cable", ModBlocks.FUSION_CABLE);
+    public static final DeferredItem<EnergyBatteryItem> FUSION_ENERGY_BATTERY = ITEMS.registerItem("fusion_energy_battery",
+            properties -> new EnergyBatteryItem(ModBlocks.FUSION_ENERGY_BATTERY.get(), properties, EnergyBatteryBlockEntity.FUSION_CAPACITY, 0x60FF80),
+            properties -> properties.useBlockDescriptionPrefix());
     public static final DeferredItem<BlockItem> PLASMA_CABLE = ITEMS.registerSimpleBlockItem("plasma_cable", ModBlocks.PLASMA_CABLE);
     public static final DeferredItem<BlockItem> FLUID_PIPE = ITEMS.registerSimpleBlockItem("fluid_pipe", ModBlocks.FLUID_PIPE);
     public static final DeferredItem<BlockItem> FLUID_TANK = ITEMS.registerSimpleBlockItem("fluid_tank", ModBlocks.FLUID_TANK);

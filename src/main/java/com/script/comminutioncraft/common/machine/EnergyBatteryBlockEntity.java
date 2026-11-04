@@ -43,6 +43,8 @@ public class EnergyBatteryBlockEntity extends BlockEntity implements TickingMach
     public static final int TRANSFER_RATE = 1_000;
     public static final int PLASMA_CAPACITY = 8_000_000;
     public static final int PLASMA_TRANSFER_RATE = 8_000;
+    public static final int FUSION_CAPACITY = 64_000_000;
+    public static final int FUSION_TRANSFER_RATE = 32_000;
     /** Charge cells on the front texture (blockstate {@code charge} 0..CELLS). */
     public static final int CELLS = 6;
 
@@ -104,6 +106,12 @@ public class EnergyBatteryBlockEntity extends BlockEntity implements TickingMach
     public static EnergyBatteryBlockEntity plasma(BlockPos pos, BlockState state) {
         return new EnergyBatteryBlockEntity(ModBlockEntities.PLASMA_ENERGY_BATTERY.get(), ModMenus.PLASMA_ENERGY_BATTERY.get(),
                 pos, state, PLASMA_CAPACITY, PLASMA_TRANSFER_RATE);
+    }
+
+    /** Tier 4 Fusion Energy Battery. */
+    public static EnergyBatteryBlockEntity fusion(BlockPos pos, BlockState state) {
+        return new EnergyBatteryBlockEntity(ModBlockEntities.FUSION_ENERGY_BATTERY.get(), ModMenus.FUSION_ENERGY_BATTERY.get(),
+                pos, state, FUSION_CAPACITY, FUSION_TRANSFER_RATE);
     }
 
     private EnergyBatteryBlockEntity(BlockEntityType<?> type, MenuType<EnergyBatteryMenu> menuType, BlockPos pos,

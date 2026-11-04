@@ -20,6 +20,10 @@ import com.script.comminutioncraft.common.machine.MhdGeneratorBlock;
 import com.script.comminutioncraft.common.machine.IsotopeSeparatorBlock;
 import com.script.comminutioncraft.common.machine.PelletPressBlock;
 import com.script.comminutioncraft.common.machine.TritiumBreederBlock;
+import com.script.comminutioncraft.common.machine.ReactorCasingBlock;
+import com.script.comminutioncraft.common.machine.ReactorControllerBlock;
+import com.script.comminutioncraft.common.machine.ReactorGlassBlock;
+import com.script.comminutioncraft.common.machine.ReactorPortBlock;
 import com.script.comminutioncraft.common.machine.PlasmaGranulatorBlock;
 import com.script.comminutioncraft.common.machine.CircuitAssemblerBlock;
 import com.script.comminutioncraft.common.machine.OreWasherBlock;
@@ -125,6 +129,39 @@ public final class ModBlocks {
 
     public static final DeferredBlock<PelletPressBlock> PELLET_PRESS = BLOCKS.registerBlock(
             "pellet_press", PelletPressBlock::new, ModBlocks::tier2MachineProperties);
+
+    // Tier 4 (fusion), phase 4B: the 3x3x3 Fusion Reactor and the fast power blocks
+    public static final DeferredBlock<ReactorCasingBlock> REACTOR_CASING = BLOCKS.registerBlock(
+            "reactor_casing", ReactorCasingBlock::new, ModBlocks::tier2MachineProperties);
+
+    /** See-through (cutout) window, so it mustn't hide its neighbours' faces or suffocate. */
+    public static final DeferredBlock<ReactorGlassBlock> REACTOR_GLASS = BLOCKS.registerBlock(
+            "reactor_glass", ReactorGlassBlock::new, properties -> properties
+                    .mapColor(MapColor.METAL)
+                    .requiresCorrectToolForDrops()
+                    .strength(3.5F)
+                    .sound(SoundType.GLASS)
+                    .noOcclusion()
+                    .isViewBlocking((state, level, pos) -> false)
+                    .isSuffocating((state, level, pos) -> false)
+                    .isRedstoneConductor((state, level, pos) -> false));
+
+    public static final DeferredBlock<ReactorPortBlock> REACTOR_PORT = BLOCKS.registerBlock(
+            "reactor_port", ReactorPortBlock::new, ModBlocks::tier2MachineProperties);
+
+    public static final DeferredBlock<ReactorControllerBlock> REACTOR_CONTROLLER = BLOCKS.registerBlock(
+            "reactor_controller", ReactorControllerBlock::new, ModBlocks::tier2MachineProperties);
+
+    public static final DeferredBlock<EnergyCableBlock> FUSION_CABLE = BLOCKS.registerBlock(
+            "fusion_cable", properties -> new EnergyCableBlock(properties, EnergyCableBlock.FUSION_CABLE_RATE), properties -> properties
+                    .mapColor(MapColor.COLOR_GREEN)
+                    .strength(0.5F)
+                    .sound(SoundType.COPPER)
+                    .noOcclusion());
+
+    public static final DeferredBlock<EnergyBatteryBlock> FUSION_ENERGY_BATTERY = BLOCKS.registerBlock(
+            "fusion_energy_battery", properties -> new EnergyBatteryBlock(properties, () -> ModBlockEntities.FUSION_ENERGY_BATTERY.get()),
+            ModBlocks::tier2MachineProperties);
 
     // Decorative stone (marble generates like granite; volcanic basalt crusts underground lava pools)
     public static final StoneSet MARBLE = new StoneSet(BLOCKS, "marble", MapColor.QUARTZ, 1.5F, 6.0F, SoundType.STONE);

@@ -18,6 +18,8 @@ import com.script.comminutioncraft.common.machine.OreWasherBlockEntity;
 import com.script.comminutioncraft.common.machine.IsotopeSeparatorBlockEntity;
 import com.script.comminutioncraft.common.machine.PelletPressBlockEntity;
 import com.script.comminutioncraft.common.machine.TritiumBreederBlockEntity;
+import com.script.comminutioncraft.common.machine.FusionReactorBlockEntity;
+import com.script.comminutioncraft.common.machine.ReactorPortBlockEntity;
 import com.script.comminutioncraft.common.energy.MachineEnergyStorage;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.transfer.energy.EnergyHandler;
@@ -127,6 +129,8 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("separator_and_breeder_make_fusion_fuel", () -> ModGameTests::separatorAndBreederMakeFusionFuel);
         TEST_FUNCTIONS.register("pellet_press_makes_a_pellet", () -> ModGameTests::pelletPressMakesAPellet);
         TEST_FUNCTIONS.register("assembler_forges_reactor_parts", () -> ModGameTests::assemblerForgesReactorParts);
+        TEST_FUNCTIONS.register("reactor_forms_and_unforms", () -> ModGameTests::reactorFormsAndUnforms);
+        TEST_FUNCTIONS.register("reactor_burns_pellets_for_fe", () -> ModGameTests::reactorBurnsPelletsForFe);
     }
 
     public static void registerTests(RegisterGameTestsEvent event) {
@@ -875,7 +879,67 @@ public final class ModGameTests {
         });
     }
 
+    /** A complete 3x3x3 forms at once; taking a corner casing away unforms it at the next check. */
+    private static void reactorFormsAndUnforms(GameTestHelper helper) {
+        FusionReactorBlockEntity reactor = buildReactor(helper);
+        helper.runAfterDelay(2, () -> {
+            helper.assertTrue(reactor.isFormed(), "The complete reactor didn't form");
+            helper.setBlock(new BlockPos(1, 0, 1), Blocks.AIR);
+            helper.runAfterDelay(FusionReactorBlockEntity.FORM_CHECK_INTERVAL + 2, () -> {
+                helper.assertTrue(!reactor.isFormed(), "The reactor stayed formed with a corner missing");
+                helper.succeed();
+            });
+        });
+    }
+
+    /**
+     * Given plasma and two pellets, the reactor heats up, burns a pellet for FE (pushed out of the port's Output face
+     * into a battery) and gets tritium back when the pellet is spent.
+     */
+    private static void reactorBurnsPelletsForFe(GameTestHelper helper) {
+        FusionReactorBlockEntity reactor = buildReactor(helper);
+        reactor.getPlasma().fill(FluidResource.of(ModFluids.PLASMA.get()), 1_500);
+        reactor.setItem(FusionReactorBlockEntity.SLOT_PELLETS, new ItemStack(ModItems.FUSION_FUEL_PELLET.get(), 2));
+        BlockPos batteryPos = new BlockPos(4, 1, 2);
+        helper.setBlock(batteryPos, ModBlocks.ENERGY_BATTERY.get());
+        EnergyBatteryBlockEntity battery = helper.getBlockEntity(batteryPos, EnergyBatteryBlockEntity.class);
+        helper.succeedWhen(() -> {
+            helper.assertTrue(battery.getEnergy() > 0, "No FE has reached the battery yet (core heat " + reactor.getHeat() + "%)");
+            helper.assertTrue(reactor.getTritium().getAmount() >= FusionReactorBlockEntity.TRITIUM_PER_PELLET,
+                    "No tritium back yet (" + reactor.getTritium().getAmount() + " mB)");
+        });
+    }
+
     // ---- Helpers ----
+
+    /**
+     * Builds a 3x3x3 Fusion Reactor at x 1-3, y 0-2, z 1-3 (it replaces part of the floor): casing frame, glass in
+     * the face centres, the controller in the south face's centre (facing south) and a port in the east face's centre
+     * with its east face set to Output.
+     */
+    private static FusionReactorBlockEntity buildReactor(GameTestHelper helper) {
+        BlockPos core = new BlockPos(2, 1, 2);
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = -1; dy <= 1; dy++) {
+                for (int dz = -1; dz <= 1; dz++) {
+                    BlockPos p = core.offset(dx, dy, dz);
+                    int centred = (dx == 0 ? 1 : 0) + (dy == 0 ? 1 : 0) + (dz == 0 ? 1 : 0);
+                    if (centred == 3) {
+                        helper.setBlock(p, Blocks.AIR);
+                    } else {
+                        helper.setBlock(p, centred == 2 ? ModBlocks.REACTOR_GLASS.get() : ModBlocks.REACTOR_CASING.get());
+                    }
+                }
+            }
+        }
+        BlockPos controllerPos = core.south();
+        helper.setBlock(controllerPos, ModBlocks.REACTOR_CONTROLLER.get().defaultBlockState().setValue(MachineBlock.FACING, Direction.SOUTH));
+        BlockPos portPos = core.east();
+        helper.setBlock(portPos, ModBlocks.REACTOR_PORT.get().defaultBlockState().setValue(MachineBlock.FACING, Direction.NORTH));
+        // Facing north, the port's left is east (away from the reactor).
+        helper.getBlockEntity(portPos, ReactorPortBlockEntity.class).getControls().setSide(RelativeSide.LEFT, SideMode.OUTPUT);
+        return helper.getBlockEntity(controllerPos, FusionReactorBlockEntity.class);
+    }
 
     private static PlasmaMachineBlockEntity placeAssembler(GameTestHelper helper, BlockPos pos, ItemStack input) {
         helper.setBlock(pos, ModBlocks.CIRCUIT_ASSEMBLER.get());

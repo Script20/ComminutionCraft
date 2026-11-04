@@ -9,6 +9,7 @@ import com.script.comminutioncraft.common.cable.CableConnection;
 import com.script.comminutioncraft.common.cable.CableEnergyHandler;
 import com.script.comminutioncraft.common.machine.OreWasherBlockEntity;
 import com.script.comminutioncraft.common.machine.PelletPressBlockEntity;
+import com.script.comminutioncraft.common.machine.ReactorPortBlockEntity;
 import com.script.comminutioncraft.common.machine.PlasmaMachineBlockEntity;
 import com.script.comminutioncraft.common.cable.ConduitBlock;
 import com.script.comminutioncraft.common.cable.EnergyCableBlock;
@@ -101,7 +102,19 @@ public class ComminutionCraft {
         event.registerBlock(Capabilities.Energy.BLOCK, (level, pos, state, blockEntity, side) ->
                 side != null && state.getValue(EnergyCableBlock.CONNECTIONS.get(side)) == CableConnection.DISABLED
                         ? null : new CableEnergyHandler(level, pos, side, ((EnergyCableBlock) state.getBlock()).getTransferRate()),
-                ModBlocks.ENERGY_CABLE.get());
+                ModBlocks.ENERGY_CABLE.get(), ModBlocks.FUSION_CABLE.get());
+
+        // Tier 4 Fusion Reactor: everything goes through its ports; the controller itself only answers "no side"
+        // queries (Jade) and takes pellets from hoppers.
+        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.REACTOR_PORT.get(), ReactorPortBlockEntity::getItemHandler);
+        event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.REACTOR_PORT.get(), ReactorPortBlockEntity::getFluidHandler);
+        event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.REACTOR_PORT.get(), ReactorPortBlockEntity::getEnergyHandler);
+        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.FUSION_REACTOR.get(), WorldlyContainerWrapper::new);
+        event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.FUSION_REACTOR.get(),
+                (reactor, side) -> side == null ? reactor.getTanks() : null);
+        event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.FUSION_REACTOR.get(),
+                (reactor, side) -> side == null ? reactor.getEnergy() : null);
+        event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.FUSION_ENERGY_BATTERY.get(), EnergyBatteryBlockEntity::getEnergyHandler);
 
         // Tier 3 machines: FE and items like tier 2 (the granulator and smelter need nothing else)
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.PLASMA_GRANULATOR.get(), WorldlyContainerWrapper::new);

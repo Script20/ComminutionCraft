@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "comminutioncraft:block/reactor_port"
+    },
+    "lit=true": {
+      "model": "comminutioncraft:block/reactor_port_on"
+    }
+  }
+}

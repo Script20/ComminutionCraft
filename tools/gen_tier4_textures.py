@@ -7,6 +7,11 @@ Phase 4A (approved preview: design/previews/phase_4a.png, drawn from these same 
   tritium), Pellet Press (pressing the two into pellets): fusion tier bottom (tier_fusion from six_tiers.py),
   shared tier-4 side and top.
 - Items: Fusion Fuel Pellet, Reactor Plating, Fusion Circuit. Fluids: deuterium / tritium still + flow strips.
+
+Phase 4B (approved preview: design/previews/phase_4b.png):
+- Fusion Reactor blocks: Reactor Casing (+ _on: seams glow, animated), Reactor Glass (cutout window; the core is drawn
+  by FusionReactorRenderer), Reactor Port (+ _on), Reactor Controller (front + animated _front_on; top/side = casing).
+- Fusion Cable (same UV layout as the other cables), Fusion Energy Battery (battery faces in green).
 """
 import math
 import os
@@ -19,7 +24,7 @@ sys.path.insert(0, TOOLS)
 from mekstyle_lib import Tex, mix, shade, FRAMES, TAU  # noqa: E402
 import dark_chassis_system as dcs  # noqa: E402
 from dark_chassis_system import (K, GLASS, STEEL, COPPER, casing, seam, well, front, side, top,  # noqa: E402
-                                 cylinder_row, circuit)
+                                 cylinder_row, circuit, battery_front, battery_side, battery_top, BATTERY_CELLS)
 import gen_tier3_textures as t3  # noqa: E402
 
 dcs.TIERS['fusion'] = dict(off=(32, 84, 44), on=(96, 255, 128), hi=(214, 255, 214))
@@ -162,6 +167,135 @@ def tritium_still(f):
 
 
 
+# ================================================================ Reactor Casing
+def reactor_casing():
+    """Heavy plated block: four riveted plates split by green seams (it's what the reactor's frame is built from)."""
+    t = casing()
+    for y in range(1, 15):
+        for x in range(1, 15):
+            t.px(x, y, mix(STEEL[2], STEEL[0], (y - 1) / 13) if (x - 1) % 7 and (y - 1) % 7 else K['d'])
+    seam(t, [(x, 7) for x in range(1, 15)] + [(x, 8) for x in range(1, 15)], 'fusion', False, 0)
+    for x in (7, 8):
+        for y in range(1, 15):
+            t.px(x, y, F['off'])
+    for (x, y) in ((3, 3), (12, 3), (3, 12), (12, 12)):
+        t.px(x, y, STEEL[0]); t.px(x - 1, y - 1, STEEL[4])
+    t.hline(1, 14, 0, STEEL[3]); t.vline(0, 1, 14, STEEL[2])
+    return t
+
+
+def reactor_casing_lit(f):
+    """Formed and running: the seams glow."""
+    t = reactor_casing()
+    for x in (7, 8):
+        for y in range(1, 15):
+            t.px(x, y, mix(F['on'], F['hi'], 0.2 + 0.3 * math.sin((f + y) * TAU / FRAMES)))
+    for x in range(1, 15):
+        for y in (7, 8):
+            t.px(x, y, mix(F['on'], F['hi'], 0.2 + 0.3 * math.sin((f + x) * TAU / FRAMES)))
+    return t
+
+
+# ================================================================ Reactor Glass
+def reactor_glass(core=None):
+    """Steel frame, a wide window (see-through in game: cutout), green-tinted corners. `core` paints the glow behind it."""
+    t = Tex()
+    for y in range(16):
+        for x in range(16):
+            edge = x in (0, 15) or y in (0, 15)
+            inner = x in (1, 14) or y in (1, 14)
+            if edge:
+                t.px(x, y, STEEL[1] if x == 0 or y == 0 else STEEL[0])
+            elif inner:
+                t.px(x, y, STEEL[2] if x == 1 or y == 1 else K['d'])
+            elif core is not None:
+                t.px(x, y, core(x, y))
+            else:
+                t.img.putpixel((x, y), (0, 0, 0, 0))
+    for (x, y) in ((2, 2), (13, 2), (2, 13), (13, 13)):
+        t.px(x, y, F['off'])
+    for (x, y) in ((3, 4), (4, 3), (11, 12), (12, 11)):  # glints
+        b = t.img.getpixel((x, y))
+        t.img.putpixel((x, y), (210, 240, 220, 255 if b[3] else 120))
+    return t
+
+
+def core_glow(f):
+    """What a window shows of the running core: a green plasma torus, brightest in the middle."""
+    def colour(x, y):
+        d = math.hypot((x - 7.5) / 6, (y - 7.5) / 3.2)
+        ring = abs(d - 0.75)
+        pulse = 0.85 + 0.15 * math.sin(f * TAU / FRAMES * 2 + x * 0.4)
+        if ring < 0.22:
+            return mix(F['on'], F['hi'], (1 - ring / 0.22) * pulse)
+        if d < 0.5:
+            return mix((20, 60, 30), F['on'], 0.4 * pulse)
+        return mix((10, 24, 14), (24, 60, 32), max(0.0, 1 - ring))
+    return colour
+
+
+# ================================================================ Reactor Port
+def reactor_port(lit=False):
+    """Where the reactor connects to the world: pellets in, plasma in, tritium out, FE out (one port does all four)."""
+    t = reactor_casing()
+    for y in range(3, 13):
+        for x in range(3, 13):
+            d = math.hypot(x - 7.5, y - 7.5)
+            if d <= 4.6:
+                t.px(x, y, (F['on'] if lit else F['off']) if d > 3.6 else (STEEL[1] if d > 2.6 else (14, 18, 16)))
+    for (x, y) in ((7, 3), (8, 12), (3, 8), (12, 7)):  # four small arrows: in / out
+        t.px(x, y, STEEL[4])
+    if lit:
+        t.px(7, 7, F['hi']); t.px(8, 8, F['on'])
+    return t
+
+
+# ================================================================ Reactor Controller
+def reactor_controller(f=None):
+    """The reactor's brain and GUI: a status screen (temperature bars, a core readout) over the fusion tier panel."""
+    lit = f is not None
+    f = f or 0
+    t = reactor_casing() if not lit else reactor_casing_lit(f)
+    well(t, 2, 2, 13, 13)
+    for i in range(5):  # temperature bars rising
+        h = (2 + int(3 + 2 * math.sin(f * TAU / FRAMES + i))) if lit else 1
+        for k in range(h):
+            y = 12 - k
+            t.px(3 + i * 2, y, mix(F['on'], F['hi'], k / 7) if lit else F['off'])
+    for y in range(3, 7):  # core readout (a little torus)
+        for x in range(9, 13):
+            d = math.hypot(x - 10.5, (y - 4.5) * 1.6)
+            if 0.8 < d < 1.9:
+                t.px(x, y, F['hi'] if lit and (x + y + f) % 3 else (F['on'] if lit else F['off']))
+    t.px(12, 12, F['on'] if lit else (120, 40, 40))  # status lamp: green when running
+    return t
+
+
+# ================================================================ Fusion Cable and Battery
+def fusion_cable_sheet():
+    """Same UV layout as the other cables: green core, heavy steel bands, a triple-ringed plate (the fast power cable)."""
+    img = t3.plasma_cable_sheet().copy()
+    px = img.load()
+    for y in range(16):
+        for x in range(16):
+            c = px[x, y]
+            if c[3] == 0:
+                continue
+            r, g, b, a = c
+            if r > 150 and b > 120 and g < 150:  # plasma magenta -> fusion green
+                k = (r + b) / 2 / 255
+                px[x, y] = tuple(int(v) for v in mix(F['off'], F['on'], k)[:3]) + (a,)
+            elif r > 200 and g > 150 and b > 200:  # magenta highlight -> green highlight
+                px[x, y] = tuple(F['hi'][:3]) + (a,)
+    for x in range(16):  # an extra steel band on the arm, at every 4th pixel
+        if x % 8 == 4:
+            px[x, 9] = tuple(STEEL[3][:3]) + (255,)
+            px[x, 10] = tuple(STEEL[2][:3]) + (255,)
+    for i in range(8, 16):  # the plate gets an outer green ring
+        px[i, 0] = tuple(shade(F['on'], 0.7)[:3]) + (255,)
+    return img
+
+
 ROOT = os.path.join(TOOLS, '..', 'src', 'main', 'resources', 'assets', 'comminutioncraft', 'textures')
 BLOCK = os.path.join(ROOT, 'block')
 ITEM = os.path.join(ROOT, 'item')
@@ -180,4 +314,20 @@ if __name__ == '__main__':
     for name, still in (('deuterium', deuterium_still), ('tritium', tritium_still)):
         t3.save_strip(os.path.join(BLOCK, f'{name}_still.png'), still)
         t3.save_strip(os.path.join(BLOCK, f'{name}_flow.png'), still)
+    # phase 4B
+    reactor_casing().img.save(os.path.join(BLOCK, 'reactor_casing.png'))
+    t3.save_strip(os.path.join(BLOCK, 'reactor_casing_on.png'), reactor_casing_lit)
+    reactor_glass().img.save(os.path.join(BLOCK, 'reactor_glass.png'))
+    reactor_port().img.save(os.path.join(BLOCK, 'reactor_port.png'))
+    reactor_port(True).img.save(os.path.join(BLOCK, 'reactor_port_on.png'))
+    reactor_casing().img.save(os.path.join(BLOCK, 'reactor_controller_top.png'))
+    reactor_casing().img.save(os.path.join(BLOCK, 'reactor_controller_side.png'))
+    reactor_controller().img.save(os.path.join(BLOCK, 'reactor_controller_front.png'))
+    t3.save_strip(os.path.join(BLOCK, 'reactor_controller_front_on.png'), reactor_controller)
+    fusion_cable_sheet().save(os.path.join(BLOCK, 'fusion_cable.png'))
+    battery_top('fusion').img.save(os.path.join(BLOCK, 'fusion_energy_battery_top.png'))
+    battery_side('fusion').img.save(os.path.join(BLOCK, 'fusion_energy_battery_side.png'))
+    battery_front('fusion', BATTERY_CELLS).img.save(os.path.join(BLOCK, 'fusion_energy_battery_front.png'))
+    for level in range(BATTERY_CELLS + 1):
+        battery_front('fusion', level).img.save(os.path.join(BLOCK, f'fusion_energy_battery_front_{level}.png'))
     print('ok')

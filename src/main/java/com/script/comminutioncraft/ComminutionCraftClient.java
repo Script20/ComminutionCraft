@@ -14,6 +14,8 @@ import com.script.comminutioncraft.client.gui.FluidMachineScreen;
 import com.script.comminutioncraft.client.gui.PlasmaMachineScreen;
 import com.script.comminutioncraft.client.gui.OreWasherScreen;
 import com.script.comminutioncraft.client.gui.PelletPressScreen;
+import com.script.comminutioncraft.client.gui.FusionReactorScreen;
+import com.script.comminutioncraft.client.render.FusionReactorRenderer;
 import com.script.comminutioncraft.common.machine.PelletPressMenu;
 import com.script.comminutioncraft.common.machine.OreWasherMenu;
 import com.script.comminutioncraft.common.machine.ElectricMachineMenu;
@@ -61,6 +63,8 @@ public class ComminutionCraftClient {
         event.register(ModMenus.MHD_GENERATOR.get(), FluidMachineScreen::mhdGenerator);
         event.register(ModMenus.ISOTOPE_SEPARATOR.get(), FluidMachineScreen::isotopeSeparator);
         event.register(ModMenus.TRITIUM_BREEDER.get(), FluidMachineScreen::tritiumBreeder);
+        event.register(ModMenus.FUSION_REACTOR.get(), FusionReactorScreen::new);
+        event.register(ModMenus.FUSION_ENERGY_BATTERY.get(), EnergyBatteryScreen::fusion);
         event.<ElectricMachineMenu, PelletPressScreen>register(ModMenus.PELLET_PRESS.get(),
                 (menu, inventory, title) -> new PelletPressScreen((PelletPressMenu) menu, inventory, title));
         event.register(ModMenus.PLASMA_GRANULATOR.get(), ElectricMachineScreen::plasmaGranulator);
@@ -73,6 +77,7 @@ public class ComminutionCraftClient {
 
     private static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(ModBlockEntities.FLUID_TANK.get(), context -> new FluidTankRenderer(context.sprites()));
+        event.registerBlockEntityRenderer(ModBlockEntities.FUSION_REACTOR.get(), context -> new FusionReactorRenderer(context.sprites()));
     }
 
     /** Our fluids' textures (they have no world blocks, but tanks, GUIs and JEI draw them from these models). */

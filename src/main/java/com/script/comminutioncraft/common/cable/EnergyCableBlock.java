@@ -12,6 +12,8 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 public class EnergyCableBlock extends ConduitBlock {
     /** Tier 2 Energy Cable. */
     public static final int ENERGY_CABLE_RATE = 1_000;
+    /** Tier 4 Fusion Cable. */
+    public static final int FUSION_CABLE_RATE = 16_000;
 
     private final int transferRate;
 

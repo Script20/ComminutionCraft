@@ -516,6 +516,29 @@ def pellet_press_sheet():
     return s.img
 
 
+def fusion_reactor_sheet():
+    """Reactor Controller: energy left, plasma (ignition) tube, pellet slot, core-heat bar, tritium tube right.
+    Heat bar well at (64, 19)-(112, 25), its fill sprite at (176, 90), 47x5."""
+    s = Sheet()
+    body(s)
+    energy_well(s)
+    gauge_well(s, 50)
+    gauge_well(s, 155)
+    slot(s, 79, 52, rim=FUSION['off'])
+    x0, y0, x1, y1 = 64, 19, 112, 25
+    s.rect(x0, y0, x1, y1, GLASS)
+    s.hline(x0, x1, y0, K['o']); s.vline(x0, y0, y1, K['o'])
+    s.hline(x0, x1, y1, K['hi']); s.vline(x1, y0, y1, K['hi'])
+    player_inventory(s)
+    energy_sprite(s)
+    fusion_sprites(s)
+    for x in range(47):
+        for y in range(5):
+            c = mix(FUSION['off'], FUSION['on'], x / 46) if x < 40 else mix(FUSION['on'], FUSION['hi'], (x - 40) / 6)
+            s.px(176 + x, 90 + y, shade(c, 0.8) if y in (0, 4) else c)
+    return s.img
+
+
 os.makedirs(OUT, exist_ok=True)
 coal_sheet(granulator_arrow).save(os.path.join(OUT, 'coal_granulator.png'))
 coal_sheet(smelter_arrow).save(os.path.join(OUT, 'coal_smelter.png'))
@@ -532,6 +555,7 @@ fluid_machine_sheet((50,), fade_arrow(PLASMA['on'], ELEC['on'])).save(os.path.jo
 fusion_fluid_sheet((50, 155), fade_arrow(WATER[2], DEUTERIUM[2])).save(os.path.join(OUT, 'isotope_separator.png'))
 fusion_fluid_sheet((50, 155), fade_arrow(DEUTERIUM[2], TRITIUM[2])).save(os.path.join(OUT, 'tritium_breeder.png'))
 pellet_press_sheet().save(os.path.join(OUT, 'pellet_press.png'))
+fusion_reactor_sheet().save(os.path.join(OUT, 'reactor_controller.png'))
 tier3_sheet(plasma_granulator_arrow).save(os.path.join(OUT, 'plasma_granulator.png'))
 tier3_sheet(smelter_arrow).save(os.path.join(OUT, 'plasma_smelter.png'))
 plasma_machine_sheet(plasma_granulator_arrow).save(os.path.join(OUT, 'circuit_assembler.png'))

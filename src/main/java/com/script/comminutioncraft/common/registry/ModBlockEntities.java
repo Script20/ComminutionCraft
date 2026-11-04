@@ -15,6 +15,8 @@ import com.script.comminutioncraft.common.machine.MhdGeneratorBlockEntity;
 import com.script.comminutioncraft.common.machine.IsotopeSeparatorBlockEntity;
 import com.script.comminutioncraft.common.machine.PelletPressBlockEntity;
 import com.script.comminutioncraft.common.machine.TritiumBreederBlockEntity;
+import com.script.comminutioncraft.common.machine.FusionReactorBlockEntity;
+import com.script.comminutioncraft.common.machine.ReactorPortBlockEntity;
 import com.script.comminutioncraft.common.machine.PlasmaGranulatorBlockEntity;
 import com.script.comminutioncraft.common.machine.CircuitAssemblerBlockEntity;
 import com.script.comminutioncraft.common.machine.OreWasherBlockEntity;
@@ -103,6 +105,18 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PelletPressBlockEntity>> PELLET_PRESS =
             BLOCK_ENTITY_TYPES.register("pellet_press",
                     () -> new BlockEntityType<>(PelletPressBlockEntity::new, ModBlocks.PELLET_PRESS.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FusionReactorBlockEntity>> FUSION_REACTOR =
+            BLOCK_ENTITY_TYPES.register("fusion_reactor",
+                    () -> new BlockEntityType<>(FusionReactorBlockEntity::new, ModBlocks.REACTOR_CONTROLLER.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ReactorPortBlockEntity>> REACTOR_PORT =
+            BLOCK_ENTITY_TYPES.register("reactor_port",
+                    () -> new BlockEntityType<>(ReactorPortBlockEntity::new, ModBlocks.REACTOR_PORT.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<EnergyBatteryBlockEntity>> FUSION_ENERGY_BATTERY =
+            BLOCK_ENTITY_TYPES.register("fusion_energy_battery",
+                    () -> new BlockEntityType<>(EnergyBatteryBlockEntity::fusion, ModBlocks.FUSION_ENERGY_BATTERY.get()));
 
     private ModBlockEntities() {}
 }

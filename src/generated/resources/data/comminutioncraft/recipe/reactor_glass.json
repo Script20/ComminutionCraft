@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": "#c:glass_blocks",
+    "P": "comminutioncraft:reactor_plating"
+  },
+  "pattern": [
+    "GPG"
+  ],
+  "result": {
+    "count": 2,
+    "id": "comminutioncraft:reactor_glass"
+  }
+}

@@ -12,6 +12,7 @@ import com.script.comminutioncraft.common.machine.MhdGeneratorBlockEntity;
 import com.script.comminutioncraft.common.machine.IsotopeSeparatorBlockEntity;
 import com.script.comminutioncraft.common.machine.PelletPressMenu;
 import com.script.comminutioncraft.common.machine.TritiumBreederBlockEntity;
+import com.script.comminutioncraft.common.machine.FusionReactorMenu;
 import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlockEntity;
 import com.script.comminutioncraft.common.machine.PlasmaMachineMenu;
 import com.script.comminutioncraft.common.machine.OreWasherMenu;
@@ -82,6 +83,12 @@ public final class ModMenus {
 
     public static final DeferredHolder<MenuType<?>, MenuType<PelletPressMenu>> PELLET_PRESS =
             MENUS.register("pellet_press", () -> new MenuType<>(PelletPressMenu::client, FeatureFlags.VANILLA_SET));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<FusionReactorMenu>> FUSION_REACTOR =
+            MENUS.register("reactor_controller", () -> new MenuType<>(FusionReactorMenu::client, FeatureFlags.VANILLA_SET));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<EnergyBatteryMenu>> FUSION_ENERGY_BATTERY =
+            MENUS.register("fusion_energy_battery", () -> new MenuType<>(EnergyBatteryMenu::clientFusion, FeatureFlags.VANILLA_SET));
 
     private ModMenus() {}
 }
