@@ -138,6 +138,11 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
     /** Called when an operation finishes (tier 3 uses up its plasma here). */
     protected void onOperationDone() {}
 
+    /** Called when an operation finishes, with the recipe it ran (the Ore Purifier rolls its by-product here). */
+    protected void onOperationDone(RecipeHolder<? extends Recipe<SingleRecipeInput>> recipe) {
+        onOperationDone();
+    }
+
     /** The recipe this machine would run on this input, or empty if it can't process it. */
     protected abstract Optional<? extends RecipeHolder<? extends Recipe<SingleRecipeInput>>> findRecipe(ServerLevel level, ItemStack input);
 
@@ -201,7 +206,7 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
                 MachineSlots.addTo(items, SLOT_OUTPUT, result);
                 input.shrink(1);
                 experience.recordRecipe(recipe);
-                onOperationDone();
+                onOperationDone(recipe);
                 changed = true;
             }
         }

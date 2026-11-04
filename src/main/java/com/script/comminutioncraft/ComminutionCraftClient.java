@@ -15,6 +15,8 @@ import com.script.comminutioncraft.client.gui.PlasmaMachineScreen;
 import com.script.comminutioncraft.client.gui.OreWasherScreen;
 import com.script.comminutioncraft.client.gui.PelletPressScreen;
 import com.script.comminutioncraft.client.gui.FusionReactorScreen;
+import com.script.comminutioncraft.client.gui.OrePurifierScreen;
+import com.script.comminutioncraft.common.machine.OrePurifierMenu;
 import com.script.comminutioncraft.client.render.FusionReactorRenderer;
 import com.script.comminutioncraft.common.machine.PelletPressMenu;
 import com.script.comminutioncraft.common.machine.OreWasherMenu;
@@ -64,6 +66,8 @@ public class ComminutionCraftClient {
         event.register(ModMenus.ISOTOPE_SEPARATOR.get(), FluidMachineScreen::isotopeSeparator);
         event.register(ModMenus.TRITIUM_BREEDER.get(), FluidMachineScreen::tritiumBreeder);
         event.register(ModMenus.FUSION_REACTOR.get(), FusionReactorScreen::new);
+        event.<ElectricMachineMenu, OrePurifierScreen>register(ModMenus.ORE_PURIFIER.get(),
+                (menu, inventory, title) -> new OrePurifierScreen((OrePurifierMenu) menu, inventory, title));
         event.register(ModMenus.FUSION_ENERGY_BATTERY.get(), EnergyBatteryScreen::fusion);
         event.<ElectricMachineMenu, PelletPressScreen>register(ModMenus.PELLET_PRESS.get(),
                 (menu, inventory, title) -> new PelletPressScreen((PelletPressMenu) menu, inventory, title));

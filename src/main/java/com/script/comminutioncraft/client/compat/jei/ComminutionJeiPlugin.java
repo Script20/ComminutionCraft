@@ -11,6 +11,8 @@ import com.script.comminutioncraft.common.data.ProcessedMetal;
 import com.script.comminutioncraft.common.recipe.AssemblingRecipe;
 import com.script.comminutioncraft.common.recipe.GranulatingRecipe;
 import com.script.comminutioncraft.common.recipe.PressingRecipe;
+import com.script.comminutioncraft.common.recipe.PurifyingRecipe;
+import com.script.comminutioncraft.common.machine.OrePurifierBlockEntity;
 import com.script.comminutioncraft.common.machine.PelletPressBlockEntity;
 import com.script.comminutioncraft.common.recipe.WashingRecipe;
 import com.script.comminutioncraft.client.gui.PlasmaMachineScreen;
@@ -58,6 +60,8 @@ public class ComminutionJeiPlugin implements IModPlugin {
             IRecipeHolderType.createDeferred(ModRecipes.WASHING_TYPE::get);
     public static final Supplier<IRecipeHolderType<PressingRecipe>> PRESSING =
             IRecipeHolderType.createDeferred(ModRecipes.PRESSING_TYPE::get);
+    public static final Supplier<IRecipeHolderType<PurifyingRecipe>> PURIFYING =
+            IRecipeHolderType.createDeferred(ModRecipes.PURIFYING_TYPE::get);
 
     // Positions match the GUI textures (see MachineScreen)
     private static final int ARROW_X = 79;
@@ -94,7 +98,13 @@ public class ComminutionJeiPlugin implements IModPlugin {
                         ModItems.PELLET_PRESS.get(), List.of(
                         new ProcessingCategory.Station("jei.comminutioncraft.time.pellet_press", PelletPressBlockEntity.PROCESS_TIME)),
                         List.of(Component.translatable("jei.comminutioncraft.uses_fusion_fuel",
-                                PelletPressBlockEntity.DEUTERIUM_PER_PELLET, PelletPressBlockEntity.TRITIUM_PER_PELLET))));
+                                PelletPressBlockEntity.DEUTERIUM_PER_PELLET, PelletPressBlockEntity.TRITIUM_PER_PELLET))),
+                new ProcessingCategory<>(gui, PURIFYING.get(), Component.translatable("jei.comminutioncraft.purifying"),
+                        ModItems.ORE_PURIFIER.get(), List.of(
+                        new ProcessingCategory.Station("jei.comminutioncraft.time.ore_purifier", OrePurifierBlockEntity.PROCESS_TIME)),
+                        List.of(Component.translatable("jei.comminutioncraft.uses_oxygen", OrePurifierBlockEntity.OXYGEN_PER_OPERATION)),
+                        recipe -> List.of(Component.translatable("jei.comminutioncraft.byproduct",
+                                recipe.getByproduct().create().getHoverName(), Math.round(recipe.getChance() * 100)))));
     }
 
     @Override
@@ -103,6 +113,7 @@ public class ComminutionJeiPlugin implements IModPlugin {
         registration.addRecipes(ASSEMBLING.get(), ClientRecipes.assembling());
         registration.addRecipes(WASHING.get(), ClientRecipes.washing());
         registration.addRecipes(PRESSING.get(), ClientRecipes.pressing());
+        registration.addRecipes(PURIFYING.get(), ClientRecipes.purifying());
     }
 
     @Override
@@ -114,6 +125,7 @@ public class ComminutionJeiPlugin implements IModPlugin {
         registration.addCraftingStation(ASSEMBLING.get(), ModItems.CIRCUIT_ASSEMBLER.get());
         registration.addCraftingStation(WASHING.get(), ModItems.ORE_WASHER.get());
         registration.addCraftingStation(PRESSING.get(), ModItems.PELLET_PRESS.get());
+        registration.addCraftingStation(PURIFYING.get(), ModItems.ORE_PURIFIER.get());
         // Everything that burns furnace fuel
         registration.addCraftingStation(RecipeTypes.SMELTING_FUEL,
                 ModItems.COAL_GRANULATOR.get(), ModItems.COAL_SMELTER.get(), ModItems.ELECTRIC_GENERATOR.get());
@@ -124,7 +136,8 @@ public class ComminutionJeiPlugin implements IModPlugin {
     public void onRuntimeAvailable(IJeiRuntime runtime) {
         List<ItemStack> unused = ProcessedMetal.ALL.stream()
                 .filter(metal -> !metal.isAvailable())
-                .flatMap(metal -> Stream.of(new ItemStack(metal.granulated().get()), new ItemStack(metal.washed().get())))
+                .flatMap(metal -> Stream.of(new ItemStack(metal.granulated().get()), new ItemStack(metal.washed().get()),
+                        new ItemStack(metal.purified().get())))
                 .toList();
         if (!unused.isEmpty()) {
             runtime.getIngredientManager().removeIngredientsAtRuntime(VanillaTypes.ITEM_STACK, unused);
@@ -159,6 +172,8 @@ public class ComminutionJeiPlugin implements IModPlugin {
                     type = WASHING.get();
                 } else if (menuType == ModMenus.PELLET_PRESS.get()) {
                     type = PRESSING.get();
+                } else if (menuType == ModMenus.ORE_PURIFIER.get()) {
+                    type = PURIFYING.get();
                 } else {
                     type = RecipeTypes.SMELTING;
                 }

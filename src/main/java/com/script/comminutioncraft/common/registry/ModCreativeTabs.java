@@ -48,6 +48,7 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.REACTOR_PLATING.get());
                         output.accept(ModItems.FUSION_CIRCUIT.get());
                         output.accept(ModItems.FUSION_FUEL_PELLET.get());
+                        output.accept(ModItems.ORE_PURIFIER.get());
                         output.accept(ModItems.REACTOR_CONTROLLER.get());
                         output.accept(ModItems.REACTOR_CASING.get());
                         output.accept(ModItems.REACTOR_GLASS.get());
@@ -61,6 +62,7 @@ public final class ModCreativeTabs {
                                 .filter(ProcessedMetal::isAvailable)
                                 .forEach(metal -> {
                                     output.accept(metal.washed().get());
+                                    output.accept(metal.purified().get());
                                     output.accept(metal.granulated().get());
                                 });
                     })

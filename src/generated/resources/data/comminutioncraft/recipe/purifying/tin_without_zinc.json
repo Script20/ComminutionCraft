@@ -1,0 +1,48 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:raw_materials/tin"
+      }
+    },
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ingots/tin"
+      }
+    },
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:and",
+        "values": [
+          {
+            "type": "neoforge:not",
+            "value": {
+              "type": "neoforge:tag_empty",
+              "tag": "c:raw_materials/zinc"
+            }
+          },
+          {
+            "type": "neoforge:not",
+            "value": {
+              "type": "neoforge:tag_empty",
+              "tag": "c:ingots/zinc"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "type": "comminutioncraft:purifying",
+  "byproduct": {
+    "id": "minecraft:iron_nugget"
+  },
+  "ingredient": "comminutioncraft:washed_tin",
+  "result": {
+    "id": "comminutioncraft:purified_tin"
+  }
+}

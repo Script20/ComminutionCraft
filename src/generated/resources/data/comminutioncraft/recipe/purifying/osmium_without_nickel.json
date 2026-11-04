@@ -1,0 +1,48 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:raw_materials/osmium"
+      }
+    },
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ingots/osmium"
+      }
+    },
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:and",
+        "values": [
+          {
+            "type": "neoforge:not",
+            "value": {
+              "type": "neoforge:tag_empty",
+              "tag": "c:raw_materials/nickel"
+            }
+          },
+          {
+            "type": "neoforge:not",
+            "value": {
+              "type": "neoforge:tag_empty",
+              "tag": "c:ingots/nickel"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "type": "comminutioncraft:purifying",
+  "byproduct": {
+    "id": "minecraft:iron_nugget"
+  },
+  "ingredient": "comminutioncraft:washed_osmium",
+  "result": {
+    "id": "comminutioncraft:purified_osmium"
+  }
+}

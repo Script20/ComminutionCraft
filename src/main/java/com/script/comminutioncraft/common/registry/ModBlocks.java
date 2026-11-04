@@ -24,6 +24,7 @@ import com.script.comminutioncraft.common.machine.ReactorCasingBlock;
 import com.script.comminutioncraft.common.machine.ReactorControllerBlock;
 import com.script.comminutioncraft.common.machine.ReactorGlassBlock;
 import com.script.comminutioncraft.common.machine.ReactorPortBlock;
+import com.script.comminutioncraft.common.machine.OrePurifierBlock;
 import com.script.comminutioncraft.common.machine.PlasmaGranulatorBlock;
 import com.script.comminutioncraft.common.machine.CircuitAssemblerBlock;
 import com.script.comminutioncraft.common.machine.OreWasherBlock;
@@ -131,6 +132,10 @@ public final class ModBlocks {
             "pellet_press", PelletPressBlock::new, ModBlocks::tier2MachineProperties);
 
     // Tier 4 (fusion), phase 4B: the 3x3x3 Fusion Reactor and the fast power blocks
+    // Tier 4 phase 4C: the by-product step
+    public static final DeferredBlock<OrePurifierBlock> ORE_PURIFIER = BLOCKS.registerBlock(
+            "ore_purifier", OrePurifierBlock::new, ModBlocks::tier2MachineProperties);
+
     public static final DeferredBlock<ReactorCasingBlock> REACTOR_CASING = BLOCKS.registerBlock(
             "reactor_casing", ReactorCasingBlock::new, ModBlocks::tier2MachineProperties);
 

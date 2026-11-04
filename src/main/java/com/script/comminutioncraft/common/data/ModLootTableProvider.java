@@ -39,6 +39,7 @@ public class ModLootTableProvider extends LootTableProvider {
             dropSelf(ModBlocks.ISOTOPE_SEPARATOR.get());
             dropSelf(ModBlocks.TRITIUM_BREEDER.get());
             dropSelf(ModBlocks.PELLET_PRESS.get());
+            dropSelf(ModBlocks.ORE_PURIFIER.get());
             dropSelf(ModBlocks.REACTOR_CASING.get());
             dropSelf(ModBlocks.REACTOR_GLASS.get());
             dropSelf(ModBlocks.REACTOR_PORT.get());

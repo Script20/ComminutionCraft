@@ -50,6 +50,12 @@ public class ElectricMachineMenu extends AbstractContainerMenu implements Contro
     }
 
     public ElectricMachineMenu(MenuType<?> type, int containerId, Inventory inventory, Container container, ContainerData data) {
+        this(type, containerId, inventory, container, data, 35);
+    }
+
+    /** {@code outputY}: where the output slot sits (the Ore Purifier stacks a by-product slot under it). */
+    protected ElectricMachineMenu(MenuType<?> type, int containerId, Inventory inventory, Container container, ContainerData data,
+                                  int outputY) {
         super(type, containerId);
         checkContainerSize(container, MACHINE_SLOTS);
         checkContainerDataCount(data, ElectricMachineBlockEntity.DATA_COUNT);
@@ -57,7 +63,7 @@ public class ElectricMachineMenu extends AbstractContainerMenu implements Contro
         this.data = data;
 
         addSlot(new Slot(container, ElectricMachineBlockEntity.SLOT_INPUT, 56, 35));
-        addSlot(new MachineOutputSlot(inventory.player, container, ElectricMachineBlockEntity.SLOT_OUTPUT, 116, 35));
+        addSlot(new MachineOutputSlot(inventory.player, container, ElectricMachineBlockEntity.SLOT_OUTPUT, 116, outputY));
         addStandardInventorySlots(inventory, 8, 84);
         addDataSlots(data);
     }

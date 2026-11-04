@@ -1,0 +1,26 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:raw_materials/aluminum"
+      }
+    },
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ingots/aluminum"
+      }
+    }
+  ],
+  "type": "comminutioncraft:purifying",
+  "byproduct": {
+    "id": "comminutioncraft:granulated_iron"
+  },
+  "ingredient": "comminutioncraft:washed_aluminum",
+  "result": {
+    "id": "comminutioncraft:purified_aluminum"
+  }
+}

@@ -17,6 +17,7 @@ import com.script.comminutioncraft.common.machine.PelletPressBlockEntity;
 import com.script.comminutioncraft.common.machine.TritiumBreederBlockEntity;
 import com.script.comminutioncraft.common.machine.FusionReactorBlockEntity;
 import com.script.comminutioncraft.common.machine.ReactorPortBlockEntity;
+import com.script.comminutioncraft.common.machine.OrePurifierBlockEntity;
 import com.script.comminutioncraft.common.machine.PlasmaGranulatorBlockEntity;
 import com.script.comminutioncraft.common.machine.CircuitAssemblerBlockEntity;
 import com.script.comminutioncraft.common.machine.OreWasherBlockEntity;
@@ -117,6 +118,10 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<EnergyBatteryBlockEntity>> FUSION_ENERGY_BATTERY =
             BLOCK_ENTITY_TYPES.register("fusion_energy_battery",
                     () -> new BlockEntityType<>(EnergyBatteryBlockEntity::fusion, ModBlocks.FUSION_ENERGY_BATTERY.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<OrePurifierBlockEntity>> ORE_PURIFIER =
+            BLOCK_ENTITY_TYPES.register("ore_purifier",
+                    () -> new BlockEntityType<>(OrePurifierBlockEntity::new, ModBlocks.ORE_PURIFIER.get()));
 
     private ModBlockEntities() {}
 }

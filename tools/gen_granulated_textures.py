@@ -7,6 +7,7 @@ Each colour of the iron pile is mapped, by brightness, onto the same step of a m
 keeps the iron pile's shape and shading. Iron, copper and gold are hand-drawn and are never overwritten.
 Washed ore (approved preview: design/previews/washed_ore.png) is drawn: clean rounded chunks shaded with the 5 tones
 of the metal's granulated texture, plus blue water droplets, so a washed ore matches its granulated form.
+Purified ore (approved preview: design/previews/phase_4c.png) is a faceted nugget in the same 5 tones with a sparkle.
 """
 import math
 import os
@@ -52,6 +53,8 @@ def ramp(metal):
                      key=luminance)
     if len(colours) > 5:  # hand-drawn ones may have more: pick 5 spread across the range
         colours = [colours[round(i * (len(colours) - 1) / 4)] for i in range(5)]
+    while len(colours) < 5:  # bright metals (silver) clip two tones to the same white
+        colours.append(colours[-1])
     return colours
 
 
@@ -110,6 +113,36 @@ def recolour(template, mid):
     return out
 
 
+# One faceted nugget: (x, y) -> facet number; facets get lighter towards the top left.
+def purified(metal):
+    """A clean, faceted nugget in the metal's colours, with a white sparkle (purer = shinier than washed ore)."""
+    tones = ramp(metal)
+    img = Image.new('RGBA', (16, 16), (0, 0, 0, 0))
+    cx, cy = 7.5, 8.6
+    for y in range(16):
+        for x in range(16):
+            px, py = x + 0.5 - cx, y + 0.5 - cy
+            # an octagon-ish gem, wider than tall
+            if abs(px) / 5.6 + abs(py) / 4.6 > 1.0 or abs(px) > 5.2 or abs(py) > 4.4:
+                continue
+            edge = abs(px) / 5.6 + abs(py) / 4.6 > 0.84 or abs(px) > 4.6 or abs(py) > 3.9
+            if edge:
+                tone = 0
+            elif py < -1.2:  # top facets
+                tone = 4 if px < 0.5 else 3
+            elif px < -1.5:
+                tone = 3
+            elif px > 1.5:
+                tone = 1
+            else:
+                tone = 2
+            img.putpixel((x, y), tones[tone] + (255,))
+    for (x, y) in ((5, 6), (6, 5), (5, 4), (4, 5), (5, 5)):  # sparkle
+        img.putpixel((x, y), (255, 255, 255, 255))
+    img.putpixel((10, 10), tones[4] + (255,))
+    return img
+
+
 if __name__ == '__main__':
     iron = Image.open(os.path.join(ITEM, 'granulated_iron.png')).convert('RGBA')
     made = {}
@@ -118,6 +151,7 @@ if __name__ == '__main__':
         made[name].save(os.path.join(ITEM, f'granulated_{name}.png'))
     for name in ALL_METALS:  # after the granulated ones: washed ore takes their colours
         washed(name).save(os.path.join(ITEM, f'washed_{name}.png'))
+        purified(name).save(os.path.join(ITEM, f'purified_{name}.png'))
     if len(sys.argv) > 1:
         sheet = Image.new('RGBA', (8 + len(made) * 72, 80), (60, 62, 70, 255))
         for i, img in enumerate(made.values()):

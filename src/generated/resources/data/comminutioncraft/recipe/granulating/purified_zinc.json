@@ -1,0 +1,24 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:raw_materials/zinc"
+      }
+    },
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ingots/zinc"
+      }
+    }
+  ],
+  "type": "comminutioncraft:granulating",
+  "ingredient": "comminutioncraft:purified_zinc",
+  "min_tier": 2,
+  "result": {
+    "id": "comminutioncraft:granulated_zinc"
+  }
+}

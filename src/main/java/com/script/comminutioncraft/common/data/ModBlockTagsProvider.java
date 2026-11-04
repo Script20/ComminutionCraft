@@ -31,6 +31,7 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
                 .add(ModBlocks.ISOTOPE_SEPARATOR.get())
                 .add(ModBlocks.TRITIUM_BREEDER.get())
                 .add(ModBlocks.PELLET_PRESS.get())
+                .add(ModBlocks.ORE_PURIFIER.get())
                 .add(ModBlocks.REACTOR_CASING.get())
                 .add(ModBlocks.REACTOR_GLASS.get())
                 .add(ModBlocks.REACTOR_PORT.get())

@@ -1,0 +1,34 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:and",
+        "values": [
+          {
+            "type": "neoforge:not",
+            "value": {
+              "type": "neoforge:tag_empty",
+              "tag": "c:raw_materials/nickel"
+            }
+          },
+          {
+            "type": "neoforge:not",
+            "value": {
+              "type": "neoforge:tag_empty",
+              "tag": "c:ingots/nickel"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "type": "comminutioncraft:purifying",
+  "byproduct": {
+    "id": "minecraft:gold_nugget"
+  },
+  "ingredient": "comminutioncraft:washed_iron",
+  "result": {
+    "id": "comminutioncraft:purified_iron"
+  }
+}

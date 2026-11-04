@@ -1,0 +1,10 @@
+{
+  "type": "comminutioncraft:purifying",
+  "byproduct": {
+    "id": "comminutioncraft:granulated_gold"
+  },
+  "ingredient": "comminutioncraft:washed_copper",
+  "result": {
+    "id": "comminutioncraft:purified_copper"
+  }
+}

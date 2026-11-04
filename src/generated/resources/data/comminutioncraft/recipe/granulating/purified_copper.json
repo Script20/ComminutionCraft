@@ -1,0 +1,8 @@
+{
+  "type": "comminutioncraft:granulating",
+  "ingredient": "comminutioncraft:purified_copper",
+  "min_tier": 2,
+  "result": {
+    "id": "comminutioncraft:granulated_copper"
+  }
+}

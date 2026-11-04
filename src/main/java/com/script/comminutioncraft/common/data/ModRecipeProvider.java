@@ -5,6 +5,10 @@ import com.script.comminutioncraft.common.block.StoneSet;
 import com.script.comminutioncraft.common.recipe.AssemblingRecipe;
 import com.script.comminutioncraft.common.recipe.GranulatingRecipe;
 import com.script.comminutioncraft.common.recipe.PressingRecipe;
+import com.script.comminutioncraft.common.recipe.PurifyingRecipe;
+import java.util.List;
+import net.neoforged.neoforge.common.conditions.AndCondition;
+import net.neoforged.neoforge.common.conditions.ICondition;
 import com.script.comminutioncraft.common.recipe.WashingRecipe;
 import com.script.comminutioncraft.common.recipe.TagBlastingRecipe;
 import com.script.comminutioncraft.common.recipe.TagResult;
@@ -44,6 +48,33 @@ public class ModRecipeProvider extends RecipeProvider {
         super(registries, output);
     }
 
+    /** Chance per operation of the Ore Purifier's by-product. */
+    private static final float BYPRODUCT_CHANCE = 0.2F;
+
+    /**
+     * Washed -> purified ore, sometimes with 1 granulated by-product metal. A by-product from another mod only counts
+     * when that mod is installed; without it the recipe gives a vanilla nugget instead (a gold nugget with iron, an
+     * iron nugget otherwise). Exactly one of the two versions loads.
+     */
+    private void purifying(RecipeOutput out, ProcessedMetal metal) {
+        ProcessedMetal partner = ProcessedMetal.byName(metal.byproduct());
+        ItemStackTemplate result = new ItemStackTemplate(metal.purified());
+        Ingredient washed = Ingredient.of(metal.washed());
+        ItemStackTemplate partnerByproduct = new ItemStackTemplate(partner.granulated());
+        if (!partner.fromOtherMods()) {
+            out.accept(key("purifying/" + metal.name()), new PurifyingRecipe(washed, result, partnerByproduct, BYPRODUCT_CHANCE), null);
+            return;
+        }
+        ICondition partnerAvailable = new AndCondition(List.of(
+                new NotCondition(new TagEmptyCondition<>(partner.rawTag())),
+                new NotCondition(new TagEmptyCondition<>(partner.ingotTag()))));
+        out.withConditions(partnerAvailable).accept(key("purifying/" + metal.name()),
+                new PurifyingRecipe(washed, result, partnerByproduct, BYPRODUCT_CHANCE), null);
+        ItemStackTemplate nugget = new ItemStackTemplate(metal.name().equals("iron") ? Items.GOLD_NUGGET : Items.IRON_NUGGET);
+        out.withConditions(new NotCondition(partnerAvailable)).accept(key("purifying/" + metal.name() + "_without_" + partner.name()),
+                new PurifyingRecipe(washed, result, nugget, BYPRODUCT_CHANCE), null);
+    }
+
     @Override
     protected void buildRecipes() {
         for (ProcessedMetal metal : ProcessedMetal.ALL) {
@@ -66,10 +97,14 @@ public class ModRecipeProvider extends RecipeProvider {
             out.withConditions(new NotCondition(new TagEmptyCondition<>(metal.oreTag()))).accept(key("washing/ore_" + metal.name()),
                     new WashingRecipe(tag(metal.oreTag()), new ItemStackTemplate(metal.washed(), 3)),
                     null);
-            // washed ore -> 1 granulated ore, Electric and Plasma Granulators only (tier 2+)
+            // washed ore -> 1 granulated ore, Electric and Plasma Granulators only (tier 2+); purified ore the same
             out.accept(key("granulating/washed_" + metal.name()),
                     new GranulatingRecipe(Ingredient.of(metal.washed()), new ItemStackTemplate(metal.granulated()), 2),
                     null);
+            out.accept(key("granulating/purified_" + metal.name()),
+                    new GranulatingRecipe(Ingredient.of(metal.purified()), new ItemStackTemplate(metal.granulated()), 2),
+                    null);
+            purifying(out, metal);
 
             // granulated ore -> ingot (vanilla furnace, Coal/Electric Smelter, blast furnace)
             Ingredient granulated = Ingredient.of(metal.granulated());
@@ -273,6 +308,17 @@ public class ModRecipeProvider extends RecipeProvider {
                 .save(output, key("pellet_press"));
 
         // The Fusion Reactor and the fast power blocks
+        shaped(RecipeCategory.MISC, ModItems.ORE_PURIFIER.get())
+                .pattern("RFR")
+                .pattern("GWG")
+                .pattern("RFR")
+                .define('R', ModItems.REACTOR_PLATING.get())
+                .define('F', ModItems.FUSION_CIRCUIT.get())
+                .define('G', tag(ProcessedMetal.commonItemTag("glass_blocks")))
+                .define('W', ModItems.ORE_WASHER.get())
+                .unlockedBy("has_fusion_circuit", has(ModItems.FUSION_CIRCUIT.get()))
+                .save(output, key("ore_purifier"));
+
         shaped(RecipeCategory.MISC, ModItems.REACTOR_CASING.get(), 2)
                 .pattern("PP")
                 .pattern("PP")

@@ -20,6 +20,7 @@ import com.script.comminutioncraft.common.machine.PelletPressBlockEntity;
 import com.script.comminutioncraft.common.machine.TritiumBreederBlockEntity;
 import com.script.comminutioncraft.common.machine.FusionReactorBlockEntity;
 import com.script.comminutioncraft.common.machine.ReactorPortBlockEntity;
+import com.script.comminutioncraft.common.machine.OrePurifierBlockEntity;
 import com.script.comminutioncraft.common.energy.MachineEnergyStorage;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.transfer.energy.EnergyHandler;
@@ -131,6 +132,8 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("assembler_forges_reactor_parts", () -> ModGameTests::assemblerForgesReactorParts);
         TEST_FUNCTIONS.register("reactor_forms_and_unforms", () -> ModGameTests::reactorFormsAndUnforms);
         TEST_FUNCTIONS.register("reactor_burns_pellets_for_fe", () -> ModGameTests::reactorBurnsPelletsForFe);
+        TEST_FUNCTIONS.register("ore_purifier_purifies_with_oxygen", () -> ModGameTests::orePurifierPurifiesWithOxygen);
+        TEST_FUNCTIONS.register("granulator_takes_purified_ore", () -> ModGameTests::granulatorTakesPurifiedOre);
     }
 
     public static void registerTests(RegisterGameTestsEvent event) {
@@ -907,6 +910,39 @@ public final class ModGameTests {
             helper.assertTrue(battery.getEnergy() > 0, "No FE has reached the battery yet (core heat " + reactor.getHeat() + "%)");
             helper.assertTrue(reactor.getTritium().getAmount() >= FusionReactorBlockEntity.TRITIUM_PER_PELLET,
                     "No tritium back yet (" + reactor.getTritium().getAmount() + " mB)");
+        });
+    }
+
+    /**
+     * 5 Washed Iron + 250 mB oxygen -> 5 Purified Iron, using 50 mB oxygen each. Any by-product is a gold nugget (no
+     * mod adds nickel in the test world, so the fallback recipe is the one that loaded).
+     */
+    private static void orePurifierPurifiesWithOxygen(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, ModBlocks.ORE_PURIFIER.get());
+        OrePurifierBlockEntity purifier = helper.getBlockEntity(pos, OrePurifierBlockEntity.class);
+        ((MachineEnergyStorage) purifier.getEnergyHandler()).set(ElectricMachineBlockEntity.TIER3_ENERGY_CAPACITY);
+        purifier.getOxygen().fill(FluidResource.of(ModFluids.OXYGEN.get()), 300);
+        purifier.setItem(ElectricMachineBlockEntity.SLOT_INPUT, new ItemStack(ModItems.WASHED_IRON.get(), 5));
+        helper.succeedWhen(() -> {
+            ItemStack output = purifier.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT);
+            helper.assertTrue(output.is(ModItems.PURIFIED_IRON.get()) && output.getCount() == 5, "Expected 5 Purified Iron, got " + output);
+            helper.assertTrue(purifier.getOxygen().getAmount() == 50, "Expected 50 mB oxygen left, has " + purifier.getOxygen().getAmount());
+            ItemStack byproduct = purifier.getItem(OrePurifierBlockEntity.SLOT_BYPRODUCT);
+            helper.assertTrue(byproduct.isEmpty() || byproduct.is(Items.GOLD_NUGGET), "Unexpected by-product " + byproduct);
+        });
+    }
+
+    /** An Electric Granulator turns Purified ore into granulated ore, 1 for 1. */
+    private static void granulatorTakesPurifiedOre(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, ModBlocks.ELECTRIC_GRANULATOR.get());
+        ElectricMachineBlockEntity machine = helper.getBlockEntity(pos, ElectricMachineBlockEntity.class);
+        ((MachineEnergyStorage) machine.getEnergyHandler()).set(ElectricMachineBlockEntity.ENERGY_CAPACITY);
+        machine.setItem(ElectricMachineBlockEntity.SLOT_INPUT, new ItemStack(ModItems.PURIFIED_COPPER.get(), 2));
+        helper.succeedWhen(() -> {
+            ItemStack output = machine.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT);
+            helper.assertTrue(output.is(ModItems.GRANULATED_COPPER.get()) && output.getCount() == 2, "Expected 2 granulated copper, got " + output);
         });
     }
 

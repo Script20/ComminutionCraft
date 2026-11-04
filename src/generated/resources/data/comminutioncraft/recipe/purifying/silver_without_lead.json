@@ -1,0 +1,48 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:raw_materials/silver"
+      }
+    },
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ingots/silver"
+      }
+    },
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:and",
+        "values": [
+          {
+            "type": "neoforge:not",
+            "value": {
+              "type": "neoforge:tag_empty",
+              "tag": "c:raw_materials/lead"
+            }
+          },
+          {
+            "type": "neoforge:not",
+            "value": {
+              "type": "neoforge:tag_empty",
+              "tag": "c:ingots/lead"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "type": "comminutioncraft:purifying",
+  "byproduct": {
+    "id": "minecraft:iron_nugget"
+  },
+  "ingredient": "comminutioncraft:washed_silver",
+  "result": {
+    "id": "comminutioncraft:purified_silver"
+  }
+}

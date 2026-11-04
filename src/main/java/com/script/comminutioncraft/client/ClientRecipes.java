@@ -3,6 +3,7 @@ package com.script.comminutioncraft.client;
 import com.script.comminutioncraft.common.recipe.AssemblingRecipe;
 import com.script.comminutioncraft.common.recipe.GranulatingRecipe;
 import com.script.comminutioncraft.common.recipe.PressingRecipe;
+import com.script.comminutioncraft.common.recipe.PurifyingRecipe;
 import com.script.comminutioncraft.common.recipe.WashingRecipe;
 import com.script.comminutioncraft.common.registry.ModRecipes;
 import java.util.List;
@@ -32,6 +33,10 @@ public final class ClientRecipes {
 
     public static List<RecipeHolder<PressingRecipe>> pressing() {
         return List.copyOf(recipes.byType(ModRecipes.PRESSING_TYPE.get()));
+    }
+
+    public static List<RecipeHolder<PurifyingRecipe>> purifying() {
+        return List.copyOf(recipes.byType(ModRecipes.PURIFYING_TYPE.get()));
     }
 
     private ClientRecipes() {}

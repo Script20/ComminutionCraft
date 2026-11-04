@@ -539,6 +539,24 @@ def fusion_reactor_sheet():
     return s.img
 
 
+def ore_purifier_sheet():
+    """Ore Purifier: washed ore in, purified ore out (top right slot) and the by-product below it, oxygen tube right.
+    Slots (menu positions): input (56, 35), output (116, 24), by-product (116, 46); oxygen tube at x 155."""
+    s = Sheet()
+    body(s)
+    energy_well(s)
+    slot(s, 55, 34)
+    slot(s, 115, 23, rim=FUSION['off'])
+    slot(s, 115, 45, rim=FUSION['off'])
+    arrow_silhouette(s, 79, 34)
+    gauge_well(s, 155)
+    player_inventory(s)
+    arrow_sprite(s, fade_arrow(OXYGEN[2], FUSION['on']))
+    energy_sprite(s)
+    fusion_sprites(s)
+    return s.img
+
+
 os.makedirs(OUT, exist_ok=True)
 coal_sheet(granulator_arrow).save(os.path.join(OUT, 'coal_granulator.png'))
 coal_sheet(smelter_arrow).save(os.path.join(OUT, 'coal_smelter.png'))
@@ -556,6 +574,7 @@ fusion_fluid_sheet((50, 155), fade_arrow(WATER[2], DEUTERIUM[2])).save(os.path.j
 fusion_fluid_sheet((50, 155), fade_arrow(DEUTERIUM[2], TRITIUM[2])).save(os.path.join(OUT, 'tritium_breeder.png'))
 pellet_press_sheet().save(os.path.join(OUT, 'pellet_press.png'))
 fusion_reactor_sheet().save(os.path.join(OUT, 'reactor_controller.png'))
+ore_purifier_sheet().save(os.path.join(OUT, 'ore_purifier.png'))
 tier3_sheet(plasma_granulator_arrow).save(os.path.join(OUT, 'plasma_granulator.png'))
 tier3_sheet(smelter_arrow).save(os.path.join(OUT, 'plasma_smelter.png'))
 plasma_machine_sheet(plasma_granulator_arrow).save(os.path.join(OUT, 'circuit_assembler.png'))

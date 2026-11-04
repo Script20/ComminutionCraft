@@ -31,6 +31,11 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModBlocks.ISOTOPE_SEPARATOR.get(), "Isotope Separator");
         add(ModBlocks.TRITIUM_BREEDER.get(), "Tritium Breeder");
         add(ModBlocks.PELLET_PRESS.get(), "Pellet Press");
+        add(ModBlocks.ORE_PURIFIER.get(), "Ore Purifier");
+        add("jei.comminutioncraft.purifying", "Ore Purifying");
+        add("jei.comminutioncraft.time.ore_purifier", "Ore Purifier: %s");
+        add("jei.comminutioncraft.uses_oxygen", "Uses %s mB oxygen");
+        add("jei.comminutioncraft.byproduct", "Sometimes also: %s (%s%%)");
         add(ModBlocks.REACTOR_CASING.get(), "Reactor Casing");
         add(ModBlocks.REACTOR_GLASS.get(), "Reactor Glass");
         add(ModBlocks.REACTOR_PORT.get(), "Reactor Port");
@@ -144,6 +149,7 @@ public class ModLanguageProvider extends LanguageProvider {
         for (ProcessedMetal metal : ProcessedMetal.ALL) {
             add(metal.granulated().get(), metal.displayName());
             add(metal.washed().get(), metal.washedDisplayName());
+            add(metal.purified().get(), metal.purifiedDisplayName());
         }
     }
 

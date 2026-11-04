@@ -40,6 +40,19 @@ public final class ModItems {
     public static final DeferredItem<Item> WASHED_OSMIUM = ITEMS.registerSimpleItem("washed_osmium");
     public static final DeferredItem<Item> WASHED_URANIUM = ITEMS.registerSimpleItem("washed_uranium");
 
+    // Purified ores (Ore Purifier: 1 washed -> 1 purified, sometimes a by-product; granulate like washed ore)
+    public static final DeferredItem<Item> PURIFIED_IRON = ITEMS.registerSimpleItem("purified_iron");
+    public static final DeferredItem<Item> PURIFIED_COPPER = ITEMS.registerSimpleItem("purified_copper");
+    public static final DeferredItem<Item> PURIFIED_GOLD = ITEMS.registerSimpleItem("purified_gold");
+    public static final DeferredItem<Item> PURIFIED_TIN = ITEMS.registerSimpleItem("purified_tin");
+    public static final DeferredItem<Item> PURIFIED_LEAD = ITEMS.registerSimpleItem("purified_lead");
+    public static final DeferredItem<Item> PURIFIED_SILVER = ITEMS.registerSimpleItem("purified_silver");
+    public static final DeferredItem<Item> PURIFIED_NICKEL = ITEMS.registerSimpleItem("purified_nickel");
+    public static final DeferredItem<Item> PURIFIED_ZINC = ITEMS.registerSimpleItem("purified_zinc");
+    public static final DeferredItem<Item> PURIFIED_ALUMINUM = ITEMS.registerSimpleItem("purified_aluminum");
+    public static final DeferredItem<Item> PURIFIED_OSMIUM = ITEMS.registerSimpleItem("purified_osmium");
+    public static final DeferredItem<Item> PURIFIED_URANIUM = ITEMS.registerSimpleItem("purified_uranium");
+
     // Crafting components
     public static final DeferredItem<Item> ELECTRONIC_CIRCUIT = ITEMS.registerSimpleItem("electronic_circuit");
     /** Tier-3 recipes use it; the Circuit Assembler makes it from an Electronic Circuit and plasma. */
@@ -87,6 +100,7 @@ public final class ModItems {
     public static final DeferredItem<EnergyBatteryItem> FUSION_ENERGY_BATTERY = ITEMS.registerItem("fusion_energy_battery",
             properties -> new EnergyBatteryItem(ModBlocks.FUSION_ENERGY_BATTERY.get(), properties, EnergyBatteryBlockEntity.FUSION_CAPACITY, 0x60FF80),
             properties -> properties.useBlockDescriptionPrefix());
+    public static final DeferredItem<BlockItem> ORE_PURIFIER = ITEMS.registerSimpleBlockItem("ore_purifier", ModBlocks.ORE_PURIFIER);
     public static final DeferredItem<BlockItem> PLASMA_CABLE = ITEMS.registerSimpleBlockItem("plasma_cable", ModBlocks.PLASMA_CABLE);
     public static final DeferredItem<BlockItem> FLUID_PIPE = ITEMS.registerSimpleBlockItem("fluid_pipe", ModBlocks.FLUID_PIPE);
     public static final DeferredItem<BlockItem> FLUID_TANK = ITEMS.registerSimpleBlockItem("fluid_tank", ModBlocks.FLUID_TANK);

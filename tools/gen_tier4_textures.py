@@ -12,6 +12,9 @@ Phase 4B (approved preview: design/previews/phase_4b.png):
 - Fusion Reactor blocks: Reactor Casing (+ _on: seams glow, animated), Reactor Glass (cutout window; the core is drawn
   by FusionReactorRenderer), Reactor Port (+ _on), Reactor Controller (front + animated _front_on; top/side = casing).
 - Fusion Cable (same UV layout as the other cables), Fusion Energy Battery (battery faces in green).
+
+Phase 4C (approved preview: design/previews/phase_4c.png): the Ore Purifier (washed ore between two oxygen jets,
+oxygen inlet on the sides). Purified ore items are drawn by gen_granulated_textures.py.
 """
 import math
 import os
@@ -21,7 +24,7 @@ from PIL import Image
 
 TOOLS = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, TOOLS)
-from mekstyle_lib import Tex, mix, shade, FRAMES, TAU  # noqa: E402
+from mekstyle_lib import Tex, mix, shade, FRAMES, TAU, ORE  # noqa: E402
 import dark_chassis_system as dcs  # noqa: E402
 from dark_chassis_system import (K, GLASS, STEEL, COPPER, casing, seam, well, front, side, top,  # noqa: E402
                                  cylinder_row, circuit, battery_front, battery_side, battery_top, BATTERY_CELLS)
@@ -296,6 +299,51 @@ def fusion_cable_sheet():
     return img
 
 
+OXYGEN = t3.OXYGEN
+
+
+# ================================================================ Ore Purifier
+def act_purifier(t, f, lit):
+    """Top half: a chunk of washed ore held between two oxygen jets (blue), burning off its impurities in sparks."""
+    ff = f if lit else 0
+    t.vline(2, 3, 5, STEEL[2]); t.vline(13, 3, 5, STEEL[2])  # nozzles
+    t.px(2, 4, OXYGEN[2] if lit else OXYGEN[0]); t.px(13, 4, OXYGEN[2] if lit else OXYGEN[0])
+    t.rect(6, 3, 9, 5, ORE[3])  # the ore chunk on its stand
+    t.px(6, 3, ORE[0]); t.px(9, 5, shade(ORE[3], 0.6)); t.px(7, 4, ORE[1])
+    t.hline(5, 10, 6, STEEL[1])
+    if lit:
+        for x in range(3, 6):  # oxygen jets, flickering
+            if (x + ff) % 2 == 0 or x == 5:
+                t.px(x, 4, OXYGEN[3] if x == 5 else OXYGEN[1])
+        for x in range(10, 13):
+            if (x + ff) % 2 == 0 or x == 10:
+                t.px(x, 4, OXYGEN[3] if x == 10 else OXYGEN[1])
+        for k in range(3):  # sparks flying off the chunk
+            a = (ff + k * 3) * TAU / FRAMES
+            sx, sy = int(round(7.5 + 2.6 * math.cos(a))), int(round(4 - 1.6 * abs(math.sin(a))))
+            if 2 <= sy <= 6 and 3 <= sx <= 12:
+                t.px(sx, sy, (255, 236, 160) if k else F['hi'])
+        t.px(7, 4, mix(ORE[1], (255, 230, 170), 0.6))  # the chunk glows where the jets meet
+
+
+def purifier_side():
+    """An oxygen inlet port above the seam (blue ring, like the Electrolyser's oxygen outlet), a grille below."""
+    t = casing()
+    well(t, 4, 2, 11, 6, K['d'])
+    t3.port(t, 7, 4, OXYGEN[1], (14, 16, 20))
+    t.px(8, 4, (14, 16, 20))
+    seam(t, [(x, 8) for x in range(1, 15)], 'fusion', False, 0)
+    t.rect(2, 10, 13, 13, K['m'])
+    t.hline(2, 13, 10, K['hi']); t.hline(2, 13, 13, K['o'])
+    for x in range(4, 12, 2):
+        t.vline(x, 11, 12, K['d'])
+    return t
+
+
+def purifier_front(f=None):
+    return front(act_purifier, tier_fusion, 'fusion', f)
+
+
 ROOT = os.path.join(TOOLS, '..', 'src', 'main', 'resources', 'assets', 'comminutioncraft', 'textures')
 BLOCK = os.path.join(ROOT, 'block')
 ITEM = os.path.join(ROOT, 'item')
@@ -330,4 +378,9 @@ if __name__ == '__main__':
     battery_front('fusion', BATTERY_CELLS).img.save(os.path.join(BLOCK, 'fusion_energy_battery_front.png'))
     for level in range(BATTERY_CELLS + 1):
         battery_front('fusion', level).img.save(os.path.join(BLOCK, f'fusion_energy_battery_front_{level}.png'))
+    # phase 4C
+    machine_top().img.save(os.path.join(BLOCK, 'ore_purifier_top.png'))
+    purifier_side().img.save(os.path.join(BLOCK, 'ore_purifier_side.png'))
+    purifier_front().img.save(os.path.join(BLOCK, 'ore_purifier_front.png'))
+    t3.save_strip(os.path.join(BLOCK, 'ore_purifier_front_on.png'), purifier_front)
     print('ok')

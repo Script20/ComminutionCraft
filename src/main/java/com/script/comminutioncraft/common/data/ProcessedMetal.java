@@ -13,28 +13,28 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * Every metal the mod processes. Adding a metal here generates its granulating, washing (raw ore / ore block -> 3
- * washed), washed-ore granulating, smelting + blasting recipes, c:dusts tag, item models and translations.
- * (The granulated and washed items themselves still need registering in {@link ModItems} and textures.)
+ * washed), purifying (washed -> purified + by-product), washed/purified granulating, smelting + blasting recipes, c:dusts tag, item models and translations.
+ * (The granulated, washed and purified items themselves still need registering in {@link ModItems} and textures.)
  * <p>
  * Vanilla metals smelt into a fixed ingot. Metals from other mods ({@code ingot == null}) smelt into whatever is in
  * {@code c:ingots/<metal>}, and their recipes and granulated item only show up when another installed mod provides
  * both {@code c:raw_materials/<metal>} and {@code c:ingots/<metal>} (see {@link #isAvailable()}).
  */
-public record ProcessedMetal(String name, DeferredItem<Item> granulated, DeferredItem<Item> washed, @Nullable Item ingot,
-                             float experience) {
+public record ProcessedMetal(String name, DeferredItem<Item> granulated, DeferredItem<Item> washed, DeferredItem<Item> purified,
+                             @Nullable Item ingot, float experience) {
     public static final List<ProcessedMetal> ALL = List.of(
-            new ProcessedMetal("iron", ModItems.GRANULATED_IRON, ModItems.WASHED_IRON, Items.IRON_INGOT, 0.7F),
-            new ProcessedMetal("copper", ModItems.GRANULATED_COPPER, ModItems.WASHED_COPPER, Items.COPPER_INGOT, 0.7F),
-            new ProcessedMetal("gold", ModItems.GRANULATED_GOLD, ModItems.WASHED_GOLD, Items.GOLD_INGOT, 1.0F),
+            new ProcessedMetal("iron", ModItems.GRANULATED_IRON, ModItems.WASHED_IRON, ModItems.PURIFIED_IRON, Items.IRON_INGOT, 0.7F),
+            new ProcessedMetal("copper", ModItems.GRANULATED_COPPER, ModItems.WASHED_COPPER, ModItems.PURIFIED_COPPER, Items.COPPER_INGOT, 0.7F),
+            new ProcessedMetal("gold", ModItems.GRANULATED_GOLD, ModItems.WASHED_GOLD, ModItems.PURIFIED_GOLD, Items.GOLD_INGOT, 1.0F),
             // From other mods (Mekanism, Thermal, Immersive Engineering, Create, ...)
-            new ProcessedMetal("tin", ModItems.GRANULATED_TIN, ModItems.WASHED_TIN, null, 0.7F),
-            new ProcessedMetal("lead", ModItems.GRANULATED_LEAD, ModItems.WASHED_LEAD, null, 0.7F),
-            new ProcessedMetal("silver", ModItems.GRANULATED_SILVER, ModItems.WASHED_SILVER, null, 1.0F),
-            new ProcessedMetal("nickel", ModItems.GRANULATED_NICKEL, ModItems.WASHED_NICKEL, null, 0.7F),
-            new ProcessedMetal("zinc", ModItems.GRANULATED_ZINC, ModItems.WASHED_ZINC, null, 0.7F),
-            new ProcessedMetal("aluminum", ModItems.GRANULATED_ALUMINUM, ModItems.WASHED_ALUMINUM, null, 0.7F),
-            new ProcessedMetal("osmium", ModItems.GRANULATED_OSMIUM, ModItems.WASHED_OSMIUM, null, 0.7F),
-            new ProcessedMetal("uranium", ModItems.GRANULATED_URANIUM, ModItems.WASHED_URANIUM, null, 1.0F)
+            new ProcessedMetal("tin", ModItems.GRANULATED_TIN, ModItems.WASHED_TIN, ModItems.PURIFIED_TIN, null, 0.7F),
+            new ProcessedMetal("lead", ModItems.GRANULATED_LEAD, ModItems.WASHED_LEAD, ModItems.PURIFIED_LEAD, null, 0.7F),
+            new ProcessedMetal("silver", ModItems.GRANULATED_SILVER, ModItems.WASHED_SILVER, ModItems.PURIFIED_SILVER, null, 1.0F),
+            new ProcessedMetal("nickel", ModItems.GRANULATED_NICKEL, ModItems.WASHED_NICKEL, ModItems.PURIFIED_NICKEL, null, 0.7F),
+            new ProcessedMetal("zinc", ModItems.GRANULATED_ZINC, ModItems.WASHED_ZINC, ModItems.PURIFIED_ZINC, null, 0.7F),
+            new ProcessedMetal("aluminum", ModItems.GRANULATED_ALUMINUM, ModItems.WASHED_ALUMINUM, ModItems.PURIFIED_ALUMINUM, null, 0.7F),
+            new ProcessedMetal("osmium", ModItems.GRANULATED_OSMIUM, ModItems.WASHED_OSMIUM, ModItems.PURIFIED_OSMIUM, null, 0.7F),
+            new ProcessedMetal("uranium", ModItems.GRANULATED_URANIUM, ModItems.WASHED_URANIUM, ModItems.PURIFIED_URANIUM, null, 1.0F)
     );
 
     /** True for metals that only exist when another mod adds them. */
@@ -80,6 +80,28 @@ public record ProcessedMetal(String name, DeferredItem<Item> granulated, Deferre
 
     public String washedDisplayName() {
         return "Washed " + titleName();
+    }
+
+    public String purifiedDisplayName() {
+        return "Purified " + titleName();
+    }
+
+    /** The metal real ores of this kind carry, which the Ore Purifier sometimes gives (see ModRecipeProvider). */
+    public String byproduct() {
+        return switch (name) {
+            case "iron" -> "nickel";
+            case "copper" -> "gold";
+            case "gold", "lead" -> "silver";
+            case "tin" -> "zinc";
+            case "nickel" -> "osmium";
+            case "aluminum" -> "iron";
+            case "osmium" -> "nickel";
+            default -> "lead"; // zinc, silver, uranium
+        };
+    }
+
+    public static ProcessedMetal byName(String name) {
+        return ALL.stream().filter(metal -> metal.name.equals(name)).findFirst().orElseThrow();
     }
 
     private String titleName() {

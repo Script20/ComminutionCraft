@@ -1,0 +1,24 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:raw_materials/silver"
+      }
+    },
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ingots/silver"
+      }
+    }
+  ],
+  "type": "comminutioncraft:granulating",
+  "ingredient": "comminutioncraft:purified_silver",
+  "min_tier": 2,
+  "result": {
+    "id": "comminutioncraft:granulated_silver"
+  }
+}

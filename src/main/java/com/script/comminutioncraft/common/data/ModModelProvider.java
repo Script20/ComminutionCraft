@@ -108,6 +108,7 @@ public class ModModelProvider extends ModelProvider {
         blockModels.createFurnace(ModBlocks.ISOTOPE_SEPARATOR.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         blockModels.createFurnace(ModBlocks.TRITIUM_BREEDER.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         blockModels.createFurnace(ModBlocks.PELLET_PRESS.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
+        blockModels.createFurnace(ModBlocks.ORE_PURIFIER.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         // Fusion Reactor: casing and ports glow while it burns (an _on texture); the glass is cutout; the controller is
         // a furnace-style front over casing sides.
         litCube(blockModels, ModBlocks.REACTOR_CASING.get());
@@ -140,6 +141,7 @@ public class ModModelProvider extends ModelProvider {
         for (ProcessedMetal metal : ProcessedMetal.ALL) {
             itemModels.generateFlatItem(metal.granulated().get(), ModelTemplates.FLAT_ITEM);
             itemModels.generateFlatItem(metal.washed().get(), ModelTemplates.FLAT_ITEM);
+            itemModels.generateFlatItem(metal.purified().get(), ModelTemplates.FLAT_ITEM);
         }
         wrench(itemModels);
     }

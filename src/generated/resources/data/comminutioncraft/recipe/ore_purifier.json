@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "F": "comminutioncraft:fusion_circuit",
+    "G": "#c:glass_blocks",
+    "R": "comminutioncraft:reactor_plating",
+    "W": "comminutioncraft:ore_washer"
+  },
+  "pattern": [
+    "RFR",
+    "GWG",
+    "RFR"
+  ],
+  "result": {
+    "id": "comminutioncraft:ore_purifier"
+  }
+}

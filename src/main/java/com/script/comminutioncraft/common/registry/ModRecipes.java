@@ -4,6 +4,7 @@ import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.recipe.AssemblingRecipe;
 import com.script.comminutioncraft.common.recipe.GranulatingRecipe;
 import com.script.comminutioncraft.common.recipe.PressingRecipe;
+import com.script.comminutioncraft.common.recipe.PurifyingRecipe;
 import com.script.comminutioncraft.common.recipe.WashingRecipe;
 import com.script.comminutioncraft.common.recipe.TagBlastingRecipe;
 import com.script.comminutioncraft.common.recipe.TagSmeltingRecipe;
@@ -50,6 +51,14 @@ public final class ModRecipes {
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<PressingRecipe>> PRESSING_SERIALIZER =
             RECIPE_SERIALIZERS.register("pressing",
                     () -> new RecipeSerializer<>(PressingRecipe.CODEC, PressingRecipe.STREAM_CODEC));
+
+    /** "comminutioncraft:purifying" — Ore Purifier (tier 4): washed -> purified ore, maybe a by-product. */
+    public static final DeferredHolder<RecipeType<?>, RecipeType<PurifyingRecipe>> PURIFYING_TYPE =
+            RECIPE_TYPES.register("purifying", RecipeType::simple);
+
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<PurifyingRecipe>> PURIFYING_SERIALIZER =
+            RECIPE_SERIALIZERS.register("purifying",
+                    () -> new RecipeSerializer<>(PurifyingRecipe.CODEC, PurifyingRecipe.STREAM_CODEC));
 
     /** Smelting / blasting whose result is an item tag, for other mods' metals (see TagResult). */
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<TagSmeltingRecipe>> TAG_SMELTING_SERIALIZER =
