@@ -26,6 +26,6 @@
   "ingredient": "#c:ores/zinc",
   "result": {
     "count": 3,
-    "id": "comminutioncraft:granulated_zinc"
+    "id": "comminutioncraft:washed_zinc"
   }
 }

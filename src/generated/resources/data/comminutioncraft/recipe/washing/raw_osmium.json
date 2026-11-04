@@ -19,6 +19,6 @@
   "ingredient": "#c:raw_materials/osmium",
   "result": {
     "count": 3,
-    "id": "comminutioncraft:granulated_osmium"
+    "id": "comminutioncraft:washed_osmium"
   }
 }

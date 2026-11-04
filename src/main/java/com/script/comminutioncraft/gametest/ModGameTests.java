@@ -118,6 +118,8 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("cable_tiers_dont_join", () -> ModGameTests::cableTiersDontJoin);
         TEST_FUNCTIONS.register("circuit_assembler_makes_plasma_circuit", () -> ModGameTests::circuitAssemblerMakesPlasmaCircuit);
         TEST_FUNCTIONS.register("ore_washer_triples_with_water", () -> ModGameTests::oreWasherTriplesWithWater);
+        TEST_FUNCTIONS.register("electric_granulator_takes_washed_ore", () -> ModGameTests::electricGranulatorTakesWashedOre);
+        TEST_FUNCTIONS.register("coal_granulator_refuses_washed_ore", () -> ModGameTests::coalGranulatorRefusesWashedOre);
     }
 
     public static void registerTests(RegisterGameTestsEvent event) {
@@ -729,7 +731,7 @@ public final class ModGameTests {
 
     /**
      * Without water the Ore Washer waits; with a water source block next to it, it fills its water tank by itself and
-     * washes raw iron into 3 granulated iron.
+     * washes raw iron into 3 Washed Iron.
      */
     private static void oreWasherTriplesWithWater(GameTestHelper helper) {
         BlockPos pos = new BlockPos(2, 1, 2);
@@ -743,9 +745,38 @@ public final class ModGameTests {
             helper.setBlock(new BlockPos(2, 1, 3), Blocks.WATER);
             helper.succeedWhen(() -> {
                 ItemStack output = washer.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT);
-                helper.assertTrue(output.is(ModItems.GRANULATED_IRON.get()) && output.getCount() == 3,
-                        "Expected 3 granulated iron, got " + output);
+                helper.assertTrue(output.is(ModItems.WASHED_IRON.get()) && output.getCount() == 3,
+                        "Expected 3 Washed Iron, got " + output);
             });
+        });
+    }
+
+    /** A powered Electric Granulator turns 2 Washed Iron into 2 granulated iron (1 each). */
+    private static void electricGranulatorTakesWashedOre(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, ModBlocks.ELECTRIC_GRANULATOR.get());
+        ElectricMachineBlockEntity machine = helper.getBlockEntity(pos, ElectricMachineBlockEntity.class);
+        ((MachineEnergyStorage) machine.getEnergyHandler()).set(ElectricMachineBlockEntity.ENERGY_CAPACITY);
+        machine.setItem(ElectricMachineBlockEntity.SLOT_INPUT, new ItemStack(ModItems.WASHED_IRON.get(), 2));
+        helper.succeedWhen(() -> {
+            ItemStack output = machine.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT);
+            helper.assertTrue(output.is(ModItems.GRANULATED_IRON.get()) && output.getCount() == 2,
+                    "Expected 2 granulated iron, got " + output);
+        });
+    }
+
+    /** The Coal Granulator won't take Washed ore (not even from a hopper), and won't run it if it's put in anyway. */
+    private static void coalGranulatorRefusesWashedOre(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, ModBlocks.COAL_GRANULATOR.get());
+        FuelMachineBlockEntity granulator = helper.getBlockEntity(pos, FuelMachineBlockEntity.class);
+        ItemStack washed = new ItemStack(ModItems.WASHED_IRON.get());
+        helper.assertTrue(!granulator.canPlaceItem(FuelMachineBlockEntity.SLOT_INPUT, washed), "The Coal Granulator accepted Washed Iron");
+        granulator.setItem(FuelMachineBlockEntity.SLOT_INPUT, washed);
+        granulator.setItem(FuelMachineBlockEntity.SLOT_FUEL, new ItemStack(Items.COAL));
+        helper.runAfterDelay(200, () -> {
+            helper.assertTrue(granulator.getItem(FuelMachineBlockEntity.SLOT_OUTPUT).isEmpty(), "The Coal Granulator granulated Washed Iron");
+            helper.succeed();
         });
     }
 

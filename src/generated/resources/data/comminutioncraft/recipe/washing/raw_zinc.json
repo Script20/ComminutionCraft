@@ -19,6 +19,6 @@
   "ingredient": "#c:raw_materials/zinc",
   "result": {
     "count": 3,
-    "id": "comminutioncraft:granulated_zinc"
+    "id": "comminutioncraft:washed_zinc"
   }
 }

@@ -52,7 +52,8 @@ public class CoalGranulatorBlockEntity extends FuelMachineBlockEntity {
 
     @Override
     protected Optional<RecipeHolder<GranulatingRecipe>> findRecipe(ServerLevel level, ItemStack input) {
-        return recipeCheck.getRecipeFor(new SingleRecipeInput(input), level);
+        // Washed ore recipes are for the Electric and Plasma Granulators.
+        return recipeCheck.getRecipeFor(new SingleRecipeInput(input), level).filter(recipe -> recipe.value().getMinTier() <= 1);
     }
 
     @Override

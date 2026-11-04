@@ -1,0 +1,24 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:raw_materials/tin"
+      }
+    },
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ingots/tin"
+      }
+    }
+  ],
+  "type": "comminutioncraft:granulating",
+  "ingredient": "comminutioncraft:washed_tin",
+  "min_tier": 2,
+  "result": {
+    "id": "comminutioncraft:granulated_tin"
+  }
+}

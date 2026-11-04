@@ -27,6 +27,19 @@ public final class ModItems {
     public static final DeferredItem<Item> GRANULATED_OSMIUM = ITEMS.registerSimpleItem("granulated_osmium");
     public static final DeferredItem<Item> GRANULATED_URANIUM = ITEMS.registerSimpleItem("granulated_uranium");
 
+    // Washed ores (3 per raw ore or ore block from the Ore Washer; an Electric or Plasma Granulator makes each one granulated)
+    public static final DeferredItem<Item> WASHED_IRON = ITEMS.registerSimpleItem("washed_iron");
+    public static final DeferredItem<Item> WASHED_COPPER = ITEMS.registerSimpleItem("washed_copper");
+    public static final DeferredItem<Item> WASHED_GOLD = ITEMS.registerSimpleItem("washed_gold");
+    public static final DeferredItem<Item> WASHED_TIN = ITEMS.registerSimpleItem("washed_tin");
+    public static final DeferredItem<Item> WASHED_LEAD = ITEMS.registerSimpleItem("washed_lead");
+    public static final DeferredItem<Item> WASHED_SILVER = ITEMS.registerSimpleItem("washed_silver");
+    public static final DeferredItem<Item> WASHED_NICKEL = ITEMS.registerSimpleItem("washed_nickel");
+    public static final DeferredItem<Item> WASHED_ZINC = ITEMS.registerSimpleItem("washed_zinc");
+    public static final DeferredItem<Item> WASHED_ALUMINUM = ITEMS.registerSimpleItem("washed_aluminum");
+    public static final DeferredItem<Item> WASHED_OSMIUM = ITEMS.registerSimpleItem("washed_osmium");
+    public static final DeferredItem<Item> WASHED_URANIUM = ITEMS.registerSimpleItem("washed_uranium");
+
     // Crafting components
     public static final DeferredItem<Item> ELECTRONIC_CIRCUIT = ITEMS.registerSimpleItem("electronic_circuit");
     /** Tier-3 recipes use it; the Circuit Assembler makes it from an Electronic Circuit and plasma. */

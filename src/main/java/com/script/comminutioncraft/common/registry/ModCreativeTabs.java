@@ -47,7 +47,10 @@ public final class ModCreativeTabs {
                         // Other mods' metals only appear when some installed mod adds that metal.
                         ProcessedMetal.ALL.stream()
                                 .filter(ProcessedMetal::isAvailable)
-                                .forEach(metal -> output.accept(metal.granulated().get()));
+                                .forEach(metal -> {
+                                    output.accept(metal.washed().get());
+                                    output.accept(metal.granulated().get());
+                                });
                     })
                     .build());
 

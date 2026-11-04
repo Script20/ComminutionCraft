@@ -123,6 +123,7 @@ public class ModModelProvider extends ModelProvider {
 
         for (ProcessedMetal metal : ProcessedMetal.ALL) {
             itemModels.generateFlatItem(metal.granulated().get(), ModelTemplates.FLAT_ITEM);
+            itemModels.generateFlatItem(metal.washed().get(), ModelTemplates.FLAT_ITEM);
         }
         wrench(itemModels);
     }

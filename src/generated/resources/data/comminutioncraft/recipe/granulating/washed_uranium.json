@@ -1,0 +1,24 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:raw_materials/uranium"
+      }
+    },
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ingots/uranium"
+      }
+    }
+  ],
+  "type": "comminutioncraft:granulating",
+  "ingredient": "comminutioncraft:washed_uranium",
+  "min_tier": 2,
+  "result": {
+    "id": "comminutioncraft:granulated_uranium"
+  }
+}

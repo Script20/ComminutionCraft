@@ -102,6 +102,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("jei.comminutioncraft.time.coal_granulator", "Coal Granulator: %s");
         add("jei.comminutioncraft.time.electric_granulator", "Electric Granulator: %s");
         add("jei.comminutioncraft.time.plasma_granulator", "Plasma Granulator: %s");
+        add("jei.comminutioncraft.electric_granulators_only", "Electric or Plasma Granulator only");
         add("jei.comminutioncraft.assembling", "Circuit Assembling");
         add("jei.comminutioncraft.time.circuit_assembler", "Circuit Assembler: %s");
         add("jei.comminutioncraft.uses_plasma", "Uses %s mB plasma");
@@ -118,6 +119,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("jade.comminutioncraft.no_filter", "No Air Filter (half as much water)");
         for (ProcessedMetal metal : ProcessedMetal.ALL) {
             add(metal.granulated().get(), metal.displayName());
+            add(metal.washed().get(), metal.washedDisplayName());
         }
     }
 

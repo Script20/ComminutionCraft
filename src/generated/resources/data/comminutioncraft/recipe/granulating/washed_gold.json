@@ -1,0 +1,8 @@
+{
+  "type": "comminutioncraft:granulating",
+  "ingredient": "comminutioncraft:washed_gold",
+  "min_tier": 2,
+  "result": {
+    "id": "comminutioncraft:granulated_gold"
+  }
+}

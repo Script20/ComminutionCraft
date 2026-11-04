@@ -3,6 +3,6 @@
   "ingredient": "#c:raw_materials/iron",
   "result": {
     "count": 3,
-    "id": "comminutioncraft:granulated_iron"
+    "id": "comminutioncraft:washed_iron"
   }
 }

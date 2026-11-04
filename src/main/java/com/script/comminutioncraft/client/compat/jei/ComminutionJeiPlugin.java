@@ -23,6 +23,7 @@ import com.script.comminutioncraft.common.registry.ModMenus;
 import com.script.comminutioncraft.common.registry.ModRecipes;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.RecipeTypes;
@@ -74,7 +75,9 @@ public class ComminutionJeiPlugin implements IModPlugin {
                         new ProcessingCategory.Station("jei.comminutioncraft.time.coal_granulator", CoalGranulatorBlockEntity.PROCESS_TIME),
                         new ProcessingCategory.Station("jei.comminutioncraft.time.electric_granulator", ElectricGranulatorBlockEntity.PROCESS_TIME),
                         new ProcessingCategory.Station("jei.comminutioncraft.time.plasma_granulator", PlasmaGranulatorBlockEntity.PROCESS_TIME)),
-                        List.of()),
+                        List.of(), recipe -> recipe.getMinTier() >= 2
+                                ? List.of(Component.translatable("jei.comminutioncraft.electric_granulators_only"))
+                                : List.of()),
                 new ProcessingCategory<>(gui, ASSEMBLING.get(), Component.translatable("jei.comminutioncraft.assembling"),
                         ModItems.CIRCUIT_ASSEMBLER.get(), List.of(
                         new ProcessingCategory.Station("jei.comminutioncraft.time.circuit_assembler", CircuitAssemblerBlockEntity.PROCESS_TIME)),
@@ -105,12 +108,12 @@ public class ComminutionJeiPlugin implements IModPlugin {
                 ModItems.COAL_GRANULATOR.get(), ModItems.COAL_SMELTER.get(), ModItems.ELECTRIC_GENERATOR.get());
     }
 
-    /** Granulated forms of other mods' metals that aren't in this pack stay out of the ingredient list. */
+    /** Granulated and washed forms of other mods' metals that aren't in this pack stay out of the ingredient list. */
     @Override
     public void onRuntimeAvailable(IJeiRuntime runtime) {
         List<ItemStack> unused = ProcessedMetal.ALL.stream()
                 .filter(metal -> !metal.isAvailable())
-                .map(metal -> new ItemStack(metal.granulated().get()))
+                .flatMap(metal -> Stream.of(new ItemStack(metal.granulated().get()), new ItemStack(metal.washed().get())))
                 .toList();
         if (!unused.isEmpty()) {
             runtime.getIngredientManager().removeIngredientsAtRuntime(VanillaTypes.ITEM_STACK, unused);

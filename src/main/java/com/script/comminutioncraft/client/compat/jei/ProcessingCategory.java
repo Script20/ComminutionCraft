@@ -6,6 +6,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.placement.HorizontalAlignment;
@@ -31,12 +32,20 @@ public class ProcessingCategory<R extends ItemProcessingRecipe> extends Abstract
 
     private final List<Station> stations;
     private final List<Component> notes;
+    private final Function<R, List<Component>> recipeNotes;
 
     public ProcessingCategory(IGuiHelper guiHelper, IRecipeHolderType<R> type, Component title, ItemLike icon,
                               List<Station> stations, List<Component> notes) {
+        this(guiHelper, type, title, icon, stations, notes, recipe -> List.of());
+    }
+
+    /** {@code recipeNotes} adds tooltip lines for particular recipes (e.g. "Electric or Plasma Granulator only"). */
+    public ProcessingCategory(IGuiHelper guiHelper, IRecipeHolderType<R> type, Component title, ItemLike icon,
+                              List<Station> stations, List<Component> notes, Function<R, List<Component>> recipeNotes) {
         super(type, title, guiHelper.createDrawableItemLike(icon), WIDTH, HEIGHT);
         this.stations = stations;
         this.notes = notes;
+        this.recipeNotes = recipeNotes;
     }
 
     @Override
@@ -57,6 +66,7 @@ public class ProcessingCategory<R extends ItemProcessingRecipe> extends Abstract
             tooltip.add(Component.translatable(station.timeKey(), seconds(station.ticks())));
         }
         tooltip.addAll(notes);
+        tooltip.addAll(recipeNotes.apply(recipe.value()));
         String times = stations.stream().map(station -> seconds(station.ticks())).collect(Collectors.joining(" · "));
         builder.addText(Component.literal(times), WIDTH, 10)
                 .setPosition(0, 28)

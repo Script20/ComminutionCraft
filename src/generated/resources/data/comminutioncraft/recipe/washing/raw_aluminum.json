@@ -19,6 +19,6 @@
   "ingredient": "#c:raw_materials/aluminum",
   "result": {
     "count": 3,
-    "id": "comminutioncraft:granulated_aluminum"
+    "id": "comminutioncraft:washed_aluminum"
   }
 }

@@ -19,6 +19,6 @@
   "ingredient": "#c:raw_materials/uranium",
   "result": {
     "count": 3,
-    "id": "comminutioncraft:granulated_uranium"
+    "id": "comminutioncraft:washed_uranium"
   }
 }

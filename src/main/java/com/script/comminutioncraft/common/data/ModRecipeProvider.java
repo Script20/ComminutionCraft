@@ -58,12 +58,16 @@ public class ModRecipeProvider extends RecipeProvider {
                     new GranulatingRecipe(tag(metal.rawTag()), new ItemStackTemplate(metal.granulated(), 2)),
                     null);
 
-            // raw ore or ore block -> 3 granulated ore (Ore Washer); ore blocks only count when some mod has them
+            // raw ore or ore block -> 3 washed ore (Ore Washer); ore blocks only count when some mod has them
             out.accept(key("washing/raw_" + metal.name()),
-                    new WashingRecipe(tag(metal.rawTag()), new ItemStackTemplate(metal.granulated(), 3)),
+                    new WashingRecipe(tag(metal.rawTag()), new ItemStackTemplate(metal.washed(), 3)),
                     null);
             out.withConditions(new NotCondition(new TagEmptyCondition<>(metal.oreTag()))).accept(key("washing/ore_" + metal.name()),
-                    new WashingRecipe(tag(metal.oreTag()), new ItemStackTemplate(metal.granulated(), 3)),
+                    new WashingRecipe(tag(metal.oreTag()), new ItemStackTemplate(metal.washed(), 3)),
+                    null);
+            // washed ore -> 1 granulated ore, Electric and Plasma Granulators only (tier 2+)
+            out.accept(key("granulating/washed_" + metal.name()),
+                    new GranulatingRecipe(Ingredient.of(metal.washed()), new ItemStackTemplate(metal.granulated()), 2),
                     null);
 
             // granulated ore -> ingot (vanilla furnace, Coal/Electric Smelter, blast furnace)
