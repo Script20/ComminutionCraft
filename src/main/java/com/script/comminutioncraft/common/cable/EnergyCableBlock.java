@@ -6,14 +6,12 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.Capabilities;
 
 /**
- * Energy cable: connects to anything with FE on that side, except other kinds of cable (each tier is its own
- * network). Power moves through {@link CableEnergyHandler}, at most {@link #getTransferRate()} FE per tick per network.
+ * Energy cable: connects to anything with FE on that side, except other kinds of conduit. Power moves through
+ * {@link CableEnergyHandler}, at most {@link #getTransferRate()} FE per tick per network.
  */
 public class EnergyCableBlock extends ConduitBlock {
     /** Tier 2 Energy Cable. */
     public static final int ENERGY_CABLE_RATE = 1_000;
-    /** Tier 3 Plasma Cable. */
-    public static final int PLASMA_CABLE_RATE = 8_000;
 
     private final int transferRate;
 

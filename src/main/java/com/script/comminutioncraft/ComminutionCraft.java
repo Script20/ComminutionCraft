@@ -11,6 +11,7 @@ import com.script.comminutioncraft.common.machine.OreWasherBlockEntity;
 import com.script.comminutioncraft.common.machine.PlasmaMachineBlockEntity;
 import com.script.comminutioncraft.common.cable.ConduitBlock;
 import com.script.comminutioncraft.common.cable.EnergyCableBlock;
+import com.script.comminutioncraft.common.cable.FluidPipeBlock;
 import com.script.comminutioncraft.common.cable.PipeFluidHandler;
 import com.script.comminutioncraft.common.machine.FluidTankBlockEntity;
 import com.script.comminutioncraft.common.machine.AtmosphericWaterGeneratorBlockEntity;
@@ -94,12 +95,12 @@ public class ComminutionCraft {
         event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.FLUID_TANK.get(), FluidTankBlockEntity::getFluidHandler);
         event.registerBlock(Capabilities.Fluid.BLOCK, (level, pos, state, blockEntity, side) ->
                 side != null && state.getValue(ConduitBlock.CONNECTIONS.get(side)) == CableConnection.DISABLED
-                        ? null : new PipeFluidHandler(level, pos, side),
-                ModBlocks.FLUID_PIPE.get());
+                        ? null : new PipeFluidHandler(level, pos, side, (FluidPipeBlock) state.getBlock()),
+                ModBlocks.FLUID_PIPE.get(), ModBlocks.PLASMA_CABLE.get());
         event.registerBlock(Capabilities.Energy.BLOCK, (level, pos, state, blockEntity, side) ->
                 side != null && state.getValue(EnergyCableBlock.CONNECTIONS.get(side)) == CableConnection.DISABLED
                         ? null : new CableEnergyHandler(level, pos, side, ((EnergyCableBlock) state.getBlock()).getTransferRate()),
-                ModBlocks.ENERGY_CABLE.get(), ModBlocks.PLASMA_CABLE.get());
+                ModBlocks.ENERGY_CABLE.get());
 
         // Tier 3 machines: FE and items like tier 2 (the granulator and smelter need nothing else)
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.PLASMA_GRANULATOR.get(), WorldlyContainerWrapper::new);

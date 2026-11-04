@@ -4,6 +4,7 @@ import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.block.StoneSet;
 import com.script.comminutioncraft.common.cable.EnergyCableBlock;
 import com.script.comminutioncraft.common.cable.FluidPipeBlock;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import com.script.comminutioncraft.common.machine.CoalGranulatorBlock;
 import com.script.comminutioncraft.common.machine.CoalSmelterBlock;
 import com.script.comminutioncraft.common.machine.ElectricGeneratorBlock;
@@ -87,16 +88,18 @@ public final class ModBlocks {
             "plasma_energy_battery", properties -> new EnergyBatteryBlock(properties, () -> ModBlockEntities.PLASMA_ENERGY_BATTERY.get()),
             ModBlocks::tier2MachineProperties);
 
-    /** Its own network: never joins Energy Cables. */
-    public static final DeferredBlock<EnergyCableBlock> PLASMA_CABLE = BLOCKS.registerBlock(
-            "plasma_cable", properties -> new EnergyCableBlock(properties, EnergyCableBlock.PLASMA_CABLE_RATE), properties -> properties
+    /** A pipe for plasma only (faster than a Fluid Pipe); never joins Fluid Pipes or cables. */
+    public static final DeferredBlock<FluidPipeBlock> PLASMA_CABLE = BLOCKS.registerBlock(
+            "plasma_cable", properties -> new FluidPipeBlock(properties, FluidPipeBlock.PLASMA_CABLE_RATE,
+                    resource -> resource.is(ModFluids.PLASMA_TYPE.get()), () -> FluidResource.of(ModFluids.PLASMA.get())),
+            properties -> properties
                     .mapColor(MapColor.COLOR_MAGENTA)
                     .strength(0.5F)
                     .sound(SoundType.COPPER)
                     .noOcclusion());
 
     public static final DeferredBlock<FluidPipeBlock> FLUID_PIPE = BLOCKS.registerBlock(
-            "fluid_pipe", FluidPipeBlock::new, properties -> properties
+            "fluid_pipe", properties -> new FluidPipeBlock(properties, FluidPipeBlock.FLUID_PIPE_RATE), properties -> properties
                     .mapColor(MapColor.METAL)
                     .strength(0.5F)
                     .sound(SoundType.COPPER)

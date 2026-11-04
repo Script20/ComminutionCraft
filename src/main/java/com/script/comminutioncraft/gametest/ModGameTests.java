@@ -4,6 +4,7 @@ import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.cable.CableConnection;
 import com.script.comminutioncraft.common.cable.ConduitBlock;
 import com.script.comminutioncraft.common.cable.EnergyCableBlock;
+import com.script.comminutioncraft.common.cable.FluidPipeBlock;
 import com.script.comminutioncraft.common.machine.FluidTankBlockEntity;
 import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlockEntity;
 import com.script.comminutioncraft.common.machine.AtmosphericWaterGeneratorBlockEntity;
@@ -112,7 +113,8 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("side_change_reconnects_cable", () -> ModGameTests::sideChangeReconnectsCable);
         TEST_FUNCTIONS.register("plasma_granulator_runs_on_fe", () -> ModGameTests::plasmaGranulatorRunsOnFe);
         TEST_FUNCTIONS.register("oxygen_leaves_by_byproduct_face", () -> ModGameTests::oxygenLeavesByByproductFace);
-        TEST_FUNCTIONS.register("plasma_cable_caps_per_tick", () -> ModGameTests::plasmaCableCapsPerTick);
+        TEST_FUNCTIONS.register("energy_cable_caps_per_tick", () -> ModGameTests::energyCableCapsPerTick);
+        TEST_FUNCTIONS.register("plasma_cable_carries_only_plasma", () -> ModGameTests::plasmaCableCarriesOnlyPlasma);
         TEST_FUNCTIONS.register("cable_tiers_dont_join", () -> ModGameTests::cableTiersDontJoin);
         TEST_FUNCTIONS.register("circuit_assembler_makes_plasma_circuit", () -> ModGameTests::circuitAssemblerMakesPlasmaCircuit);
         TEST_FUNCTIONS.register("ore_washer_triples_with_water", () -> ModGameTests::oreWasherTriplesWithWater);
@@ -639,35 +641,67 @@ public final class ModGameTests {
     }
 
     /**
-     * A Plasma Cable network moves at most 8,000 FE per tick however many inserts there are, a cancelled
+     * An Energy Cable network moves at most 1,000 FE per tick however many inserts there are, a cancelled
      * (simulated) insert doesn't use any of that, and the next tick the full amount is available again.
      */
-    private static void plasmaCableCapsPerTick(GameTestHelper helper) {
+    private static void energyCableCapsPerTick(GameTestHelper helper) {
         BlockPos battery = new BlockPos(1, 1, 2);
         BlockPos cable = new BlockPos(2, 1, 2);
+        // The plasma battery takes up to 8,000 FE per insert, so only the cable limits what arrives.
         helper.setBlock(battery, ModBlocks.PLASMA_ENERGY_BATTERY.get().defaultBlockState().setValue(MachineBlock.FACING, Direction.NORTH));
-        placeConduit(helper, cable, ModBlocks.PLASMA_CABLE.get());
+        placeConduit(helper, cable, ModBlocks.ENERGY_CABLE.get());
         assertConnection(helper, cable, Direction.WEST, CableConnection.MACHINE);
         EnergyHandler handler = helper.getLevel().getCapability(Capabilities.Energy.BLOCK, helper.absolutePos(cable), Direction.EAST);
-        helper.assertTrue(handler != null, "The plasma cable has no FE capability");
+        helper.assertTrue(handler != null, "The energy cable has no FE capability");
         EnergyBatteryBlockEntity cell = helper.getBlockEntity(battery, EnergyBatteryBlockEntity.class);
 
         try (Transaction simulation = Transaction.openRoot()) {
-            handler.insert(6_000, simulation); // not committed
+            handler.insert(600, simulation); // not committed
         }
-        int first = insertCommitted(handler, 6_000);
-        int second = insertCommitted(handler, 6_000);
-        helper.assertTrue(first == 6_000 && second == 2_000,
-                "Expected 6,000 then 2,000 FE this tick, got " + first + " then " + second);
-        helper.assertTrue(cell.getEnergy() == EnergyCableBlock.PLASMA_CABLE_RATE, "The battery should hold 8,000 FE, has " + cell.getEnergy());
+        int first = insertCommitted(handler, 600);
+        int second = insertCommitted(handler, 600);
+        helper.assertTrue(first == 600 && second == 400,
+                "Expected 600 then 400 FE this tick, got " + first + " then " + second);
+        helper.assertTrue(cell.getEnergy() == EnergyCableBlock.ENERGY_CABLE_RATE, "The battery should hold 1,000 FE, has " + cell.getEnergy());
         helper.runAfterDelay(1, () -> {
-            int next = insertCommitted(handler, 6_000);
-            helper.assertTrue(next == 6_000, "Next tick the cable should carry 6,000 FE again, carried " + next);
+            int next = insertCommitted(handler, 600);
+            helper.assertTrue(next == 600, "Next tick the cable should carry 600 FE again, carried " + next);
             helper.succeed();
         });
     }
 
-    /** An Energy Cable next to a Plasma Cable doesn't connect to it either way (each tier is its own network). */
+    /**
+     * A Plasma Cable takes plasma (up to 4,000 mB at a time) into a tank but refuses water, and doesn't join a
+     * Fluid Pipe next to it.
+     */
+    private static void plasmaCableCarriesOnlyPlasma(GameTestHelper helper) {
+        BlockPos pipe = new BlockPos(1, 1, 2);
+        BlockPos cable = new BlockPos(2, 1, 2);
+        BlockPos tankPos = new BlockPos(3, 1, 2);
+        helper.setBlock(tankPos, ModBlocks.FLUID_TANK.get());
+        placeConduit(helper, pipe, ModBlocks.FLUID_PIPE.get());
+        placeConduit(helper, cable, ModBlocks.PLASMA_CABLE.get());
+        assertConnection(helper, cable, Direction.EAST, CableConnection.MACHINE);
+        assertConnection(helper, cable, Direction.WEST, CableConnection.NONE);
+        assertConnection(helper, pipe, Direction.EAST, CableConnection.NONE);
+
+        var handler = helper.getLevel().getCapability(Capabilities.Fluid.BLOCK, helper.absolutePos(cable), Direction.UP);
+        helper.assertTrue(handler != null, "The plasma cable has no fluid capability");
+        int water;
+        int plasma;
+        try (Transaction transaction = Transaction.openRoot()) {
+            water = handler.insert(FluidResource.of(Fluids.WATER), 1_000, transaction);
+            plasma = handler.insert(FluidResource.of(ModFluids.PLASMA.get()), 5_000, transaction);
+            transaction.commit();
+        }
+        FluidTankBlockEntity tank = helper.getBlockEntity(tankPos, FluidTankBlockEntity.class);
+        helper.assertTrue(water == 0, "The plasma cable carried " + water + " mB of water");
+        helper.assertTrue(plasma == FluidPipeBlock.PLASMA_CABLE_RATE && tank.getTank().getAmount() == plasma,
+                "Expected 4,000 mB of plasma in the tank, carried " + plasma + ", tank has " + tank.getTank().getAmount());
+        helper.succeed();
+    }
+
+    /** An Energy Cable next to a Plasma Cable doesn't connect to it either way (conduits only join their own kind). */
     private static void cableTiersDontJoin(GameTestHelper helper) {
         BlockPos energy = new BlockPos(1, 1, 2);
         BlockPos plasma = new BlockPos(2, 1, 2);

@@ -16,11 +16,9 @@ import org.jspecify.annotations.Nullable;
  * What a pipe exposes as its fluid capability. Like {@link CableEnergyHandler}, pipes store nothing: fluid inserted
  * into any pipe is handed straight to every fluid block on the same network (except the one it came from) that
  * accepts that fluid, split evenly. Different fluids never mix because nothing waits inside the pipe.
- * Each insert carries at most {@link #TRANSFER_RATE} mB.
+ * Each insert carries at most the pipe block's transfer rate, and only fluids that pipe carries (see {@link FluidPipeBlock}).
  */
-public record PipeFluidHandler(Level level, BlockPos pos, @Nullable Direction side) implements ResourceHandler<FluidResource> {
-    public static final int TRANSFER_RATE = 1000;
-
+public record PipeFluidHandler(Level level, BlockPos pos, @Nullable Direction side, FluidPipeBlock pipe) implements ResourceHandler<FluidResource> {
     @Override
     public int size() {
         return 1;
@@ -38,18 +36,18 @@ public record PipeFluidHandler(Level level, BlockPos pos, @Nullable Direction si
 
     @Override
     public long getCapacityAsLong(int index, FluidResource resource) {
-        return TRANSFER_RATE;
+        return pipe.getTransferRate();
     }
 
     @Override
     public boolean isValid(int index, FluidResource resource) {
-        return true;
+        return pipe.carries(resource);
     }
 
     @Override
     public int insert(int index, FluidResource resource, int amount, TransactionContext transaction) {
         TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
-        if (amount == 0 || level.isClientSide()) {
+        if (amount == 0 || level.isClientSide() || !pipe.carries(resource)) {
             return 0;
         }
         CableNetworks.Network network = CableNetworks.get(level, pos);
@@ -59,7 +57,7 @@ public record PipeFluidHandler(Level level, BlockPos pos, @Nullable Direction si
         network.busy = true;
         try {
             List<ResourceHandler<FluidResource>> targets = findTargets(network);
-            int offered = Math.min(amount, TRANSFER_RATE);
+            int offered = Math.min(amount, pipe.getTransferRate());
             int remaining = offered;
             for (int i = 0; i < targets.size() && remaining > 0; i++) {
                 // Even split; whatever one target refuses is offered to the ones after it.

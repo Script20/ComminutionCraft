@@ -286,7 +286,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("CCC")
                 .pattern("GPG")
                 .pattern("CCC")
-                .define('C', ModItems.ENERGY_CABLE.get())
+                .define('C', ModItems.FLUID_PIPE.get())
                 .define('G', tag(ProcessedMetal.commonItemTag("ingots/gold")))
                 .define('P', ModItems.PLASMA_CIRCUIT.get())
                 .unlockedBy("has_plasma_circuit", has(ModItems.PLASMA_CIRCUIT.get()))

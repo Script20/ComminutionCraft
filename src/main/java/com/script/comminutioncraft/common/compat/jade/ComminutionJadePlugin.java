@@ -37,8 +37,8 @@ public class ComminutionJadePlugin implements IWailaPlugin {
         registration.registerItemStorage(HideThingsExtensionProvider.instance(), ElectricMachineBlockEntity.class);
         registration.registerItemStorage(HideThingsExtensionProvider.instance(), ElectricGeneratorBlockEntity.class);
         // Cables and pipes pass things on and store none; a "0 / 1,000" bar would only confuse.
-        registration.registerEnergyStorage(HideThingsExtensionProvider.instance(), EnergyCableBlock.class); // both cable tiers
-        registration.registerFluidStorage(HideThingsExtensionProvider.instance(), FluidPipeBlock.class);
+        registration.registerEnergyStorage(HideThingsExtensionProvider.instance(), EnergyCableBlock.class);
+        registration.registerFluidStorage(HideThingsExtensionProvider.instance(), FluidPipeBlock.class); // Fluid Pipe and Plasma Cable
     }
 
     @Override
