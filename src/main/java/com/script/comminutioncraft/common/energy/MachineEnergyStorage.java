@@ -34,6 +34,11 @@ public class MachineEnergyStorage extends SimpleEnergyHandler {
         return capacity - energy;
     }
 
+    /** Most FE other blocks can take out in one go. */
+    public int getMaxExtract() {
+        return maxExtract;
+    }
+
     /** Puts the stored FE on the item a machine becomes when picked up with the wrench. */
     public void saveTo(DataComponentMap.Builder components) {
         if (energy > 0) {

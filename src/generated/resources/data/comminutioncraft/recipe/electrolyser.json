@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": "#c:ingots/copper",
+    "E": "comminutioncraft:electronic_circuit",
+    "G": "#c:glass_blocks",
+    "I": "#c:ingots/iron",
+    "W": "minecraft:water_bucket"
+  },
+  "pattern": [
+    "IEI",
+    "CWC",
+    "IGI"
+  ],
+  "result": {
+    "id": "comminutioncraft:electrolyser"
+  }
+}

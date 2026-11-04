@@ -9,6 +9,9 @@ import com.script.comminutioncraft.common.machine.ElectricSmelterBlockEntity;
 import com.script.comminutioncraft.common.machine.EnergyBatteryBlockEntity;
 import com.script.comminutioncraft.common.machine.FluidTankBlockEntity;
 import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlockEntity;
+import com.script.comminutioncraft.common.machine.AtmosphericWaterGeneratorBlockEntity;
+import com.script.comminutioncraft.common.machine.ElectrolyserBlockEntity;
+import com.script.comminutioncraft.common.machine.MhdGeneratorBlockEntity;
 import com.script.comminutioncraft.common.machine.PlasmaGranulatorBlockEntity;
 import com.script.comminutioncraft.common.machine.CircuitAssemblerBlockEntity;
 import com.script.comminutioncraft.common.machine.OreWasherBlockEntity;
@@ -73,6 +76,18 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<OreWasherBlockEntity>> ORE_WASHER =
             BLOCK_ENTITY_TYPES.register("ore_washer",
                     () -> new BlockEntityType<>(OreWasherBlockEntity::new, ModBlocks.ORE_WASHER.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AtmosphericWaterGeneratorBlockEntity>> ATMOSPHERIC_WATER_GENERATOR =
+            BLOCK_ENTITY_TYPES.register("atmospheric_water_generator",
+                    () -> new BlockEntityType<>(AtmosphericWaterGeneratorBlockEntity::new, ModBlocks.ATMOSPHERIC_WATER_GENERATOR.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ElectrolyserBlockEntity>> ELECTROLYSER =
+            BLOCK_ENTITY_TYPES.register("electrolyser",
+                    () -> new BlockEntityType<>(ElectrolyserBlockEntity::new, ModBlocks.ELECTROLYSER.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MhdGeneratorBlockEntity>> MHD_GENERATOR =
+            BLOCK_ENTITY_TYPES.register("mhd_generator",
+                    () -> new BlockEntityType<>(MhdGeneratorBlockEntity::new, ModBlocks.MHD_GENERATOR.get()));
 
     private ModBlockEntities() {}
 }

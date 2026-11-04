@@ -4,7 +4,7 @@ import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.item.EnergyBatteryItem;
 import com.script.comminutioncraft.common.item.WrenchItem;
 import com.script.comminutioncraft.common.machine.EnergyBatteryBlockEntity;
-import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlockEntity;
+import com.script.comminutioncraft.common.machine.AtmosphericWaterGeneratorBlockEntity;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -31,9 +31,9 @@ public final class ModItems {
     public static final DeferredItem<Item> ELECTRONIC_CIRCUIT = ITEMS.registerSimpleItem("electronic_circuit");
     /** Tier-3 recipes use it; the Circuit Assembler makes it from an Electronic Circuit and plasma. */
     public static final DeferredItem<Item> PLASMA_CIRCUIT = ITEMS.registerSimpleItem("plasma_circuit");
-    /** Wears down by 1 per mB of plasma made in a Plasma Generator. */
+    /** Doubles an Atmospheric Water Generator's output; wears down by 1 per 100 mB of water it makes. */
     public static final DeferredItem<Item> AIR_FILTER = ITEMS.registerSimpleItem("air_filter",
-            properties -> properties.durability(PlasmaGeneratorBlockEntity.FILTER_DURABILITY));
+            properties -> properties.durability(AtmosphericWaterGeneratorBlockEntity.FILTER_DURABILITY));
 
     // Tools
     public static final DeferredItem<WrenchItem> WRENCH = ITEMS.registerItem("wrench", WrenchItem::new, properties -> properties.stacksTo(1));
@@ -47,7 +47,11 @@ public final class ModItems {
     public static final DeferredItem<EnergyBatteryItem> ENERGY_BATTERY = ITEMS.registerItem("energy_battery",
             properties -> new EnergyBatteryItem(ModBlocks.ENERGY_BATTERY.get(), properties, EnergyBatteryBlockEntity.CAPACITY, 0x40C4FF),
             properties -> properties.useBlockDescriptionPrefix());
+    public static final DeferredItem<BlockItem> ATMOSPHERIC_WATER_GENERATOR =
+            ITEMS.registerSimpleBlockItem("atmospheric_water_generator", ModBlocks.ATMOSPHERIC_WATER_GENERATOR);
+    public static final DeferredItem<BlockItem> ELECTROLYSER = ITEMS.registerSimpleBlockItem("electrolyser", ModBlocks.ELECTROLYSER);
     public static final DeferredItem<BlockItem> PLASMA_GENERATOR = ITEMS.registerSimpleBlockItem("plasma_generator", ModBlocks.PLASMA_GENERATOR);
+    public static final DeferredItem<BlockItem> MHD_GENERATOR = ITEMS.registerSimpleBlockItem("mhd_generator", ModBlocks.MHD_GENERATOR);
     public static final DeferredItem<BlockItem> PLASMA_GRANULATOR = ITEMS.registerSimpleBlockItem("plasma_granulator", ModBlocks.PLASMA_GRANULATOR);
     public static final DeferredItem<BlockItem> PLASMA_SMELTER = ITEMS.registerSimpleBlockItem("plasma_smelter", ModBlocks.PLASMA_SMELTER);
     public static final DeferredItem<EnergyBatteryItem> PLASMA_ENERGY_BATTERY = ITEMS.registerItem("plasma_energy_battery",

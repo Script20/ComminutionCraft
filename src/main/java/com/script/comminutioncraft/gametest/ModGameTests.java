@@ -6,6 +6,12 @@ import com.script.comminutioncraft.common.cable.ConduitBlock;
 import com.script.comminutioncraft.common.cable.EnergyCableBlock;
 import com.script.comminutioncraft.common.machine.FluidTankBlockEntity;
 import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlockEntity;
+import com.script.comminutioncraft.common.machine.AtmosphericWaterGeneratorBlockEntity;
+import com.script.comminutioncraft.common.machine.ElectrolyserBlockEntity;
+import com.script.comminutioncraft.common.machine.MhdGeneratorBlockEntity;
+import java.util.List;
+import net.minecraft.world.level.biome.Biomes;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import com.script.comminutioncraft.common.machine.PlasmaGranulatorBlockEntity;
 import com.script.comminutioncraft.common.machine.PlasmaMachineBlockEntity;
 import com.script.comminutioncraft.common.machine.OreWasherBlockEntity;
@@ -96,10 +102,12 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("pickaxe_drop_forgets_settings", () -> ModGameTests::pickaxeDropForgetsSettings);
         TEST_FUNCTIONS.register("wrench_pickup_keeps_settings", () -> ModGameTests::wrenchPickupKeepsSettings);
         TEST_FUNCTIONS.register("wrench_acts_before_machine_gui", () -> ModGameTests::wrenchActsBeforeMachineGui);
-        TEST_FUNCTIONS.register("plasma_generator_breathes", () -> ModGameTests::plasmaGeneratorBreathes);
+        TEST_FUNCTIONS.register("water_generator_breathes", () -> ModGameTests::waterGeneratorBreathes);
         TEST_FUNCTIONS.register("walled_in_generator_makes_nothing", () -> ModGameTests::walledInGeneratorMakesNothing);
-        TEST_FUNCTIONS.register("no_filter_half_speed", () -> ModGameTests::noFilterHalfSpeed);
-        TEST_FUNCTIONS.register("pipe_carries_plasma_to_tank", () -> ModGameTests::pipeCarriesPlasmaToTank);
+        TEST_FUNCTIONS.register("filter_doubles_water", () -> ModGameTests::filterDoublesWater);
+        TEST_FUNCTIONS.register("pipe_carries_water_to_tank", () -> ModGameTests::pipeCarriesWaterToTank);
+        TEST_FUNCTIONS.register("humidity_follows_biome", () -> ModGameTests::humidityFollowsBiome);
+        TEST_FUNCTIONS.register("power_chain_makes_energy", () -> ModGameTests::powerChainMakesEnergy);
         TEST_FUNCTIONS.register("wrench_pickup_keeps_tank_fluid", () -> ModGameTests::wrenchPickupKeepsTankFluid);
         TEST_FUNCTIONS.register("pipes_and_cables_dont_join", () -> ModGameTests::pipesAndCablesDontJoin);
         TEST_FUNCTIONS.register("side_change_reconnects_cable", () -> ModGameTests::sideChangeReconnectsCable);
@@ -419,25 +427,33 @@ public final class ModGameTests {
         helper.succeed();
     }
 
-    /** On the floor with nothing else around, 5 faces breathe: 5 mB/t, and the filter wears 1 per mB made. */
-    private static void plasmaGeneratorBreathes(GameTestHelper helper) {
+    /**
+     * On the floor with nothing else around, 5 faces breathe: with a filter that's 5 x humidity x 2 mB/t of water
+     * (whatever the test world's biome is), and the filter wears 1 per 100 mB made.
+     */
+    private static void waterGeneratorBreathes(GameTestHelper helper) {
         BlockPos pos = new BlockPos(2, 1, 2);
-        PlasmaGeneratorBlockEntity generator = placePlasmaGenerator(helper, pos, true);
+        AtmosphericWaterGeneratorBlockEntity generator = placeWaterGenerator(helper, pos, true);
+        float humidity = AtmosphericWaterGeneratorBlockEntity.humidity(helper.getLevel(), helper.absolutePos(pos));
+        helper.assertTrue(humidity > 0, "The test world should have some humidity");
 
-        helper.runAfterDelay(20, () -> {
+        helper.runAfterDelay(40, () -> {
             helper.assertTrue(generator.getIntake() == 5, "On the floor in open air the intake should be 5/6, but is " + generator.getIntake());
             int made = generator.getTank().getAmount();
-            helper.assertTrue(made >= 5 * 15, "Expected about 5 mB/t of plasma, only " + made + " mB after 20 ticks");
-            int wear = generator.getItem(PlasmaGeneratorBlockEntity.SLOT_FILTER).getDamageValue();
-            helper.assertTrue(wear == made, "The filter should wear 1 per mB (" + made + "), but wore " + wear);
+            float expected = 5 * humidity * 2 * 40;
+            helper.assertTrue(Math.abs(made - expected) <= 5 * humidity * 2 * 3 + 1,
+                    "Expected about " + expected + " mB of water after 40 ticks, got " + made);
+            int wear = generator.getItem(AtmosphericWaterGeneratorBlockEntity.SLOT_FILTER).getDamageValue();
+            helper.assertTrue(wear == made / AtmosphericWaterGeneratorBlockEntity.MB_PER_FILTER_WEAR,
+                    "The filter should wear 1 per 100 mB (" + made + " mB), but wore " + wear);
             helper.succeed();
         });
     }
 
-    /** Stone on every side: no intake, no plasma, even with power and a filter. */
+    /** Stone on every side: no intake, no water, even with a filter. */
     private static void walledInGeneratorMakesNothing(GameTestHelper helper) {
         BlockPos pos = new BlockPos(2, 1, 2);
-        PlasmaGeneratorBlockEntity generator = placePlasmaGenerator(helper, pos, true);
+        AtmosphericWaterGeneratorBlockEntity generator = placeWaterGenerator(helper, pos, true);
         for (Direction direction : Direction.values()) {
             if (direction != Direction.DOWN) {
                 helper.setBlock(pos.relative(direction), Blocks.STONE);
@@ -450,24 +466,24 @@ public final class ModGameTests {
         });
     }
 
-    /** Two generators in the same open air: the one without a filter makes half as much plasma. */
-    private static void noFilterHalfSpeed(GameTestHelper helper) {
-        PlasmaGeneratorBlockEntity filtered = placePlasmaGenerator(helper, new BlockPos(1, 1, 1), true);
-        PlasmaGeneratorBlockEntity bare = placePlasmaGenerator(helper, new BlockPos(3, 1, 3), false);
-        helper.runAfterDelay(40, () -> {
+    /** Two water generators in the same open air: the one with a filter makes twice as much. */
+    private static void filterDoublesWater(GameTestHelper helper) {
+        AtmosphericWaterGeneratorBlockEntity filtered = placeWaterGenerator(helper, new BlockPos(1, 1, 1), true);
+        AtmosphericWaterGeneratorBlockEntity bare = placeWaterGenerator(helper, new BlockPos(3, 1, 3), false);
+        helper.runAfterDelay(60, () -> {
             int full = filtered.getTank().getAmount();
             int half = bare.getTank().getAmount();
-            helper.assertTrue(full > 0 && Math.abs(half * 2 - full) <= 10,
-                    "Without a filter it should make half as much: " + half + " mB vs " + full + " mB with one");
+            helper.assertTrue(full > 0 && Math.abs(half * 2 - full) <= 4,
+                    "With a filter it should make twice as much: " + full + " mB vs " + half + " mB without");
             helper.succeed();
         });
     }
 
-    /** Generator (output to the east) -> 2 fluid pipes -> Fluid Tank: plasma ends up in the tank. */
-    private static void pipeCarriesPlasmaToTank(GameTestHelper helper) {
+    /** Water generator (output to the east) -> 2 fluid pipes -> Fluid Tank: water ends up in the tank. */
+    private static void pipeCarriesWaterToTank(GameTestHelper helper) {
         BlockPos generatorPos = new BlockPos(0, 1, 2);
         BlockPos tankPos = new BlockPos(3, 1, 2);
-        PlasmaGeneratorBlockEntity generator = placePlasmaGenerator(helper, generatorPos, true);
+        AtmosphericWaterGeneratorBlockEntity generator = placeWaterGenerator(helper, generatorPos, true);
         // Facing north, the generator's left is east (towards the pipes).
         generator.getControls().setSide(RelativeSide.LEFT, SideMode.OUTPUT);
         helper.setBlock(tankPos, ModBlocks.FLUID_TANK.get());
@@ -477,8 +493,53 @@ public final class ModGameTests {
         assertConnection(helper, new BlockPos(2, 1, 2), Direction.EAST, CableConnection.MACHINE);
 
         FluidTankBlockEntity tank = helper.getBlockEntity(tankPos, FluidTankBlockEntity.class);
-        helper.succeedWhen(() -> helper.assertTrue(tank.getTank().getAmount() >= 100 && tank.getTank().getFluid().is(ModFluids.PLASMA_TYPE.get()),
-                "The tank should be filling with plasma, it has " + tank.getTank().getAmount() + " mB"));
+        helper.succeedWhen(() -> helper.assertTrue(tank.getTank().getAmount() >= 10 && tank.getTank().getFluid().is(NeoForgeMod.WATER_TYPE.value()),
+                "The tank should be filling with water, it has " + tank.getTank().getAmount() + " mB"));
+    }
+
+    /** Humidity follows the biome: a desert is nearly dry, a river wetter than plains, a jungle wetter still. */
+    private static void humidityFollowsBiome(GameTestHelper helper) {
+        var biomes = helper.getLevel().registryAccess().lookupOrThrow(Registries.BIOME);
+        float desert = AtmosphericWaterGeneratorBlockEntity.humidity(biomes.getOrThrow(Biomes.DESERT));
+        float plains = AtmosphericWaterGeneratorBlockEntity.humidity(biomes.getOrThrow(Biomes.PLAINS));
+        float river = AtmosphericWaterGeneratorBlockEntity.humidity(biomes.getOrThrow(Biomes.RIVER));
+        float jungle = AtmosphericWaterGeneratorBlockEntity.humidity(biomes.getOrThrow(Biomes.JUNGLE));
+        helper.assertTrue(desert > 0 && desert < 0.1F, "A desert should be nearly dry, is " + desert);
+        helper.assertTrue(river > plains, "A river (" + river + ") should be wetter than plains (" + plains + ")");
+        helper.assertTrue(jungle > plains, "A jungle (" + jungle + ") should be wetter than plains (" + plains + ")");
+        helper.succeed();
+    }
+
+    /**
+     * Electrolyser -> Plasma Generator -> MHD Generator side by side (each pushing east): water becomes hydrogen (and
+     * half as much oxygen, kept in the electrolyser), then plasma, then FE. The MHD Generator also powers the
+     * Plasma Generator next to it.
+     */
+    private static void powerChainMakesEnergy(GameTestHelper helper) {
+        BlockPos electrolyserPos = new BlockPos(1, 1, 2);
+        BlockPos plasmaPos = new BlockPos(2, 1, 2);
+        BlockPos mhdPos = new BlockPos(3, 1, 2);
+        for (BlockPos pos : List.of(electrolyserPos, plasmaPos, mhdPos)) {
+            helper.setBlock(pos, (pos == electrolyserPos ? ModBlocks.ELECTROLYSER.get() : pos == plasmaPos
+                    ? ModBlocks.PLASMA_GENERATOR.get() : ModBlocks.MHD_GENERATOR.get()).defaultBlockState().setValue(MachineBlock.FACING, Direction.NORTH));
+        }
+        ElectrolyserBlockEntity electrolyser = helper.getBlockEntity(electrolyserPos, ElectrolyserBlockEntity.class);
+        PlasmaGeneratorBlockEntity plasma = helper.getBlockEntity(plasmaPos, PlasmaGeneratorBlockEntity.class);
+        MhdGeneratorBlockEntity mhd = helper.getBlockEntity(mhdPos, MhdGeneratorBlockEntity.class);
+        // Facing north, left is east: each one's east face is its Output.
+        electrolyser.getControls().setSide(RelativeSide.LEFT, SideMode.OUTPUT);
+        plasma.getControls().setSide(RelativeSide.LEFT, SideMode.OUTPUT);
+        electrolyser.setEnergy(ElectrolyserBlockEntity.ENERGY_CAPACITY);
+        plasma.setEnergy(PlasmaGeneratorBlockEntity.ENERGY_CAPACITY);
+        electrolyser.getTanks().get(ElectrolyserBlockEntity.TANK_WATER).fill(FluidResource.of(Fluids.WATER), 2_000);
+
+        helper.succeedWhen(() -> {
+            helper.assertTrue(mhd.getRate() > 0, "The MHD Generator isn't making FE yet");
+            int oxygen = electrolyser.getTanks().get(ElectrolyserBlockEntity.TANK_OXYGEN).getAmount();
+            int waterUsed = 2_000 - electrolyser.getTanks().get(ElectrolyserBlockEntity.TANK_WATER).getAmount();
+            helper.assertTrue(oxygen > 0 && Math.abs(oxygen - waterUsed / 4) <= 1,
+                    "Oxygen should be half the hydrogen (a quarter of the water used, " + waterUsed + " mB), has " + oxygen);
+        });
     }
 
     /** A tank picked up with the wrench keeps its fluid; one placed from that item has it back. */
@@ -648,13 +709,12 @@ public final class ModGameTests {
         }
     }
 
-    /** A Plasma Generator facing north with a full FE buffer and, optionally, an Air Filter. */
-    private static PlasmaGeneratorBlockEntity placePlasmaGenerator(GameTestHelper helper, BlockPos pos, boolean filter) {
-        helper.setBlock(pos, ModBlocks.PLASMA_GENERATOR.get().defaultBlockState().setValue(MachineBlock.FACING, Direction.NORTH));
-        PlasmaGeneratorBlockEntity generator = helper.getBlockEntity(pos, PlasmaGeneratorBlockEntity.class);
-        generator.setEnergy(PlasmaGeneratorBlockEntity.ENERGY_CAPACITY);
+    /** An Atmospheric Water Generator facing north, optionally with an Air Filter. */
+    private static AtmosphericWaterGeneratorBlockEntity placeWaterGenerator(GameTestHelper helper, BlockPos pos, boolean filter) {
+        helper.setBlock(pos, ModBlocks.ATMOSPHERIC_WATER_GENERATOR.get().defaultBlockState().setValue(MachineBlock.FACING, Direction.NORTH));
+        AtmosphericWaterGeneratorBlockEntity generator = helper.getBlockEntity(pos, AtmosphericWaterGeneratorBlockEntity.class);
         if (filter) {
-            generator.setItem(PlasmaGeneratorBlockEntity.SLOT_FILTER, new ItemStack(ModItems.AIR_FILTER.get()));
+            generator.setItem(AtmosphericWaterGeneratorBlockEntity.SLOT_FILTER, new ItemStack(ModItems.AIR_FILTER.get()));
         }
         return generator;
     }

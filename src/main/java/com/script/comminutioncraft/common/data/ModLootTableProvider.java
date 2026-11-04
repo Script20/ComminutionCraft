@@ -33,6 +33,9 @@ public class ModLootTableProvider extends LootTableProvider {
             dropSelf(ModBlocks.ENERGY_CABLE.get());
             dropSelf(ModBlocks.ENERGY_BATTERY.get());
             dropSelf(ModBlocks.PLASMA_GENERATOR.get());
+            dropSelf(ModBlocks.ATMOSPHERIC_WATER_GENERATOR.get());
+            dropSelf(ModBlocks.ELECTROLYSER.get());
+            dropSelf(ModBlocks.MHD_GENERATOR.get());
             dropSelf(ModBlocks.FLUID_PIPE.get());
             dropSelf(ModBlocks.FLUID_TANK.get());
             dropSelf(ModBlocks.PLASMA_GRANULATOR.get());

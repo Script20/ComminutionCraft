@@ -1,6 +1,5 @@
 package com.script.comminutioncraft.common.machine;
 
-import com.script.comminutioncraft.common.energy.EnergySync;
 import com.script.comminutioncraft.common.machine.control.ControllableMenu;
 import com.script.comminutioncraft.common.machine.control.MachineControls;
 import com.script.comminutioncraft.common.machine.control.RedstoneMode;
@@ -18,9 +17,9 @@ import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
-/** Plasma Generator GUI: Air Filter slot, energy bar on the left, plasma gauge on the right, intake readout. */
-public class PlasmaGeneratorMenu extends AbstractContainerMenu implements ControllableMenu {
-    private static final int INV_START = PlasmaGeneratorBlockEntity.SLOT_COUNT;
+/** Atmospheric Water Generator GUI: Air Filter slot, water gauge on the right, intake and humidity readout (no FE). */
+public class AtmosphericWaterGeneratorMenu extends AbstractContainerMenu implements ControllableMenu {
+    private static final int INV_START = AtmosphericWaterGeneratorBlockEntity.SLOT_COUNT;
     private static final int INV_END = INV_START + 27;
     private static final int HOTBAR_END = INV_END + 9;
 
@@ -28,20 +27,20 @@ public class PlasmaGeneratorMenu extends AbstractContainerMenu implements Contro
     private final ContainerData data;
 
     // Client-side constructor (called when the server tells the client to open the GUI)
-    public static PlasmaGeneratorMenu client(int containerId, Inventory inventory) {
-        return new PlasmaGeneratorMenu(containerId, inventory,
-                new SimpleContainer(PlasmaGeneratorBlockEntity.SLOT_COUNT),
-                new SimpleContainerData(PlasmaGeneratorBlockEntity.DATA_COUNT));
+    public static AtmosphericWaterGeneratorMenu client(int containerId, Inventory inventory) {
+        return new AtmosphericWaterGeneratorMenu(containerId, inventory,
+                new SimpleContainer(AtmosphericWaterGeneratorBlockEntity.SLOT_COUNT),
+                new SimpleContainerData(AtmosphericWaterGeneratorBlockEntity.DATA_COUNT));
     }
 
-    public PlasmaGeneratorMenu(int containerId, Inventory inventory, Container container, ContainerData data) {
-        super(ModMenus.PLASMA_GENERATOR.get(), containerId);
-        checkContainerSize(container, PlasmaGeneratorBlockEntity.SLOT_COUNT);
-        checkContainerDataCount(data, PlasmaGeneratorBlockEntity.DATA_COUNT);
+    public AtmosphericWaterGeneratorMenu(int containerId, Inventory inventory, Container container, ContainerData data) {
+        super(ModMenus.ATMOSPHERIC_WATER_GENERATOR.get(), containerId);
+        checkContainerSize(container, AtmosphericWaterGeneratorBlockEntity.SLOT_COUNT);
+        checkContainerDataCount(data, AtmosphericWaterGeneratorBlockEntity.DATA_COUNT);
         this.container = container;
         this.data = data;
 
-        addSlot(new FilterSlot(container, PlasmaGeneratorBlockEntity.SLOT_FILTER, 80, 53));
+        addSlot(new FilterSlot(container, AtmosphericWaterGeneratorBlockEntity.SLOT_FILTER, 80, 53));
         addStandardInventorySlots(inventory, 8, 84);
         addDataSlots(data);
     }
@@ -55,12 +54,12 @@ public class PlasmaGeneratorMenu extends AbstractContainerMenu implements Contro
 
     @Override
     public RedstoneMode getRedstoneMode() {
-        return RedstoneMode.byOrdinal(data.get(PlasmaGeneratorBlockEntity.DATA_REDSTONE));
+        return RedstoneMode.byOrdinal(data.get(AtmosphericWaterGeneratorBlockEntity.DATA_REDSTONE));
     }
 
     @Override
     public SideMode getSideMode(RelativeSide side) {
-        return MachineControls.unpackSide(data.get(PlasmaGeneratorBlockEntity.DATA_SIDES), side);
+        return MachineControls.unpackSide(data.get(AtmosphericWaterGeneratorBlockEntity.DATA_SIDES), side);
     }
 
     @Override
@@ -82,7 +81,7 @@ public class PlasmaGeneratorMenu extends AbstractContainerMenu implements Contro
                 return ItemStack.EMPTY;
             }
         } else if (stack.is(ModItems.AIR_FILTER.get())) {
-            if (!moveItemStackTo(stack, PlasmaGeneratorBlockEntity.SLOT_FILTER, PlasmaGeneratorBlockEntity.SLOT_FILTER + 1, false)) {
+            if (!moveItemStackTo(stack, AtmosphericWaterGeneratorBlockEntity.SLOT_FILTER, AtmosphericWaterGeneratorBlockEntity.SLOT_FILTER + 1, false)) {
                 return ItemStack.EMPTY;
             }
         } else if (index < INV_END) {
@@ -107,33 +106,30 @@ public class PlasmaGeneratorMenu extends AbstractContainerMenu implements Contro
 
     // ---- GUI helpers ----
 
-    public int getEnergy() {
-        return EnergySync.join(data.get(PlasmaGeneratorBlockEntity.DATA_ENERGY_LOW), data.get(PlasmaGeneratorBlockEntity.DATA_ENERGY_HIGH));
+    public int getWater() {
+        return data.get(AtmosphericWaterGeneratorBlockEntity.DATA_WATER);
     }
 
-    public int getEnergyCapacity() {
-        return EnergySync.join(data.get(PlasmaGeneratorBlockEntity.DATA_CAPACITY_LOW), data.get(PlasmaGeneratorBlockEntity.DATA_CAPACITY_HIGH));
+    public int getWaterCapacity() {
+        return data.get(AtmosphericWaterGeneratorBlockEntity.DATA_WATER_CAPACITY);
     }
 
-    public int getPlasma() {
-        return data.get(PlasmaGeneratorBlockEntity.DATA_PLASMA);
-    }
-
-    public int getPlasmaCapacity() {
-        return data.get(PlasmaGeneratorBlockEntity.DATA_PLASMA_CAPACITY);
+    /** Humidity in percent (100 = 1 mB/t per open face). */
+    public int getHumidity() {
+        return data.get(AtmosphericWaterGeneratorBlockEntity.DATA_HUMIDITY);
     }
 
     public int getIntake() {
-        return data.get(PlasmaGeneratorBlockEntity.DATA_INTAKE);
+        return data.get(AtmosphericWaterGeneratorBlockEntity.DATA_INTAKE);
     }
 
-    /** mB made last tick. */
-    public int getRate() {
-        return data.get(PlasmaGeneratorBlockEntity.DATA_RATE);
+    /** mB made per tick, x 10. */
+    public int getRateTenths() {
+        return data.get(AtmosphericWaterGeneratorBlockEntity.DATA_RATE_TENTHS);
     }
 
     public boolean hasFilter() {
-        return slots.get(PlasmaGeneratorBlockEntity.SLOT_FILTER).getItem().is(ModItems.AIR_FILTER.get());
+        return slots.get(AtmosphericWaterGeneratorBlockEntity.SLOT_FILTER).getItem().is(ModItems.AIR_FILTER.get());
     }
 
     private static class FilterSlot extends Slot {

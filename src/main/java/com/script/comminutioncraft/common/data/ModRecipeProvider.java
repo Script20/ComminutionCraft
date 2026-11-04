@@ -183,6 +183,43 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_electric_generator", has(ModItems.ELECTRIC_GENERATOR.get()))
                 .save(output, key("plasma_generator"));
 
+        // The power chain. Everything up to the plasma is buildable with Electronic Circuits (an Electric Generator
+        // powers it at first); the MHD Generator, which pays it back, needs Plasma Circuits.
+        shaped(RecipeCategory.MISC, ModItems.ATMOSPHERIC_WATER_GENERATOR.get())
+                .pattern("IGI")
+                .pattern("EBE")
+                .pattern("ICI")
+                .define('I', tag(ProcessedMetal.commonItemTag("ingots/iron")))
+                .define('G', tag(ProcessedMetal.commonItemTag("glass_blocks")))
+                .define('E', ModItems.ELECTRONIC_CIRCUIT.get())
+                .define('B', Items.BUCKET)
+                .define('C', tag(ProcessedMetal.commonItemTag("ingots/copper")))
+                .unlockedBy("has_electronic_circuit", has(ModItems.ELECTRONIC_CIRCUIT.get()))
+                .save(output, key("atmospheric_water_generator"));
+
+        shaped(RecipeCategory.MISC, ModItems.ELECTROLYSER.get())
+                .pattern("IEI")
+                .pattern("CWC")
+                .pattern("IGI")
+                .define('I', tag(ProcessedMetal.commonItemTag("ingots/iron")))
+                .define('E', ModItems.ELECTRONIC_CIRCUIT.get())
+                .define('C', tag(ProcessedMetal.commonItemTag("ingots/copper")))
+                .define('W', Items.WATER_BUCKET)
+                .define('G', tag(ProcessedMetal.commonItemTag("glass_blocks")))
+                .unlockedBy("has_electronic_circuit", has(ModItems.ELECTRONIC_CIRCUIT.get()))
+                .save(output, key("electrolyser"));
+
+        shaped(RecipeCategory.MISC, ModItems.MHD_GENERATOR.get())
+                .pattern("IPI")
+                .pattern("CXC")
+                .pattern("IPI")
+                .define('I', tag(ProcessedMetal.commonItemTag("ingots/iron")))
+                .define('P', ModItems.PLASMA_CIRCUIT.get())
+                .define('C', tag(ProcessedMetal.commonItemTag("storage_blocks/copper")))
+                .define('X', ModItems.ELECTRIC_GENERATOR.get())
+                .unlockedBy("has_plasma_circuit", has(ModItems.PLASMA_CIRCUIT.get()))
+                .save(output, key("mhd_generator"));
+
         // The Circuit Assembler makes Plasma Circuits, so it can't need one itself.
         output.accept(key("assembling/plasma_circuit"),
                 new AssemblingRecipe(Ingredient.of(ModItems.ELECTRONIC_CIRCUIT.get()), new ItemStackTemplate(ModItems.PLASMA_CIRCUIT.get())),

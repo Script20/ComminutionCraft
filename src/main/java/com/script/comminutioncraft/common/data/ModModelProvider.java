@@ -100,6 +100,9 @@ public class ModModelProvider extends ModelProvider {
         energyBattery(blockModels, ModBlocks.ENERGY_BATTERY.get());
         conduit(blockModels, itemModels, ModBlocks.ENERGY_CABLE.get(), ModItems.ENERGY_CABLE.get());
         blockModels.createFurnace(ModBlocks.PLASMA_GENERATOR.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
+        blockModels.createFurnace(ModBlocks.ATMOSPHERIC_WATER_GENERATOR.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
+        blockModels.createFurnace(ModBlocks.ELECTROLYSER.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
+        blockModels.createFurnace(ModBlocks.MHD_GENERATOR.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         conduit(blockModels, itemModels, ModBlocks.FLUID_PIPE.get(), ModItems.FLUID_PIPE.get());
         // fluid_tank_side has a transparent window, so the model renders cutout; the contents are a renderer
         blockModels.createTrivialBlock(ModBlocks.FLUID_TANK.get(), TexturedModel.COLUMN);

@@ -13,6 +13,9 @@ import com.script.comminutioncraft.common.machine.EnergyBatteryBlock;
 import com.script.comminutioncraft.common.machine.FluidTankBlock;
 import com.script.comminutioncraft.common.machine.MachineBlock;
 import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlock;
+import com.script.comminutioncraft.common.machine.AtmosphericWaterGeneratorBlock;
+import com.script.comminutioncraft.common.machine.ElectrolyserBlock;
+import com.script.comminutioncraft.common.machine.MhdGeneratorBlock;
 import com.script.comminutioncraft.common.machine.PlasmaGranulatorBlock;
 import com.script.comminutioncraft.common.machine.CircuitAssemblerBlock;
 import com.script.comminutioncraft.common.machine.OreWasherBlock;
@@ -55,7 +58,16 @@ public final class ModBlocks {
                     .sound(SoundType.COPPER)
                     .noOcclusion());
 
-    // Tier 3 (plasma)
+    // Tier 3 (plasma). Power chain: water generator -> electrolyser -> plasma generator -> MHD generator
+    public static final DeferredBlock<AtmosphericWaterGeneratorBlock> ATMOSPHERIC_WATER_GENERATOR = BLOCKS.registerBlock(
+            "atmospheric_water_generator", AtmosphericWaterGeneratorBlock::new, ModBlocks::tier2MachineProperties);
+
+    public static final DeferredBlock<ElectrolyserBlock> ELECTROLYSER = BLOCKS.registerBlock(
+            "electrolyser", ElectrolyserBlock::new, ModBlocks::tier2MachineProperties);
+
+    public static final DeferredBlock<MhdGeneratorBlock> MHD_GENERATOR = BLOCKS.registerBlock(
+            "mhd_generator", MhdGeneratorBlock::new, ModBlocks::tier2MachineProperties);
+
     public static final DeferredBlock<PlasmaGeneratorBlock> PLASMA_GENERATOR = BLOCKS.registerBlock(
             "plasma_generator", PlasmaGeneratorBlock::new, ModBlocks::tier2MachineProperties);
 

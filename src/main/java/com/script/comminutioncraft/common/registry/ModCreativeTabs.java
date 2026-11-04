@@ -28,7 +28,10 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.ENERGY_BATTERY.get());
                         output.accept(ModItems.ENERGY_CABLE.get());
                         output.accept(ModItems.ELECTRONIC_CIRCUIT.get());
+                        output.accept(ModItems.ATMOSPHERIC_WATER_GENERATOR.get());
+                        output.accept(ModItems.ELECTROLYSER.get());
                         output.accept(ModItems.PLASMA_GENERATOR.get());
+                        output.accept(ModItems.MHD_GENERATOR.get());
                         output.accept(ModItems.FLUID_PIPE.get());
                         output.accept(ModItems.FLUID_TANK.get());
                         output.accept(ModItems.AIR_FILTER.get());

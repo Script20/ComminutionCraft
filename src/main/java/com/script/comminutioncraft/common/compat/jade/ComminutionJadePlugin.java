@@ -2,8 +2,8 @@ package com.script.comminutioncraft.common.compat.jade;
 
 import com.script.comminutioncraft.common.cable.EnergyCableBlock;
 import com.script.comminutioncraft.common.cable.FluidPipeBlock;
-import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlock;
-import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlockEntity;
+import com.script.comminutioncraft.common.machine.AtmosphericWaterGeneratorBlock;
+import com.script.comminutioncraft.common.machine.AtmosphericWaterGeneratorBlockEntity;
 import com.script.comminutioncraft.common.machine.ElectricGeneratorBlock;
 import com.script.comminutioncraft.common.machine.ElectricGeneratorBlockEntity;
 import com.script.comminutioncraft.common.machine.ElectricMachineBlockEntity;
@@ -30,7 +30,7 @@ public class ComminutionJadePlugin implements IWailaPlugin {
         registration.registerBlockDataProvider(MachineProvider.INSTANCE, ElectricMachineBlockEntity.class);
         registration.registerBlockDataProvider(GeneratorProvider.INSTANCE, ElectricGeneratorBlockEntity.class);
         registration.registerBlockDataProvider(BatteryProvider.INSTANCE, EnergyBatteryBlockEntity.class);
-        registration.registerBlockDataProvider(PlasmaGeneratorProvider.INSTANCE, PlasmaGeneratorBlockEntity.class);
+        registration.registerBlockDataProvider(WaterGeneratorProvider.INSTANCE, AtmosphericWaterGeneratorBlockEntity.class);
 
         // Our views already show the slots, so skip Jade's generic item list for them.
         registration.registerItemStorage(HideThingsExtensionProvider.instance(), FuelMachineBlockEntity.class);
@@ -46,6 +46,6 @@ public class ComminutionJadePlugin implements IWailaPlugin {
         registration.registerBlockComponent(MachineProvider.Client.INSTANCE, MachineBlock.class);
         registration.registerBlockComponent(GeneratorProvider.Client.INSTANCE, ElectricGeneratorBlock.class);
         registration.registerBlockComponent(BatteryProvider.Client.INSTANCE, EnergyBatteryBlock.class);
-        registration.registerBlockComponent(PlasmaGeneratorProvider.Client.INSTANCE, PlasmaGeneratorBlock.class);
+        registration.registerBlockComponent(WaterGeneratorProvider.Client.INSTANCE, AtmosphericWaterGeneratorBlock.class);
     }
 }

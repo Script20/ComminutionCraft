@@ -5,7 +5,11 @@ import com.script.comminutioncraft.common.machine.ElectricGeneratorMenu;
 import com.script.comminutioncraft.common.machine.ElectricMachineMenu;
 import com.script.comminutioncraft.common.machine.EnergyBatteryMenu;
 import com.script.comminutioncraft.common.machine.FuelMachineMenu;
-import com.script.comminutioncraft.common.machine.PlasmaGeneratorMenu;
+import com.script.comminutioncraft.common.machine.AtmosphericWaterGeneratorMenu;
+import com.script.comminutioncraft.common.machine.ElectrolyserBlockEntity;
+import com.script.comminutioncraft.common.machine.FluidMachineMenu;
+import com.script.comminutioncraft.common.machine.MhdGeneratorBlockEntity;
+import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlockEntity;
 import com.script.comminutioncraft.common.machine.PlasmaMachineMenu;
 import com.script.comminutioncraft.common.machine.OreWasherMenu;
 import net.minecraft.core.registries.Registries;
@@ -35,8 +39,20 @@ public final class ModMenus {
     public static final DeferredHolder<MenuType<?>, MenuType<EnergyBatteryMenu>> ENERGY_BATTERY =
             MENUS.register("energy_battery", () -> new MenuType<>(EnergyBatteryMenu::client, FeatureFlags.VANILLA_SET));
 
-    public static final DeferredHolder<MenuType<?>, MenuType<PlasmaGeneratorMenu>> PLASMA_GENERATOR =
-            MENUS.register("plasma_generator", () -> new MenuType<>(PlasmaGeneratorMenu::client, FeatureFlags.VANILLA_SET));
+    public static final DeferredHolder<MenuType<?>, MenuType<FluidMachineMenu>> PLASMA_GENERATOR = MENUS.register("plasma_generator",
+            () -> new MenuType<>((id, inventory) -> FluidMachineMenu.client(ModMenus.PLASMA_GENERATOR.get(), id, inventory,
+                    PlasmaGeneratorBlockEntity.TANK_COUNT), FeatureFlags.VANILLA_SET));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<AtmosphericWaterGeneratorMenu>> ATMOSPHERIC_WATER_GENERATOR =
+            MENUS.register("atmospheric_water_generator", () -> new MenuType<>(AtmosphericWaterGeneratorMenu::client, FeatureFlags.VANILLA_SET));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<FluidMachineMenu>> ELECTROLYSER = MENUS.register("electrolyser",
+            () -> new MenuType<>((id, inventory) -> FluidMachineMenu.client(ModMenus.ELECTROLYSER.get(), id, inventory,
+                    ElectrolyserBlockEntity.TANK_COUNT), FeatureFlags.VANILLA_SET));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<FluidMachineMenu>> MHD_GENERATOR = MENUS.register("mhd_generator",
+            () -> new MenuType<>((id, inventory) -> FluidMachineMenu.client(ModMenus.MHD_GENERATOR.get(), id, inventory,
+                    MhdGeneratorBlockEntity.TANK_COUNT), FeatureFlags.VANILLA_SET));
 
     public static final DeferredHolder<MenuType<?>, MenuType<PlasmaMachineMenu>> PLASMA_GRANULATOR =
             MENUS.register("plasma_granulator", () -> new MenuType<>(PlasmaMachineMenu::clientGranulator, FeatureFlags.VANILLA_SET));

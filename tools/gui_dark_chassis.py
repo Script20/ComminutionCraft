@@ -387,6 +387,84 @@ def ore_washer_sheet():
     return s.img
 
 
+HYDROGEN = [(150, 150, 176), (196, 198, 224), (228, 230, 248), (250, 250, 255)]
+OXYGEN = [(60, 120, 190), (110, 170, 230), (160, 206, 248), (214, 236, 255)]
+
+
+def gauge_well(s, x):
+    """A recessed fluid tube like the plasma one, inner area at x .. x + ENERGY_W - 1."""
+    x0, y0, x1, y1 = x - 1, ENERGY_Y - 1, x + ENERGY_W, ENERGY_Y + ENERGY_H
+    s.rect(x0, y0, x1, y1, GLASS)
+    s.hline(x0, x1, y0, K['o'])
+    s.vline(x0, y0, y1, K['o'])
+    s.hline(x0, x1, y1, K['hi'])
+    s.vline(x1, y0, y1, K['hi'])
+    for y in range(ENERGY_Y + 3, ENERGY_Y + ENERGY_H, 4):
+        s.px(x0 - 1, y, K['hi'])
+        s.hline(x, x + ENERGY_W - 1, y, (18, 20, 24))
+
+
+def fluid_sprite(s, u, palette):
+    """A fluid fill sprite at (u, 31): light at the surface, soft bands below (palette: dark .. light)."""
+    import math
+    for y in range(ENERGY_H):
+        for x in range(ENERGY_W):
+            base = mix(palette[3], palette[2], min(1.0, y / 6)) if y < 6 else mix(palette[2], palette[0], (y - 6) / (ENERGY_H - 6))
+            c = mix(base, palette[3], 0.12 * (0.5 + 0.5 * math.sin(x * 1.1 + y * 0.5))) if y >= 6 else base
+            if x == 0 or x == ENERGY_W - 1:
+                c = shade(c, 0.75)
+            if (y - 3) % 4 == 0:
+                c = shade(c, 0.78)
+            s.px(u + x, 31 + y, c)
+
+
+def all_fluid_sprites(s):
+    """Fill sprites for every fluid gauge: plasma 186, water 196, hydrogen 206, oxygen 216 (all at v 31)."""
+    plasma_sprite(s)
+    fluid_sprite(s, 196, WATER)
+    fluid_sprite(s, 206, HYDROGEN)
+    fluid_sprite(s, 216, OXYGEN)
+
+
+def fade_arrow(a, b):
+    def colour(x, y):
+        base = mix(a, b, x / 23)
+        return shade(base, 0.72) if (x + abs(y - 8)) % 6 == 0 else base
+    return colour
+
+
+def fluid_machine_sheet(gauges, arrow_colour):
+    """Electrolyser / Plasma Generator / MHD Generator: energy left, a fluid tube at each x in gauges, an arrow."""
+    s = Sheet()
+    body(s)
+    energy_well(s)
+    for x in gauges:
+        gauge_well(s, x)
+    arrow_silhouette(s, 79, 34)
+    player_inventory(s)
+    arrow_sprite(s, arrow_colour)
+    energy_sprite(s)
+    all_fluid_sprites(s)
+    return s.img
+
+
+def water_generator_sheet():
+    """Atmospheric Water Generator: water tube right, Air Filter slot, air -> water intake dots (no FE)."""
+    s = Sheet()
+    body(s)
+    gauge_well(s, 155)
+    slot(s, 79, 52, rim=PLASMA['off'])
+    for i in range(3):
+        s.rect(66 + i * 8, 30, 69 + i * 8, 33, K['d'])
+    s.rect(102, 30, 105, 33, K['d'])
+    for x in range(91, 99):
+        s.px(x, 31, K['hi']); s.px(x, 32, K['hi'])
+    s.px(99, 30, K['hi']); s.px(99, 33, K['hi'])
+    player_inventory(s)
+    all_fluid_sprites(s)
+    return s.img
+
+
 os.makedirs(OUT, exist_ok=True)
 coal_sheet(granulator_arrow).save(os.path.join(OUT, 'coal_granulator.png'))
 coal_sheet(smelter_arrow).save(os.path.join(OUT, 'coal_smelter.png'))
@@ -394,7 +472,11 @@ electric_sheet(electric_granulator_arrow).save(os.path.join(OUT, 'electric_granu
 electric_sheet(smelter_arrow).save(os.path.join(OUT, 'electric_smelter.png'))
 generator_sheet().save(os.path.join(OUT, 'electric_generator.png'))
 battery_sheet().save(os.path.join(OUT, 'energy_battery.png'))
-plasma_generator_sheet().save(os.path.join(OUT, 'plasma_generator.png'))
+# phase D: the Plasma Generator runs on hydrogen (its old sheet's layout lives on in the water generator's)
+fluid_machine_sheet((50, 155), fade_arrow(HYDROGEN[2], PLASMA['on'])).save(os.path.join(OUT, 'plasma_generator.png'))
+water_generator_sheet().save(os.path.join(OUT, 'atmospheric_water_generator.png'))
+fluid_machine_sheet((50, 131, 155), fade_arrow(WATER[2], HYDROGEN[2])).save(os.path.join(OUT, 'electrolyser.png'))
+fluid_machine_sheet((50,), fade_arrow(PLASMA['on'], ELEC['on'])).save(os.path.join(OUT, 'mhd_generator.png'))
 plasma_machine_sheet(plasma_granulator_arrow).save(os.path.join(OUT, 'plasma_granulator.png'))
 plasma_machine_sheet(smelter_arrow).save(os.path.join(OUT, 'plasma_smelter.png'))
 plasma_machine_sheet(plasma_granulator_arrow).save(os.path.join(OUT, 'circuit_assembler.png'))

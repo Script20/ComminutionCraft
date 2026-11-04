@@ -66,6 +66,11 @@ public abstract class MachineScreen<M extends AbstractContainerMenu & Controllab
     protected static final int ENERGY_H = 52;
     /** Plasma gauge: same size as the energy bar, on the right; its fill sprite sits at (186, 31) on the sheet. */
     protected static final int PLASMA_X = 155;
+    /** Fill sprites of the fluid gauges on the sheets (all at v 31, same size as the energy bar). */
+    protected static final int PLASMA_U = 186;
+    protected static final int WATER_U = 196;
+    protected static final int HYDROGEN_U = 206;
+    protected static final int OXYGEN_U = 216;
 
     private static final int TAB_GAP = 2;
 
@@ -175,24 +180,33 @@ public abstract class MachineScreen<M extends AbstractContainerMenu & Controllab
                 ENERGY_W, height, TEX_SIZE, TEX_SIZE);
     }
 
-    /** Plasma gauge on the right, filling from the bottom. */
-    protected void drawPlasmaGauge(GuiGraphicsExtractor graphics, int amount, int capacity) {
+    /** A fluid gauge at x (same size as the energy bar), filling from the bottom with the sprite at (u, 31). */
+    protected void drawGauge(GuiGraphicsExtractor graphics, int x, int u, int amount, int capacity) {
         if (capacity <= 0 || amount <= 0) {
             return;
         }
         int height = Math.max(1, Math.round((float) ENERGY_H * Math.min(amount, capacity) / capacity));
         graphics.blit(RenderPipelines.GUI_TEXTURED, texture,
-                leftPos + PLASMA_X, topPos + ENERGY_Y + ENERGY_H - height,
-                186, 31 + ENERGY_H - height,
+                leftPos + x, topPos + ENERGY_Y + ENERGY_H - height,
+                u, 31 + ENERGY_H - height,
                 ENERGY_W, height, TEX_SIZE, TEX_SIZE);
+    }
+
+    /** "Water: 1,234 / 8,000 mB"-style tooltip ({@code key} takes the amount and capacity) while hovering a gauge. */
+    protected void gaugeTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY, int x, String key, int amount, int capacity) {
+        if (isHovering(x, ENERGY_Y, ENERGY_W, ENERGY_H, mouseX, mouseY)) {
+            graphics.setTooltipForNextFrame(Component.translatable(key, formatFe(amount), formatFe(capacity)), mouseX, mouseY);
+        }
+    }
+
+    /** Plasma gauge on the right, filling from the bottom. */
+    protected void drawPlasmaGauge(GuiGraphicsExtractor graphics, int amount, int capacity) {
+        drawGauge(graphics, PLASMA_X, PLASMA_U, amount, capacity);
     }
 
     /** "Plasma: 1,234 / 8,000 mB" tooltip while hovering the plasma gauge. */
     protected void plasmaTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY, int amount, int capacity) {
-        if (isHovering(PLASMA_X, ENERGY_Y, ENERGY_W, ENERGY_H, mouseX, mouseY)) {
-            graphics.setTooltipForNextFrame(Component.translatable("gui.comminutioncraft.plasma",
-                    formatFe(amount), formatFe(capacity)), mouseX, mouseY);
-        }
+        gaugeTooltip(graphics, mouseX, mouseY, PLASMA_X, "gui.comminutioncraft.plasma", amount, capacity);
     }
 
     /** "12,345 / 20,000 FE" tooltip while hovering the energy bar. */

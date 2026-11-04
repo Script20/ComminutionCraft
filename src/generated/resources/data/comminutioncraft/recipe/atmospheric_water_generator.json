@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": "minecraft:bucket",
+    "C": "#c:ingots/copper",
+    "E": "comminutioncraft:electronic_circuit",
+    "G": "#c:glass_blocks",
+    "I": "#c:ingots/iron"
+  },
+  "pattern": [
+    "IGI",
+    "EBE",
+    "ICI"
+  ],
+  "result": {
+    "id": "comminutioncraft:atmospheric_water_generator"
+  }
+}

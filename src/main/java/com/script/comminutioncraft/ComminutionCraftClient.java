@@ -9,7 +9,8 @@ import com.script.comminutioncraft.client.gui.CoalSmelterScreen;
 import com.script.comminutioncraft.client.gui.ElectricGeneratorScreen;
 import com.script.comminutioncraft.client.gui.ElectricMachineScreen;
 import com.script.comminutioncraft.client.gui.EnergyBatteryScreen;
-import com.script.comminutioncraft.client.gui.PlasmaGeneratorScreen;
+import com.script.comminutioncraft.client.gui.AtmosphericWaterGeneratorScreen;
+import com.script.comminutioncraft.client.gui.FluidMachineScreen;
 import com.script.comminutioncraft.client.gui.PlasmaMachineScreen;
 import com.script.comminutioncraft.client.gui.OreWasherScreen;
 import com.script.comminutioncraft.common.machine.OreWasherMenu;
@@ -17,7 +18,9 @@ import com.script.comminutioncraft.common.machine.PlasmaMachineMenu;
 import com.script.comminutioncraft.client.render.FluidTankRenderer;
 import com.script.comminutioncraft.common.registry.ModBlockEntities;
 import com.script.comminutioncraft.common.registry.ModFluids;
+import java.util.function.Supplier;
 import net.minecraft.client.renderer.block.FluidModel;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterFluidModelsEvent;
@@ -50,7 +53,10 @@ public class ComminutionCraftClient {
         event.register(ModMenus.ELECTRIC_SMELTER.get(), ElectricMachineScreen::smelter);
         event.register(ModMenus.ELECTRIC_GENERATOR.get(), ElectricGeneratorScreen::new);
         event.register(ModMenus.ENERGY_BATTERY.get(), EnergyBatteryScreen::electric);
-        event.register(ModMenus.PLASMA_GENERATOR.get(), PlasmaGeneratorScreen::new);
+        event.register(ModMenus.PLASMA_GENERATOR.get(), FluidMachineScreen::plasmaGenerator);
+        event.register(ModMenus.ATMOSPHERIC_WATER_GENERATOR.get(), AtmosphericWaterGeneratorScreen::new);
+        event.register(ModMenus.ELECTROLYSER.get(), FluidMachineScreen::electrolyser);
+        event.register(ModMenus.MHD_GENERATOR.get(), FluidMachineScreen::mhdGenerator);
         event.register(ModMenus.PLASMA_GRANULATOR.get(), PlasmaMachineScreen::granulator);
         event.register(ModMenus.PLASMA_SMELTER.get(), PlasmaMachineScreen::smelter);
         event.register(ModMenus.PLASMA_ENERGY_BATTERY.get(), EnergyBatteryScreen::plasma);
@@ -63,10 +69,17 @@ public class ComminutionCraftClient {
         event.registerBlockEntityRenderer(ModBlockEntities.FLUID_TANK.get(), context -> new FluidTankRenderer(context.sprites()));
     }
 
-    /** Plasma's textures (it has no world block, but tanks, GUIs and JEI draw it from this model). */
+    /** Our fluids' textures (they have no world blocks, but tanks, GUIs and JEI draw them from these models). */
     private static void registerFluidModels(RegisterFluidModelsEvent event) {
-        event.register(new FluidModel.Unbaked(new Material(ComminutionCraft.id("block/plasma_still")),
-                        new Material(ComminutionCraft.id("block/plasma_flow")), null, (FluidTintSource) null),
-                ModFluids.PLASMA, ModFluids.FLOWING_PLASMA);
+        fluidModel(event, "plasma", ModFluids.PLASMA, ModFluids.FLOWING_PLASMA);
+        fluidModel(event, "hydrogen", ModFluids.HYDROGEN, ModFluids.FLOWING_HYDROGEN);
+        fluidModel(event, "oxygen", ModFluids.OXYGEN, ModFluids.FLOWING_OXYGEN);
+    }
+
+    private static void fluidModel(RegisterFluidModelsEvent event, String name,
+                                   Supplier<? extends Fluid> still, Supplier<? extends Fluid> flowing) {
+        event.register(new FluidModel.Unbaked(new Material(ComminutionCraft.id("block/" + name + "_still")),
+                        new Material(ComminutionCraft.id("block/" + name + "_flow")), null, (FluidTintSource) null),
+                still, flowing);
     }
 }

@@ -12,7 +12,8 @@ import com.script.comminutioncraft.common.cable.ConduitBlock;
 import com.script.comminutioncraft.common.cable.EnergyCableBlock;
 import com.script.comminutioncraft.common.cable.PipeFluidHandler;
 import com.script.comminutioncraft.common.machine.FluidTankBlockEntity;
-import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlockEntity;
+import com.script.comminutioncraft.common.machine.AtmosphericWaterGeneratorBlockEntity;
+import com.script.comminutioncraft.common.machine.FluidMachineBlockEntity;
 import com.script.comminutioncraft.common.machine.EnergyBatteryBlockEntity;
 import com.script.comminutioncraft.common.network.SwitchWrenchModePayload;
 import com.script.comminutioncraft.gametest.ModGameTests;
@@ -79,10 +80,16 @@ public class ComminutionCraft {
         event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.ELECTRIC_GENERATOR.get(), (generator, side) -> generator.getEnergyHandler());
         event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.ENERGY_BATTERY.get(), EnergyBatteryBlockEntity::getEnergyHandler);
 
-        // Tier 3: plasma generator (FE in, filters in, plasma out of output faces), tank, pipes
-        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.PLASMA_GENERATOR.get(), WorldlyContainerWrapper::new);
-        event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.PLASMA_GENERATOR.get(), (generator, side) -> generator.getEnergyHandler());
-        event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.PLASMA_GENERATOR.get(), PlasmaGeneratorBlockEntity::getFluidHandler);
+        // Tier 3 power chain: water generator (filters in, water out), electrolyser / plasma generator (FE in, fluids
+        // in and out by face), MHD generator (plasma in, FE out); then tank and pipes
+        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.ATMOSPHERIC_WATER_GENERATOR.get(), WorldlyContainerWrapper::new);
+        event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.ATMOSPHERIC_WATER_GENERATOR.get(),
+                AtmosphericWaterGeneratorBlockEntity::getFluidHandler);
+        for (var type : java.util.List.of(ModBlockEntities.ELECTROLYSER.get(), ModBlockEntities.PLASMA_GENERATOR.get(),
+                ModBlockEntities.MHD_GENERATOR.get())) {
+            event.registerBlockEntity(Capabilities.Energy.BLOCK, type, (machine, side) -> machine.getEnergyHandler());
+            event.registerBlockEntity(Capabilities.Fluid.BLOCK, type, FluidMachineBlockEntity::getFluidHandler);
+        }
         event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.FLUID_TANK.get(), FluidTankBlockEntity::getFluidHandler);
         event.registerBlock(Capabilities.Fluid.BLOCK, (level, pos, state, blockEntity, side) ->
                 side != null && state.getValue(ConduitBlock.CONNECTIONS.get(side)) == CableConnection.DISABLED
