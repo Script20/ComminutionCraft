@@ -120,6 +120,7 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("ore_washer_triples_with_water", () -> ModGameTests::oreWasherTriplesWithWater);
         TEST_FUNCTIONS.register("electric_granulator_takes_washed_ore", () -> ModGameTests::electricGranulatorTakesWashedOre);
         TEST_FUNCTIONS.register("coal_granulator_refuses_washed_ore", () -> ModGameTests::coalGranulatorRefusesWashedOre);
+        TEST_FUNCTIONS.register("machines_push_into_the_next", () -> ModGameTests::machinesPushIntoTheNext);
     }
 
     public static void registerTests(RegisterGameTestsEvent event) {
@@ -777,6 +778,36 @@ public final class ModGameTests {
         helper.runAfterDelay(200, () -> {
             helper.assertTrue(granulator.getItem(FuelMachineBlockEntity.SLOT_OUTPUT).isEmpty(), "The Coal Granulator granulated Washed Iron");
             helper.succeed();
+        });
+    }
+
+    /**
+     * Ore Washer -> Electric Granulator -> Electric Smelter side by side, each with its east face set to Output and no
+     * hoppers: raw iron ends up as iron ingots in the smelter (3 of them, one per Washed Iron).
+     */
+    private static void machinesPushIntoTheNext(GameTestHelper helper) {
+        BlockPos washerPos = new BlockPos(1, 1, 2);
+        BlockPos granulatorPos = new BlockPos(2, 1, 2);
+        BlockPos smelterPos = new BlockPos(3, 1, 2);
+        helper.setBlock(washerPos, ModBlocks.ORE_WASHER.get().defaultBlockState().setValue(MachineBlock.FACING, Direction.NORTH));
+        helper.setBlock(granulatorPos, ModBlocks.ELECTRIC_GRANULATOR.get().defaultBlockState().setValue(MachineBlock.FACING, Direction.NORTH));
+        helper.setBlock(smelterPos, ModBlocks.ELECTRIC_SMELTER.get().defaultBlockState().setValue(MachineBlock.FACING, Direction.NORTH));
+        OreWasherBlockEntity washer = helper.getBlockEntity(washerPos, OreWasherBlockEntity.class);
+        ElectricMachineBlockEntity granulator = helper.getBlockEntity(granulatorPos, ElectricMachineBlockEntity.class);
+        ElectricMachineBlockEntity smelter = helper.getBlockEntity(smelterPos, ElectricMachineBlockEntity.class);
+        // Facing north, the left side is east: the face towards the next machine.
+        washer.getControls().setSide(RelativeSide.LEFT, SideMode.OUTPUT);
+        granulator.getControls().setSide(RelativeSide.LEFT, SideMode.OUTPUT);
+        ((MachineEnergyStorage) washer.getEnergyHandler()).set(ElectricMachineBlockEntity.TIER3_ENERGY_CAPACITY);
+        ((MachineEnergyStorage) granulator.getEnergyHandler()).set(ElectricMachineBlockEntity.ENERGY_CAPACITY);
+        ((MachineEnergyStorage) smelter.getEnergyHandler()).set(ElectricMachineBlockEntity.ENERGY_CAPACITY);
+        washer.getWater().fill(FluidResource.of(Fluids.WATER), 1_000);
+        washer.setItem(ElectricMachineBlockEntity.SLOT_INPUT, new ItemStack(Items.RAW_IRON));
+
+        helper.succeedWhen(() -> {
+            ItemStack ingots = smelter.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT);
+            helper.assertTrue(ingots.is(Items.IRON_INGOT) && ingots.getCount() == 3,
+                    "Expected 3 iron ingots at the end of the line, got " + ingots);
         });
     }
 

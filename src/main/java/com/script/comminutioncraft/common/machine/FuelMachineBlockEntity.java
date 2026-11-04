@@ -207,6 +207,10 @@ public abstract class FuelMachineBlockEntity extends BaseContainerBlockEntity
             level.setBlock(pos, state.setValue(MachineBlock.LIT, isLit()), Block.UPDATE_ALL);
         }
 
+        if (!items.get(SLOT_OUTPUT).isEmpty()) {
+            pushItemsOut(level, pos);
+        }
+
         if (changed) {
             setChanged();
         }

@@ -34,7 +34,8 @@ import org.jspecify.annotations.Nullable;
 /**
  * Shared logic for every FE processing machine (tier 2, and tier 3 via {@link PlasmaMachineBlockEntity}): one input
  * slot, one output slot and an FE buffer. Each tick of work costs {@link #getEnergyPerTick()} FE; without power (or
- * whatever else {@link #hasOperationResources()} asks for) the machine pauses (progress is kept).
+ * whatever else {@link #hasOperationResources()} asks for) the machine pauses (progress is kept). Finished items are
+ * pushed out of Output faces into the block there (e.g. the next machine's Input face).
  */
 public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntity
         implements WorldlyContainer, TickingMachine, MachineExperience.Holder, ControllableMachine {
@@ -211,6 +212,10 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
         boolean lit = litCooldown > 0;
         if (state.getValue(MachineBlock.LIT) != lit) {
             level.setBlock(pos, state.setValue(MachineBlock.LIT, lit), Block.UPDATE_ALL);
+        }
+
+        if (!items.get(SLOT_OUTPUT).isEmpty()) {
+            pushItemsOut(level, pos);
         }
 
         if (changed) {
