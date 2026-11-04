@@ -24,7 +24,12 @@ public class FluidMachineScreen extends MachineScreen<FluidMachineMenu> {
 
     public FluidMachineScreen(FluidMachineMenu menu, Inventory inventory, Component title, Identifier texture,
                               List<Gauge> gauges, String rateKey) {
-        super(menu, inventory, title, texture, Tier.PLASMA);
+        this(menu, inventory, title, texture, gauges, rateKey, Tier.PLASMA);
+    }
+
+    public FluidMachineScreen(FluidMachineMenu menu, Inventory inventory, Component title, Identifier texture,
+                              List<Gauge> gauges, String rateKey, Tier tier) {
+        super(menu, inventory, title, texture, tier);
         this.gauges = gauges;
         this.rateKey = rateKey;
     }
@@ -51,6 +56,22 @@ public class FluidMachineScreen extends MachineScreen<FluidMachineMenu> {
         return new FluidMachineScreen(menu, inventory, title, ComminutionCraft.id("textures/gui/container/mhd_generator.png"),
                 List.of(new Gauge(0, 50, PLASMA_U, "gui.comminutioncraft.plasma")),
                 "gui.comminutioncraft.generating");
+    }
+
+    /** Water (in) -> deuterium (out). */
+    public static FluidMachineScreen isotopeSeparator(FluidMachineMenu menu, Inventory inventory, Component title) {
+        return new FluidMachineScreen(menu, inventory, title, ComminutionCraft.id("textures/gui/container/isotope_separator.png"),
+                List.of(new Gauge(0, 50, WATER_U, "gui.comminutioncraft.water"),
+                        new Gauge(1, PLASMA_X, DEUTERIUM_U, "gui.comminutioncraft.deuterium")),
+                "gui.comminutioncraft.fluid_rate", Tier.FUSION);
+    }
+
+    /** Deuterium (in) -> tritium (out). */
+    public static FluidMachineScreen tritiumBreeder(FluidMachineMenu menu, Inventory inventory, Component title) {
+        return new FluidMachineScreen(menu, inventory, title, ComminutionCraft.id("textures/gui/container/tritium_breeder.png"),
+                List.of(new Gauge(0, 50, DEUTERIUM_U, "gui.comminutioncraft.deuterium"),
+                        new Gauge(1, PLASMA_X, TRITIUM_U, "gui.comminutioncraft.tritium")),
+                "gui.comminutioncraft.fluid_rate", Tier.FUSION);
     }
 
     @Override

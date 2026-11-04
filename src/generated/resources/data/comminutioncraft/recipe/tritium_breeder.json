@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "F": "comminutioncraft:fusion_circuit",
+    "P": "comminutioncraft:plasma_circuit",
+    "R": "comminutioncraft:reactor_plating",
+    "X": "comminutioncraft:plasma_generator"
+  },
+  "pattern": [
+    "RFR",
+    "PXP",
+    "RFR"
+  ],
+  "result": {
+    "id": "comminutioncraft:tritium_breeder"
+  }
+}

@@ -17,6 +17,9 @@ import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlock;
 import com.script.comminutioncraft.common.machine.AtmosphericWaterGeneratorBlock;
 import com.script.comminutioncraft.common.machine.ElectrolyserBlock;
 import com.script.comminutioncraft.common.machine.MhdGeneratorBlock;
+import com.script.comminutioncraft.common.machine.IsotopeSeparatorBlock;
+import com.script.comminutioncraft.common.machine.PelletPressBlock;
+import com.script.comminutioncraft.common.machine.TritiumBreederBlock;
 import com.script.comminutioncraft.common.machine.PlasmaGranulatorBlock;
 import com.script.comminutioncraft.common.machine.CircuitAssemblerBlock;
 import com.script.comminutioncraft.common.machine.OreWasherBlock;
@@ -112,6 +115,16 @@ public final class ModBlocks {
                     .isViewBlocking((state, level, pos) -> false)
                     .isSuffocating((state, level, pos) -> false)
                     .isRedstoneConductor((state, level, pos) -> false));
+
+    // Tier 4 (fusion), phase 4A: the fuel chain
+    public static final DeferredBlock<IsotopeSeparatorBlock> ISOTOPE_SEPARATOR = BLOCKS.registerBlock(
+            "isotope_separator", IsotopeSeparatorBlock::new, ModBlocks::tier2MachineProperties);
+
+    public static final DeferredBlock<TritiumBreederBlock> TRITIUM_BREEDER = BLOCKS.registerBlock(
+            "tritium_breeder", TritiumBreederBlock::new, ModBlocks::tier2MachineProperties);
+
+    public static final DeferredBlock<PelletPressBlock> PELLET_PRESS = BLOCKS.registerBlock(
+            "pellet_press", PelletPressBlock::new, ModBlocks::tier2MachineProperties);
 
     // Decorative stone (marble generates like granite; volcanic basalt crusts underground lava pools)
     public static final StoneSet MARBLE = new StoneSet(BLOCKS, "marble", MapColor.QUARTZ, 1.5F, 6.0F, SoundType.STONE);

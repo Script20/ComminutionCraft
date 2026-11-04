@@ -11,8 +11,9 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 /**
- * Tier 3's fluids: Plasma (machines run on it, the MHD Generator burns it for FE), Hydrogen (what plasma is made
- * from) and Oxygen (the Electrolyser's by-product, kept for later tiers). They only live in tanks, pipes and
+ * Tier 3's fluids: Plasma (the Circuit Assembler uses it, the MHD Generator burns it for FE), Hydrogen (what plasma is
+ * made from) and Oxygen (the Electrolyser's by-product, kept for later tiers); tier 4's Deuterium (spun out of water)
+ * and Tritium (bred from deuterium), the fusion fuel. They only live in tanks, pipes and
  * machines (no bucket, no world block), so their properties don't set a bucket or block. Textures come from the
  * fluid models registered in ComminutionCraftClient.
  */
@@ -30,6 +31,14 @@ public final class ModFluids {
                     .viscosity(200)));
     public static final DeferredHolder<FluidType, FluidType> HYDROGEN_TYPE = FLUID_TYPES.register("hydrogen", () -> gas("hydrogen"));
     public static final DeferredHolder<FluidType, FluidType> OXYGEN_TYPE = FLUID_TYPES.register("oxygen", () -> gas("oxygen"));
+    public static final DeferredHolder<FluidType, FluidType> DEUTERIUM_TYPE = FLUID_TYPES.register("deuterium", () -> gas("deuterium"));
+    public static final DeferredHolder<FluidType, FluidType> TRITIUM_TYPE = FLUID_TYPES.register("tritium",
+            () -> new FluidType(FluidType.Properties.create()
+                    .descriptionId("fluid_type.comminutioncraft.tritium")
+                    .lightLevel(4) // tritium glows faintly green
+                    .temperature(300)
+                    .density(-500)
+                    .viscosity(100)));
 
     public static final DeferredHolder<Fluid, BaseFlowingFluid.Source> PLASMA =
             FLUIDS.register("plasma", () -> new BaseFlowingFluid.Source(plasmaProperties()));
@@ -45,6 +54,15 @@ public final class ModFluids {
             FLUIDS.register("flowing_oxygen", () -> new BaseFlowingFluid.Flowing(oxygenProperties()));
 
     /** A light, cold-ish gas (lighter than air, so negative density, like Mekanism's gases). */
+    public static final DeferredHolder<Fluid, BaseFlowingFluid.Source> DEUTERIUM =
+            FLUIDS.register("deuterium", () -> new BaseFlowingFluid.Source(deuteriumProperties()));
+    public static final DeferredHolder<Fluid, BaseFlowingFluid.Flowing> FLOWING_DEUTERIUM =
+            FLUIDS.register("flowing_deuterium", () -> new BaseFlowingFluid.Flowing(deuteriumProperties()));
+    public static final DeferredHolder<Fluid, BaseFlowingFluid.Source> TRITIUM =
+            FLUIDS.register("tritium", () -> new BaseFlowingFluid.Source(tritiumProperties()));
+    public static final DeferredHolder<Fluid, BaseFlowingFluid.Flowing> FLOWING_TRITIUM =
+            FLUIDS.register("flowing_tritium", () -> new BaseFlowingFluid.Flowing(tritiumProperties()));
+
     private static FluidType gas(String name) {
         return new FluidType(FluidType.Properties.create()
                 .descriptionId("fluid_type.comminutioncraft." + name)
@@ -63,6 +81,14 @@ public final class ModFluids {
 
     private static BaseFlowingFluid.Properties oxygenProperties() {
         return properties(OXYGEN_TYPE, OXYGEN, FLOWING_OXYGEN);
+    }
+
+    private static BaseFlowingFluid.Properties deuteriumProperties() {
+        return properties(DEUTERIUM_TYPE, DEUTERIUM, FLOWING_DEUTERIUM);
+    }
+
+    private static BaseFlowingFluid.Properties tritiumProperties() {
+        return properties(TRITIUM_TYPE, TRITIUM, FLOWING_TRITIUM);
     }
 
     private static BaseFlowingFluid.Properties properties(Supplier<FluidType> type, Supplier<? extends Fluid> still,

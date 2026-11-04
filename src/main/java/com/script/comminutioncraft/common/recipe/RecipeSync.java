@@ -9,7 +9,8 @@ import net.neoforged.neoforge.event.OnDatapackSyncEvent;
  */
 public final class RecipeSync {
     public static void sendToClients(OnDatapackSyncEvent event) {
-        event.sendRecipes(ModRecipes.GRANULATING_TYPE.get(), ModRecipes.ASSEMBLING_TYPE.get(), ModRecipes.WASHING_TYPE.get());
+        event.sendRecipes(ModRecipes.GRANULATING_TYPE.get(), ModRecipes.ASSEMBLING_TYPE.get(), ModRecipes.WASHING_TYPE.get(),
+                ModRecipes.PRESSING_TYPE.get());
     }
 
     private RecipeSync() {}

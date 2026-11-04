@@ -9,6 +9,9 @@ import com.script.comminutioncraft.common.machine.AtmosphericWaterGeneratorMenu;
 import com.script.comminutioncraft.common.machine.ElectrolyserBlockEntity;
 import com.script.comminutioncraft.common.machine.FluidMachineMenu;
 import com.script.comminutioncraft.common.machine.MhdGeneratorBlockEntity;
+import com.script.comminutioncraft.common.machine.IsotopeSeparatorBlockEntity;
+import com.script.comminutioncraft.common.machine.PelletPressMenu;
+import com.script.comminutioncraft.common.machine.TritiumBreederBlockEntity;
 import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlockEntity;
 import com.script.comminutioncraft.common.machine.PlasmaMachineMenu;
 import com.script.comminutioncraft.common.machine.OreWasherMenu;
@@ -68,6 +71,17 @@ public final class ModMenus {
 
     public static final DeferredHolder<MenuType<?>, MenuType<OreWasherMenu>> ORE_WASHER =
             MENUS.register("ore_washer", () -> new MenuType<>(OreWasherMenu::client, FeatureFlags.VANILLA_SET));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<FluidMachineMenu>> ISOTOPE_SEPARATOR = MENUS.register("isotope_separator",
+            () -> new MenuType<>((id, inventory) -> FluidMachineMenu.client(ModMenus.ISOTOPE_SEPARATOR.get(), id, inventory,
+                    IsotopeSeparatorBlockEntity.TANK_COUNT), FeatureFlags.VANILLA_SET));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<FluidMachineMenu>> TRITIUM_BREEDER = MENUS.register("tritium_breeder",
+            () -> new MenuType<>((id, inventory) -> FluidMachineMenu.client(ModMenus.TRITIUM_BREEDER.get(), id, inventory,
+                    TritiumBreederBlockEntity.TANK_COUNT), FeatureFlags.VANILLA_SET));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<PelletPressMenu>> PELLET_PRESS =
+            MENUS.register("pellet_press", () -> new MenuType<>(PelletPressMenu::client, FeatureFlags.VANILLA_SET));
 
     private ModMenus() {}
 }

@@ -12,6 +12,9 @@ import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlockEntity;
 import com.script.comminutioncraft.common.machine.AtmosphericWaterGeneratorBlockEntity;
 import com.script.comminutioncraft.common.machine.ElectrolyserBlockEntity;
 import com.script.comminutioncraft.common.machine.MhdGeneratorBlockEntity;
+import com.script.comminutioncraft.common.machine.IsotopeSeparatorBlockEntity;
+import com.script.comminutioncraft.common.machine.PelletPressBlockEntity;
+import com.script.comminutioncraft.common.machine.TritiumBreederBlockEntity;
 import com.script.comminutioncraft.common.machine.PlasmaGranulatorBlockEntity;
 import com.script.comminutioncraft.common.machine.CircuitAssemblerBlockEntity;
 import com.script.comminutioncraft.common.machine.OreWasherBlockEntity;
@@ -88,6 +91,18 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MhdGeneratorBlockEntity>> MHD_GENERATOR =
             BLOCK_ENTITY_TYPES.register("mhd_generator",
                     () -> new BlockEntityType<>(MhdGeneratorBlockEntity::new, ModBlocks.MHD_GENERATOR.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<IsotopeSeparatorBlockEntity>> ISOTOPE_SEPARATOR =
+            BLOCK_ENTITY_TYPES.register("isotope_separator",
+                    () -> new BlockEntityType<>(IsotopeSeparatorBlockEntity::new, ModBlocks.ISOTOPE_SEPARATOR.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TritiumBreederBlockEntity>> TRITIUM_BREEDER =
+            BLOCK_ENTITY_TYPES.register("tritium_breeder",
+                    () -> new BlockEntityType<>(TritiumBreederBlockEntity::new, ModBlocks.TRITIUM_BREEDER.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PelletPressBlockEntity>> PELLET_PRESS =
+            BLOCK_ENTITY_TYPES.register("pellet_press",
+                    () -> new BlockEntityType<>(PelletPressBlockEntity::new, ModBlocks.PELLET_PRESS.get()));
 
     private ModBlockEntities() {}
 }

@@ -3,6 +3,7 @@ package com.script.comminutioncraft.common.registry;
 import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.recipe.AssemblingRecipe;
 import com.script.comminutioncraft.common.recipe.GranulatingRecipe;
+import com.script.comminutioncraft.common.recipe.PressingRecipe;
 import com.script.comminutioncraft.common.recipe.WashingRecipe;
 import com.script.comminutioncraft.common.recipe.TagBlastingRecipe;
 import com.script.comminutioncraft.common.recipe.TagSmeltingRecipe;
@@ -41,6 +42,14 @@ public final class ModRecipes {
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<WashingRecipe>> WASHING_SERIALIZER =
             RECIPE_SERIALIZERS.register("washing",
                     () -> new RecipeSerializer<>(WashingRecipe.CODEC, WashingRecipe.STREAM_CODEC));
+
+    /** "comminutioncraft:pressing" — Pellet Press (tier 4). */
+    public static final DeferredHolder<RecipeType<?>, RecipeType<PressingRecipe>> PRESSING_TYPE =
+            RECIPE_TYPES.register("pressing", RecipeType::simple);
+
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<PressingRecipe>> PRESSING_SERIALIZER =
+            RECIPE_SERIALIZERS.register("pressing",
+                    () -> new RecipeSerializer<>(PressingRecipe.CODEC, PressingRecipe.STREAM_CODEC));
 
     /** Smelting / blasting whose result is an item tag, for other mods' metals (see TagResult). */
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<TagSmeltingRecipe>> TAG_SMELTING_SERIALIZER =

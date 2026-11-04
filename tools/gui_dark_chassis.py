@@ -479,6 +479,43 @@ def water_generator_sheet():
     return s.img
 
 
+FUSION = dict(off=(32, 84, 44), on=(96, 255, 128), hi=(214, 255, 214))
+DEUTERIUM = [(70, 120, 150), (120, 186, 214), (180, 228, 244), (232, 250, 255)]
+TRITIUM = [(30, 90, 50), (70, 190, 100), (140, 245, 160), (220, 255, 226)]
+
+
+def fusion_sprites(s):
+    """Tier-4 fluid fill sprites: deuterium 226, tritium 236 (at v 31), next to the others."""
+    all_fluid_sprites(s)
+    fluid_sprite(s, 226, DEUTERIUM)
+    fluid_sprite(s, 236, TRITIUM)
+
+
+def fusion_fluid_sheet(gauges, arrow_colour):
+    """Isotope Separator / Tritium Breeder: the fluid-machine layout with the tier-4 sprites."""
+    s = Sheet()
+    s.img = fluid_machine_sheet(gauges, arrow_colour)
+    fusion_sprites(s)
+    return s.img
+
+
+def pellet_press_sheet():
+    """Pellet Press: casing in, pellet out (green rims), deuterium and tritium tubes on the right."""
+    s = Sheet()
+    body(s)
+    energy_well(s)
+    slot(s, 55, 34)
+    slot(s, 111, 30, 26, rim=FUSION['off'])
+    arrow_silhouette(s, 79, 34)
+    gauge_well(s, 141)
+    gauge_well(s, 155)
+    player_inventory(s)
+    arrow_sprite(s, fade_arrow(DEUTERIUM[2], TRITIUM[2]))
+    energy_sprite(s)
+    fusion_sprites(s)
+    return s.img
+
+
 os.makedirs(OUT, exist_ok=True)
 coal_sheet(granulator_arrow).save(os.path.join(OUT, 'coal_granulator.png'))
 coal_sheet(smelter_arrow).save(os.path.join(OUT, 'coal_smelter.png'))
@@ -491,6 +528,10 @@ fluid_machine_sheet((50, 155), fade_arrow(HYDROGEN[2], PLASMA['on'])).save(os.pa
 water_generator_sheet().save(os.path.join(OUT, 'atmospheric_water_generator.png'))
 fluid_machine_sheet((50, 131, 155), fade_arrow(WATER[2], HYDROGEN[2])).save(os.path.join(OUT, 'electrolyser.png'))
 fluid_machine_sheet((50,), fade_arrow(PLASMA['on'], ELEC['on'])).save(os.path.join(OUT, 'mhd_generator.png'))
+# tier 4 (fusion), phase 4A
+fusion_fluid_sheet((50, 155), fade_arrow(WATER[2], DEUTERIUM[2])).save(os.path.join(OUT, 'isotope_separator.png'))
+fusion_fluid_sheet((50, 155), fade_arrow(DEUTERIUM[2], TRITIUM[2])).save(os.path.join(OUT, 'tritium_breeder.png'))
+pellet_press_sheet().save(os.path.join(OUT, 'pellet_press.png'))
 tier3_sheet(plasma_granulator_arrow).save(os.path.join(OUT, 'plasma_granulator.png'))
 tier3_sheet(smelter_arrow).save(os.path.join(OUT, 'plasma_smelter.png'))
 plasma_machine_sheet(plasma_granulator_arrow).save(os.path.join(OUT, 'circuit_assembler.png'))

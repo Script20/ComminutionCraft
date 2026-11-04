@@ -10,6 +10,8 @@ import com.script.comminutioncraft.client.gui.MachineScreen;
 import com.script.comminutioncraft.common.data.ProcessedMetal;
 import com.script.comminutioncraft.common.recipe.AssemblingRecipe;
 import com.script.comminutioncraft.common.recipe.GranulatingRecipe;
+import com.script.comminutioncraft.common.recipe.PressingRecipe;
+import com.script.comminutioncraft.common.machine.PelletPressBlockEntity;
 import com.script.comminutioncraft.common.recipe.WashingRecipe;
 import com.script.comminutioncraft.client.gui.PlasmaMachineScreen;
 import com.script.comminutioncraft.common.machine.CircuitAssemblerBlockEntity;
@@ -54,6 +56,8 @@ public class ComminutionJeiPlugin implements IModPlugin {
             IRecipeHolderType.createDeferred(ModRecipes.ASSEMBLING_TYPE::get);
     public static final Supplier<IRecipeHolderType<WashingRecipe>> WASHING =
             IRecipeHolderType.createDeferred(ModRecipes.WASHING_TYPE::get);
+    public static final Supplier<IRecipeHolderType<PressingRecipe>> PRESSING =
+            IRecipeHolderType.createDeferred(ModRecipes.PRESSING_TYPE::get);
 
     // Positions match the GUI textures (see MachineScreen)
     private static final int ARROW_X = 79;
@@ -85,7 +89,12 @@ public class ComminutionJeiPlugin implements IModPlugin {
                 new ProcessingCategory<>(gui, WASHING.get(), Component.translatable("jei.comminutioncraft.washing"),
                         ModItems.ORE_WASHER.get(), List.of(
                         new ProcessingCategory.Station("jei.comminutioncraft.time.ore_washer", OreWasherBlockEntity.PROCESS_TIME)),
-                        List.of(Component.translatable("jei.comminutioncraft.uses_water", OreWasherBlockEntity.WATER_PER_OPERATION))));
+                        List.of(Component.translatable("jei.comminutioncraft.uses_water", OreWasherBlockEntity.WATER_PER_OPERATION))),
+                new ProcessingCategory<>(gui, PRESSING.get(), Component.translatable("jei.comminutioncraft.pressing"),
+                        ModItems.PELLET_PRESS.get(), List.of(
+                        new ProcessingCategory.Station("jei.comminutioncraft.time.pellet_press", PelletPressBlockEntity.PROCESS_TIME)),
+                        List.of(Component.translatable("jei.comminutioncraft.uses_fusion_fuel",
+                                PelletPressBlockEntity.DEUTERIUM_PER_PELLET, PelletPressBlockEntity.TRITIUM_PER_PELLET))));
     }
 
     @Override
@@ -93,6 +102,7 @@ public class ComminutionJeiPlugin implements IModPlugin {
         registration.addRecipes(GRANULATING.get(), ClientRecipes.granulating());
         registration.addRecipes(ASSEMBLING.get(), ClientRecipes.assembling());
         registration.addRecipes(WASHING.get(), ClientRecipes.washing());
+        registration.addRecipes(PRESSING.get(), ClientRecipes.pressing());
     }
 
     @Override
@@ -103,6 +113,7 @@ public class ComminutionJeiPlugin implements IModPlugin {
                 ModItems.COAL_SMELTER.get(), ModItems.ELECTRIC_SMELTER.get(), ModItems.PLASMA_SMELTER.get());
         registration.addCraftingStation(ASSEMBLING.get(), ModItems.CIRCUIT_ASSEMBLER.get());
         registration.addCraftingStation(WASHING.get(), ModItems.ORE_WASHER.get());
+        registration.addCraftingStation(PRESSING.get(), ModItems.PELLET_PRESS.get());
         // Everything that burns furnace fuel
         registration.addCraftingStation(RecipeTypes.SMELTING_FUEL,
                 ModItems.COAL_GRANULATOR.get(), ModItems.COAL_SMELTER.get(), ModItems.ELECTRIC_GENERATOR.get());
@@ -146,6 +157,8 @@ public class ComminutionJeiPlugin implements IModPlugin {
                     type = GRANULATING.get();
                 } else if (menuType == ModMenus.ORE_WASHER.get()) {
                     type = WASHING.get();
+                } else if (menuType == ModMenus.PELLET_PRESS.get()) {
+                    type = PRESSING.get();
                 } else {
                     type = RecipeTypes.SMELTING;
                 }

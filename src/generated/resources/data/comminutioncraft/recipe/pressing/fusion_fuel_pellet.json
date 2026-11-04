@@ -1,0 +1,7 @@
+{
+  "type": "comminutioncraft:pressing",
+  "ingredient": "#c:nuggets/iron",
+  "result": {
+    "id": "comminutioncraft:fusion_fuel_pellet"
+  }
+}

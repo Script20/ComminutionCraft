@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "comminutioncraft:block/pellet_press_front",
+    "side": "comminutioncraft:block/pellet_press_side",
+    "top": "comminutioncraft:block/pellet_press_top"
+  }
+}

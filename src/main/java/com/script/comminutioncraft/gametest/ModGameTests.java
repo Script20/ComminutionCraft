@@ -15,6 +15,9 @@ import net.minecraft.world.level.biome.Biomes;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import com.script.comminutioncraft.common.machine.PlasmaMachineBlockEntity;
 import com.script.comminutioncraft.common.machine.OreWasherBlockEntity;
+import com.script.comminutioncraft.common.machine.IsotopeSeparatorBlockEntity;
+import com.script.comminutioncraft.common.machine.PelletPressBlockEntity;
+import com.script.comminutioncraft.common.machine.TritiumBreederBlockEntity;
 import com.script.comminutioncraft.common.energy.MachineEnergyStorage;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.transfer.energy.EnergyHandler;
@@ -121,6 +124,9 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("electric_granulator_takes_washed_ore", () -> ModGameTests::electricGranulatorTakesWashedOre);
         TEST_FUNCTIONS.register("coal_granulator_refuses_washed_ore", () -> ModGameTests::coalGranulatorRefusesWashedOre);
         TEST_FUNCTIONS.register("machines_push_into_the_next", () -> ModGameTests::machinesPushIntoTheNext);
+        TEST_FUNCTIONS.register("separator_and_breeder_make_fusion_fuel", () -> ModGameTests::separatorAndBreederMakeFusionFuel);
+        TEST_FUNCTIONS.register("pellet_press_makes_a_pellet", () -> ModGameTests::pelletPressMakesAPellet);
+        TEST_FUNCTIONS.register("assembler_forges_reactor_parts", () -> ModGameTests::assemblerForgesReactorParts);
     }
 
     public static void registerTests(RegisterGameTestsEvent event) {
@@ -811,7 +817,74 @@ public final class ModGameTests {
         });
     }
 
+    /**
+     * The Isotope Separator spins 20 mB of water into each mB of deuterium (1 mB/t); the Tritium Breeder turns
+     * deuterium into tritium 1:1.
+     */
+    private static void separatorAndBreederMakeFusionFuel(GameTestHelper helper) {
+        BlockPos separatorPos = new BlockPos(1, 1, 2);
+        BlockPos breederPos = new BlockPos(3, 1, 2);
+        helper.setBlock(separatorPos, ModBlocks.ISOTOPE_SEPARATOR.get());
+        helper.setBlock(breederPos, ModBlocks.TRITIUM_BREEDER.get());
+        IsotopeSeparatorBlockEntity separator = helper.getBlockEntity(separatorPos, IsotopeSeparatorBlockEntity.class);
+        TritiumBreederBlockEntity breeder = helper.getBlockEntity(breederPos, TritiumBreederBlockEntity.class);
+        separator.setEnergy(IsotopeSeparatorBlockEntity.ENERGY_CAPACITY);
+        breeder.setEnergy(TritiumBreederBlockEntity.ENERGY_CAPACITY);
+        separator.getTanks().get(IsotopeSeparatorBlockEntity.TANK_WATER).fill(FluidResource.of(Fluids.WATER), 1_000);
+        breeder.getTanks().get(TritiumBreederBlockEntity.TANK_DEUTERIUM).fill(FluidResource.of(ModFluids.DEUTERIUM.get()), 50);
+        helper.runAfterDelay(30, () -> {
+            int deuterium = separator.getTanks().get(IsotopeSeparatorBlockEntity.TANK_DEUTERIUM).getAmount();
+            int waterUsed = 1_000 - separator.getTanks().get(IsotopeSeparatorBlockEntity.TANK_WATER).getAmount();
+            helper.assertTrue(deuterium > 0 && waterUsed == deuterium * IsotopeSeparatorBlockEntity.WATER_PER_MB,
+                    "Expected 20 mB water per mB deuterium, used " + waterUsed + " for " + deuterium);
+            int tritium = breeder.getTanks().get(TritiumBreederBlockEntity.TANK_TRITIUM).getAmount();
+            int deuteriumLeft = breeder.getTanks().get(TritiumBreederBlockEntity.TANK_DEUTERIUM).getAmount();
+            helper.assertTrue(tritium > 0 && tritium + deuteriumLeft == 50,
+                    "Expected deuterium -> tritium 1:1, got " + tritium + " tritium with " + deuteriumLeft + " deuterium left");
+            helper.succeed();
+        });
+    }
+
+    /** 100 mB deuterium + 100 mB tritium + an iron nugget -> a Fusion Fuel Pellet. */
+    private static void pelletPressMakesAPellet(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, ModBlocks.PELLET_PRESS.get());
+        PelletPressBlockEntity press = helper.getBlockEntity(pos, PelletPressBlockEntity.class);
+        ((MachineEnergyStorage) press.getEnergyHandler()).set(ElectricMachineBlockEntity.TIER3_ENERGY_CAPACITY);
+        press.getDeuterium().fill(FluidResource.of(ModFluids.DEUTERIUM.get()), 150);
+        press.getTritium().fill(FluidResource.of(ModFluids.TRITIUM.get()), 150);
+        press.setItem(ElectricMachineBlockEntity.SLOT_INPUT, new ItemStack(Items.IRON_NUGGET, 2));
+        helper.succeedWhen(() -> {
+            ItemStack output = press.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT);
+            helper.assertTrue(output.is(ModItems.FUSION_FUEL_PELLET.get()) && output.getCount() == 1,
+                    "Expected one pellet (only enough fuel for one), got " + output);
+            helper.assertTrue(press.getDeuterium().getAmount() == 50 && press.getTritium().getAmount() == 50,
+                    "Expected 50 mB of each left, have " + press.getDeuterium().getAmount() + " / " + press.getTritium().getAmount());
+        });
+    }
+
+    /** The Circuit Assembler forges an iron block into Reactor Plating and a Plasma Circuit into a Fusion Circuit. */
+    private static void assemblerForgesReactorParts(GameTestHelper helper) {
+        BlockPos platingPos = new BlockPos(1, 1, 2);
+        BlockPos circuitPos = new BlockPos(3, 1, 2);
+        PlasmaMachineBlockEntity plating = placeAssembler(helper, platingPos, new ItemStack(Items.IRON_BLOCK));
+        PlasmaMachineBlockEntity circuit = placeAssembler(helper, circuitPos, new ItemStack(ModItems.PLASMA_CIRCUIT.get()));
+        helper.succeedWhen(() -> {
+            helper.assertTrue(plating.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT).is(ModItems.REACTOR_PLATING.get()), "No Reactor Plating yet");
+            helper.assertTrue(circuit.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT).is(ModItems.FUSION_CIRCUIT.get()), "No Fusion Circuit yet");
+        });
+    }
+
     // ---- Helpers ----
+
+    private static PlasmaMachineBlockEntity placeAssembler(GameTestHelper helper, BlockPos pos, ItemStack input) {
+        helper.setBlock(pos, ModBlocks.CIRCUIT_ASSEMBLER.get());
+        PlasmaMachineBlockEntity machine = helper.getBlockEntity(pos, PlasmaMachineBlockEntity.class);
+        ((MachineEnergyStorage) machine.getEnergyHandler()).set(ElectricMachineBlockEntity.TIER3_ENERGY_CAPACITY);
+        machine.getTank().fill(FluidResource.of(ModFluids.PLASMA.get()), 200);
+        machine.setItem(ElectricMachineBlockEntity.SLOT_INPUT, input);
+        return machine;
+    }
 
     private static int insertCommitted(EnergyHandler handler, int amount) {
         try (Transaction transaction = Transaction.openRoot()) {

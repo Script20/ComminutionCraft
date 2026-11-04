@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "E": "comminutioncraft:electrolyser",
+    "G": "#c:glass_blocks",
+    "P": "comminutioncraft:plasma_circuit",
+    "R": "comminutioncraft:reactor_plating"
+  },
+  "pattern": [
+    "RPR",
+    "GEG",
+    "RPR"
+  ],
+  "result": {
+    "id": "comminutioncraft:isotope_separator"
+  }
+}

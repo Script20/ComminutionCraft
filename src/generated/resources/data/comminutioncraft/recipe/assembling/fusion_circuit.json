@@ -1,0 +1,7 @@
+{
+  "type": "comminutioncraft:assembling",
+  "ingredient": "comminutioncraft:plasma_circuit",
+  "result": {
+    "id": "comminutioncraft:fusion_circuit"
+  }
+}

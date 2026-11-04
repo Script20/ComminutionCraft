@@ -40,7 +40,8 @@ public abstract class MachineScreen<M extends AbstractContainerMenu & Controllab
     public enum Tier {
         COAL(0xFF56381F, 0xFFFF9628, 0x60FF9628),
         ELECTRIC(0xFF1E4256, 0xFF40C4FF, 0x6040C4FF),
-        PLASMA(0xFF5C2254, 0xFFFF50D2, 0x60FF50D2);
+        PLASMA(0xFF5C2254, 0xFFFF50D2, 0x60FF50D2),
+        FUSION(0xFF20542C, 0xFF60FF80, 0x6060FF80);
 
         final int seamOff;
         final int seamOn;
@@ -71,6 +72,8 @@ public abstract class MachineScreen<M extends AbstractContainerMenu & Controllab
     protected static final int WATER_U = 196;
     protected static final int HYDROGEN_U = 206;
     protected static final int OXYGEN_U = 216;
+    protected static final int DEUTERIUM_U = 226;
+    protected static final int TRITIUM_U = 236;
 
     private static final int TAB_GAP = 2;
 

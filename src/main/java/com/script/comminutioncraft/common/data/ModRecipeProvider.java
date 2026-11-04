@@ -4,6 +4,7 @@ import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.block.StoneSet;
 import com.script.comminutioncraft.common.recipe.AssemblingRecipe;
 import com.script.comminutioncraft.common.recipe.GranulatingRecipe;
+import com.script.comminutioncraft.common.recipe.PressingRecipe;
 import com.script.comminutioncraft.common.recipe.WashingRecipe;
 import com.script.comminutioncraft.common.recipe.TagBlastingRecipe;
 import com.script.comminutioncraft.common.recipe.TagResult;
@@ -223,6 +224,53 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('X', ModItems.ELECTRIC_GENERATOR.get())
                 .unlockedBy("has_plasma_circuit", has(ModItems.PLASMA_CIRCUIT.get()))
                 .save(output, key("mhd_generator"));
+
+        // ---- Tier 4 ----
+
+        // The "plasma-forged parts": the Circuit Assembler forges plating and fusion circuits with plasma.
+        output.accept(key("assembling/reactor_plating"),
+                new AssemblingRecipe(tag(ProcessedMetal.commonItemTag("storage_blocks/iron")), new ItemStackTemplate(ModItems.REACTOR_PLATING.get())),
+                null);
+        output.accept(key("assembling/fusion_circuit"),
+                new AssemblingRecipe(Ingredient.of(ModItems.PLASMA_CIRCUIT.get()), new ItemStackTemplate(ModItems.FUSION_CIRCUIT.get())),
+                null);
+        // A fuel pellet is an iron-nugget casing filled with deuterium and tritium in the Pellet Press.
+        output.accept(key("pressing/fusion_fuel_pellet"),
+                new PressingRecipe(tag(ProcessedMetal.commonItemTag("nuggets/iron")), new ItemStackTemplate(ModItems.FUSION_FUEL_PELLET.get())),
+                null);
+
+        shaped(RecipeCategory.MISC, ModItems.ISOTOPE_SEPARATOR.get())
+                .pattern("RPR")
+                .pattern("GEG")
+                .pattern("RPR")
+                .define('R', ModItems.REACTOR_PLATING.get())
+                .define('P', ModItems.PLASMA_CIRCUIT.get())
+                .define('G', tag(ProcessedMetal.commonItemTag("glass_blocks")))
+                .define('E', ModItems.ELECTROLYSER.get())
+                .unlockedBy("has_reactor_plating", has(ModItems.REACTOR_PLATING.get()))
+                .save(output, key("isotope_separator"));
+
+        shaped(RecipeCategory.MISC, ModItems.TRITIUM_BREEDER.get())
+                .pattern("RFR")
+                .pattern("PXP")
+                .pattern("RFR")
+                .define('R', ModItems.REACTOR_PLATING.get())
+                .define('F', ModItems.FUSION_CIRCUIT.get())
+                .define('P', ModItems.PLASMA_CIRCUIT.get())
+                .define('X', ModItems.PLASMA_GENERATOR.get())
+                .unlockedBy("has_fusion_circuit", has(ModItems.FUSION_CIRCUIT.get()))
+                .save(output, key("tritium_breeder"));
+
+        shaped(RecipeCategory.MISC, ModItems.PELLET_PRESS.get())
+                .pattern("RFR")
+                .pattern("PXP")
+                .pattern("RFR")
+                .define('R', ModItems.REACTOR_PLATING.get())
+                .define('F', ModItems.FUSION_CIRCUIT.get())
+                .define('P', Items.PISTON)
+                .define('X', ModItems.CIRCUIT_ASSEMBLER.get())
+                .unlockedBy("has_fusion_circuit", has(ModItems.FUSION_CIRCUIT.get()))
+                .save(output, key("pellet_press"));
 
         // The Circuit Assembler makes Plasma Circuits, so it can't need one itself.
         output.accept(key("assembling/plasma_circuit"),

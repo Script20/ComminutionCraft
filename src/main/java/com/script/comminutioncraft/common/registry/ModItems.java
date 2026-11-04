@@ -44,6 +44,10 @@ public final class ModItems {
     public static final DeferredItem<Item> ELECTRONIC_CIRCUIT = ITEMS.registerSimpleItem("electronic_circuit");
     /** Tier-3 recipes use it; the Circuit Assembler makes it from an Electronic Circuit and plasma. */
     public static final DeferredItem<Item> PLASMA_CIRCUIT = ITEMS.registerSimpleItem("plasma_circuit");
+    // Tier 4: the "plasma-forged parts" (Circuit Assembler) and the reactor's fuel (Pellet Press)
+    public static final DeferredItem<Item> FUSION_CIRCUIT = ITEMS.registerSimpleItem("fusion_circuit");
+    public static final DeferredItem<Item> REACTOR_PLATING = ITEMS.registerSimpleItem("reactor_plating");
+    public static final DeferredItem<Item> FUSION_FUEL_PELLET = ITEMS.registerSimpleItem("fusion_fuel_pellet");
     /** Doubles an Atmospheric Water Generator's output; wears down by 1 per 100 mB of water it makes. */
     public static final DeferredItem<Item> AIR_FILTER = ITEMS.registerSimpleItem("air_filter",
             properties -> properties.durability(AtmosphericWaterGeneratorBlockEntity.FILTER_DURABILITY));
@@ -72,6 +76,9 @@ public final class ModItems {
             properties -> properties.useBlockDescriptionPrefix());
     public static final DeferredItem<BlockItem> CIRCUIT_ASSEMBLER = ITEMS.registerSimpleBlockItem("circuit_assembler", ModBlocks.CIRCUIT_ASSEMBLER);
     public static final DeferredItem<BlockItem> ORE_WASHER = ITEMS.registerSimpleBlockItem("ore_washer", ModBlocks.ORE_WASHER);
+    public static final DeferredItem<BlockItem> ISOTOPE_SEPARATOR = ITEMS.registerSimpleBlockItem("isotope_separator", ModBlocks.ISOTOPE_SEPARATOR);
+    public static final DeferredItem<BlockItem> TRITIUM_BREEDER = ITEMS.registerSimpleBlockItem("tritium_breeder", ModBlocks.TRITIUM_BREEDER);
+    public static final DeferredItem<BlockItem> PELLET_PRESS = ITEMS.registerSimpleBlockItem("pellet_press", ModBlocks.PELLET_PRESS);
     public static final DeferredItem<BlockItem> PLASMA_CABLE = ITEMS.registerSimpleBlockItem("plasma_cable", ModBlocks.PLASMA_CABLE);
     public static final DeferredItem<BlockItem> FLUID_PIPE = ITEMS.registerSimpleBlockItem("fluid_pipe", ModBlocks.FLUID_PIPE);
     public static final DeferredItem<BlockItem> FLUID_TANK = ITEMS.registerSimpleBlockItem("fluid_tank", ModBlocks.FLUID_TANK);

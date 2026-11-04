@@ -13,6 +13,8 @@ import com.script.comminutioncraft.client.gui.AtmosphericWaterGeneratorScreen;
 import com.script.comminutioncraft.client.gui.FluidMachineScreen;
 import com.script.comminutioncraft.client.gui.PlasmaMachineScreen;
 import com.script.comminutioncraft.client.gui.OreWasherScreen;
+import com.script.comminutioncraft.client.gui.PelletPressScreen;
+import com.script.comminutioncraft.common.machine.PelletPressMenu;
 import com.script.comminutioncraft.common.machine.OreWasherMenu;
 import com.script.comminutioncraft.common.machine.ElectricMachineMenu;
 import com.script.comminutioncraft.client.render.FluidTankRenderer;
@@ -57,6 +59,10 @@ public class ComminutionCraftClient {
         event.register(ModMenus.ATMOSPHERIC_WATER_GENERATOR.get(), AtmosphericWaterGeneratorScreen::new);
         event.register(ModMenus.ELECTROLYSER.get(), FluidMachineScreen::electrolyser);
         event.register(ModMenus.MHD_GENERATOR.get(), FluidMachineScreen::mhdGenerator);
+        event.register(ModMenus.ISOTOPE_SEPARATOR.get(), FluidMachineScreen::isotopeSeparator);
+        event.register(ModMenus.TRITIUM_BREEDER.get(), FluidMachineScreen::tritiumBreeder);
+        event.<ElectricMachineMenu, PelletPressScreen>register(ModMenus.PELLET_PRESS.get(),
+                (menu, inventory, title) -> new PelletPressScreen((PelletPressMenu) menu, inventory, title));
         event.register(ModMenus.PLASMA_GRANULATOR.get(), ElectricMachineScreen::plasmaGranulator);
         event.register(ModMenus.PLASMA_SMELTER.get(), ElectricMachineScreen::plasmaSmelter);
         event.register(ModMenus.PLASMA_ENERGY_BATTERY.get(), EnergyBatteryScreen::plasma);
@@ -74,6 +80,8 @@ public class ComminutionCraftClient {
         fluidModel(event, "plasma", ModFluids.PLASMA, ModFluids.FLOWING_PLASMA);
         fluidModel(event, "hydrogen", ModFluids.HYDROGEN, ModFluids.FLOWING_HYDROGEN);
         fluidModel(event, "oxygen", ModFluids.OXYGEN, ModFluids.FLOWING_OXYGEN);
+        fluidModel(event, "deuterium", ModFluids.DEUTERIUM, ModFluids.FLOWING_DEUTERIUM);
+        fluidModel(event, "tritium", ModFluids.TRITIUM, ModFluids.FLOWING_TRITIUM);
     }
 
     private static void fluidModel(RegisterFluidModelsEvent event, String name,

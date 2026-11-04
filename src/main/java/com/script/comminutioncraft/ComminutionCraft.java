@@ -8,6 +8,7 @@ import com.script.comminutioncraft.common.registry.ModBlocks;
 import com.script.comminutioncraft.common.cable.CableConnection;
 import com.script.comminutioncraft.common.cable.CableEnergyHandler;
 import com.script.comminutioncraft.common.machine.OreWasherBlockEntity;
+import com.script.comminutioncraft.common.machine.PelletPressBlockEntity;
 import com.script.comminutioncraft.common.machine.PlasmaMachineBlockEntity;
 import com.script.comminutioncraft.common.cable.ConduitBlock;
 import com.script.comminutioncraft.common.cable.EnergyCableBlock;
@@ -88,7 +89,7 @@ public class ComminutionCraft {
         event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.ATMOSPHERIC_WATER_GENERATOR.get(),
                 AtmosphericWaterGeneratorBlockEntity::getFluidHandler);
         for (var type : java.util.List.of(ModBlockEntities.ELECTROLYSER.get(), ModBlockEntities.PLASMA_GENERATOR.get(),
-                ModBlockEntities.MHD_GENERATOR.get())) {
+                ModBlockEntities.MHD_GENERATOR.get(), ModBlockEntities.ISOTOPE_SEPARATOR.get(), ModBlockEntities.TRITIUM_BREEDER.get())) {
             event.registerBlockEntity(Capabilities.Energy.BLOCK, type, (machine, side) -> machine.getEnergyHandler());
             event.registerBlockEntity(Capabilities.Fluid.BLOCK, type, FluidMachineBlockEntity::getFluidHandler);
         }
@@ -115,6 +116,10 @@ public class ComminutionCraft {
         event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.ORE_WASHER.get(), (machine, side) -> machine.getEnergyHandler());
         event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.CIRCUIT_ASSEMBLER.get(), PlasmaMachineBlockEntity::getFluidHandler);
         event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.ORE_WASHER.get(), OreWasherBlockEntity::getFluidHandler);
+        // Tier 4 Pellet Press: casings in / pellets out, FE, deuterium + tritium in through Input faces
+        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.PELLET_PRESS.get(), WorldlyContainerWrapper::new);
+        event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.PELLET_PRESS.get(), (machine, side) -> machine.getEnergyHandler());
+        event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.PELLET_PRESS.get(), PelletPressBlockEntity::getFluidHandler);
     }
 
     public static Identifier id(String path) {

@@ -1,0 +1,7 @@
+{
+  "type": "comminutioncraft:assembling",
+  "ingredient": "#c:storage_blocks/iron",
+  "result": {
+    "id": "comminutioncraft:reactor_plating"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "comminutioncraft:block/isotope_separator_front_on",
+    "side": "comminutioncraft:block/isotope_separator_side",
+    "top": "comminutioncraft:block/isotope_separator_top"
+  }
+}
