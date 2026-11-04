@@ -18,7 +18,7 @@ import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
-/** Menu shared by all tier-2 processing machines: input, output and an energy bar on the left. */
+/** Menu shared by the FE processing machines (tier 2, and tier 3 without plasma): input, output and an energy bar on the left. */
 public class ElectricMachineMenu extends AbstractContainerMenu implements ControllableMenu {
     private static final int MACHINE_SLOTS = ElectricMachineBlockEntity.SLOT_COUNT;
     private static final int INV_START = MACHINE_SLOTS;
@@ -36,6 +36,16 @@ public class ElectricMachineMenu extends AbstractContainerMenu implements Contro
 
     public static ElectricMachineMenu clientSmelter(int containerId, Inventory inventory) {
         return new ElectricMachineMenu(ModMenus.ELECTRIC_SMELTER.get(), containerId, inventory,
+                new SimpleContainer(MACHINE_SLOTS), new SimpleContainerData(ElectricMachineBlockEntity.DATA_COUNT));
+    }
+
+    public static ElectricMachineMenu clientPlasmaGranulator(int containerId, Inventory inventory) {
+        return new ElectricMachineMenu(ModMenus.PLASMA_GRANULATOR.get(), containerId, inventory,
+                new SimpleContainer(MACHINE_SLOTS), new SimpleContainerData(ElectricMachineBlockEntity.DATA_COUNT));
+    }
+
+    public static ElectricMachineMenu clientPlasmaSmelter(int containerId, Inventory inventory) {
+        return new ElectricMachineMenu(ModMenus.PLASMA_SMELTER.get(), containerId, inventory,
                 new SimpleContainer(MACHINE_SLOTS), new SimpleContainerData(ElectricMachineBlockEntity.DATA_COUNT));
     }
 

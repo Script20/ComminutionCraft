@@ -313,7 +313,7 @@ public abstract class FuelMachineBlockEntity extends BaseContainerBlockEntity
         return switch (sideMode(side)) {
             case INPUT -> SLOTS_INPUT_FACE;
             case OUTPUT -> SLOTS_OUTPUT_FACE;
-            case NONE -> SLOTS_NONE;
+            case NONE, BYPRODUCT -> SLOTS_NONE;
         };
     }
 

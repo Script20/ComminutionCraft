@@ -17,20 +17,19 @@ import net.minecraft.world.item.crafting.SmeltingRecipe;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
- * Tier 3 smelter: runs normal furnace (smelting) recipes on FE + plasma.
+ * Tier 3 smelter: runs normal furnace (smelting) recipes on FE alone.
  * <p>
- * Twice as fast as the Electric Smelter (25 ticks vs 50) at 80 FE/t = 2,000 FE and 5 mB plasma per item.
+ * Twice as fast as the Electric Smelter (25 ticks vs 50) at 80 FE/t = 2,000 FE per item.
  */
-public class PlasmaSmelterBlockEntity extends PlasmaMachineBlockEntity {
+public class PlasmaSmelterBlockEntity extends ElectricMachineBlockEntity {
     public static final int PROCESS_TIME = 25;
     public static final int ENERGY_PER_TICK = 80;
-    public static final int PLASMA_PER_OPERATION = 5;
 
     private final RecipeManager.CachedCheck<SingleRecipeInput, SmeltingRecipe> recipeCheck =
             RecipeManager.createCheck(RecipeType.SMELTING);
 
     public PlasmaSmelterBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.PLASMA_SMELTER.get(), pos, state);
+        super(ModBlockEntities.PLASMA_SMELTER.get(), pos, state, TIER3_ENERGY_CAPACITY, TIER3_MAX_ENERGY_INPUT);
     }
 
     @Override
@@ -41,11 +40,6 @@ public class PlasmaSmelterBlockEntity extends PlasmaMachineBlockEntity {
     @Override
     protected int getEnergyPerTick() {
         return ENERGY_PER_TICK;
-    }
-
-    @Override
-    protected int getPlasmaPerOperation() {
-        return PLASMA_PER_OPERATION;
     }
 
     @Override
@@ -60,6 +54,6 @@ public class PlasmaSmelterBlockEntity extends PlasmaMachineBlockEntity {
 
     @Override
     protected AbstractContainerMenu createMenu(int containerId, Inventory inventory) {
-        return new PlasmaMachineMenu(ModMenus.PLASMA_SMELTER.get(), containerId, inventory, this, dataAccess);
+        return new ElectricMachineMenu(ModMenus.PLASMA_SMELTER.get(), containerId, inventory, this, dataAccess);
     }
 }

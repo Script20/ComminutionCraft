@@ -25,8 +25,8 @@ public class PlasmaGeneratorBlockEntity extends FluidMachineBlockEntity {
     public static final int TANK_PLASMA = 1;
     public static final int TANK_COUNT = 2;
 
-    private final MachineFluidTank hydrogen = addTank("hydrogen", resource -> resource.is(ModFluids.HYDROGEN_TYPE.get()), false);
-    private final MachineFluidTank plasma = addTank("plasma", resource -> resource.is(ModFluids.PLASMA_TYPE.get()), true);
+    private final MachineFluidTank hydrogen = addTank("hydrogen", resource -> resource.is(ModFluids.HYDROGEN_TYPE.get()), TankRole.INPUT);
+    private final MachineFluidTank plasma = addTank("plasma", resource -> resource.is(ModFluids.PLASMA_TYPE.get()), TankRole.OUTPUT);
 
     public PlasmaGeneratorBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.PLASMA_GENERATOR.get(), pos, state, ENERGY_CAPACITY, MAX_ENERGY_INPUT, 0);

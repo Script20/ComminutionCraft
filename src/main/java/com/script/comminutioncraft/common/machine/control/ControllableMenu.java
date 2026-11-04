@@ -5,4 +5,9 @@ public interface ControllableMenu {
     RedstoneMode getRedstoneMode();
 
     SideMode getSideMode(RelativeSide side);
+
+    /** Whether its faces can be set to By-product (shown in the side config legend). */
+    default boolean hasByproductOutput() {
+        return false;
+    }
 }

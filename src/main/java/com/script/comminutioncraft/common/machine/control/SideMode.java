@@ -9,7 +9,12 @@ public enum SideMode {
     /** Finished items (and empty buckets from the fuel slot) can be taken out. */
     OUTPUT("output", 0xFFFF9628),
     /** Closed to item transport. */
-    NONE("none", 0xFF606470);
+    NONE("none", 0xFF606470),
+    /**
+     * A second output, only on machines that make a by-product (the Electrolyser's oxygen): the by-product leaves
+     * here, the main product through Output faces, so the two never share a pipe.
+     */
+    BYPRODUCT("byproduct", 0xFFB4E050);
 
     private final String name;
     /** Colour used for this mode in the side configuration screen. */
@@ -20,8 +25,14 @@ public enum SideMode {
         this.color = color;
     }
 
-    public SideMode next() {
-        return values()[(ordinal() + 1) % values().length];
+    /** Input -> Output -> (By-product, if the machine has one) -> None -> Input. */
+    public SideMode next(boolean byproduct) {
+        return switch (this) {
+            case INPUT -> OUTPUT;
+            case OUTPUT -> byproduct ? BYPRODUCT : NONE;
+            case BYPRODUCT -> NONE;
+            case NONE -> INPUT;
+        };
     }
 
     public static SideMode byOrdinal(int ordinal) {

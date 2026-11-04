@@ -54,11 +54,11 @@ public final class ModMenus {
             () -> new MenuType<>((id, inventory) -> FluidMachineMenu.client(ModMenus.MHD_GENERATOR.get(), id, inventory,
                     MhdGeneratorBlockEntity.TANK_COUNT), FeatureFlags.VANILLA_SET));
 
-    public static final DeferredHolder<MenuType<?>, MenuType<PlasmaMachineMenu>> PLASMA_GRANULATOR =
-            MENUS.register("plasma_granulator", () -> new MenuType<>(PlasmaMachineMenu::clientGranulator, FeatureFlags.VANILLA_SET));
+    public static final DeferredHolder<MenuType<?>, MenuType<ElectricMachineMenu>> PLASMA_GRANULATOR =
+            MENUS.register("plasma_granulator", () -> new MenuType<>(ElectricMachineMenu::clientPlasmaGranulator, FeatureFlags.VANILLA_SET));
 
-    public static final DeferredHolder<MenuType<?>, MenuType<PlasmaMachineMenu>> PLASMA_SMELTER =
-            MENUS.register("plasma_smelter", () -> new MenuType<>(PlasmaMachineMenu::clientSmelter, FeatureFlags.VANILLA_SET));
+    public static final DeferredHolder<MenuType<?>, MenuType<ElectricMachineMenu>> PLASMA_SMELTER =
+            MENUS.register("plasma_smelter", () -> new MenuType<>(ElectricMachineMenu::clientPlasmaSmelter, FeatureFlags.VANILLA_SET));
 
     public static final DeferredHolder<MenuType<?>, MenuType<EnergyBatteryMenu>> PLASMA_ENERGY_BATTERY =
             MENUS.register("plasma_energy_battery", () -> new MenuType<>(EnergyBatteryMenu::clientPlasma, FeatureFlags.VANILLA_SET));

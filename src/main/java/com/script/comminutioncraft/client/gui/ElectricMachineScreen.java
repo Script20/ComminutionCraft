@@ -7,10 +7,22 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 
-/** GUI for tier-2 processing machines: energy bar, input, progress arrow, output. */
+/** GUI for the FE processing machines (tier 2, and tier 3 without plasma): energy bar, input, progress arrow, output. */
 public class ElectricMachineScreen extends MachineScreen<ElectricMachineMenu> {
     public ElectricMachineScreen(ElectricMachineMenu menu, Inventory inventory, Component title, Identifier texture) {
-        super(menu, inventory, title, texture, Tier.ELECTRIC);
+        this(menu, inventory, title, texture, Tier.ELECTRIC);
+    }
+
+    public ElectricMachineScreen(ElectricMachineMenu menu, Inventory inventory, Component title, Identifier texture, Tier tier) {
+        super(menu, inventory, title, texture, tier);
+    }
+
+    public static ElectricMachineScreen plasmaGranulator(ElectricMachineMenu menu, Inventory inventory, Component title) {
+        return new ElectricMachineScreen(menu, inventory, title, ComminutionCraft.id("textures/gui/container/plasma_granulator.png"), Tier.PLASMA);
+    }
+
+    public static ElectricMachineScreen plasmaSmelter(ElectricMachineMenu menu, Inventory inventory, Component title) {
+        return new ElectricMachineScreen(menu, inventory, title, ComminutionCraft.id("textures/gui/container/plasma_smelter.png"), Tier.PLASMA);
     }
 
     public static ElectricMachineScreen granulator(ElectricMachineMenu menu, Inventory inventory, Component title) {

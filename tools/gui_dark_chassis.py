@@ -326,8 +326,22 @@ def plasma_granulator_arrow(x, y):
     return shade(base, 0.72) if (x + abs(y - 8)) % 6 == 0 else base
 
 
+def tier3_sheet(arrow_colour):
+    """Tier-3 FE machines (Plasma Granulator / Smelter): the electric layout with magenta slot rims, no fluid tube."""
+    s = Sheet()
+    body(s)
+    energy_well(s)
+    slot(s, 55, 34)
+    slot(s, 111, 30, 26, rim=PLASMA['off'])
+    arrow_silhouette(s, 79, 34)
+    player_inventory(s)
+    arrow_sprite(s, arrow_colour)
+    energy_sprite(s)
+    return s.img
+
+
 def plasma_machine_sheet(arrow_colour):
-    """Tier-3 processing machines: the electric layout (energy left, input, arrow, output) plus the plasma tube right."""
+    """The Circuit Assembler: the electric layout (energy left, input, arrow, output) plus the plasma tube right."""
     s = Sheet()
     body(s)
     energy_well(s)
@@ -379,11 +393,11 @@ def washer_arrow(x, y):
 
 
 def ore_washer_sheet():
-    img = plasma_machine_sheet(washer_arrow)
+    """The Ore Washer runs on FE and water: the tier-3 layout with one water tube on the right."""
     s = Sheet()
-    s.img = img
-    water_well(s)
-    water_sprite(s)
+    s.img = tier3_sheet(washer_arrow)
+    gauge_well(s, 155)
+    all_fluid_sprites(s)
     return s.img
 
 
@@ -477,8 +491,8 @@ fluid_machine_sheet((50, 155), fade_arrow(HYDROGEN[2], PLASMA['on'])).save(os.pa
 water_generator_sheet().save(os.path.join(OUT, 'atmospheric_water_generator.png'))
 fluid_machine_sheet((50, 131, 155), fade_arrow(WATER[2], HYDROGEN[2])).save(os.path.join(OUT, 'electrolyser.png'))
 fluid_machine_sheet((50,), fade_arrow(PLASMA['on'], ELEC['on'])).save(os.path.join(OUT, 'mhd_generator.png'))
-plasma_machine_sheet(plasma_granulator_arrow).save(os.path.join(OUT, 'plasma_granulator.png'))
-plasma_machine_sheet(smelter_arrow).save(os.path.join(OUT, 'plasma_smelter.png'))
+tier3_sheet(plasma_granulator_arrow).save(os.path.join(OUT, 'plasma_granulator.png'))
+tier3_sheet(smelter_arrow).save(os.path.join(OUT, 'plasma_smelter.png'))
 plasma_machine_sheet(plasma_granulator_arrow).save(os.path.join(OUT, 'circuit_assembler.png'))
 ore_washer_sheet().save(os.path.join(OUT, 'ore_washer.png'))
 print('ok')

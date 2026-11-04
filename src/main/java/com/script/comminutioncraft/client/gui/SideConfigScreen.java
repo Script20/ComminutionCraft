@@ -213,7 +213,9 @@ public class SideConfigScreen extends Screen {
     }
 
     private void drawLegend(GuiGraphicsExtractor graphics) {
-        SideMode[] modes = SideMode.values();
+        SideMode[] modes = java.util.Arrays.stream(SideMode.values())
+                .filter(mode -> mode != SideMode.BYPRODUCT || controls.hasByproductOutput())
+                .toArray(SideMode[]::new);
         int[] widths = new int[modes.length];
         int total = 0;
         for (int i = 0; i < modes.length; i++) {

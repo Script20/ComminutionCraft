@@ -6,6 +6,7 @@ import com.script.comminutioncraft.common.machine.control.MachineControls;
 import com.script.comminutioncraft.common.machine.control.RedstoneMode;
 import com.script.comminutioncraft.common.machine.control.RelativeSide;
 import com.script.comminutioncraft.common.machine.control.SideMode;
+import com.script.comminutioncraft.common.registry.ModMenus;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -56,6 +57,11 @@ public class FluidMachineMenu extends AbstractContainerMenu implements Controlla
     @Override
     public SideMode getSideMode(RelativeSide side) {
         return MachineControls.unpackSide(data.get(FluidMachineBlockEntity.DATA_SIDES), side);
+    }
+
+    @Override
+    public boolean hasByproductOutput() {
+        return getType() == ModMenus.ELECTROLYSER.get();
     }
 
     @Override

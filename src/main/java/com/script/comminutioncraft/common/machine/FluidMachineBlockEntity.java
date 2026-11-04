@@ -5,9 +5,12 @@ import com.script.comminutioncraft.common.energy.MachineEnergyStorage;
 import com.script.comminutioncraft.common.fluid.MachineFluidTank;
 import com.script.comminutioncraft.common.machine.control.ControllableMachine;
 import com.script.comminutioncraft.common.machine.control.MachineControls;
+import com.script.comminutioncraft.common.machine.control.RelativeSide;
 import com.script.comminutioncraft.common.machine.control.SideMode;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -39,7 +42,7 @@ import org.jspecify.annotations.Nullable;
 /**
  * Shared logic for the tier-3 power chain's fluid machines (Electrolyser, Plasma Generator, MHD Generator): an FE
  * buffer and a few one-fluid tanks, no item slots. Input tanks fill through Input faces; output tanks push up to
- * {@link #MAX_FLUID_OUTPUT} mB/t each out of Output faces. Each tick {@link #work} turns inputs into outputs and
+ * {@link #MAX_FLUID_OUTPUT} mB/t each out of Output faces, and by-product tanks out of By-product faces. Each tick {@link #work} turns inputs into outputs and
  * returns its rate for the GUI (mB/t, or FE/t for the MHD Generator). Redstone-off pauses everything.
  * <p>
  * Mined with a pickaxe it forgets everything; picked up with the wrench it keeps its FE and settings.
@@ -59,14 +62,18 @@ public abstract class FluidMachineBlockEntity extends BlockEntity implements Tic
     public static final int DATA_RATE = 6;
     public static final int DATA_TANKS = 7;
 
+    /** What a tank is for, which decides the faces it fills or empties through. */
+    public enum TankRole { INPUT, OUTPUT, BYPRODUCT }
+
     protected final MachineEnergyStorage energy;
-    private final MachineControls controls = new MachineControls(MachineControls.outputBelow(), this::onControlsChanged);
+    private final MachineControls controls;
     private final List<MachineFluidTank> tanks = new ArrayList<>();
     private final List<String> tankNames = new ArrayList<>();
-    private final List<Boolean> tankIsOutput = new ArrayList<>();
+    private final List<TankRole> tankRoles = new ArrayList<>();
     private @Nullable ResourceHandler<FluidResource> allTanks;
     private @Nullable ResourceHandler<FluidResource> inputFaces;
     private @Nullable ResourceHandler<FluidResource> outputFaces;
+    private @Nullable ResourceHandler<FluidResource> byproductFaces;
     private int rate;
     private int litCooldown;
 
@@ -100,8 +107,20 @@ public abstract class FluidMachineBlockEntity extends BlockEntity implements Tic
 
     protected FluidMachineBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state,
                                       int energyCapacity, int maxEnergyInput, int maxEnergyOutput) {
+        this(type, pos, state, energyCapacity, maxEnergyInput, maxEnergyOutput, false);
+    }
+
+    /** @param byproduct whether it has a by-product tank (its faces can then be set to By-product) */
+    protected FluidMachineBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state,
+                                      int energyCapacity, int maxEnergyInput, int maxEnergyOutput, boolean byproduct) {
         super(type, pos, state);
         energy = new MachineEnergyStorage(energyCapacity, maxEnergyInput, maxEnergyOutput, this::setChanged);
+        // Machines with a by-product send it out of the back by default.
+        Map<RelativeSide, SideMode> sides = new EnumMap<>(MachineControls.outputBelow());
+        if (byproduct) {
+            sides.put(RelativeSide.BACK, SideMode.BYPRODUCT);
+        }
+        controls = new MachineControls(sides, this::onControlsChanged, byproduct);
     }
 
     public static int dataCount(int tankCount) {
@@ -109,11 +128,11 @@ public abstract class FluidMachineBlockEntity extends BlockEntity implements Tic
     }
 
     /** Adds a tank (call from the constructor); {@code name} is its save key. */
-    protected MachineFluidTank addTank(String name, Predicate<FluidResource> accepts, boolean output) {
+    protected MachineFluidTank addTank(String name, Predicate<FluidResource> accepts, TankRole role) {
         MachineFluidTank tank = new MachineFluidTank(TANK_CAPACITY, accepts, this::setChanged);
         tanks.add(tank);
         tankNames.add(name);
-        tankIsOutput.add(output);
+        tankRoles.add(role);
         return tank;
     }
 
@@ -145,21 +164,16 @@ public abstract class FluidMachineBlockEntity extends BlockEntity implements Tic
         energy.set(Math.clamp(amount, 0, energy.getCapacity()));
     }
 
-    /** Fluid capability: Input faces fill the input tanks, Output faces drain the output tanks, None faces have none. */
+    /**
+     * Fluid capability: Input faces fill the input tanks, Output faces drain the output tanks, By-product faces the
+     * by-product tanks; None faces have none.
+     */
     public @Nullable ResourceHandler<FluidResource> getFluidHandler(@Nullable Direction side) {
         if (allTanks == null) {
-            List<ResourceHandler<FluidResource>> ins = new ArrayList<>();
-            List<ResourceHandler<FluidResource>> outs = new ArrayList<>();
-            for (int i = 0; i < tanks.size(); i++) {
-                if (tankIsOutput.get(i)) {
-                    outs.add(tanks.get(i).extractOnly());
-                } else {
-                    ins.add(tanks.get(i).insertOnly());
-                }
-            }
             allTanks = new CombinedResourceHandler<>(List.copyOf(tanks));
-            inputFaces = new CombinedResourceHandler<>(ins);
-            outputFaces = new CombinedResourceHandler<>(outs);
+            inputFaces = facesFor(TankRole.INPUT);
+            outputFaces = facesFor(TankRole.OUTPUT);
+            byproductFaces = facesFor(TankRole.BYPRODUCT);
         }
         if (side == null) {
             return allTanks;
@@ -167,8 +181,19 @@ public abstract class FluidMachineBlockEntity extends BlockEntity implements Tic
         return switch (sideMode(side)) {
             case INPUT -> inputFaces;
             case OUTPUT -> outputFaces;
+            case BYPRODUCT -> byproductFaces;
             case NONE -> null;
         };
+    }
+
+    private ResourceHandler<FluidResource> facesFor(TankRole role) {
+        List<ResourceHandler<FluidResource>> handlers = new ArrayList<>();
+        for (int i = 0; i < tanks.size(); i++) {
+            if (tankRoles.get(i) == role) {
+                handlers.add(role == TankRole.INPUT ? tanks.get(i).insertOnly() : tanks.get(i).extractOnly());
+            }
+        }
+        return new CombinedResourceHandler<>(handlers);
     }
 
     // ---- Ticking ----
@@ -211,19 +236,24 @@ public abstract class FluidMachineBlockEntity extends BlockEntity implements Tic
         }
     }
 
-    /** Offers each output tank's fluid to the neighbours on Output faces, up to {@link #MAX_FLUID_OUTPUT} mB per tank per tick. */
+    /**
+     * Offers each output tank's fluid to the neighbours on Output faces (by-product tanks: By-product faces), up to
+     * {@link #MAX_FLUID_OUTPUT} mB per tank per tick.
+     */
     private void pushFluids(ServerLevel level, BlockPos pos) {
         for (int i = 0; i < tanks.size(); i++) {
             MachineFluidTank tank = tanks.get(i);
-            if (!tankIsOutput.get(i) || tank.getAmount() <= 0) {
+            TankRole role = tankRoles.get(i);
+            if (role == TankRole.INPUT || tank.getAmount() <= 0) {
                 continue;
             }
+            SideMode faces = role == TankRole.OUTPUT ? SideMode.OUTPUT : SideMode.BYPRODUCT;
             int budget = Math.min(MAX_FLUID_OUTPUT, tank.getAmount());
             for (Direction direction : Direction.values()) {
                 if (budget <= 0) {
                     break;
                 }
-                if (sideMode(direction) != SideMode.OUTPUT) {
+                if (sideMode(direction) != faces) {
                     continue;
                 }
                 ResourceHandler<FluidResource> target = level.getCapability(Capabilities.Fluid.BLOCK, pos.relative(direction), direction.getOpposite());

@@ -7,8 +7,8 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.SimpleContainerData;
 
-/** Ore Washer menu: the tier-3 machine layout plus a water gauge. */
-public class OreWasherMenu extends PlasmaMachineMenu {
+/** Ore Washer menu: the electric machine layout plus a water gauge. */
+public class OreWasherMenu extends ElectricMachineMenu {
     private final ContainerData data;
 
     // Client-side constructor (called when the server tells the client to open the GUI)

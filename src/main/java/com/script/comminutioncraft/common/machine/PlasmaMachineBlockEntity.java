@@ -16,13 +16,12 @@ import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Shared logic for tier-3 (plasma) processing machines: the electric machine plus a plasma tank. Each operation needs
- * {@link #getPlasmaPerOperation()} mB of plasma on top of its FE; without either it pauses (progress kept). Plasma
- * comes in through Input faces (pipes, tanks, a generator's output face), like items do.
+ * A tier-3 processing machine that also uses plasma (the Circuit Assembler): the electric machine plus a plasma tank.
+ * Each operation needs {@link #getPlasmaPerOperation()} mB of plasma on top of its FE; without either it pauses
+ * (progress kept). Plasma comes in through Input faces (pipes, tanks, a Plasma Generator's Output face), like items do.
+ * The other tier-3 machines run on FE alone.
  */
 public abstract class PlasmaMachineBlockEntity extends ElectricMachineBlockEntity {
-    public static final int ENERGY_CAPACITY = 50_000;
-    public static final int MAX_ENERGY_INPUT = 1_000;
     public static final int PLASMA_CAPACITY = 8_000;
 
     // ContainerData indices after the electric machine's (plasma fits in one 16-bit slot)
@@ -34,7 +33,7 @@ public abstract class PlasmaMachineBlockEntity extends ElectricMachineBlockEntit
             resource -> resource.is(ModFluids.PLASMA_TYPE.get()), this::setChanged);
 
     protected PlasmaMachineBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
-        super(type, pos, state, ENERGY_CAPACITY, MAX_ENERGY_INPUT);
+        super(type, pos, state, TIER3_ENERGY_CAPACITY, TIER3_MAX_ENERGY_INPUT);
     }
 
     /** mB of plasma one operation uses (taken when it finishes). */

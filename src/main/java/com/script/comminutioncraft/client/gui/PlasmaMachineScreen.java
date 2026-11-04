@@ -7,18 +7,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 
-/** GUI for tier-3 processing machines: energy bar, input, progress arrow, output, plasma gauge. */
+/** GUI for tier-3 machines that use plasma (the Circuit Assembler): energy bar, input, progress arrow, output, plasma gauge. */
 public class PlasmaMachineScreen extends MachineScreen<PlasmaMachineMenu> {
     public PlasmaMachineScreen(PlasmaMachineMenu menu, Inventory inventory, Component title, Identifier texture) {
         super(menu, inventory, title, texture, Tier.PLASMA);
-    }
-
-    public static PlasmaMachineScreen granulator(PlasmaMachineMenu menu, Inventory inventory, Component title) {
-        return new PlasmaMachineScreen(menu, inventory, title, ComminutionCraft.id("textures/gui/container/plasma_granulator.png"));
-    }
-
-    public static PlasmaMachineScreen smelter(PlasmaMachineMenu menu, Inventory inventory, Component title) {
-        return new PlasmaMachineScreen(menu, inventory, title, ComminutionCraft.id("textures/gui/container/plasma_smelter.png"));
     }
 
     public static PlasmaMachineScreen assembler(PlasmaMachineMenu menu, Inventory inventory, Component title) {

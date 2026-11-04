@@ -59,6 +59,9 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
 
     public static final int ENERGY_CAPACITY = 20_000;
     public static final int MAX_ENERGY_INPUT = 200;
+    /** Tier-3 machines (Plasma Granulator / Smelter, Ore Washer, Circuit Assembler) hold more and take FE faster. */
+    public static final int TIER3_ENERGY_CAPACITY = 50_000;
+    public static final int TIER3_MAX_ENERGY_INPUT = 1_000;
     /** How long the front stays lit after work stops, so a machine on a thin power supply doesn't flicker. */
     private static final int LIT_COOLDOWN = 10;
 
@@ -303,7 +306,7 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
         return switch (sideMode(side)) {
             case INPUT -> SLOTS_INPUT;
             case OUTPUT -> SLOTS_OUTPUT;
-            case NONE -> SLOTS_NONE;
+            case NONE, BYPRODUCT -> SLOTS_NONE;
         };
     }
 

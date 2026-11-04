@@ -82,8 +82,7 @@ public class ComminutionJeiPlugin implements IModPlugin {
                 new ProcessingCategory<>(gui, WASHING.get(), Component.translatable("jei.comminutioncraft.washing"),
                         ModItems.ORE_WASHER.get(), List.of(
                         new ProcessingCategory.Station("jei.comminutioncraft.time.ore_washer", OreWasherBlockEntity.PROCESS_TIME)),
-                        List.of(Component.translatable("jei.comminutioncraft.uses_water_plasma",
-                                OreWasherBlockEntity.WATER_PER_OPERATION, OreWasherBlockEntity.PLASMA_PER_OPERATION))));
+                        List.of(Component.translatable("jei.comminutioncraft.uses_water", OreWasherBlockEntity.WATER_PER_OPERATION))));
     }
 
     @Override
@@ -134,31 +133,28 @@ public class ComminutionJeiPlugin implements IModPlugin {
             }
         });
 
-        // Both electric machines share one screen class, so pick the category from the menu type.
+        // The FE machines (both granulators, both smelters, the washer) share one screen class, so pick the category from the menu type.
         registration.addGuiContainerHandler(ElectricMachineScreen.class, new IGuiContainerHandler<>() {
             @Override
             public List<IGuiClickableArea> getGuiClickableAreas(ElectricMachineScreen screen, double mouseX, double mouseY) {
-                var type = screen.getMenu().getType() == ModMenus.ELECTRIC_GRANULATOR.get() ? GRANULATING.get() : RecipeTypes.SMELTING;
-                return List.of(IGuiClickableArea.createBasic(ARROW_X, ARROW_Y, ARROW_W, ARROW_H, type));
-            }
-        });
-
-        // Tier-3 machines share one screen class too.
-        registration.addGuiContainerHandler(PlasmaMachineScreen.class, new IGuiContainerHandler<>() {
-            @Override
-            public List<IGuiClickableArea> getGuiClickableAreas(PlasmaMachineScreen screen, double mouseX, double mouseY) {
                 var menuType = screen.getMenu().getType();
                 IRecipeType<?> type;
-                if (menuType == ModMenus.PLASMA_GRANULATOR.get()) {
+                if (menuType == ModMenus.ELECTRIC_GRANULATOR.get() || menuType == ModMenus.PLASMA_GRANULATOR.get()) {
                     type = GRANULATING.get();
-                } else if (menuType == ModMenus.CIRCUIT_ASSEMBLER.get()) {
-                    type = ASSEMBLING.get();
                 } else if (menuType == ModMenus.ORE_WASHER.get()) {
                     type = WASHING.get();
                 } else {
                     type = RecipeTypes.SMELTING;
                 }
                 return List.of(IGuiClickableArea.createBasic(ARROW_X, ARROW_Y, ARROW_W, ARROW_H, type));
+            }
+        });
+
+        // The Circuit Assembler's screen (the only one with a plasma gauge).
+        registration.addGuiContainerHandler(PlasmaMachineScreen.class, new IGuiContainerHandler<>() {
+            @Override
+            public List<IGuiClickableArea> getGuiClickableAreas(PlasmaMachineScreen screen, double mouseX, double mouseY) {
+                return List.of(IGuiClickableArea.createBasic(ARROW_X, ARROW_Y, ARROW_W, ARROW_H, ASSEMBLING.get()));
             }
         });
     }

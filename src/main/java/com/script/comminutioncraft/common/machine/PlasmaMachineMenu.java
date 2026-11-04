@@ -8,21 +8,11 @@ import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.SimpleContainerData;
 
-/** Menu shared by tier-3 processing machines: the electric machine's layout plus the plasma gauge on the right. */
+/** Menu for tier-3 machines that use plasma (the Circuit Assembler): the electric machine's layout plus a plasma gauge. */
 public class PlasmaMachineMenu extends ElectricMachineMenu {
     private final ContainerData data;
 
-    // Client-side constructors (called when the server tells the client to open the GUI)
-    public static PlasmaMachineMenu clientGranulator(int containerId, Inventory inventory) {
-        return new PlasmaMachineMenu(ModMenus.PLASMA_GRANULATOR.get(), containerId, inventory,
-                new SimpleContainer(ElectricMachineBlockEntity.SLOT_COUNT), new SimpleContainerData(PlasmaMachineBlockEntity.DATA_COUNT));
-    }
-
-    public static PlasmaMachineMenu clientSmelter(int containerId, Inventory inventory) {
-        return new PlasmaMachineMenu(ModMenus.PLASMA_SMELTER.get(), containerId, inventory,
-                new SimpleContainer(ElectricMachineBlockEntity.SLOT_COUNT), new SimpleContainerData(PlasmaMachineBlockEntity.DATA_COUNT));
-    }
-
+    // Client-side constructor (called when the server tells the client to open the GUI)
     public static PlasmaMachineMenu clientAssembler(int containerId, Inventory inventory) {
         return new PlasmaMachineMenu(ModMenus.CIRCUIT_ASSEMBLER.get(), containerId, inventory,
                 new SimpleContainer(ElectricMachineBlockEntity.SLOT_COUNT), new SimpleContainerData(PlasmaMachineBlockEntity.DATA_COUNT));

@@ -126,7 +126,7 @@ public class EnergyBatteryBlockEntity extends BlockEntity implements TickingMach
         return switch (sideMode(side)) {
             case INPUT -> side == null ? energy : inputFace;
             case OUTPUT -> outputFace;
-            case NONE -> null;
+            case NONE, BYPRODUCT -> null;
         };
     }
 

@@ -7,6 +7,7 @@ import com.script.comminutioncraft.common.registry.ModBlockEntities;
 import com.script.comminutioncraft.common.registry.ModBlocks;
 import com.script.comminutioncraft.common.cable.CableConnection;
 import com.script.comminutioncraft.common.cable.CableEnergyHandler;
+import com.script.comminutioncraft.common.machine.OreWasherBlockEntity;
 import com.script.comminutioncraft.common.machine.PlasmaMachineBlockEntity;
 import com.script.comminutioncraft.common.cable.ConduitBlock;
 import com.script.comminutioncraft.common.cable.EnergyCableBlock;
@@ -100,21 +101,19 @@ public class ComminutionCraft {
                         ? null : new CableEnergyHandler(level, pos, side, ((EnergyCableBlock) state.getBlock()).getTransferRate()),
                 ModBlocks.ENERGY_CABLE.get(), ModBlocks.PLASMA_CABLE.get());
 
-        // Tier 3 machines: FE and items like tier 2, plasma in through Input faces
+        // Tier 3 machines: FE and items like tier 2 (the granulator and smelter need nothing else)
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.PLASMA_GRANULATOR.get(), WorldlyContainerWrapper::new);
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.PLASMA_SMELTER.get(), WorldlyContainerWrapper::new);
         event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.PLASMA_GRANULATOR.get(), (machine, side) -> machine.getEnergyHandler());
         event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.PLASMA_SMELTER.get(), (machine, side) -> machine.getEnergyHandler());
-        event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.PLASMA_GRANULATOR.get(), PlasmaMachineBlockEntity::getFluidHandler);
-        event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.PLASMA_SMELTER.get(), PlasmaMachineBlockEntity::getFluidHandler);
         event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.PLASMA_ENERGY_BATTERY.get(), EnergyBatteryBlockEntity::getEnergyHandler);
-        // Circuit Assembler and Ore Washer: same as the other tier-3 machines (the washer's fluid faces take water too)
+        // Circuit Assembler (plasma in through Input faces) and Ore Washer (water in through Input faces)
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.CIRCUIT_ASSEMBLER.get(), WorldlyContainerWrapper::new);
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.ORE_WASHER.get(), WorldlyContainerWrapper::new);
         event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.CIRCUIT_ASSEMBLER.get(), (machine, side) -> machine.getEnergyHandler());
         event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.ORE_WASHER.get(), (machine, side) -> machine.getEnergyHandler());
         event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.CIRCUIT_ASSEMBLER.get(), PlasmaMachineBlockEntity::getFluidHandler);
-        event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.ORE_WASHER.get(), PlasmaMachineBlockEntity::getFluidHandler);
+        event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.ORE_WASHER.get(), OreWasherBlockEntity::getFluidHandler);
     }
 
     public static Identifier id(String path) {

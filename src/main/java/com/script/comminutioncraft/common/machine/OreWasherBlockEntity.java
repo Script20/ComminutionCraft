@@ -4,11 +4,12 @@ import com.script.comminutioncraft.common.fluid.MachineFluidTank;
 import com.script.comminutioncraft.common.machine.control.SideMode;
 import com.script.comminutioncraft.common.recipe.WashingRecipe;
 import com.script.comminutioncraft.common.registry.ModBlockEntities;
-import com.script.comminutioncraft.common.registry.ModMenus;
 import com.script.comminutioncraft.common.registry.ModRecipes;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponentGetter;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Inventory;
@@ -22,53 +23,48 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.common.NeoForgeMod;
-import net.neoforged.neoforge.transfer.CombinedResourceHandler;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import org.jspecify.annotations.Nullable;
 
 /**
  * Tier 3 Ore Washer, the 3x path: raw ore or an ore block -> 3 granulated ore ({@code comminutioncraft:washing}
- * recipes). Each one takes 60 ticks at 80 FE/t (4,800 FE), 250 mB of water and 5 mB of plasma.
+ * recipes). Each one takes 60 ticks at 80 FE/t (4,800 FE) and 250 mB of water.
  * <p>
- * Water comes in like plasma (pipes, tanks, buckets into a tank) through Input faces, or straight from any water
+ * Water comes in through Input faces (pipes, tanks, an Atmospheric Water Generator), or straight from any water
  * source block touching it: {@link #WATER_PER_SOURCE} mB/t each, without using the source up.
  */
-public class OreWasherBlockEntity extends PlasmaMachineBlockEntity {
+public class OreWasherBlockEntity extends ElectricMachineBlockEntity {
     public static final int PROCESS_TIME = 60;
     public static final int ENERGY_PER_TICK = 80;
-    public static final int PLASMA_PER_OPERATION = 5;
     public static final int WATER_PER_OPERATION = 250;
     public static final int WATER_CAPACITY = 8_000;
     public static final int WATER_PER_SOURCE = 50;
 
-    public static final int DATA_WATER = PlasmaMachineBlockEntity.DATA_COUNT;
+    public static final int DATA_WATER = ElectricMachineBlockEntity.DATA_COUNT;
     public static final int DATA_WATER_CAPACITY = DATA_WATER + 1;
     public static final int DATA_COUNT = DATA_WATER_CAPACITY + 1;
 
     private final MachineFluidTank water = new MachineFluidTank(WATER_CAPACITY,
             resource -> resource.is(NeoForgeMod.WATER_TYPE.value()), this::setChanged);
-    /** Plasma and water together, so one face takes both (each goes to its own tank). */
-    private final ResourceHandler<FluidResource> tanks = new CombinedResourceHandler<>(getTank(), water);
-    private final ResourceHandler<FluidResource> inputs = new CombinedResourceHandler<>(getTank().insertOnly(), water.insertOnly());
 
     private final RecipeManager.CachedCheck<SingleRecipeInput, WashingRecipe> recipeCheck =
             RecipeManager.createCheck(ModRecipes.WASHING_TYPE.get());
 
     public OreWasherBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.ORE_WASHER.get(), pos, state);
+        super(ModBlockEntities.ORE_WASHER.get(), pos, state, TIER3_ENERGY_CAPACITY, TIER3_MAX_ENERGY_INPUT);
     }
 
     public MachineFluidTank getWater() {
         return water;
     }
 
-    @Override
+    /** The fluid capability on a face: water goes in through Input faces; nothing comes out. */
     public @Nullable ResourceHandler<FluidResource> getFluidHandler(@Nullable Direction side) {
         if (side == null) {
-            return tanks;
+            return water;
         }
-        return sideMode(side) == SideMode.INPUT ? inputs : null;
+        return sideMode(side) == SideMode.INPUT ? water.insertOnly() : null;
     }
 
     @Override
@@ -86,12 +82,11 @@ public class OreWasherBlockEntity extends PlasmaMachineBlockEntity {
 
     @Override
     protected boolean hasOperationResources() {
-        return super.hasOperationResources() && water.getAmount() >= WATER_PER_OPERATION;
+        return water.getAmount() >= WATER_PER_OPERATION;
     }
 
     @Override
     protected void onOperationDone() {
-        super.onOperationDone();
         water.drain(WATER_PER_OPERATION);
     }
 
@@ -103,11 +98,6 @@ public class OreWasherBlockEntity extends PlasmaMachineBlockEntity {
     @Override
     protected int getEnergyPerTick() {
         return ENERGY_PER_TICK;
-    }
-
-    @Override
-    protected int getPlasmaPerOperation() {
-        return PLASMA_PER_OPERATION;
     }
 
     @Override
@@ -129,7 +119,21 @@ public class OreWasherBlockEntity extends PlasmaMachineBlockEntity {
         return DATA_COUNT;
     }
 
-    // ---- Saving (a wrench pickup keeps the plasma, not the water) ----
+    // ---- Wrench pickup keeps the water too ----
+
+    @Override
+    protected void collectImplicitComponents(DataComponentMap.Builder components) {
+        super.collectImplicitComponents(components);
+        water.saveTo(components);
+    }
+
+    @Override
+    protected void applyImplicitComponents(DataComponentGetter components) {
+        super.applyImplicitComponents(components);
+        water.loadFrom(components);
+    }
+
+    // ---- Saving ----
 
     @Override
     protected void loadAdditional(ValueInput input) {

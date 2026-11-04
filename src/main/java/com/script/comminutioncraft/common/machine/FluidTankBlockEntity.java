@@ -58,7 +58,7 @@ public class FluidTankBlockEntity extends BlockEntity implements TickingMachine,
         return switch (sideMode(side)) {
             case INPUT -> tank.insertOnly();
             case OUTPUT -> tank.extractOnly();
-            case NONE -> null;
+            case NONE, BYPRODUCT -> null;
         };
     }
 

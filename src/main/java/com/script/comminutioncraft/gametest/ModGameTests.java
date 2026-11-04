@@ -12,7 +12,6 @@ import com.script.comminutioncraft.common.machine.MhdGeneratorBlockEntity;
 import java.util.List;
 import net.minecraft.world.level.biome.Biomes;
 import net.neoforged.neoforge.common.NeoForgeMod;
-import com.script.comminutioncraft.common.machine.PlasmaGranulatorBlockEntity;
 import com.script.comminutioncraft.common.machine.PlasmaMachineBlockEntity;
 import com.script.comminutioncraft.common.machine.OreWasherBlockEntity;
 import com.script.comminutioncraft.common.energy.MachineEnergyStorage;
@@ -111,7 +110,8 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("wrench_pickup_keeps_tank_fluid", () -> ModGameTests::wrenchPickupKeepsTankFluid);
         TEST_FUNCTIONS.register("pipes_and_cables_dont_join", () -> ModGameTests::pipesAndCablesDontJoin);
         TEST_FUNCTIONS.register("side_change_reconnects_cable", () -> ModGameTests::sideChangeReconnectsCable);
-        TEST_FUNCTIONS.register("plasma_granulator_needs_plasma", () -> ModGameTests::plasmaGranulatorNeedsPlasma);
+        TEST_FUNCTIONS.register("plasma_granulator_runs_on_fe", () -> ModGameTests::plasmaGranulatorRunsOnFe);
+        TEST_FUNCTIONS.register("oxygen_leaves_by_byproduct_face", () -> ModGameTests::oxygenLeavesByByproductFace);
         TEST_FUNCTIONS.register("plasma_cable_caps_per_tick", () -> ModGameTests::plasmaCableCapsPerTick);
         TEST_FUNCTIONS.register("cable_tiers_dont_join", () -> ModGameTests::cableTiersDontJoin);
         TEST_FUNCTIONS.register("circuit_assembler_makes_plasma_circuit", () -> ModGameTests::circuitAssemblerMakesPlasmaCircuit);
@@ -596,28 +596,45 @@ public final class ModGameTests {
         helper.succeed();
     }
 
-    /**
-     * A powered Plasma Granulator with raw iron does nothing without plasma; given 15 mB it runs one operation
-     * (10 mB) and then waits again with 5 mB left.
-     */
-    private static void plasmaGranulatorNeedsPlasma(GameTestHelper helper) {
+    /** A powered Plasma Granulator needs nothing but FE: 2 raw iron become 4 granulated iron, and it takes no fluid. */
+    private static void plasmaGranulatorRunsOnFe(GameTestHelper helper) {
         BlockPos pos = new BlockPos(2, 1, 2);
         helper.setBlock(pos, ModBlocks.PLASMA_GRANULATOR.get());
-        PlasmaMachineBlockEntity machine = helper.getBlockEntity(pos, PlasmaMachineBlockEntity.class);
-        ((MachineEnergyStorage) machine.getEnergyHandler()).set(PlasmaMachineBlockEntity.ENERGY_CAPACITY);
+        ElectricMachineBlockEntity machine = helper.getBlockEntity(pos, ElectricMachineBlockEntity.class);
+        ((MachineEnergyStorage) machine.getEnergyHandler()).set(ElectricMachineBlockEntity.TIER3_ENERGY_CAPACITY);
         machine.setItem(ElectricMachineBlockEntity.SLOT_INPUT, new ItemStack(Items.RAW_IRON, 2));
+        helper.assertTrue(helper.getLevel().getCapability(Capabilities.Fluid.BLOCK, helper.absolutePos(pos), Direction.NORTH) == null,
+                "The Plasma Granulator shouldn't take fluids any more");
+        helper.succeedWhen(() -> {
+            ItemStack output = machine.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT);
+            helper.assertTrue(output.is(ModItems.GRANULATED_IRON.get()) && output.getCount() == 4,
+                    "Expected 4 granulated iron, got " + output);
+        });
+    }
 
-        helper.runAfterDelay(PlasmaGranulatorBlockEntity.PROCESS_TIME + 10, () -> {
-            helper.assertTrue(machine.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT).isEmpty() && machine.getProgress() == 0,
-                    "The granulator ran without plasma");
-            machine.getTank().fill(FluidResource.of(ModFluids.PLASMA.get()), 15);
-            helper.runAfterDelay(PlasmaGranulatorBlockEntity.PROCESS_TIME * 3, () -> {
-                ItemStack output = machine.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT);
-                helper.assertTrue(output.is(ModItems.GRANULATED_IRON.get()) && output.getCount() == 2,
-                        "Expected one operation (2 granulated iron), got " + output);
-                helper.assertTrue(machine.getTank().getAmount() == 5, "Expected 5 mB left, has " + machine.getTank().getAmount());
-                helper.succeed();
-            });
+    /**
+     * An Electrolyser's oxygen leaves through its By-product face (the back, by default) and its hydrogen through its
+     * Output face, each into its own Fluid Tank.
+     */
+    private static void oxygenLeavesByByproductFace(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, ModBlocks.ELECTROLYSER.get().defaultBlockState().setValue(MachineBlock.FACING, Direction.NORTH));
+        ElectrolyserBlockEntity electrolyser = helper.getBlockEntity(pos, ElectrolyserBlockEntity.class);
+        electrolyser.setEnergy(ElectrolyserBlockEntity.ENERGY_CAPACITY);
+        electrolyser.getTanks().get(ElectrolyserBlockEntity.TANK_WATER).fill(FluidResource.of(Fluids.WATER), 2_000);
+        // Facing north: the back is south; make east an Output face (left side).
+        electrolyser.getControls().setSide(RelativeSide.LEFT, SideMode.OUTPUT);
+        BlockPos oxygenTank = new BlockPos(2, 1, 3);
+        BlockPos hydrogenTank = new BlockPos(3, 1, 2);
+        helper.setBlock(oxygenTank, ModBlocks.FLUID_TANK.get());
+        helper.setBlock(hydrogenTank, ModBlocks.FLUID_TANK.get());
+        FluidTankBlockEntity oxygen = helper.getBlockEntity(oxygenTank, FluidTankBlockEntity.class);
+        FluidTankBlockEntity hydrogen = helper.getBlockEntity(hydrogenTank, FluidTankBlockEntity.class);
+        helper.succeedWhen(() -> {
+            helper.assertTrue(oxygen.getTank().getAmount() > 0 && oxygen.getTank().getFluid().is(ModFluids.OXYGEN_TYPE.get()),
+                    "The back tank should fill with oxygen, it has " + oxygen.getTank().getStack());
+            helper.assertTrue(hydrogen.getTank().getAmount() > 0 && hydrogen.getTank().getFluid().is(ModFluids.HYDROGEN_TYPE.get()),
+                    "The east tank should fill with hydrogen, it has " + hydrogen.getTank().getStack());
         });
     }
 
@@ -666,7 +683,7 @@ public final class ModGameTests {
         BlockPos pos = new BlockPos(2, 1, 2);
         helper.setBlock(pos, ModBlocks.CIRCUIT_ASSEMBLER.get());
         PlasmaMachineBlockEntity machine = helper.getBlockEntity(pos, PlasmaMachineBlockEntity.class);
-        ((MachineEnergyStorage) machine.getEnergyHandler()).set(PlasmaMachineBlockEntity.ENERGY_CAPACITY);
+        ((MachineEnergyStorage) machine.getEnergyHandler()).set(ElectricMachineBlockEntity.TIER3_ENERGY_CAPACITY);
         machine.getTank().fill(FluidResource.of(ModFluids.PLASMA.get()), 150);
         machine.setItem(ElectricMachineBlockEntity.SLOT_INPUT, new ItemStack(ModItems.ELECTRONIC_CIRCUIT.get()));
         helper.succeedWhen(() -> {
@@ -684,8 +701,7 @@ public final class ModGameTests {
         BlockPos pos = new BlockPos(2, 1, 2);
         helper.setBlock(pos, ModBlocks.ORE_WASHER.get());
         OreWasherBlockEntity washer = helper.getBlockEntity(pos, OreWasherBlockEntity.class);
-        ((MachineEnergyStorage) washer.getEnergyHandler()).set(PlasmaMachineBlockEntity.ENERGY_CAPACITY);
-        washer.getTank().fill(FluidResource.of(ModFluids.PLASMA.get()), 100);
+        ((MachineEnergyStorage) washer.getEnergyHandler()).set(ElectricMachineBlockEntity.TIER3_ENERGY_CAPACITY);
         washer.setItem(ElectricMachineBlockEntity.SLOT_INPUT, new ItemStack(Items.RAW_IRON));
 
         helper.runAfterDelay(OreWasherBlockEntity.PROCESS_TIME + 10, () -> {

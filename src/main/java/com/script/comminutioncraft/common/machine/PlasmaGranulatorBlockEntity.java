@@ -17,20 +17,19 @@ import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
- * Tier 3 granulator: raw ore -> 2 granulated ore (still 2x; the Ore Washer is the 3x path), on FE + plasma.
+ * Tier 3 granulator: raw ore -> 2 granulated ore (still 2x; the Ore Washer is the 3x path), on FE alone.
  * <p>
- * Almost twice as fast as the Electric Granulator (40 ticks vs 75) at 60 FE/t = 2,400 FE and 10 mB plasma per operation.
+ * Almost twice as fast as the Electric Granulator (40 ticks vs 75) at 60 FE/t = 2,400 FE per operation.
  */
-public class PlasmaGranulatorBlockEntity extends PlasmaMachineBlockEntity {
+public class PlasmaGranulatorBlockEntity extends ElectricMachineBlockEntity {
     public static final int PROCESS_TIME = 40;
     public static final int ENERGY_PER_TICK = 60;
-    public static final int PLASMA_PER_OPERATION = 10;
 
     private final RecipeManager.CachedCheck<SingleRecipeInput, GranulatingRecipe> recipeCheck =
             RecipeManager.createCheck(ModRecipes.GRANULATING_TYPE.get());
 
     public PlasmaGranulatorBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.PLASMA_GRANULATOR.get(), pos, state);
+        super(ModBlockEntities.PLASMA_GRANULATOR.get(), pos, state, TIER3_ENERGY_CAPACITY, TIER3_MAX_ENERGY_INPUT);
     }
 
     @Override
@@ -41,11 +40,6 @@ public class PlasmaGranulatorBlockEntity extends PlasmaMachineBlockEntity {
     @Override
     protected int getEnergyPerTick() {
         return ENERGY_PER_TICK;
-    }
-
-    @Override
-    protected int getPlasmaPerOperation() {
-        return PLASMA_PER_OPERATION;
     }
 
     @Override
@@ -60,6 +54,6 @@ public class PlasmaGranulatorBlockEntity extends PlasmaMachineBlockEntity {
 
     @Override
     protected AbstractContainerMenu createMenu(int containerId, Inventory inventory) {
-        return new PlasmaMachineMenu(ModMenus.PLASMA_GRANULATOR.get(), containerId, inventory, this, dataAccess);
+        return new ElectricMachineMenu(ModMenus.PLASMA_GRANULATOR.get(), containerId, inventory, this, dataAccess);
     }
 }

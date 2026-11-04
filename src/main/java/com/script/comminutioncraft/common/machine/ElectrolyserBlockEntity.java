@@ -16,9 +16,9 @@ import net.neoforged.neoforge.transfer.fluid.FluidResource;
 /**
  * Tier 3 Electrolyser: splits water with FE. Every {@link #WATER_PER_HYDROGEN} mB of water gives 1 mB of hydrogen
  * and half a mB of oxygen (hydrogen to oxygen 2:1, like real electrolysis), up to {@link #MAX_HYDROGEN_PER_TICK}
- * mB/t at {@link #ENERGY_PER_HYDROGEN} FE per mB of hydrogen. Water comes in through Input faces; hydrogen and
- * oxygen go out of Output faces into whatever takes them. Oxygen is kept for later tiers: when its tank is full
- * the rest is vented, so a full oxygen tank never stops the hydrogen.
+ * mB/t at {@link #ENERGY_PER_HYDROGEN} FE per mB of hydrogen. Water comes in through Input faces; hydrogen goes out
+ * of Output faces and oxygen out of By-product faces (so the two never share a pipe or a tank). Oxygen is kept for
+ * later tiers: when its tank is full the rest is vented, so a full oxygen tank never stops the hydrogen.
  */
 public class ElectrolyserBlockEntity extends FluidMachineBlockEntity {
     public static final int MAX_HYDROGEN_PER_TICK = 10;
@@ -32,14 +32,14 @@ public class ElectrolyserBlockEntity extends FluidMachineBlockEntity {
     public static final int TANK_OXYGEN = 2;
     public static final int TANK_COUNT = 3;
 
-    private final MachineFluidTank water = addTank("water", resource -> resource.is(NeoForgeMod.WATER_TYPE.value()), false);
-    private final MachineFluidTank hydrogen = addTank("hydrogen", resource -> resource.is(ModFluids.HYDROGEN_TYPE.get()), true);
-    private final MachineFluidTank oxygen = addTank("oxygen", resource -> resource.is(ModFluids.OXYGEN_TYPE.get()), true);
+    private final MachineFluidTank water = addTank("water", resource -> resource.is(NeoForgeMod.WATER_TYPE.value()), TankRole.INPUT);
+    private final MachineFluidTank hydrogen = addTank("hydrogen", resource -> resource.is(ModFluids.HYDROGEN_TYPE.get()), TankRole.OUTPUT);
+    private final MachineFluidTank oxygen = addTank("oxygen", resource -> resource.is(ModFluids.OXYGEN_TYPE.get()), TankRole.BYPRODUCT);
     /** Oxygen comes in halves of a mB; this is the half left over. */
     private int oxygenHalves;
 
     public ElectrolyserBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.ELECTROLYSER.get(), pos, state, ENERGY_CAPACITY, MAX_ENERGY_INPUT, 0);
+        super(ModBlockEntities.ELECTROLYSER.get(), pos, state, ENERGY_CAPACITY, MAX_ENERGY_INPUT, 0, true);
     }
 
     @Override

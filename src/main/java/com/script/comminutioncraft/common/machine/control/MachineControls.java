@@ -25,13 +25,24 @@ public final class MachineControls {
     private final EnumMap<RelativeSide, SideMode> defaults;
     private final EnumMap<RelativeSide, SideMode> sides;
     private final Runnable onChanged;
+    private final boolean byproduct;
     private RedstoneMode redstone = RedstoneMode.IGNORE;
 
     /** @param onChanged called after any change (save the block entity, refresh hopper/pipe capabilities) */
     public MachineControls(Map<RelativeSide, SideMode> defaults, Runnable onChanged) {
+        this(defaults, onChanged, false);
+    }
+
+    /** @param byproduct whether faces can also be set to {@link SideMode#BYPRODUCT} */
+    public MachineControls(Map<RelativeSide, SideMode> defaults, Runnable onChanged, boolean byproduct) {
         this.defaults = new EnumMap<>(defaults);
         this.sides = new EnumMap<>(defaults);
         this.onChanged = onChanged;
+        this.byproduct = byproduct;
+    }
+
+    public boolean hasByproduct() {
+        return byproduct;
     }
 
     /** The usual layout: output at the bottom, input everywhere else. */
@@ -75,7 +86,7 @@ public final class MachineControls {
     }
 
     public SideMode cycleSide(RelativeSide side) {
-        SideMode next = sides.get(side).next();
+        SideMode next = sides.get(side).next(byproduct);
         setSide(side, next);
         return next;
     }

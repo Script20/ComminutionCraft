@@ -96,6 +96,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.comminutioncraft.side_mode.input", "Input");
         add("gui.comminutioncraft.side_mode.output", "Output");
         add("gui.comminutioncraft.side_mode.none", "None");
+        add("gui.comminutioncraft.side_mode.byproduct", "By-product");
 
         add("jei.comminutioncraft.granulating", "Granulating");
         add("jei.comminutioncraft.time.coal_granulator", "Coal Granulator: %s");
@@ -106,7 +107,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("jei.comminutioncraft.uses_plasma", "Uses %s mB plasma");
         add("jei.comminutioncraft.washing", "Ore Washing");
         add("jei.comminutioncraft.time.ore_washer", "Ore Washer: %s");
-        add("jei.comminutioncraft.uses_water_plasma", "Uses %s mB water and %s mB plasma");
+        add("jei.comminutioncraft.uses_water", "Uses %s mB water");
 
         add("config.jade.plugin_comminutioncraft.machine", "Comminution Craft machines");
         add("config.jade.plugin_comminutioncraft.generator", "Comminution Craft generator");
