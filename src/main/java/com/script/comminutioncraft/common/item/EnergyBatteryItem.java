@@ -1,18 +1,12 @@
 package com.script.comminutioncraft.common.item;
 
 import com.script.comminutioncraft.common.registry.ModDataComponents;
-import java.util.Locale;
-import java.util.function.Consumer;
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.block.Block;
 
-/** Battery block item: a charge bar and "Stored: x / y FE" for the FE kept from a broken battery. */
+/** Battery block item: a charge bar for the FE kept from a wrench pickup (the FE line is in {@code ModTooltips}). */
 public class EnergyBatteryItem extends BlockItem {
     private final int capacity;
     private final int barColor;
@@ -24,7 +18,11 @@ public class EnergyBatteryItem extends BlockItem {
         this.barColor = barColor;
     }
 
-    private static int stored(ItemStack stack) {
+    public int capacity() {
+        return capacity;
+    }
+
+    public static int stored(ItemStack stack) {
         return stack.getOrDefault(ModDataComponents.STORED_ENERGY.get(), 0);
     }
 
@@ -41,13 +39,5 @@ public class EnergyBatteryItem extends BlockItem {
     @Override
     public int getBarColor(ItemStack stack) {
         return barColor;
-    }
-
-    @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display,
-                                Consumer<Component> builder, TooltipFlag flag) {
-        builder.accept(Component.translatable("gui.comminutioncraft.energy",
-                String.format(Locale.ROOT, "%,d", stored(stack)), String.format(Locale.ROOT, "%,d", capacity))
-                .withStyle(ChatFormatting.GRAY));
     }
 }

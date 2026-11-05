@@ -111,7 +111,10 @@ public class ModLanguageProvider extends LanguageProvider {
         add("tooltip.comminutioncraft.cable_rate", "Carries up to %s FE/t per network");
         add("tooltip.comminutioncraft.pipe_rate", "Carries up to %s mB per transfer");
         add("tooltip.comminutioncraft.plasma_only", "Plasma only");
-        add("tooltip.comminutioncraft.tank_capacity", "Holds %s mB of one fluid");
+        add("tooltip.comminutioncraft.tank_amount", "Amount: %s / %s mB");
+        add("tooltip.comminutioncraft.tank_amount_fluid", "Amount: %s %s / %s mB");
+        add("tooltip.comminutioncraft.hold_shift", "Hold %s for Details");
+        add("tooltip.comminutioncraft.shift", "Shift");
         add("tooltip.comminutioncraft.creative_tank", "Endless fluid of the kind picked in its GUI");
         add("tooltip.comminutioncraft.creative_battery", "Endless FE out of every face");
         add("message.comminutioncraft.wrench.cable_cut", "Cable connection cut");

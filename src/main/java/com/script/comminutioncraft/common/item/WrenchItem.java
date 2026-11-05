@@ -19,8 +19,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -198,17 +196,5 @@ public class WrenchItem extends Item {
             rotated = state.rotate(level, pos, Rotation.CLOCKWISE_90);
         }
         return rotated.equals(state) || !rotated.canSurvive(level, pos) ? null : rotated;
-    }
-
-    // ---- Tooltip ----
-
-    @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display,
-                                Consumer<Component> builder, TooltipFlag flag) {
-        WrenchMode mode = getMode(stack);
-        builder.accept(mode.displayName().copy().withStyle(ChatFormatting.AQUA));
-        builder.accept(mode.help().copy().withStyle(ChatFormatting.GRAY));
-        builder.accept(Component.translatable("item.comminutioncraft.wrench.help.switch", Component.keybind(MODE_KEY))
-                .withStyle(ChatFormatting.DARK_GRAY));
     }
 }

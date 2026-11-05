@@ -230,9 +230,12 @@
   "tooltip.comminutioncraft.cable_rate": "Carries up to %s FE/t per network",
   "tooltip.comminutioncraft.creative_battery": "Endless FE out of every face",
   "tooltip.comminutioncraft.creative_tank": "Endless fluid of the kind picked in its GUI",
+  "tooltip.comminutioncraft.hold_shift": "Hold %s for Details",
   "tooltip.comminutioncraft.machine_settings": "Keeps its side and redstone settings",
   "tooltip.comminutioncraft.pipe_rate": "Carries up to %s mB per transfer",
   "tooltip.comminutioncraft.plasma_only": "Plasma only",
+  "tooltip.comminutioncraft.shift": "Shift",
   "tooltip.comminutioncraft.stored_fluid": "%s: %s mB",
-  "tooltip.comminutioncraft.tank_capacity": "Holds %s mB of one fluid"
+  "tooltip.comminutioncraft.tank_amount": "Amount: %s / %s mB",
+  "tooltip.comminutioncraft.tank_amount_fluid": "Amount: %s %s / %s mB"
 }

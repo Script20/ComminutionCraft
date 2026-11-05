@@ -3,8 +3,7 @@ package com.script.comminutioncraft;
 import com.script.comminutioncraft.client.gui.CoalGranulatorScreen;
 import com.script.comminutioncraft.client.ClientRecipes;
 import com.script.comminutioncraft.client.ModKeyMappings;
-import com.script.comminutioncraft.client.SavedMachineTooltip;
-import com.script.comminutioncraft.client.BlockInfoTooltip;
+import com.script.comminutioncraft.client.ModTooltips;
 import net.neoforged.neoforge.common.NeoForge;
 import com.script.comminutioncraft.client.gui.CoalSmelterScreen;
 import com.script.comminutioncraft.client.gui.ElectricGeneratorScreen;
@@ -51,8 +50,7 @@ public class ComminutionCraftClient {
         modEventBus.addListener(ComminutionCraftClient::registerRenderers);
         modEventBus.addListener(ComminutionCraftClient::registerFluidModels);
         NeoForge.EVENT_BUS.addListener(ModKeyMappings::onClientTick);
-        NeoForge.EVENT_BUS.addListener(SavedMachineTooltip::onTooltip);
-        NeoForge.EVENT_BUS.addListener(BlockInfoTooltip::onTooltip);
+        NeoForge.EVENT_BUS.addListener(ModTooltips::onTooltip);
     }
 
     private static void registerScreens(RegisterMenuScreensEvent event) {
