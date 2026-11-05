@@ -84,6 +84,10 @@ public class ProcessingCategory<R extends ItemProcessingRecipe> extends Abstract
         return Component.translatable("jei.comminutioncraft.chance", Math.round(chance * 100));
     }
 
+    private static Component shortChanceText(float chance) {
+        return Component.literal(Math.round(chance * 100) + "%");
+    }
+
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, RecipeHolder<R> recipe, IFocusGroup focuses) {
         builder.addInputSlot(1, 5)
@@ -124,8 +128,11 @@ public class ProcessingCategory<R extends ItemProcessingRecipe> extends Abstract
                 .setTextAlignment(HorizontalAlignment.CENTER)
                 .setColor(0xFF808080)
                 .setTooltip(tooltip);
+        for (int i = 0; i < fluids.size(); i++) {
+            JeiAmounts.label(builder, 1 + i * 18, FLUID_Y, fluids.get(i).amount());
+        }
         if (secondOutput != null) {
-            builder.addText(chanceText(secondOutput.chance().apply(recipe.value())), 18, 10)
+            builder.addText(shortChanceText(secondOutput.chance().apply(recipe.value())), 18, 10)
                     .setPosition(SECOND_OUTPUT_X, fluids.isEmpty() ? 28 : FLUID_Y + 4)
                     .setTextAlignment(HorizontalAlignment.CENTER)
                     .setColor(0xFFC08A20);

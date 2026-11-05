@@ -122,6 +122,8 @@ public class FusionReactorCategory extends AbstractRecipeCategory<FusionReactorC
                 .setPosition(42, IO_Y + 5)
                 .setTextAlignment(HorizontalAlignment.CENTER)
                 .setColor(0xFF808080);
+        JeiAmounts.label(builder, 21, IO_Y + 1, 1_000);
+        JeiAmounts.label(builder, WIDTH - 19, IO_Y + 1, FusionReactorBlockEntity.TRITIUM_PER_PELLET);
         builder.addText(Component.translatable("jei.comminutioncraft.fusion_reactor.hint"), WIDTH, 10)
                 .setPosition(0, HEIGHT - 10)
                 .setTextAlignment(HorizontalAlignment.CENTER)

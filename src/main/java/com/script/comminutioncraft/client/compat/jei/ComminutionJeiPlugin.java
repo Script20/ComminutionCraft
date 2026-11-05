@@ -26,6 +26,12 @@ import com.script.comminutioncraft.common.registry.ModItems;
 import com.script.comminutioncraft.common.registry.ModMenus;
 import com.script.comminutioncraft.common.registry.ModRecipes;
 import com.script.comminutioncraft.common.registry.ModFluids;
+import com.script.comminutioncraft.common.machine.ElectrolyserBlockEntity;
+import com.script.comminutioncraft.common.machine.IsotopeSeparatorBlockEntity;
+import com.script.comminutioncraft.common.machine.MhdGeneratorBlockEntity;
+import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlockEntity;
+import com.script.comminutioncraft.common.machine.TritiumBreederBlockEntity;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.material.Fluids;
 import java.util.List;
 import java.util.function.Supplier;
@@ -110,6 +116,9 @@ public class ComminutionJeiPlugin implements IModPlugin {
                         new ProcessingCategory.SecondOutput<>(PurifyingRecipe::getByproduct, PurifyingRecipe::getChance)).withFluids(
                         new ProcessingCategory.FluidCost(ModFluids.OXYGEN.get(), OrePurifierBlockEntity.OXYGEN_PER_OPERATION)),
                 new FusionReactorCategory(gui));
+        for (FluidMachinePage page : fluidMachinePages()) {
+            registration.addRecipeCategories(new FluidConversionCategory(gui, page.type(), page.machine()));
+        }
     }
 
     @Override
@@ -120,6 +129,9 @@ public class ComminutionJeiPlugin implements IModPlugin {
         registration.addRecipes(PRESSING.get(), ClientRecipes.pressing());
         registration.addRecipes(PURIFYING.get(), ClientRecipes.purifying());
         registration.addRecipes(FusionReactorCategory.TYPE, List.of(FusionReactorCategory.Structure.INSTANCE));
+        for (FluidMachinePage page : fluidMachinePages()) {
+            registration.addRecipes(page.type(), List.of(page.conversion()));
+        }
     }
 
     @Override
@@ -133,9 +145,63 @@ public class ComminutionJeiPlugin implements IModPlugin {
         registration.addCraftingStation(PRESSING.get(), ModItems.PELLET_PRESS.get());
         registration.addCraftingStation(PURIFYING.get(), ModItems.ORE_PURIFIER.get());
         registration.addCraftingStation(FusionReactorCategory.TYPE, ModItems.REACTOR_CONTROLLER.get());
+        for (FluidMachinePage page : fluidMachinePages()) {
+            registration.addCraftingStation(page.type(), page.machine());
+        }
         // Everything that burns furnace fuel
         registration.addCraftingStation(RecipeTypes.SMELTING_FUEL,
                 ModItems.COAL_GRANULATOR.get(), ModItems.COAL_SMELTER.get(), ModItems.ELECTRIC_GENERATOR.get());
+    }
+
+    // ---- The fluid machines' pages (no recipes of their own: what they turn into what, per step) ----
+
+    private record FluidMachinePage(IRecipeType<FluidConversionCategory.Conversion> type, ItemLike machine,
+                                    FluidConversionCategory.Conversion conversion) {}
+
+    private static final java.util.Map<String, IRecipeType<FluidConversionCategory.Conversion>> PAGE_TYPES = new java.util.HashMap<>();
+
+    private static IRecipeType<FluidConversionCategory.Conversion> pageType(String name) {
+        return PAGE_TYPES.computeIfAbsent(name, n -> IRecipeType.create(ComminutionCraft.MODID, n, FluidConversionCategory.Conversion.class));
+    }
+
+    private static FluidMachinePage page(String name, ItemLike machine, List<FluidConversionCategory.Amount> in,
+                                         List<FluidConversionCategory.Amount> out, Component line) {
+        return new FluidMachinePage(pageType(name), machine, new FluidConversionCategory.Conversion(in, out, line));
+    }
+
+    private static List<FluidMachinePage> fluidMachinePages() {
+        int half = ElectrolyserBlockEntity.WATER_PER_HYDROGEN;
+        return List.of(
+                page("atmospheric_water_generator", ModItems.ATMOSPHERIC_WATER_GENERATOR.get(), List.of(),
+                        List.of(new FluidConversionCategory.Amount(Fluids.WATER, 1,
+                                Component.translatable("jei.comminutioncraft.water_generator.note"))),
+                        Component.translatable("jei.comminutioncraft.water_generator.line")),
+                page("electrolyser", ModItems.ELECTROLYSER.get(),
+                        List.of(new FluidConversionCategory.Amount(Fluids.WATER, half * 2)),
+                        List.of(new FluidConversionCategory.Amount(ModFluids.HYDROGEN.get(), 2),
+                                new FluidConversionCategory.Amount(ModFluids.OXYGEN.get(), 1,
+                                        Component.translatable("jei.comminutioncraft.byproduct_face"))),
+                        Component.translatable("jei.comminutioncraft.fe_per_mb", ElectrolyserBlockEntity.ENERGY_PER_HYDROGEN,
+                                ElectrolyserBlockEntity.MAX_HYDROGEN_PER_TICK)),
+                page("plasma_generator", ModItems.PLASMA_GENERATOR.get(),
+                        List.of(new FluidConversionCategory.Amount(ModFluids.HYDROGEN.get(), 1)),
+                        List.of(new FluidConversionCategory.Amount(ModFluids.PLASMA.get(), 1)),
+                        Component.translatable("jei.comminutioncraft.fe_per_mb", PlasmaGeneratorBlockEntity.ENERGY_PER_MB,
+                                PlasmaGeneratorBlockEntity.MAX_PLASMA_PER_TICK)),
+                page("mhd_generator", ModItems.MHD_GENERATOR.get(),
+                        List.of(new FluidConversionCategory.Amount(ModFluids.PLASMA.get(), 1)), List.of(),
+                        Component.translatable("jei.comminutioncraft.mhd.line", MhdGeneratorBlockEntity.ENERGY_PER_MB,
+                                MhdGeneratorBlockEntity.ENERGY_PER_MB * MhdGeneratorBlockEntity.MAX_PLASMA_PER_TICK)),
+                page("isotope_separator", ModItems.ISOTOPE_SEPARATOR.get(),
+                        List.of(new FluidConversionCategory.Amount(Fluids.WATER, IsotopeSeparatorBlockEntity.WATER_PER_MB)),
+                        List.of(new FluidConversionCategory.Amount(ModFluids.DEUTERIUM.get(), 1)),
+                        Component.translatable("jei.comminutioncraft.fe_per_mb", IsotopeSeparatorBlockEntity.ENERGY_PER_MB,
+                                IsotopeSeparatorBlockEntity.MAX_DEUTERIUM_PER_TICK)),
+                page("tritium_breeder", ModItems.TRITIUM_BREEDER.get(),
+                        List.of(new FluidConversionCategory.Amount(ModFluids.DEUTERIUM.get(), 1)),
+                        List.of(new FluidConversionCategory.Amount(ModFluids.TRITIUM.get(), 1)),
+                        Component.translatable("jei.comminutioncraft.fe_per_mb", TritiumBreederBlockEntity.ENERGY_PER_MB,
+                                TritiumBreederBlockEntity.MAX_TRITIUM_PER_TICK)));
     }
 
     /** Granulated and washed forms of other mods' metals that aren't in this pack stay out of the ingredient list. */

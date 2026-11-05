@@ -692,7 +692,7 @@ public final class ModGameTests {
     }
 
     /**
-     * A Plasma Cable takes plasma (up to 4,000 mB at a time) into a tank but refuses water, and doesn't join a
+     * A Plasma Cable takes plasma (up to its rate per insert) into a tank but refuses water, and doesn't join a
      * Fluid Pipe next to it.
      */
     private static void plasmaCableCarriesOnlyPlasma(GameTestHelper helper) {
@@ -712,13 +712,13 @@ public final class ModGameTests {
         int plasma;
         try (Transaction transaction = Transaction.openRoot()) {
             water = handler.insert(FluidResource.of(Fluids.WATER), 1_000, transaction);
-            plasma = handler.insert(FluidResource.of(ModFluids.PLASMA.get()), 5_000, transaction);
+            plasma = handler.insert(FluidResource.of(ModFluids.PLASMA.get()), FluidPipeBlock.PLASMA_CABLE_RATE + 1_000, transaction);
             transaction.commit();
         }
         FluidTankBlockEntity tank = helper.getBlockEntity(tankPos, FluidTankBlockEntity.class);
         helper.assertTrue(water == 0, "The plasma cable carried " + water + " mB of water");
         helper.assertTrue(plasma == FluidPipeBlock.PLASMA_CABLE_RATE && tank.getTank().getAmount() == plasma,
-                "Expected 4,000 mB of plasma in the tank, carried " + plasma + ", tank has " + tank.getTank().getAmount());
+                "Expected one insert's worth of plasma in the tank, carried " + plasma + ", tank has " + tank.getTank().getAmount());
         helper.succeed();
     }
 
