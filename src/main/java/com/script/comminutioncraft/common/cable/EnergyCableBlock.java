@@ -31,4 +31,6 @@ public class EnergyCableBlock extends ConduitBlock {
         return !(level.getBlockState(neighbourPos).getBlock() instanceof ConduitBlock)
                 && level.getCapability(Capabilities.Energy.BLOCK, neighbourPos, side) != null;
     }
+
+
 }
