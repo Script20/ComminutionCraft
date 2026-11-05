@@ -18,10 +18,10 @@ import net.minecraft.world.level.block.state.BlockState;
  * The whole chain pays: a mB of plasma costs 2 mB water + 10 FE (Electrolyser) + 16 FE (Plasma Generator) and gives 60 FE.
  */
 public class MhdGeneratorBlockEntity extends FluidMachineBlockEntity {
-    public static final int MAX_PLASMA_PER_TICK = 10;
-    public static final int ENERGY_PER_MB = 60;
-    public static final int ENERGY_CAPACITY = 50_000;
-    public static final int MAX_ENERGY_OUTPUT = 1_000;
+    public static final com.script.comminutioncraft.common.config.ConfigInt MAX_PLASMA_PER_TICK = com.script.comminutioncraft.common.config.MachineConfig.MHD_GENERATOR_PLASMA_PER_TICK;
+    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_PER_MB = com.script.comminutioncraft.common.config.MachineConfig.MHD_GENERATOR_ENERGY_PER_MB;
+    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.MHD_GENERATOR_ENERGY_CAPACITY;
+    public static final com.script.comminutioncraft.common.config.ConfigInt MAX_ENERGY_OUTPUT = com.script.comminutioncraft.common.config.MachineConfig.MHD_GENERATOR_MAX_ENERGY_OUTPUT;
 
     public static final int TANK_PLASMA = 0;
     public static final int TANK_COUNT = 1;
@@ -29,17 +29,17 @@ public class MhdGeneratorBlockEntity extends FluidMachineBlockEntity {
     private final MachineFluidTank plasma = addTank("plasma", resource -> resource.is(ModFluids.PLASMA_TYPE.get()), TankRole.INPUT);
 
     public MhdGeneratorBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.MHD_GENERATOR.get(), pos, state, ENERGY_CAPACITY, 0, MAX_ENERGY_OUTPUT);
+        super(ModBlockEntities.MHD_GENERATOR.get(), pos, state, ENERGY_CAPACITY.get(), 0, MAX_ENERGY_OUTPUT.get());
     }
 
     @Override
     protected int work(ServerLevel level) {
-        int burn = Math.min(Math.min(MAX_PLASMA_PER_TICK, plasma.getAmount()), energy.getSpace() / ENERGY_PER_MB);
+        int burn = Math.min(Math.min(MAX_PLASMA_PER_TICK.get(), plasma.getAmount()), energy.getSpace() / ENERGY_PER_MB.get());
         if (burn <= 0) {
             return 0;
         }
         plasma.drain(burn);
-        return energy.generate(burn * ENERGY_PER_MB);
+        return energy.generate(burn * ENERGY_PER_MB.get());
     }
 
     @Override

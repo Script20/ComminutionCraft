@@ -17,7 +17,7 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * to the block on each face, and anything can pull as much as it likes from it. It takes nothing in.
  */
 public class CreativeEnergyBatteryBlockEntity extends BlockEntity implements TickingMachine {
-    public static final int PUSH_PER_FACE = 1_000_000;
+    public static final com.script.comminutioncraft.common.config.ConfigInt PUSH_PER_FACE = com.script.comminutioncraft.common.config.MachineConfig.CREATIVE_ENERGY_BATTERY_PUSH_PER_FACE;
 
     /** Always full, never runs down, accepts nothing. */
     public static final EnergyHandler ENDLESS = new EnergyHandler() {
@@ -53,7 +53,7 @@ public class CreativeEnergyBatteryBlockEntity extends BlockEntity implements Tic
         for (Direction direction : Direction.values()) {
             EnergyHandler target = level.getCapability(Capabilities.Energy.BLOCK, pos.relative(direction), direction.getOpposite());
             if (target != null && target != ENDLESS) {
-                EnergyHandlerUtil.move(ENDLESS, target, PUSH_PER_FACE, null);
+                EnergyHandlerUtil.move(ENDLESS, target, PUSH_PER_FACE.get(), null);
             }
         }
     }

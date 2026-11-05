@@ -48,8 +48,8 @@ import org.jspecify.annotations.Nullable;
  * Mined with a pickaxe it forgets everything; picked up with the wrench it keeps its FE and settings.
  */
 public abstract class FluidMachineBlockEntity extends BlockEntity implements TickingMachine, ControllableMachine, MenuProvider {
-    public static final int TANK_CAPACITY = 8_000;
-    public static final int MAX_FLUID_OUTPUT = 500;
+    public static final com.script.comminutioncraft.common.config.ConfigInt TANK_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.FLUID_MACHINES_TANK_CAPACITY;
+    public static final com.script.comminutioncraft.common.config.ConfigInt MAX_FLUID_OUTPUT = com.script.comminutioncraft.common.config.MachineConfig.FLUID_MACHINES_MAX_FLUID_OUTPUT;
     private static final int LIT_COOLDOWN = 10;
 
     // ContainerData indices, synced to the open GUI (energy split in two, see EnergySync); then amount + capacity per tank
@@ -129,7 +129,7 @@ public abstract class FluidMachineBlockEntity extends BlockEntity implements Tic
 
     /** Adds a tank (call from the constructor); {@code name} is its save key. */
     protected MachineFluidTank addTank(String name, Predicate<FluidResource> accepts, TankRole role) {
-        MachineFluidTank tank = new MachineFluidTank(TANK_CAPACITY, accepts, this::setChanged);
+        MachineFluidTank tank = new MachineFluidTank(TANK_CAPACITY.get(), accepts, this::setChanged);
         tanks.add(tank);
         tankNames.add(name);
         tankRoles.add(role);
@@ -248,7 +248,7 @@ public abstract class FluidMachineBlockEntity extends BlockEntity implements Tic
                 continue;
             }
             SideMode faces = role == TankRole.OUTPUT ? SideMode.OUTPUT : SideMode.BYPRODUCT;
-            int budget = Math.min(MAX_FLUID_OUTPUT, tank.getAmount());
+            int budget = Math.min(MAX_FLUID_OUTPUT.get(), tank.getAmount());
             for (Direction direction : Direction.values()) {
                 if (budget <= 0) {
                     break;

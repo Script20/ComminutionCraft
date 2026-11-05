@@ -46,11 +46,11 @@ public class ElectricGeneratorBlockEntity extends BaseContainerBlockEntity
     private static final int[] SLOTS_FUEL = {SLOT_FUEL};
     private static final int[] SLOTS_NONE = {};
 
-    public static final int ENERGY_PER_TICK = 40;
-    public static final double BURN_TIME_MULTIPLIER = 0.5;
-    public static final int ENERGY_CAPACITY = 40_000;
+    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_PER_TICK = com.script.comminutioncraft.common.config.MachineConfig.ELECTRIC_GENERATOR_ENERGY_PER_TICK;
+    public static final com.script.comminutioncraft.common.config.ConfigDouble BURN_TIME_MULTIPLIER = com.script.comminutioncraft.common.config.MachineConfig.ELECTRIC_GENERATOR_BURN_TIME_MULTIPLIER;
+    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.ELECTRIC_GENERATOR_ENERGY_CAPACITY;
     /** Max FE pushed out per tick, across all sides. */
-    public static final int MAX_OUTPUT = 400;
+    public static final com.script.comminutioncraft.common.config.ConfigInt MAX_OUTPUT = com.script.comminutioncraft.common.config.MachineConfig.ELECTRIC_GENERATOR_MAX_OUTPUT;
 
     // ContainerData indices, synced to the open GUI (energy split in two, see EnergySync)
     public static final int DATA_LIT_TIME = 0;
@@ -65,7 +65,7 @@ public class ElectricGeneratorBlockEntity extends BaseContainerBlockEntity
 
     private NonNullList<ItemStack> items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
     // Nothing can be inserted from outside; extraction is what cables and machines pull through.
-    private final MachineEnergyStorage energy = new MachineEnergyStorage(ENERGY_CAPACITY, 0, MAX_OUTPUT, this::setChanged);
+    private final MachineEnergyStorage energy = new MachineEnergyStorage(ENERGY_CAPACITY.get(), 0, MAX_OUTPUT.get(), this::setChanged);
     private final MachineControls controls = new MachineControls(MachineControls.outputBelow(), this::onControlsChanged);
     private int litTimeRemaining;
     private int litTotalTime;
@@ -143,14 +143,14 @@ public class ElectricGeneratorBlockEntity extends BaseContainerBlockEntity
 
         if (isLit()) {
             // Hold the flame while the buffer is full, so no fuel is wasted.
-            if (energy.getSpace() >= ENERGY_PER_TICK) {
+            if (energy.getSpace() >= ENERGY_PER_TICK.get()) {
                 litTimeRemaining--;
-                energy.generate(ENERGY_PER_TICK);
+                energy.generate(ENERGY_PER_TICK.get());
             }
-        } else if (energy.getSpace() >= ENERGY_PER_TICK) {
+        } else if (energy.getSpace() >= ENERGY_PER_TICK.get()) {
             ItemStack fuel = items.get(SLOT_FUEL);
             int burnTime = fuel.isEmpty() ? 0
-                    : (int) Math.round(fuel.getBurnTime(RecipeType.SMELTING, level.fuelValues()) * BURN_TIME_MULTIPLIER);
+                    : (int) Math.round(fuel.getBurnTime(RecipeType.SMELTING, level.fuelValues()) * BURN_TIME_MULTIPLIER.get());
             if (burnTime > 0) {
                 litTimeRemaining = burnTime;
                 litTotalTime = burnTime;
@@ -172,7 +172,7 @@ public class ElectricGeneratorBlockEntity extends BaseContainerBlockEntity
 
     /** Offers energy to every neighbour that accepts FE, up to {@link #MAX_OUTPUT} per tick in total. */
     private void pushEnergy(ServerLevel level, BlockPos pos) {
-        int budget = Math.min(MAX_OUTPUT, energy.getEnergy());
+        int budget = Math.min(MAX_OUTPUT.get(), energy.getEnergy());
         for (Direction direction : Direction.values()) {
             if (budget <= 0) {
                 return;

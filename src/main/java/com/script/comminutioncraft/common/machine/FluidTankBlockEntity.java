@@ -33,12 +33,12 @@ import org.jspecify.annotations.Nullable;
  * for {@code FluidTankRenderer}.
  */
 public class FluidTankBlockEntity extends BlockEntity implements TickingMachine, ControllableMachine {
-    public static final int CAPACITY = 32_000;
-    public static final int OUTPUT_RATE = 1_000;
+    public static final com.script.comminutioncraft.common.config.ConfigInt CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.FLUID_TANK_CAPACITY;
+    public static final com.script.comminutioncraft.common.config.ConfigInt OUTPUT_RATE = com.script.comminutioncraft.common.config.MachineConfig.FLUID_TANK_OUTPUT_RATE;
     /** At most one client sync every this many ticks while the contents keep changing. */
     private static final int SYNC_INTERVAL = 5;
 
-    private final MachineFluidTank tank = new MachineFluidTank(CAPACITY, resource -> true, this::onTankChanged);
+    private final MachineFluidTank tank = new MachineFluidTank(CAPACITY.get(), resource -> true, this::onTankChanged);
     private final MachineControls controls = new MachineControls(MachineControls.outputBelow(), this::onControlsChanged);
     private boolean needsSync;
     private int lastComparatorSignal;
@@ -70,7 +70,7 @@ public class FluidTankBlockEntity extends BlockEntity implements TickingMachine,
 
     public int getComparatorSignal() {
         int amount = tank.getAmount();
-        return amount <= 0 ? 0 : 1 + (int) ((long) (amount - 1) * 14 / CAPACITY);
+        return amount <= 0 ? 0 : 1 + (int) ((long) (amount - 1) * 14 / CAPACITY.get());
     }
 
     private void onTankChanged() {
@@ -107,7 +107,7 @@ public class FluidTankBlockEntity extends BlockEntity implements TickingMachine,
     }
 
     private void pushFluid(ServerLevel level, BlockPos pos) {
-        int budget = Math.min(OUTPUT_RATE, tank.getAmount());
+        int budget = Math.min(OUTPUT_RATE.get(), tank.getAmount());
         for (Direction direction : Direction.values()) {
             if (budget <= 0) {
                 return;

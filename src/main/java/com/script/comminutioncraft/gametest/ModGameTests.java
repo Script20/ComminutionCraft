@@ -112,6 +112,7 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("wrench_pickup_keeps_settings", () -> ModGameTests::wrenchPickupKeepsSettings);
         TEST_FUNCTIONS.register("wrench_acts_before_machine_gui", () -> ModGameTests::wrenchActsBeforeMachineGui);
         TEST_FUNCTIONS.register("soaryn_chest_takes_inventory", () -> ModGameTests::soarynChestTakesInventory);
+        TEST_FUNCTIONS.register("config_changes_apply", () -> ModGameTests::configChangesApply);
         TEST_FUNCTIONS.register("water_generator_breathes", () -> ModGameTests::waterGeneratorBreathes);
         TEST_FUNCTIONS.register("walled_in_generator_makes_nothing", () -> ModGameTests::walledInGeneratorMakesNothing);
         TEST_FUNCTIONS.register("filter_doubles_water", () -> ModGameTests::filterDoublesWater);
@@ -369,7 +370,7 @@ public final class ModGameTests {
         BlockPos pos = new BlockPos(2, 1, 2);
         helper.setBlock(pos, ModBlocks.ENERGY_BATTERY.get());
         EnergyBatteryBlockEntity battery = helper.getBlockEntity(pos, EnergyBatteryBlockEntity.class);
-        battery.setEnergy(EnergyBatteryBlockEntity.CAPACITY / 2);
+        battery.setEnergy(EnergyBatteryBlockEntity.CAPACITY.get() / 2);
         battery.getControls().setSide(RelativeSide.TOP, SideMode.NONE);
 
         helper.runAfterDelay(2, () -> {
@@ -427,6 +428,26 @@ public final class ModGameTests {
         helper.assertTrue(placed.getEnergy() == stored, "The placed battery has " + placed.getEnergy() + " FE, expected " + stored);
         helper.assertTrue(placed.getControls().side(RelativeSide.LEFT) == SideMode.NONE, "The placed battery lost its side config");
         helper.assertTrue(placed.getControls().redstone() == RedstoneMode.HIGH, "The placed battery lost its redstone mode");
+        helper.succeed();
+    }
+
+    /** Changing the server config in a running world changes a cable's rate and a machine's process time at once. */
+    private static void configChangesApply(GameTestHelper helper) {
+        var cableRate = com.script.comminutioncraft.common.config.MachineConfig.CABLES_ENERGY_CABLE;
+        var washerTime = com.script.comminutioncraft.common.config.MachineConfig.ORE_WASHER_PROCESS_TIME;
+        int oldRate = cableRate.get();
+        int oldTime = washerTime.get();
+        try {
+            cableRate.set(1_234);
+            washerTime.set(7);
+            int rate = ((EnergyCableBlock) ModBlocks.ENERGY_CABLE.get()).getTransferRate();
+            helper.assertTrue(rate == 1_234, "The Energy Cable should carry the configured 1,234 FE/t, carries " + rate);
+            helper.assertTrue(com.script.comminutioncraft.common.machine.OreWasherBlockEntity.PROCESS_TIME.get() == 7,
+                    "The Ore Washer should take the configured 7 ticks");
+        } finally {
+            cableRate.set(oldRate);
+            washerTime.set(oldTime);
+        }
         helper.succeed();
     }
 
@@ -497,7 +518,7 @@ public final class ModGameTests {
             helper.assertTrue(Math.abs(made - expected) <= 5 * humidity * 2 * 3 + 1,
                     "Expected about " + expected + " mB of water after 40 ticks, got " + made);
             int wear = generator.getItem(AtmosphericWaterGeneratorBlockEntity.SLOT_FILTER).getDamageValue();
-            helper.assertTrue(wear == made / AtmosphericWaterGeneratorBlockEntity.MB_PER_FILTER_WEAR,
+            helper.assertTrue(wear == made / AtmosphericWaterGeneratorBlockEntity.MB_PER_FILTER_WEAR.get(),
                     "The filter should wear 1 per 100 mB (" + made + " mB), but wore " + wear);
             helper.succeed();
         });
@@ -582,8 +603,8 @@ public final class ModGameTests {
         // Facing north, left is east: each one's east face is its Output.
         electrolyser.getControls().setSide(RelativeSide.LEFT, SideMode.OUTPUT);
         plasma.getControls().setSide(RelativeSide.LEFT, SideMode.OUTPUT);
-        electrolyser.setEnergy(ElectrolyserBlockEntity.ENERGY_CAPACITY);
-        plasma.setEnergy(PlasmaGeneratorBlockEntity.ENERGY_CAPACITY);
+        electrolyser.setEnergy(ElectrolyserBlockEntity.ENERGY_CAPACITY.get());
+        plasma.setEnergy(PlasmaGeneratorBlockEntity.ENERGY_CAPACITY.get());
         electrolyser.getTanks().get(ElectrolyserBlockEntity.TANK_WATER).fill(FluidResource.of(Fluids.WATER), 2_000);
 
         helper.succeedWhen(() -> {
@@ -654,7 +675,7 @@ public final class ModGameTests {
         BlockPos pos = new BlockPos(2, 1, 2);
         helper.setBlock(pos, ModBlocks.PLASMA_GRANULATOR.get());
         ElectricMachineBlockEntity machine = helper.getBlockEntity(pos, ElectricMachineBlockEntity.class);
-        ((MachineEnergyStorage) machine.getEnergyHandler()).set(ElectricMachineBlockEntity.TIER3_ENERGY_CAPACITY);
+        ((MachineEnergyStorage) machine.getEnergyHandler()).set(ElectricMachineBlockEntity.TIER3_ENERGY_CAPACITY.get());
         machine.setItem(ElectricMachineBlockEntity.SLOT_INPUT, new ItemStack(Items.RAW_IRON, 2));
         helper.assertTrue(helper.getLevel().getCapability(Capabilities.Fluid.BLOCK, helper.absolutePos(pos), Direction.NORTH) == null,
                 "The Plasma Granulator shouldn't take fluids any more");
@@ -673,7 +694,7 @@ public final class ModGameTests {
         BlockPos pos = new BlockPos(2, 1, 2);
         helper.setBlock(pos, ModBlocks.ELECTROLYSER.get().defaultBlockState().setValue(MachineBlock.FACING, Direction.NORTH));
         ElectrolyserBlockEntity electrolyser = helper.getBlockEntity(pos, ElectrolyserBlockEntity.class);
-        electrolyser.setEnergy(ElectrolyserBlockEntity.ENERGY_CAPACITY);
+        electrolyser.setEnergy(ElectrolyserBlockEntity.ENERGY_CAPACITY.get());
         electrolyser.getTanks().get(ElectrolyserBlockEntity.TANK_WATER).fill(FluidResource.of(Fluids.WATER), 2_000);
         // Facing north: the back is south; make east an Output face (left side).
         electrolyser.getControls().setSide(RelativeSide.LEFT, SideMode.OUTPUT);
@@ -713,7 +734,7 @@ public final class ModGameTests {
         int second = insertCommitted(handler, 600);
         helper.assertTrue(first == 600 && second == 400,
                 "Expected 600 then 400 FE this tick, got " + first + " then " + second);
-        helper.assertTrue(cell.getEnergy() == EnergyCableBlock.ENERGY_CABLE_RATE, "The battery should hold 1,000 FE, has " + cell.getEnergy());
+        helper.assertTrue(cell.getEnergy() == EnergyCableBlock.ENERGY_CABLE_RATE.get(), "The battery should hold 1,000 FE, has " + cell.getEnergy());
         helper.runAfterDelay(1, () -> {
             int next = insertCommitted(handler, 600);
             helper.assertTrue(next == 600, "Next tick the cable should carry 600 FE again, carried " + next);
@@ -742,12 +763,12 @@ public final class ModGameTests {
         int plasma;
         try (Transaction transaction = Transaction.openRoot()) {
             water = handler.insert(FluidResource.of(Fluids.WATER), 1_000, transaction);
-            plasma = handler.insert(FluidResource.of(ModFluids.PLASMA.get()), FluidPipeBlock.PLASMA_CABLE_RATE + 1_000, transaction);
+            plasma = handler.insert(FluidResource.of(ModFluids.PLASMA.get()), FluidPipeBlock.PLASMA_CABLE_RATE.get() + 1_000, transaction);
             transaction.commit();
         }
         FluidTankBlockEntity tank = helper.getBlockEntity(tankPos, FluidTankBlockEntity.class);
         helper.assertTrue(water == 0, "The plasma cable carried " + water + " mB of water");
-        helper.assertTrue(plasma == FluidPipeBlock.PLASMA_CABLE_RATE && tank.getTank().getAmount() == plasma,
+        helper.assertTrue(plasma == FluidPipeBlock.PLASMA_CABLE_RATE.get() && tank.getTank().getAmount() == plasma,
                 "Expected one insert's worth of plasma in the tank, carried " + plasma + ", tank has " + tank.getTank().getAmount());
         helper.succeed();
     }
@@ -768,7 +789,7 @@ public final class ModGameTests {
         BlockPos pos = new BlockPos(2, 1, 2);
         helper.setBlock(pos, ModBlocks.CIRCUIT_ASSEMBLER.get());
         PlasmaMachineBlockEntity machine = helper.getBlockEntity(pos, PlasmaMachineBlockEntity.class);
-        ((MachineEnergyStorage) machine.getEnergyHandler()).set(ElectricMachineBlockEntity.TIER3_ENERGY_CAPACITY);
+        ((MachineEnergyStorage) machine.getEnergyHandler()).set(ElectricMachineBlockEntity.TIER3_ENERGY_CAPACITY.get());
         machine.getTank().fill(FluidResource.of(ModFluids.PLASMA.get()), 150);
         machine.setItem(ElectricMachineBlockEntity.SLOT_INPUT, new ItemStack(ModItems.ELECTRONIC_CIRCUIT.get()));
         helper.succeedWhen(() -> {
@@ -786,10 +807,10 @@ public final class ModGameTests {
         BlockPos pos = new BlockPos(2, 1, 2);
         helper.setBlock(pos, ModBlocks.ORE_WASHER.get());
         OreWasherBlockEntity washer = helper.getBlockEntity(pos, OreWasherBlockEntity.class);
-        ((MachineEnergyStorage) washer.getEnergyHandler()).set(ElectricMachineBlockEntity.TIER3_ENERGY_CAPACITY);
+        ((MachineEnergyStorage) washer.getEnergyHandler()).set(ElectricMachineBlockEntity.TIER3_ENERGY_CAPACITY.get());
         washer.setItem(ElectricMachineBlockEntity.SLOT_INPUT, new ItemStack(Items.RAW_IRON));
 
-        helper.runAfterDelay(OreWasherBlockEntity.PROCESS_TIME + 10, () -> {
+        helper.runAfterDelay(OreWasherBlockEntity.PROCESS_TIME.get() + 10, () -> {
             helper.assertTrue(washer.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT).isEmpty(), "The washer ran without water");
             helper.setBlock(new BlockPos(2, 1, 3), Blocks.WATER);
             helper.succeedWhen(() -> {
@@ -805,7 +826,7 @@ public final class ModGameTests {
         BlockPos pos = new BlockPos(2, 1, 2);
         helper.setBlock(pos, ModBlocks.ELECTRIC_GRANULATOR.get());
         ElectricMachineBlockEntity machine = helper.getBlockEntity(pos, ElectricMachineBlockEntity.class);
-        ((MachineEnergyStorage) machine.getEnergyHandler()).set(ElectricMachineBlockEntity.ENERGY_CAPACITY);
+        ((MachineEnergyStorage) machine.getEnergyHandler()).set(ElectricMachineBlockEntity.ENERGY_CAPACITY.get());
         machine.setItem(ElectricMachineBlockEntity.SLOT_INPUT, new ItemStack(ModItems.WASHED_IRON.get(), 2));
         helper.succeedWhen(() -> {
             ItemStack output = machine.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT);
@@ -846,9 +867,9 @@ public final class ModGameTests {
         // Facing north, the left side is east: the face towards the next machine.
         washer.getControls().setSide(RelativeSide.LEFT, SideMode.OUTPUT);
         granulator.getControls().setSide(RelativeSide.LEFT, SideMode.OUTPUT);
-        ((MachineEnergyStorage) washer.getEnergyHandler()).set(ElectricMachineBlockEntity.TIER3_ENERGY_CAPACITY);
-        ((MachineEnergyStorage) granulator.getEnergyHandler()).set(ElectricMachineBlockEntity.ENERGY_CAPACITY);
-        ((MachineEnergyStorage) smelter.getEnergyHandler()).set(ElectricMachineBlockEntity.ENERGY_CAPACITY);
+        ((MachineEnergyStorage) washer.getEnergyHandler()).set(ElectricMachineBlockEntity.TIER3_ENERGY_CAPACITY.get());
+        ((MachineEnergyStorage) granulator.getEnergyHandler()).set(ElectricMachineBlockEntity.ENERGY_CAPACITY.get());
+        ((MachineEnergyStorage) smelter.getEnergyHandler()).set(ElectricMachineBlockEntity.ENERGY_CAPACITY.get());
         washer.getWater().fill(FluidResource.of(Fluids.WATER), 1_000);
         washer.setItem(ElectricMachineBlockEntity.SLOT_INPUT, new ItemStack(Items.RAW_IRON));
 
@@ -870,14 +891,14 @@ public final class ModGameTests {
         helper.setBlock(breederPos, ModBlocks.TRITIUM_BREEDER.get());
         IsotopeSeparatorBlockEntity separator = helper.getBlockEntity(separatorPos, IsotopeSeparatorBlockEntity.class);
         TritiumBreederBlockEntity breeder = helper.getBlockEntity(breederPos, TritiumBreederBlockEntity.class);
-        separator.setEnergy(IsotopeSeparatorBlockEntity.ENERGY_CAPACITY);
-        breeder.setEnergy(TritiumBreederBlockEntity.ENERGY_CAPACITY);
+        separator.setEnergy(IsotopeSeparatorBlockEntity.ENERGY_CAPACITY.get());
+        breeder.setEnergy(TritiumBreederBlockEntity.ENERGY_CAPACITY.get());
         separator.getTanks().get(IsotopeSeparatorBlockEntity.TANK_WATER).fill(FluidResource.of(Fluids.WATER), 1_000);
         breeder.getTanks().get(TritiumBreederBlockEntity.TANK_DEUTERIUM).fill(FluidResource.of(ModFluids.DEUTERIUM.get()), 50);
         helper.runAfterDelay(30, () -> {
             int deuterium = separator.getTanks().get(IsotopeSeparatorBlockEntity.TANK_DEUTERIUM).getAmount();
             int waterUsed = 1_000 - separator.getTanks().get(IsotopeSeparatorBlockEntity.TANK_WATER).getAmount();
-            helper.assertTrue(deuterium > 0 && waterUsed == deuterium * IsotopeSeparatorBlockEntity.WATER_PER_MB,
+            helper.assertTrue(deuterium > 0 && waterUsed == deuterium * IsotopeSeparatorBlockEntity.WATER_PER_MB.get(),
                     "Expected 20 mB water per mB deuterium, used " + waterUsed + " for " + deuterium);
             int tritium = breeder.getTanks().get(TritiumBreederBlockEntity.TANK_TRITIUM).getAmount();
             int deuteriumLeft = breeder.getTanks().get(TritiumBreederBlockEntity.TANK_DEUTERIUM).getAmount();
@@ -892,7 +913,7 @@ public final class ModGameTests {
         BlockPos pos = new BlockPos(2, 1, 2);
         helper.setBlock(pos, ModBlocks.PELLET_PRESS.get());
         PelletPressBlockEntity press = helper.getBlockEntity(pos, PelletPressBlockEntity.class);
-        ((MachineEnergyStorage) press.getEnergyHandler()).set(ElectricMachineBlockEntity.TIER3_ENERGY_CAPACITY);
+        ((MachineEnergyStorage) press.getEnergyHandler()).set(ElectricMachineBlockEntity.TIER3_ENERGY_CAPACITY.get());
         press.getDeuterium().fill(FluidResource.of(ModFluids.DEUTERIUM.get()), 150);
         press.getTritium().fill(FluidResource.of(ModFluids.TRITIUM.get()), 150);
         press.setItem(ElectricMachineBlockEntity.SLOT_INPUT, new ItemStack(Items.IRON_NUGGET, 2));
@@ -943,7 +964,7 @@ public final class ModGameTests {
         EnergyBatteryBlockEntity battery = helper.getBlockEntity(batteryPos, EnergyBatteryBlockEntity.class);
         helper.succeedWhen(() -> {
             helper.assertTrue(battery.getEnergy() > 0, "No FE has reached the battery yet (core heat " + reactor.getHeat() + "%)");
-            helper.assertTrue(reactor.getTritium().getAmount() >= FusionReactorBlockEntity.TRITIUM_PER_PELLET,
+            helper.assertTrue(reactor.getTritium().getAmount() >= FusionReactorBlockEntity.TRITIUM_PER_PELLET.get(),
                     "No tritium back yet (" + reactor.getTritium().getAmount() + " mB)");
         });
     }
@@ -956,7 +977,7 @@ public final class ModGameTests {
         BlockPos pos = new BlockPos(2, 1, 2);
         helper.setBlock(pos, ModBlocks.ORE_PURIFIER.get());
         OrePurifierBlockEntity purifier = helper.getBlockEntity(pos, OrePurifierBlockEntity.class);
-        ((MachineEnergyStorage) purifier.getEnergyHandler()).set(ElectricMachineBlockEntity.TIER3_ENERGY_CAPACITY);
+        ((MachineEnergyStorage) purifier.getEnergyHandler()).set(ElectricMachineBlockEntity.TIER3_ENERGY_CAPACITY.get());
         purifier.getOxygen().fill(FluidResource.of(ModFluids.OXYGEN.get()), 300);
         purifier.setItem(ElectricMachineBlockEntity.SLOT_INPUT, new ItemStack(ModItems.WASHED_IRON.get(), 5));
         helper.succeedWhen(() -> {
@@ -973,7 +994,7 @@ public final class ModGameTests {
         BlockPos pos = new BlockPos(2, 1, 2);
         helper.setBlock(pos, ModBlocks.ELECTRIC_GRANULATOR.get());
         ElectricMachineBlockEntity machine = helper.getBlockEntity(pos, ElectricMachineBlockEntity.class);
-        ((MachineEnergyStorage) machine.getEnergyHandler()).set(ElectricMachineBlockEntity.ENERGY_CAPACITY);
+        ((MachineEnergyStorage) machine.getEnergyHandler()).set(ElectricMachineBlockEntity.ENERGY_CAPACITY.get());
         machine.setItem(ElectricMachineBlockEntity.SLOT_INPUT, new ItemStack(ModItems.PURIFIED_COPPER.get(), 2));
         helper.succeedWhen(() -> {
             ItemStack output = machine.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT);
@@ -1011,7 +1032,7 @@ public final class ModGameTests {
         helper.succeedWhen(() -> {
             helper.assertTrue(tank.getTank().getAmount() >= 1_000 && tank.getTank().getFluid().is(NeoForgeMod.WATER_TYPE.value()),
                     "The tank next to it should be filling with water, has " + tank.getTank().getStack());
-            helper.assertTrue(creative.getTank().getAmount() == FluidTankBlockEntity.CAPACITY, "The creative tank should stay full");
+            helper.assertTrue(creative.getTank().getAmount() == FluidTankBlockEntity.CAPACITY.get(), "The creative tank should stay full");
             menu.clickMenuButton(helper.makeMockPlayer(GameType.CREATIVE), 0);
             helper.assertTrue(creative.getFluid() == null && creative.getTank().getAmount() == 0, "Button 0 should empty it");
         });
@@ -1051,7 +1072,7 @@ public final class ModGameTests {
     private static PlasmaMachineBlockEntity placeAssembler(GameTestHelper helper, BlockPos pos, ItemStack input) {
         helper.setBlock(pos, ModBlocks.CIRCUIT_ASSEMBLER.get());
         PlasmaMachineBlockEntity machine = helper.getBlockEntity(pos, PlasmaMachineBlockEntity.class);
-        ((MachineEnergyStorage) machine.getEnergyHandler()).set(ElectricMachineBlockEntity.TIER3_ENERGY_CAPACITY);
+        ((MachineEnergyStorage) machine.getEnergyHandler()).set(ElectricMachineBlockEntity.TIER3_ENERGY_CAPACITY.get());
         machine.getTank().fill(FluidResource.of(ModFluids.PLASMA.get()), 200);
         machine.setItem(ElectricMachineBlockEntity.SLOT_INPUT, input);
         return machine;

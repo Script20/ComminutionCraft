@@ -16,16 +16,16 @@ import net.neoforged.neoforge.transfer.fluid.FluidResource;
  */
 public class FluidPipeBlock extends ConduitBlock {
     /** Fluid Pipe: any fluid. */
-    public static final int FLUID_PIPE_RATE = 1_000;
+    public static final com.script.comminutioncraft.common.config.ConfigInt FLUID_PIPE_RATE = com.script.comminutioncraft.common.config.MachineConfig.CABLES_FLUID_PIPE;
     /** Plasma Cable: plasma only. */
-    public static final int PLASMA_CABLE_RATE = 8_000;
+    public static final com.script.comminutioncraft.common.config.ConfigInt PLASMA_CABLE_RATE = com.script.comminutioncraft.common.config.MachineConfig.CABLES_PLASMA_CABLE;
 
-    private final int transferRate;
+    private final java.util.function.IntSupplier transferRate;
     private final Predicate<FluidResource> carries;
     /** A fluid this pipe carries, used to ask neighbours whether they could hold it (EMPTY = any fluid). */
     private final Supplier<FluidResource> sample;
 
-    public FluidPipeBlock(Properties properties, int transferRate, Predicate<FluidResource> carries,
+    public FluidPipeBlock(Properties properties, java.util.function.IntSupplier transferRate, Predicate<FluidResource> carries,
                           Supplier<FluidResource> sample) {
         super(properties);
         this.transferRate = transferRate;
@@ -34,13 +34,13 @@ public class FluidPipeBlock extends ConduitBlock {
     }
 
     /** A pipe for any fluid. */
-    public FluidPipeBlock(Properties properties, int transferRate) {
+    public FluidPipeBlock(Properties properties, java.util.function.IntSupplier transferRate) {
         this(properties, transferRate, resource -> true, () -> FluidResource.EMPTY);
     }
 
     /** Most mB one insert carries. */
     public int getTransferRate() {
-        return transferRate;
+        return transferRate.getAsInt();
     }
 
     public boolean carries(FluidResource resource) {

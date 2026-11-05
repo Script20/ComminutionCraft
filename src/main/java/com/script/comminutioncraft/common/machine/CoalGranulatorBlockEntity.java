@@ -25,8 +25,8 @@ import net.minecraft.world.level.block.state.BlockState;
  * also 33% more efficient. Speed and efficiency move together at one flat rate.
  */
 public class CoalGranulatorBlockEntity extends FuelMachineBlockEntity {
-    public static final int PROCESS_TIME = 150;
-    public static final double BURN_TIME_MULTIPLIER = 1.0;
+    public static final com.script.comminutioncraft.common.config.ConfigInt PROCESS_TIME = com.script.comminutioncraft.common.config.MachineConfig.COAL_GRANULATOR_PROCESS_TIME;
+    public static final com.script.comminutioncraft.common.config.ConfigDouble BURN_TIME_MULTIPLIER = com.script.comminutioncraft.common.config.MachineConfig.COAL_GRANULATOR_BURN_TIME_MULTIPLIER;
 
     private final RecipeManager.CachedCheck<SingleRecipeInput, GranulatingRecipe> recipeCheck =
             RecipeManager.createCheck(ModRecipes.GRANULATING_TYPE.get());
@@ -37,12 +37,12 @@ public class CoalGranulatorBlockEntity extends FuelMachineBlockEntity {
 
     @Override
     protected int getProcessTime() {
-        return PROCESS_TIME;
+        return PROCESS_TIME.get();
     }
 
     @Override
     protected double getBurnTimeMultiplier() {
-        return BURN_TIME_MULTIPLIER;
+        return BURN_TIME_MULTIPLIER.get();
     }
 
     @Override

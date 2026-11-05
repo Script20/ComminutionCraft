@@ -16,10 +16,10 @@ import net.neoforged.neoforge.transfer.fluid.FluidResource;
  * (from an Electrolyser); plasma goes out of Output faces (to machines, tanks or an MHD Generator).
  */
 public class PlasmaGeneratorBlockEntity extends FluidMachineBlockEntity {
-    public static final int MAX_PLASMA_PER_TICK = 10;
-    public static final int ENERGY_PER_MB = 16;
-    public static final int ENERGY_CAPACITY = 40_000;
-    public static final int MAX_ENERGY_INPUT = 400;
+    public static final com.script.comminutioncraft.common.config.ConfigInt MAX_PLASMA_PER_TICK = com.script.comminutioncraft.common.config.MachineConfig.PLASMA_GENERATOR_PLASMA_PER_TICK;
+    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_PER_MB = com.script.comminutioncraft.common.config.MachineConfig.PLASMA_GENERATOR_ENERGY_PER_MB;
+    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.PLASMA_GENERATOR_ENERGY_CAPACITY;
+    public static final com.script.comminutioncraft.common.config.ConfigInt MAX_ENERGY_INPUT = com.script.comminutioncraft.common.config.MachineConfig.PLASMA_GENERATOR_MAX_ENERGY_INPUT;
 
     public static final int TANK_HYDROGEN = 0;
     public static final int TANK_PLASMA = 1;
@@ -29,17 +29,17 @@ public class PlasmaGeneratorBlockEntity extends FluidMachineBlockEntity {
     private final MachineFluidTank plasma = addTank("plasma", resource -> resource.is(ModFluids.PLASMA_TYPE.get()), TankRole.OUTPUT);
 
     public PlasmaGeneratorBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.PLASMA_GENERATOR.get(), pos, state, ENERGY_CAPACITY, MAX_ENERGY_INPUT, 0);
+        super(ModBlockEntities.PLASMA_GENERATOR.get(), pos, state, ENERGY_CAPACITY.get(), MAX_ENERGY_INPUT.get(), 0);
     }
 
     @Override
     protected int work(ServerLevel level) {
-        int make = Math.min(Math.min(MAX_PLASMA_PER_TICK, hydrogen.getAmount()),
-                Math.min(plasma.getSpace(), energy.getEnergy() / ENERGY_PER_MB));
+        int make = Math.min(Math.min(MAX_PLASMA_PER_TICK.get(), hydrogen.getAmount()),
+                Math.min(plasma.getSpace(), energy.getEnergy() / ENERGY_PER_MB.get()));
         if (make <= 0) {
             return 0;
         }
-        energy.consume(make * ENERGY_PER_MB);
+        energy.consume(make * ENERGY_PER_MB.get());
         hydrogen.drain(make);
         plasma.fill(FluidResource.of(ModFluids.PLASMA.get()), make);
         return make;

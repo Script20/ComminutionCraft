@@ -17,11 +17,11 @@ import net.neoforged.neoforge.transfer.fluid.FluidResource;
  * {@link #ENERGY_PER_MB} FE per mB. Water comes in through Input faces; deuterium goes out of Output faces.
  */
 public class IsotopeSeparatorBlockEntity extends FluidMachineBlockEntity {
-    public static final int WATER_PER_MB = 20;
-    public static final int MAX_DEUTERIUM_PER_TICK = 1;
-    public static final int ENERGY_PER_MB = 50;
-    public static final int ENERGY_CAPACITY = 20_000;
-    public static final int MAX_ENERGY_INPUT = 400;
+    public static final com.script.comminutioncraft.common.config.ConfigInt WATER_PER_MB = com.script.comminutioncraft.common.config.MachineConfig.ISOTOPE_SEPARATOR_WATER_PER_DEUTERIUM;
+    public static final com.script.comminutioncraft.common.config.ConfigInt MAX_DEUTERIUM_PER_TICK = com.script.comminutioncraft.common.config.MachineConfig.ISOTOPE_SEPARATOR_DEUTERIUM_PER_TICK;
+    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_PER_MB = com.script.comminutioncraft.common.config.MachineConfig.ISOTOPE_SEPARATOR_ENERGY_PER_MB;
+    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.ISOTOPE_SEPARATOR_ENERGY_CAPACITY;
+    public static final com.script.comminutioncraft.common.config.ConfigInt MAX_ENERGY_INPUT = com.script.comminutioncraft.common.config.MachineConfig.ISOTOPE_SEPARATOR_MAX_ENERGY_INPUT;
 
     public static final int TANK_WATER = 0;
     public static final int TANK_DEUTERIUM = 1;
@@ -31,18 +31,18 @@ public class IsotopeSeparatorBlockEntity extends FluidMachineBlockEntity {
     private final MachineFluidTank deuterium = addTank("deuterium", resource -> resource.is(ModFluids.DEUTERIUM_TYPE.get()), TankRole.OUTPUT);
 
     public IsotopeSeparatorBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.ISOTOPE_SEPARATOR.get(), pos, state, ENERGY_CAPACITY, MAX_ENERGY_INPUT, 0);
+        super(ModBlockEntities.ISOTOPE_SEPARATOR.get(), pos, state, ENERGY_CAPACITY.get(), MAX_ENERGY_INPUT.get(), 0);
     }
 
     @Override
     protected int work(ServerLevel level) {
-        int make = Math.min(Math.min(MAX_DEUTERIUM_PER_TICK, water.getAmount() / WATER_PER_MB),
-                Math.min(deuterium.getSpace(), energy.getEnergy() / ENERGY_PER_MB));
+        int make = Math.min(Math.min(MAX_DEUTERIUM_PER_TICK.get(), water.getAmount() / WATER_PER_MB.get()),
+                Math.min(deuterium.getSpace(), energy.getEnergy() / ENERGY_PER_MB.get()));
         if (make <= 0) {
             return 0;
         }
-        energy.consume(make * ENERGY_PER_MB);
-        water.drain(make * WATER_PER_MB);
+        energy.consume(make * ENERGY_PER_MB.get());
+        water.drain(make * WATER_PER_MB.get());
         deuterium.fill(FluidResource.of(ModFluids.DEUTERIUM.get()), make);
         return make;
     }

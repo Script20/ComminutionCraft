@@ -54,12 +54,17 @@ public class AtmosphericWaterGeneratorBlockEntity extends BaseContainerBlockEnti
     private static final int[] SLOTS_FILTER = {SLOT_FILTER};
     private static final int[] SLOTS_NONE = {};
 
-    public static final float WATER_PER_INTAKE = 1.0F;
+    public static final com.script.comminutioncraft.common.config.ConfigDouble WATER_PER_INTAKE = com.script.comminutioncraft.common.config.MachineConfig.ATMOSPHERIC_WATER_GENERATOR_WATER_PER_OPEN_FACE;
+    public static final com.script.comminutioncraft.common.config.ConfigDouble HUMIDITY_MAX = com.script.comminutioncraft.common.config.MachineConfig.ATMOSPHERIC_WATER_GENERATOR_HUMIDITY_MAX;
+    public static final com.script.comminutioncraft.common.config.ConfigDouble HUMIDITY_WATER_BIOME = com.script.comminutioncraft.common.config.MachineConfig.ATMOSPHERIC_WATER_GENERATOR_HUMIDITY_WATER_BIOME_MULTIPLIER;
+    public static final com.script.comminutioncraft.common.config.ConfigDouble HUMIDITY_PER_DOWNFALL = com.script.comminutioncraft.common.config.MachineConfig.ATMOSPHERIC_WATER_GENERATOR_HUMIDITY_PER_DOWNFALL;
+    public static final com.script.comminutioncraft.common.config.ConfigDouble HUMIDITY_BASE = com.script.comminutioncraft.common.config.MachineConfig.ATMOSPHERIC_WATER_GENERATOR_HUMIDITY_BASE;
+    public static final com.script.comminutioncraft.common.config.ConfigDouble FILTER_MULTIPLIER = com.script.comminutioncraft.common.config.MachineConfig.ATMOSPHERIC_WATER_GENERATOR_FILTER_MULTIPLIER;
     public static final int FILTER_DURABILITY = 10_000;
-    public static final int MB_PER_FILTER_WEAR = 100;
-    public static final int WATER_CAPACITY = 8_000;
+    public static final com.script.comminutioncraft.common.config.ConfigInt MB_PER_FILTER_WEAR = com.script.comminutioncraft.common.config.MachineConfig.ATMOSPHERIC_WATER_GENERATOR_WATER_PER_FILTER_WEAR;
+    public static final com.script.comminutioncraft.common.config.ConfigInt WATER_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.ATMOSPHERIC_WATER_GENERATOR_WATER_CAPACITY;
     /** Max mB pushed out per tick, across all output faces. */
-    public static final int MAX_WATER_OUTPUT = 500;
+    public static final com.script.comminutioncraft.common.config.ConfigInt MAX_WATER_OUTPUT = com.script.comminutioncraft.common.config.MachineConfig.ATMOSPHERIC_WATER_GENERATOR_MAX_WATER_OUTPUT;
     private static final int LIT_COOLDOWN = 10;
 
     // ContainerData indices, synced to the open GUI
@@ -74,7 +79,7 @@ public class AtmosphericWaterGeneratorBlockEntity extends BaseContainerBlockEnti
     public static final int DATA_COUNT = 7;
 
     private NonNullList<ItemStack> items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
-    private final MachineFluidTank tank = new MachineFluidTank(WATER_CAPACITY,
+    private final MachineFluidTank tank = new MachineFluidTank(WATER_CAPACITY.get(),
             resource -> resource.is(NeoForgeMod.WATER_TYPE.value()), this::setChanged);
     private final MachineControls controls = new MachineControls(MachineControls.outputBelow(), this::onControlsChanged);
     private int intake;
@@ -157,11 +162,11 @@ public class AtmosphericWaterGeneratorBlockEntity extends BaseContainerBlockEnti
 
     /** The biome part of {@link #humidity(Level, BlockPos)}. */
     public static float humidity(Holder<Biome> biome) {
-        float humidity = 0.05F + 1.5F * biome.value().getModifiedClimateSettings().downfall();
+        float humidity = HUMIDITY_BASE.getFloat() + HUMIDITY_PER_DOWNFALL.getFloat() * biome.value().getModifiedClimateSettings().downfall();
         if (biome.is(BiomeTags.IS_RIVER) || biome.is(BiomeTags.IS_OCEAN) || biome.is(BiomeTags.IS_BEACH)) {
-            humidity *= 1.5F;
+            humidity *= HUMIDITY_WATER_BIOME.getFloat();
         }
-        return Math.min(humidity, 2.0F);
+        return Math.min(humidity, HUMIDITY_MAX.getFloat());
     }
 
     /** Faces touching an air block. */
@@ -201,7 +206,7 @@ public class AtmosphericWaterGeneratorBlockEntity extends BaseContainerBlockEnti
         }
 
         boolean filtered = hasFilter();
-        float perTick = intake * WATER_PER_INTAKE * humidity * (filtered ? 2 : 1);
+        float perTick = intake * WATER_PER_INTAKE.getFloat() * humidity * (filtered ? FILTER_MULTIPLIER.getFloat() : 1);
         if (perTick > 0 && tank.getSpace() > 0) {
             rate = perTick;
             partial += perTick;
@@ -211,9 +216,9 @@ public class AtmosphericWaterGeneratorBlockEntity extends BaseContainerBlockEnti
             litCooldown = LIT_COOLDOWN;
             if (filtered) {
                 sinceWear += made;
-                if (sinceWear >= MB_PER_FILTER_WEAR) {
-                    items.get(SLOT_FILTER).hurtAndBreak(sinceWear / MB_PER_FILTER_WEAR, level, null, item -> {});
-                    sinceWear %= MB_PER_FILTER_WEAR;
+                if (sinceWear >= MB_PER_FILTER_WEAR.get()) {
+                    items.get(SLOT_FILTER).hurtAndBreak(sinceWear / MB_PER_FILTER_WEAR.get(), level, null, item -> {});
+                    sinceWear %= MB_PER_FILTER_WEAR.get();
                 }
             }
         }
@@ -231,7 +236,7 @@ public class AtmosphericWaterGeneratorBlockEntity extends BaseContainerBlockEnti
 
     /** Offers water to every neighbour on an output face, up to {@link #MAX_WATER_OUTPUT} mB per tick in total. */
     private void pushWater(ServerLevel level, BlockPos pos) {
-        int budget = Math.min(MAX_WATER_OUTPUT, tank.getAmount());
+        int budget = Math.min(MAX_WATER_OUTPUT.get(), tank.getAmount());
         for (Direction direction : Direction.values()) {
             if (budget <= 0) {
                 return;

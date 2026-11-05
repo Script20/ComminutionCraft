@@ -52,14 +52,14 @@ public class FusionReactorBlockEntity extends BaseContainerBlockEntity implement
     public static final int SLOT_PELLETS = 0;
     private static final int[] SLOTS = {SLOT_PELLETS};
 
-    public static final int ENERGY_CAPACITY = 1_000_000;
-    public static final int MAX_ENERGY_OUTPUT = 16_000;
-    public static final int ENERGY_PER_TICK = 4_000;
-    public static final int PELLET_BURN_TICKS = 200;
-    public static final int TRITIUM_PER_PELLET = 60;
-    public static final int IGNITION_PLASMA_PER_TICK = 10;
+    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.FUSION_REACTOR_ENERGY_CAPACITY;
+    public static final com.script.comminutioncraft.common.config.ConfigInt MAX_ENERGY_OUTPUT = com.script.comminutioncraft.common.config.MachineConfig.FUSION_REACTOR_MAX_ENERGY_OUTPUT;
+    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_PER_TICK = com.script.comminutioncraft.common.config.MachineConfig.FUSION_REACTOR_ENERGY_PER_TICK;
+    public static final com.script.comminutioncraft.common.config.ConfigInt PELLET_BURN_TICKS = com.script.comminutioncraft.common.config.MachineConfig.FUSION_REACTOR_PELLET_BURN_TICKS;
+    public static final com.script.comminutioncraft.common.config.ConfigInt TRITIUM_PER_PELLET = com.script.comminutioncraft.common.config.MachineConfig.FUSION_REACTOR_TRITIUM_PER_PELLET;
+    public static final com.script.comminutioncraft.common.config.ConfigInt IGNITION_PLASMA_PER_TICK = com.script.comminutioncraft.common.config.MachineConfig.FUSION_REACTOR_IGNITION_PLASMA_PER_TICK;
     public static final int MAX_HEAT = 100;
-    public static final int TANK_CAPACITY = 8_000;
+    public static final com.script.comminutioncraft.common.config.ConfigInt TANK_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.FUSION_REACTOR_TANK_CAPACITY;
     public static final int FORM_CHECK_INTERVAL = 20;
 
     // ContainerData indices (energy split in two, see EnergySync)
@@ -80,11 +80,11 @@ public class FusionReactorBlockEntity extends BaseContainerBlockEntity implement
     public static final int DATA_COUNT = 14;
 
     private NonNullList<ItemStack> items = NonNullList.withSize(1, ItemStack.EMPTY);
-    private final MachineEnergyStorage energy = new MachineEnergyStorage(ENERGY_CAPACITY, 0, MAX_ENERGY_OUTPUT, this::setChanged);
-    private final EnergyHandler energyOut = new LimitingEnergyHandler(energy, 0, MAX_ENERGY_OUTPUT);
-    private final MachineFluidTank plasma = new MachineFluidTank(TANK_CAPACITY,
+    private final MachineEnergyStorage energy = new MachineEnergyStorage(ENERGY_CAPACITY.get(), 0, MAX_ENERGY_OUTPUT.get(), this::setChanged);
+    private final EnergyHandler energyOut = new LimitingEnergyHandler(energy, 0, MAX_ENERGY_OUTPUT.get());
+    private final MachineFluidTank plasma = new MachineFluidTank(TANK_CAPACITY.get(),
             resource -> resource.is(ModFluids.PLASMA_TYPE.get()), this::setChanged);
-    private final MachineFluidTank tritium = new MachineFluidTank(TANK_CAPACITY,
+    private final MachineFluidTank tritium = new MachineFluidTank(TANK_CAPACITY.get(),
             resource -> resource.is(ModFluids.TRITIUM_TYPE.get()), this::setChanged);
     private final ResourceHandler<FluidResource> tanks = new CombinedResourceHandler<>(plasma, tritium);
     private final MachineControls controls = new MachineControls(MachineControls.outputBelow(), this::onControlsChanged);
@@ -202,27 +202,27 @@ public class FusionReactorBlockEntity extends BaseContainerBlockEntity implement
 
         if (heat < MAX_HEAT && burnTicks == 0) {
             // Heating up on plasma (only with fuel waiting, so an idle reactor doesn't burn plasma); otherwise it cools.
-            if (items.get(SLOT_PELLETS).is(ModItems.FUSION_FUEL_PELLET.get()) && plasma.getAmount() >= IGNITION_PLASMA_PER_TICK) {
-                plasma.drain(IGNITION_PLASMA_PER_TICK);
+            if (items.get(SLOT_PELLETS).is(ModItems.FUSION_FUEL_PELLET.get()) && plasma.getAmount() >= IGNITION_PLASMA_PER_TICK.get()) {
+                plasma.drain(IGNITION_PLASMA_PER_TICK.get());
                 heat++;
             } else if (heat > 0) {
                 heat--;
             }
-        } else if (energy.getSpace() >= ENERGY_PER_TICK) {
+        } else if (energy.getSpace() >= ENERGY_PER_TICK.get()) {
             if (burnTicks == 0) {
                 ItemStack pellets = items.get(SLOT_PELLETS);
                 if (pellets.is(ModItems.FUSION_FUEL_PELLET.get())) {
                     pellets.shrink(1);
-                    burnTicks = PELLET_BURN_TICKS;
+                    burnTicks = PELLET_BURN_TICKS.get();
                     setChanged();
                 } else {
                     heat--; // out of fuel: it cools off and will need plasma again
                 }
             }
             if (burnTicks > 0) {
-                rate = energy.generate(ENERGY_PER_TICK);
+                rate = energy.generate(ENERGY_PER_TICK.get());
                 if (--burnTicks == 0) {
-                    tritium.fill(FluidResource.of(ModFluids.TRITIUM.get()), TRITIUM_PER_PELLET);
+                    tritium.fill(FluidResource.of(ModFluids.TRITIUM.get()), TRITIUM_PER_PELLET.get());
                 }
             }
         }

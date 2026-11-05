@@ -21,11 +21,11 @@ import net.neoforged.neoforge.transfer.fluid.FluidResource;
  * later tiers: when its tank is full the rest is vented, so a full oxygen tank never stops the hydrogen.
  */
 public class ElectrolyserBlockEntity extends FluidMachineBlockEntity {
-    public static final int MAX_HYDROGEN_PER_TICK = 10;
-    public static final int WATER_PER_HYDROGEN = 2;
-    public static final int ENERGY_PER_HYDROGEN = 10;
-    public static final int ENERGY_CAPACITY = 20_000;
-    public static final int MAX_ENERGY_INPUT = 400;
+    public static final com.script.comminutioncraft.common.config.ConfigInt MAX_HYDROGEN_PER_TICK = com.script.comminutioncraft.common.config.MachineConfig.ELECTROLYSER_HYDROGEN_PER_TICK;
+    public static final com.script.comminutioncraft.common.config.ConfigInt WATER_PER_HYDROGEN = com.script.comminutioncraft.common.config.MachineConfig.ELECTROLYSER_WATER_PER_HYDROGEN;
+    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_PER_HYDROGEN = com.script.comminutioncraft.common.config.MachineConfig.ELECTROLYSER_ENERGY_PER_HYDROGEN;
+    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.ELECTROLYSER_ENERGY_CAPACITY;
+    public static final com.script.comminutioncraft.common.config.ConfigInt MAX_ENERGY_INPUT = com.script.comminutioncraft.common.config.MachineConfig.ELECTROLYSER_MAX_ENERGY_INPUT;
 
     public static final int TANK_WATER = 0;
     public static final int TANK_HYDROGEN = 1;
@@ -39,18 +39,18 @@ public class ElectrolyserBlockEntity extends FluidMachineBlockEntity {
     private int oxygenHalves;
 
     public ElectrolyserBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.ELECTROLYSER.get(), pos, state, ENERGY_CAPACITY, MAX_ENERGY_INPUT, 0, true);
+        super(ModBlockEntities.ELECTROLYSER.get(), pos, state, ENERGY_CAPACITY.get(), MAX_ENERGY_INPUT.get(), 0, true);
     }
 
     @Override
     protected int work(ServerLevel level) {
-        int make = Math.min(Math.min(MAX_HYDROGEN_PER_TICK, water.getAmount() / WATER_PER_HYDROGEN),
-                Math.min(hydrogen.getSpace(), energy.getEnergy() / ENERGY_PER_HYDROGEN));
+        int make = Math.min(Math.min(MAX_HYDROGEN_PER_TICK.get(), water.getAmount() / WATER_PER_HYDROGEN.get()),
+                Math.min(hydrogen.getSpace(), energy.getEnergy() / ENERGY_PER_HYDROGEN.get()));
         if (make <= 0) {
             return 0;
         }
-        energy.consume(make * ENERGY_PER_HYDROGEN);
-        water.drain(make * WATER_PER_HYDROGEN);
+        energy.consume(make * ENERGY_PER_HYDROGEN.get());
+        water.drain(make * WATER_PER_HYDROGEN.get());
         hydrogen.fill(FluidResource.of(ModFluids.HYDROGEN.get()), make);
         oxygenHalves += make;
         int madeOxygen = oxygenHalves / 2;

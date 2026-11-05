@@ -88,33 +88,33 @@ public class ComminutionJeiPlugin implements IModPlugin {
         registration.addRecipeCategories(
                 new ProcessingCategory<>(gui, GRANULATING.get(), Component.translatable("jei.comminutioncraft.granulating"),
                         ModItems.COAL_GRANULATOR.get(), List.of(
-                        new ProcessingCategory.Station("jei.comminutioncraft.time.coal_granulator", CoalGranulatorBlockEntity.PROCESS_TIME),
-                        new ProcessingCategory.Station("jei.comminutioncraft.time.electric_granulator", ElectricGranulatorBlockEntity.PROCESS_TIME),
-                        new ProcessingCategory.Station("jei.comminutioncraft.time.plasma_granulator", PlasmaGranulatorBlockEntity.PROCESS_TIME)),
+                        new ProcessingCategory.Station("jei.comminutioncraft.time.coal_granulator", CoalGranulatorBlockEntity.PROCESS_TIME.get()),
+                        new ProcessingCategory.Station("jei.comminutioncraft.time.electric_granulator", ElectricGranulatorBlockEntity.PROCESS_TIME.get()),
+                        new ProcessingCategory.Station("jei.comminutioncraft.time.plasma_granulator", PlasmaGranulatorBlockEntity.PROCESS_TIME.get())),
                         List.of(), recipe -> recipe.getMinTier() >= 2
                                 ? List.of(Component.translatable("jei.comminutioncraft.electric_granulators_only"))
                                 : List.of()),
                 new ProcessingCategory<>(gui, ASSEMBLING.get(), Component.translatable("jei.comminutioncraft.assembling"),
                         ModItems.CIRCUIT_ASSEMBLER.get(), List.of(
-                        new ProcessingCategory.Station("jei.comminutioncraft.time.circuit_assembler", CircuitAssemblerBlockEntity.PROCESS_TIME)),
+                        new ProcessingCategory.Station("jei.comminutioncraft.time.circuit_assembler", CircuitAssemblerBlockEntity.PROCESS_TIME.get())),
                         List.of()).withFluids(
-                        new ProcessingCategory.FluidCost(ModFluids.PLASMA.get(), CircuitAssemblerBlockEntity.PLASMA_PER_OPERATION)),
+                        new ProcessingCategory.FluidCost(ModFluids.PLASMA.get(), CircuitAssemblerBlockEntity.PLASMA_PER_OPERATION.get())),
                 new ProcessingCategory<>(gui, WASHING.get(), Component.translatable("jei.comminutioncraft.washing"),
                         ModItems.ORE_WASHER.get(), List.of(
-                        new ProcessingCategory.Station("jei.comminutioncraft.time.ore_washer", OreWasherBlockEntity.PROCESS_TIME)),
-                        List.of()).withFluids(new ProcessingCategory.FluidCost(Fluids.WATER, OreWasherBlockEntity.WATER_PER_OPERATION)),
+                        new ProcessingCategory.Station("jei.comminutioncraft.time.ore_washer", OreWasherBlockEntity.PROCESS_TIME.get())),
+                        List.of()).withFluids(new ProcessingCategory.FluidCost(Fluids.WATER, OreWasherBlockEntity.WATER_PER_OPERATION.get())),
                 new ProcessingCategory<>(gui, PRESSING.get(), Component.translatable("jei.comminutioncraft.pressing"),
                         ModItems.PELLET_PRESS.get(), List.of(
-                        new ProcessingCategory.Station("jei.comminutioncraft.time.pellet_press", PelletPressBlockEntity.PROCESS_TIME)),
+                        new ProcessingCategory.Station("jei.comminutioncraft.time.pellet_press", PelletPressBlockEntity.PROCESS_TIME.get())),
                         List.of()).withFluids(
-                        new ProcessingCategory.FluidCost(ModFluids.DEUTERIUM.get(), PelletPressBlockEntity.DEUTERIUM_PER_PELLET),
-                        new ProcessingCategory.FluidCost(ModFluids.TRITIUM.get(), PelletPressBlockEntity.TRITIUM_PER_PELLET)),
+                        new ProcessingCategory.FluidCost(ModFluids.DEUTERIUM.get(), PelletPressBlockEntity.DEUTERIUM_PER_PELLET.get()),
+                        new ProcessingCategory.FluidCost(ModFluids.TRITIUM.get(), PelletPressBlockEntity.TRITIUM_PER_PELLET.get())),
                 new ProcessingCategory<>(gui, PURIFYING.get(), Component.translatable("jei.comminutioncraft.purifying"),
                         ModItems.ORE_PURIFIER.get(), List.of(
-                        new ProcessingCategory.Station("jei.comminutioncraft.time.ore_purifier", OrePurifierBlockEntity.PROCESS_TIME)),
+                        new ProcessingCategory.Station("jei.comminutioncraft.time.ore_purifier", OrePurifierBlockEntity.PROCESS_TIME.get())),
                         List.of(), recipe -> List.of(),
                         new ProcessingCategory.SecondOutput<>(PurifyingRecipe::getByproduct, PurifyingRecipe::getChance)).withFluids(
-                        new ProcessingCategory.FluidCost(ModFluids.OXYGEN.get(), OrePurifierBlockEntity.OXYGEN_PER_OPERATION)),
+                        new ProcessingCategory.FluidCost(ModFluids.OXYGEN.get(), OrePurifierBlockEntity.OXYGEN_PER_OPERATION.get())),
                 new FusionReactorCategory(gui));
         for (FluidMachinePage page : fluidMachinePages()) {
             registration.addRecipeCategories(new FluidConversionCategory(gui, page.type(), page.machine()));
@@ -170,7 +170,7 @@ public class ComminutionJeiPlugin implements IModPlugin {
     }
 
     private static List<FluidMachinePage> fluidMachinePages() {
-        int half = ElectrolyserBlockEntity.WATER_PER_HYDROGEN;
+        int half = ElectrolyserBlockEntity.WATER_PER_HYDROGEN.get();
         return List.of(
                 page("atmospheric_water_generator", ModItems.ATMOSPHERIC_WATER_GENERATOR.get(), List.of(),
                         List.of(new FluidConversionCategory.Amount(Fluids.WATER, 1,
@@ -181,27 +181,27 @@ public class ComminutionJeiPlugin implements IModPlugin {
                         List.of(new FluidConversionCategory.Amount(ModFluids.HYDROGEN.get(), 2),
                                 new FluidConversionCategory.Amount(ModFluids.OXYGEN.get(), 1,
                                         Component.translatable("jei.comminutioncraft.byproduct_face"))),
-                        Component.translatable("jei.comminutioncraft.fe_per_mb", ElectrolyserBlockEntity.ENERGY_PER_HYDROGEN,
-                                ElectrolyserBlockEntity.MAX_HYDROGEN_PER_TICK)),
+                        Component.translatable("jei.comminutioncraft.fe_per_mb", ElectrolyserBlockEntity.ENERGY_PER_HYDROGEN.get(),
+                                ElectrolyserBlockEntity.MAX_HYDROGEN_PER_TICK.get())),
                 page("plasma_generator", ModItems.PLASMA_GENERATOR.get(),
                         List.of(new FluidConversionCategory.Amount(ModFluids.HYDROGEN.get(), 1)),
                         List.of(new FluidConversionCategory.Amount(ModFluids.PLASMA.get(), 1)),
-                        Component.translatable("jei.comminutioncraft.fe_per_mb", PlasmaGeneratorBlockEntity.ENERGY_PER_MB,
-                                PlasmaGeneratorBlockEntity.MAX_PLASMA_PER_TICK)),
+                        Component.translatable("jei.comminutioncraft.fe_per_mb", PlasmaGeneratorBlockEntity.ENERGY_PER_MB.get(),
+                                PlasmaGeneratorBlockEntity.MAX_PLASMA_PER_TICK.get())),
                 page("mhd_generator", ModItems.MHD_GENERATOR.get(),
                         List.of(new FluidConversionCategory.Amount(ModFluids.PLASMA.get(), 1)), List.of(),
-                        Component.translatable("jei.comminutioncraft.mhd.line", MhdGeneratorBlockEntity.ENERGY_PER_MB,
-                                MhdGeneratorBlockEntity.ENERGY_PER_MB * MhdGeneratorBlockEntity.MAX_PLASMA_PER_TICK)),
+                        Component.translatable("jei.comminutioncraft.mhd.line", MhdGeneratorBlockEntity.ENERGY_PER_MB.get(),
+                                MhdGeneratorBlockEntity.ENERGY_PER_MB.get() * MhdGeneratorBlockEntity.MAX_PLASMA_PER_TICK.get())),
                 page("isotope_separator", ModItems.ISOTOPE_SEPARATOR.get(),
-                        List.of(new FluidConversionCategory.Amount(Fluids.WATER, IsotopeSeparatorBlockEntity.WATER_PER_MB)),
+                        List.of(new FluidConversionCategory.Amount(Fluids.WATER, IsotopeSeparatorBlockEntity.WATER_PER_MB.get())),
                         List.of(new FluidConversionCategory.Amount(ModFluids.DEUTERIUM.get(), 1)),
-                        Component.translatable("jei.comminutioncraft.fe_per_mb", IsotopeSeparatorBlockEntity.ENERGY_PER_MB,
-                                IsotopeSeparatorBlockEntity.MAX_DEUTERIUM_PER_TICK)),
+                        Component.translatable("jei.comminutioncraft.fe_per_mb", IsotopeSeparatorBlockEntity.ENERGY_PER_MB.get(),
+                                IsotopeSeparatorBlockEntity.MAX_DEUTERIUM_PER_TICK.get())),
                 page("tritium_breeder", ModItems.TRITIUM_BREEDER.get(),
                         List.of(new FluidConversionCategory.Amount(ModFluids.DEUTERIUM.get(), 1)),
                         List.of(new FluidConversionCategory.Amount(ModFluids.TRITIUM.get(), 1)),
-                        Component.translatable("jei.comminutioncraft.fe_per_mb", TritiumBreederBlockEntity.ENERGY_PER_MB,
-                                TritiumBreederBlockEntity.MAX_TRITIUM_PER_TICK)));
+                        Component.translatable("jei.comminutioncraft.fe_per_mb", TritiumBreederBlockEntity.ENERGY_PER_MB.get(),
+                                TritiumBreederBlockEntity.MAX_TRITIUM_PER_TICK.get())));
     }
 
     /** Granulated and washed forms of other mods' metals that aren't in this pack stay out of the ingredient list. */

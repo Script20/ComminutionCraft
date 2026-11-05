@@ -93,6 +93,11 @@ public class ModLanguageProvider extends LanguageProvider {
         add("comminutioncraft.configuration.section.comminutioncraft.common.toml", "Common Settings");
         add("comminutioncraft.configuration.section.comminutioncraft.common.toml.title", "Common Settings");
         add("comminutioncraft.configuration.soaryn_chest", "Soaryn Chest");
+        add("comminutioncraft.configuration.section.comminutioncraft.server.toml", "Machine Settings");
+        add("comminutioncraft.configuration.section.comminutioncraft.server.toml.title", "Machine Settings");
+        for (String[] entry : com.script.comminutioncraft.common.config.MachineConfig.LANG) {
+            add(entry[0], entry[1]);
+        }
         add("comminutioncraft.configuration.includeHotbar", "Include Hotbar");
         add("comminutioncraft.configuration.includeHotbar.tooltip",
                 "If on, placing a Soaryn Chest also takes your hotbar, not just the main inventory.");

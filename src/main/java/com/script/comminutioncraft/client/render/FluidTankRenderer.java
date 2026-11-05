@@ -77,7 +77,7 @@ public class FluidTankRenderer implements BlockEntityRenderer<FluidTankBlockEnti
         FluidTintSource tint = model.fluidTintSource();
         state.color = tint == null ? 0xFFFFFFFF
                 : 0xFF000000 | tint.colorInWorld(fluidState, tank.getBlockState(), level, tank.getBlockPos());
-        state.fill = Math.min(1.0F, (float) stack.getAmount() / FluidTankBlockEntity.CAPACITY);
+        state.fill = Math.min(1.0F, (float) stack.getAmount() / FluidTankBlockEntity.CAPACITY.get());
         state.glows = stack.getFluidType().getLightLevel(stack) > 0;
     }
 

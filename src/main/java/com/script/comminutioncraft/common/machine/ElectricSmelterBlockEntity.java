@@ -23,8 +23,8 @@ import net.minecraft.world.level.block.state.BlockState;
  * burned in an Electric Generator (32,000 FE) smelts 16 items (vs 10 in tier 1).
  */
 public class ElectricSmelterBlockEntity extends ElectricMachineBlockEntity {
-    public static final int PROCESS_TIME = 50;
-    public static final int ENERGY_PER_TICK = 40;
+    public static final com.script.comminutioncraft.common.config.ConfigInt PROCESS_TIME = com.script.comminutioncraft.common.config.MachineConfig.ELECTRIC_SMELTER_PROCESS_TIME;
+    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_PER_TICK = com.script.comminutioncraft.common.config.MachineConfig.ELECTRIC_SMELTER_ENERGY_PER_TICK;
 
     private final RecipeManager.CachedCheck<SingleRecipeInput, SmeltingRecipe> recipeCheck =
             RecipeManager.createCheck(RecipeType.SMELTING);
@@ -35,12 +35,12 @@ public class ElectricSmelterBlockEntity extends ElectricMachineBlockEntity {
 
     @Override
     protected int getProcessTime() {
-        return PROCESS_TIME;
+        return PROCESS_TIME.get();
     }
 
     @Override
     protected int getEnergyPerTick() {
-        return ENERGY_PER_TICK;
+        return ENERGY_PER_TICK.get();
     }
 
     @Override

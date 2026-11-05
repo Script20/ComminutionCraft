@@ -63,7 +63,7 @@ public class GeneratorProvider implements StreamServerDataProvider<BlockAccessor
             }
             if (data.burnTicksLeft() > 0) {
                 tooltip.add(Component.translatable("jade.comminutioncraft.generating",
-                        ElectricGeneratorBlockEntity.ENERGY_PER_TICK, data.burnTicksLeft() / 20).withStyle(ChatFormatting.GOLD));
+                        ElectricGeneratorBlockEntity.ENERGY_PER_TICK.get(), data.burnTicksLeft() / 20).withStyle(ChatFormatting.GOLD));
             } else {
                 tooltip.add(Component.translatable("jade.comminutioncraft.idle").withStyle(ChatFormatting.GRAY));
             }

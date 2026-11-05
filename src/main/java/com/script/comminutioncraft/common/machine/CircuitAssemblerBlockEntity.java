@@ -21,9 +21,9 @@ import net.minecraft.world.level.block.state.BlockState;
  * recipes). Each one takes 100 ticks at 20 FE/t (2,000 FE) and 100 mB of plasma.
  */
 public class CircuitAssemblerBlockEntity extends PlasmaMachineBlockEntity {
-    public static final int PROCESS_TIME = 100;
-    public static final int ENERGY_PER_TICK = 20;
-    public static final int PLASMA_PER_OPERATION = 100;
+    public static final com.script.comminutioncraft.common.config.ConfigInt PROCESS_TIME = com.script.comminutioncraft.common.config.MachineConfig.CIRCUIT_ASSEMBLER_PROCESS_TIME;
+    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_PER_TICK = com.script.comminutioncraft.common.config.MachineConfig.CIRCUIT_ASSEMBLER_ENERGY_PER_TICK;
+    public static final com.script.comminutioncraft.common.config.ConfigInt PLASMA_PER_OPERATION = com.script.comminutioncraft.common.config.MachineConfig.CIRCUIT_ASSEMBLER_PLASMA_PER_OPERATION;
 
     private final RecipeManager.CachedCheck<SingleRecipeInput, AssemblingRecipe> recipeCheck =
             RecipeManager.createCheck(ModRecipes.ASSEMBLING_TYPE.get());
@@ -34,17 +34,17 @@ public class CircuitAssemblerBlockEntity extends PlasmaMachineBlockEntity {
 
     @Override
     protected int getProcessTime() {
-        return PROCESS_TIME;
+        return PROCESS_TIME.get();
     }
 
     @Override
     protected int getEnergyPerTick() {
-        return ENERGY_PER_TICK;
+        return ENERGY_PER_TICK.get();
     }
 
     @Override
     protected int getPlasmaPerOperation() {
-        return PLASMA_PER_OPERATION;
+        return PLASMA_PER_OPERATION.get();
     }
 
     @Override

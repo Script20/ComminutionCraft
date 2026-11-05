@@ -58,11 +58,11 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
     public static final int DATA_SIDES = 7;
     public static final int DATA_COUNT = 8;
 
-    public static final int ENERGY_CAPACITY = 20_000;
-    public static final int MAX_ENERGY_INPUT = 200;
+    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.ELECTRIC_MACHINES_ENERGY_CAPACITY;
+    public static final com.script.comminutioncraft.common.config.ConfigInt MAX_ENERGY_INPUT = com.script.comminutioncraft.common.config.MachineConfig.ELECTRIC_MACHINES_MAX_ENERGY_INPUT;
     /** Tier-3 machines (Plasma Granulator / Smelter, Ore Washer, Circuit Assembler) hold more and take FE faster. */
-    public static final int TIER3_ENERGY_CAPACITY = 50_000;
-    public static final int TIER3_MAX_ENERGY_INPUT = 1_000;
+    public static final com.script.comminutioncraft.common.config.ConfigInt TIER3_ENERGY_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.PLASMA_MACHINES_ENERGY_CAPACITY;
+    public static final com.script.comminutioncraft.common.config.ConfigInt TIER3_MAX_ENERGY_INPUT = com.script.comminutioncraft.common.config.MachineConfig.PLASMA_MACHINES_MAX_ENERGY_INPUT;
     /** How long the front stays lit after work stops, so a machine on a thin power supply doesn't flicker. */
     private static final int LIT_COOLDOWN = 10;
 
@@ -94,7 +94,7 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
     };
 
     protected ElectricMachineBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
-        this(type, pos, state, ENERGY_CAPACITY, MAX_ENERGY_INPUT);
+        this(type, pos, state, ENERGY_CAPACITY.get(), MAX_ENERGY_INPUT.get());
     }
 
     protected ElectricMachineBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state,

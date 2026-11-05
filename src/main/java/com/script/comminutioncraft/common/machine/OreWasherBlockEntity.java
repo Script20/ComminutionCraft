@@ -35,24 +35,24 @@ import org.jspecify.annotations.Nullable;
  * source block touching it: {@link #WATER_PER_SOURCE} mB/t each, without using the source up.
  */
 public class OreWasherBlockEntity extends ElectricMachineBlockEntity {
-    public static final int PROCESS_TIME = 60;
-    public static final int ENERGY_PER_TICK = 80;
-    public static final int WATER_PER_OPERATION = 250;
-    public static final int WATER_CAPACITY = 8_000;
-    public static final int WATER_PER_SOURCE = 50;
+    public static final com.script.comminutioncraft.common.config.ConfigInt PROCESS_TIME = com.script.comminutioncraft.common.config.MachineConfig.ORE_WASHER_PROCESS_TIME;
+    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_PER_TICK = com.script.comminutioncraft.common.config.MachineConfig.ORE_WASHER_ENERGY_PER_TICK;
+    public static final com.script.comminutioncraft.common.config.ConfigInt WATER_PER_OPERATION = com.script.comminutioncraft.common.config.MachineConfig.ORE_WASHER_WATER_PER_OPERATION;
+    public static final com.script.comminutioncraft.common.config.ConfigInt WATER_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.ORE_WASHER_WATER_CAPACITY;
+    public static final com.script.comminutioncraft.common.config.ConfigInt WATER_PER_SOURCE = com.script.comminutioncraft.common.config.MachineConfig.ORE_WASHER_WATER_PER_SOURCE;
 
     public static final int DATA_WATER = ElectricMachineBlockEntity.DATA_COUNT;
     public static final int DATA_WATER_CAPACITY = DATA_WATER + 1;
     public static final int DATA_COUNT = DATA_WATER_CAPACITY + 1;
 
-    private final MachineFluidTank water = new MachineFluidTank(WATER_CAPACITY,
+    private final MachineFluidTank water = new MachineFluidTank(WATER_CAPACITY.get(),
             resource -> resource.is(NeoForgeMod.WATER_TYPE.value()), this::setChanged);
 
     private final RecipeManager.CachedCheck<SingleRecipeInput, WashingRecipe> recipeCheck =
             RecipeManager.createCheck(ModRecipes.WASHING_TYPE.get());
 
     public OreWasherBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.ORE_WASHER.get(), pos, state, TIER3_ENERGY_CAPACITY, TIER3_MAX_ENERGY_INPUT);
+        super(ModBlockEntities.ORE_WASHER.get(), pos, state, TIER3_ENERGY_CAPACITY.get(), TIER3_MAX_ENERGY_INPUT.get());
     }
 
     public MachineFluidTank getWater() {
@@ -74,7 +74,7 @@ public class OreWasherBlockEntity extends ElectricMachineBlockEntity {
                 break;
             }
             if (level.getFluidState(pos.relative(direction)).isSourceOfType(Fluids.WATER)) {
-                water.fill(FluidResource.of(Fluids.WATER), WATER_PER_SOURCE);
+                water.fill(FluidResource.of(Fluids.WATER), WATER_PER_SOURCE.get());
             }
         }
         super.serverTick(level, pos, state);
@@ -82,22 +82,22 @@ public class OreWasherBlockEntity extends ElectricMachineBlockEntity {
 
     @Override
     protected boolean hasOperationResources() {
-        return water.getAmount() >= WATER_PER_OPERATION;
+        return water.getAmount() >= WATER_PER_OPERATION.get();
     }
 
     @Override
     protected void onOperationDone() {
-        water.drain(WATER_PER_OPERATION);
+        water.drain(WATER_PER_OPERATION.get());
     }
 
     @Override
     protected int getProcessTime() {
-        return PROCESS_TIME;
+        return PROCESS_TIME.get();
     }
 
     @Override
     protected int getEnergyPerTick() {
-        return ENERGY_PER_TICK;
+        return ENERGY_PER_TICK.get();
     }
 
     @Override

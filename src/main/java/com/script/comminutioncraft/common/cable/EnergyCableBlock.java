@@ -11,19 +11,19 @@ import net.neoforged.neoforge.capabilities.Capabilities;
  */
 public class EnergyCableBlock extends ConduitBlock {
     /** Tier 2 Energy Cable. */
-    public static final int ENERGY_CABLE_RATE = 1_000;
+    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_CABLE_RATE = com.script.comminutioncraft.common.config.MachineConfig.CABLES_ENERGY_CABLE;
     /** Tier 4 Fusion Cable. */
-    public static final int FUSION_CABLE_RATE = 32_000;
+    public static final com.script.comminutioncraft.common.config.ConfigInt FUSION_CABLE_RATE = com.script.comminutioncraft.common.config.MachineConfig.CABLES_FUSION_CABLE;
 
-    private final int transferRate;
+    private final java.util.function.IntSupplier transferRate;
 
-    public EnergyCableBlock(Properties properties, int transferRate) {
+    public EnergyCableBlock(Properties properties, java.util.function.IntSupplier transferRate) {
         super(properties);
         this.transferRate = transferRate;
     }
 
     public int getTransferRate() {
-        return transferRate;
+        return transferRate.getAsInt();
     }
 
     @Override

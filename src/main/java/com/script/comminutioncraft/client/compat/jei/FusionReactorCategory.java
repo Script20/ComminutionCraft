@@ -98,8 +98,8 @@ public class FusionReactorCategory extends AbstractRecipeCategory<FusionReactorC
                         Component.translatable("jei.comminutioncraft.fusion_reactor.ignite").withStyle(ChatFormatting.GRAY)));
         builder.addSlot(RecipeIngredientRole.OUTPUT, WIDTH - 19, IO_Y + 1)
                 .setOutputSlotBackground()
-                .setFluidRenderer(FusionReactorBlockEntity.TRITIUM_PER_PELLET, false, 16, 16)
-                .addFluidStack(ModFluids.TRITIUM.get(), FusionReactorBlockEntity.TRITIUM_PER_PELLET)
+                .setFluidRenderer(FusionReactorBlockEntity.TRITIUM_PER_PELLET.get(), false, 16, 16)
+                .addFluidStack(ModFluids.TRITIUM.get(), FusionReactorBlockEntity.TRITIUM_PER_PELLET.get())
                 .addRichTooltipCallback((view, tooltip) -> tooltip.add(
                         Component.translatable("jei.comminutioncraft.fusion_reactor.tritium").withStyle(ChatFormatting.GRAY)));
     }
@@ -118,12 +118,12 @@ public class FusionReactorCategory extends AbstractRecipeCategory<FusionReactorC
                 .setTextAlignment(HorizontalAlignment.CENTER)
                 .setColor(0xFF60FF80);
         builder.addText(Component.translatable("jei.comminutioncraft.fusion_reactor.output",
-                        String.format(java.util.Locale.ROOT, "%,d", FusionReactorBlockEntity.ENERGY_PER_TICK)), WIDTH - 62, 10)
+                        String.format(java.util.Locale.ROOT, "%,d", FusionReactorBlockEntity.ENERGY_PER_TICK.get())), WIDTH - 62, 10)
                 .setPosition(42, IO_Y + 5)
                 .setTextAlignment(HorizontalAlignment.CENTER)
                 .setColor(0xFF808080);
         JeiAmounts.label(builder, 21, IO_Y + 1, 1_000);
-        JeiAmounts.label(builder, WIDTH - 19, IO_Y + 1, FusionReactorBlockEntity.TRITIUM_PER_PELLET);
+        JeiAmounts.label(builder, WIDTH - 19, IO_Y + 1, FusionReactorBlockEntity.TRITIUM_PER_PELLET.get());
         builder.addText(Component.translatable("jei.comminutioncraft.fusion_reactor.hint"), WIDTH, 10)
                 .setPosition(0, HEIGHT - 10)
                 .setTextAlignment(HorizontalAlignment.CENTER)

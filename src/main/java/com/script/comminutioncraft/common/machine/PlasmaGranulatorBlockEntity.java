@@ -22,24 +22,24 @@ import net.minecraft.world.level.block.state.BlockState;
  * Almost twice as fast as the Electric Granulator (40 ticks vs 75) at 60 FE/t = 2,400 FE per operation.
  */
 public class PlasmaGranulatorBlockEntity extends ElectricMachineBlockEntity {
-    public static final int PROCESS_TIME = 40;
-    public static final int ENERGY_PER_TICK = 60;
+    public static final com.script.comminutioncraft.common.config.ConfigInt PROCESS_TIME = com.script.comminutioncraft.common.config.MachineConfig.PLASMA_GRANULATOR_PROCESS_TIME;
+    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_PER_TICK = com.script.comminutioncraft.common.config.MachineConfig.PLASMA_GRANULATOR_ENERGY_PER_TICK;
 
     private final RecipeManager.CachedCheck<SingleRecipeInput, GranulatingRecipe> recipeCheck =
             RecipeManager.createCheck(ModRecipes.GRANULATING_TYPE.get());
 
     public PlasmaGranulatorBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.PLASMA_GRANULATOR.get(), pos, state, TIER3_ENERGY_CAPACITY, TIER3_MAX_ENERGY_INPUT);
+        super(ModBlockEntities.PLASMA_GRANULATOR.get(), pos, state, TIER3_ENERGY_CAPACITY.get(), TIER3_MAX_ENERGY_INPUT.get());
     }
 
     @Override
     protected int getProcessTime() {
-        return PROCESS_TIME;
+        return PROCESS_TIME.get();
     }
 
     @Override
     protected int getEnergyPerTick() {
-        return ENERGY_PER_TICK;
+        return ENERGY_PER_TICK.get();
     }
 
     @Override

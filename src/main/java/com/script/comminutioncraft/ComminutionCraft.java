@@ -59,6 +59,9 @@ public class ComminutionCraft {
         ModCreativeTabs.CREATIVE_MODE_TABS.register(modEventBus);
         modContainer.registerConfig(net.neoforged.fml.config.ModConfig.Type.COMMON,
                 com.script.comminutioncraft.common.config.ComminutionConfig.SPEC);
+        // Balance numbers: per world, synced to players (see MachineConfig)
+        modContainer.registerConfig(net.neoforged.fml.config.ModConfig.Type.SERVER,
+                com.script.comminutioncraft.common.config.MachineConfig.SPEC);
 
         ModGameTests.TEST_FUNCTIONS.register(modEventBus);
 

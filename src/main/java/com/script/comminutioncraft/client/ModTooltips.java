@@ -71,7 +71,7 @@ public final class ModTooltips {
         } else if (block instanceof CreativeFluidTankBlock) {
             lines.add(gray("tooltip.comminutioncraft.creative_tank"));
         } else if (block instanceof FluidTankBlock) {
-            String capacity = number(FluidTankBlockEntity.CAPACITY);
+            String capacity = number(FluidTankBlockEntity.CAPACITY.get());
             lines.add(contents.isEmpty()
                     ? gray("tooltip.comminutioncraft.tank_amount", "0", capacity)
                     : gray("tooltip.comminutioncraft.tank_amount_fluid", contents.getHoverName(), number(contents.getAmount()), capacity));

@@ -22,18 +22,18 @@ import org.jspecify.annotations.Nullable;
  * The other tier-3 machines run on FE alone.
  */
 public abstract class PlasmaMachineBlockEntity extends ElectricMachineBlockEntity {
-    public static final int PLASMA_CAPACITY = 8_000;
+    public static final com.script.comminutioncraft.common.config.ConfigInt PLASMA_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.CIRCUIT_ASSEMBLER_PLASMA_CAPACITY;
 
     // ContainerData indices after the electric machine's (plasma fits in one 16-bit slot)
     public static final int DATA_PLASMA = ElectricMachineBlockEntity.DATA_COUNT;
     public static final int DATA_PLASMA_CAPACITY = DATA_PLASMA + 1;
     public static final int DATA_COUNT = DATA_PLASMA_CAPACITY + 1;
 
-    private final MachineFluidTank tank = new MachineFluidTank(PLASMA_CAPACITY,
+    private final MachineFluidTank tank = new MachineFluidTank(PLASMA_CAPACITY.get(),
             resource -> resource.is(ModFluids.PLASMA_TYPE.get()), this::setChanged);
 
     protected PlasmaMachineBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
-        super(type, pos, state, TIER3_ENERGY_CAPACITY, TIER3_MAX_ENERGY_INPUT);
+        super(type, pos, state, TIER3_ENERGY_CAPACITY.get(), TIER3_MAX_ENERGY_INPUT.get());
     }
 
     /** mB of plasma one operation uses (taken when it finishes). */

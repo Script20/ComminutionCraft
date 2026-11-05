@@ -73,14 +73,14 @@ public class CreativeFluidTankBlockEntity extends FluidTankBlockEntity implement
     /** Picks the fluid it makes (null = none) and fills (or empties) the tank to match. */
     public void setFluid(@Nullable Fluid picked) {
         fluid = picked;
-        getTank().drain(CAPACITY);
+        getTank().drain(CAPACITY.get());
         refill();
         setChanged();
     }
 
     private void refill() {
         if (fluid != null) {
-            getTank().fill(FluidResource.of(fluid), CAPACITY);
+            getTank().fill(FluidResource.of(fluid), CAPACITY.get());
         }
     }
 
@@ -97,7 +97,7 @@ public class CreativeFluidTankBlockEntity extends FluidTankBlockEntity implement
             for (Direction direction : Direction.values()) {
                 ResourceHandler<FluidResource> target = level.getCapability(Capabilities.Fluid.BLOCK, pos.relative(direction), direction.getOpposite());
                 if (target != null) {
-                    ResourceHandlerUtil.move(getTank(), target, resource -> true, CAPACITY, null);
+                    ResourceHandlerUtil.move(getTank(), target, resource -> true, CAPACITY.get(), null);
                     refill();
                 }
             }

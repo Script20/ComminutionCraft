@@ -33,10 +33,10 @@ import org.jspecify.annotations.Nullable;
  * Input faces (from an Electrolyser's By-product face); both outputs go out of Output faces.
  */
 public class OrePurifierBlockEntity extends ElectricMachineBlockEntity {
-    public static final int PROCESS_TIME = 60;
-    public static final int ENERGY_PER_TICK = 100;
-    public static final int OXYGEN_PER_OPERATION = 50;
-    public static final int OXYGEN_CAPACITY = 8_000;
+    public static final com.script.comminutioncraft.common.config.ConfigInt PROCESS_TIME = com.script.comminutioncraft.common.config.MachineConfig.ORE_PURIFIER_PROCESS_TIME;
+    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_PER_TICK = com.script.comminutioncraft.common.config.MachineConfig.ORE_PURIFIER_ENERGY_PER_TICK;
+    public static final com.script.comminutioncraft.common.config.ConfigInt OXYGEN_PER_OPERATION = com.script.comminutioncraft.common.config.MachineConfig.ORE_PURIFIER_OXYGEN_PER_OPERATION;
+    public static final com.script.comminutioncraft.common.config.ConfigInt OXYGEN_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.ORE_PURIFIER_OXYGEN_CAPACITY;
 
     public static final int SLOT_BYPRODUCT = SLOT_COUNT;
     private static final int[] SLOTS_OUTPUTS = {SLOT_OUTPUT, SLOT_BYPRODUCT};
@@ -45,14 +45,14 @@ public class OrePurifierBlockEntity extends ElectricMachineBlockEntity {
     public static final int DATA_OXYGEN_CAPACITY = DATA_OXYGEN + 1;
     public static final int DATA_COUNT = DATA_OXYGEN_CAPACITY + 1;
 
-    private final MachineFluidTank oxygen = new MachineFluidTank(OXYGEN_CAPACITY,
+    private final MachineFluidTank oxygen = new MachineFluidTank(OXYGEN_CAPACITY.get(),
             resource -> resource.is(ModFluids.OXYGEN_TYPE.get()), this::setChanged);
 
     private final RecipeManager.CachedCheck<SingleRecipeInput, PurifyingRecipe> recipeCheck =
             RecipeManager.createCheck(ModRecipes.PURIFYING_TYPE.get());
 
     public OrePurifierBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.ORE_PURIFIER.get(), pos, state, TIER3_ENERGY_CAPACITY, TIER3_MAX_ENERGY_INPUT);
+        super(ModBlockEntities.ORE_PURIFIER.get(), pos, state, TIER3_ENERGY_CAPACITY.get(), TIER3_MAX_ENERGY_INPUT.get());
         items = NonNullList.withSize(SLOT_COUNT + 1, ItemStack.EMPTY);
     }
 
@@ -79,12 +79,12 @@ public class OrePurifierBlockEntity extends ElectricMachineBlockEntity {
 
     @Override
     protected boolean hasOperationResources() {
-        return oxygen.getAmount() >= OXYGEN_PER_OPERATION;
+        return oxygen.getAmount() >= OXYGEN_PER_OPERATION.get();
     }
 
     @Override
     protected void onOperationDone(RecipeHolder<? extends Recipe<SingleRecipeInput>> recipe) {
-        oxygen.drain(OXYGEN_PER_OPERATION);
+        oxygen.drain(OXYGEN_PER_OPERATION.get());
         if (recipe.value() instanceof PurifyingRecipe purifying && level != null && level.getRandom().nextFloat() < purifying.getChance()) {
             ItemStack byproduct = purifying.getByproduct().create();
             if (MachineSlots.canFit(items, SLOT_BYPRODUCT, byproduct, getMaxStackSize())) {
@@ -95,12 +95,12 @@ public class OrePurifierBlockEntity extends ElectricMachineBlockEntity {
 
     @Override
     protected int getProcessTime() {
-        return PROCESS_TIME;
+        return PROCESS_TIME.get();
     }
 
     @Override
     protected int getEnergyPerTick() {
-        return ENERGY_PER_TICK;
+        return ENERGY_PER_TICK.get();
     }
 
     @Override

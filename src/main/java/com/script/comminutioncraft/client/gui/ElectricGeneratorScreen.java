@@ -35,7 +35,7 @@ public class ElectricGeneratorScreen extends MachineScreen<ElectricGeneratorMenu
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         super.extractLabels(graphics, mouseX, mouseY);
         Component rate = Component.translatable("gui.comminutioncraft.generating",
-                menu.isLit() ? ElectricGeneratorBlockEntity.ENERGY_PER_TICK : 0);
+                menu.isLit() ? ElectricGeneratorBlockEntity.ENERGY_PER_TICK.get() : 0);
         graphics.text(font, rate, 104, 39, RATE_COLOR, false);
     }
 

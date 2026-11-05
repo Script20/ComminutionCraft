@@ -39,12 +39,12 @@ import org.jspecify.annotations.Nullable;
  * Mined with a pickaxe it forgets everything; picked up with the wrench it keeps its charge and settings.
  */
 public class EnergyBatteryBlockEntity extends BlockEntity implements TickingMachine, ControllableMachine, MenuProvider {
-    public static final int CAPACITY = 1_000_000;
-    public static final int TRANSFER_RATE = 1_000;
-    public static final int PLASMA_CAPACITY = 8_000_000;
-    public static final int PLASMA_TRANSFER_RATE = 8_000;
-    public static final int FUSION_CAPACITY = 64_000_000;
-    public static final int FUSION_TRANSFER_RATE = 32_000;
+    public static final com.script.comminutioncraft.common.config.ConfigInt CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.ENERGY_BATTERY_CAPACITY;
+    public static final com.script.comminutioncraft.common.config.ConfigInt TRANSFER_RATE = com.script.comminutioncraft.common.config.MachineConfig.ENERGY_BATTERY_TRANSFER_RATE;
+    public static final com.script.comminutioncraft.common.config.ConfigInt PLASMA_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.PLASMA_ENERGY_BATTERY_CAPACITY;
+    public static final com.script.comminutioncraft.common.config.ConfigInt PLASMA_TRANSFER_RATE = com.script.comminutioncraft.common.config.MachineConfig.PLASMA_ENERGY_BATTERY_TRANSFER_RATE;
+    public static final com.script.comminutioncraft.common.config.ConfigInt FUSION_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.FUSION_ENERGY_BATTERY_CAPACITY;
+    public static final com.script.comminutioncraft.common.config.ConfigInt FUSION_TRANSFER_RATE = com.script.comminutioncraft.common.config.MachineConfig.FUSION_ENERGY_BATTERY_TRANSFER_RATE;
     /** Charge cells on the front texture (blockstate {@code charge} 0..CELLS). */
     public static final int CELLS = 6;
 
@@ -99,19 +99,19 @@ public class EnergyBatteryBlockEntity extends BlockEntity implements TickingMach
 
     /** Tier 2 Energy Battery. */
     public EnergyBatteryBlockEntity(BlockPos pos, BlockState state) {
-        this(ModBlockEntities.ENERGY_BATTERY.get(), ModMenus.ENERGY_BATTERY.get(), pos, state, CAPACITY, TRANSFER_RATE);
+        this(ModBlockEntities.ENERGY_BATTERY.get(), ModMenus.ENERGY_BATTERY.get(), pos, state, CAPACITY.get(), TRANSFER_RATE.get());
     }
 
     /** Tier 3 Plasma Energy Battery. */
     public static EnergyBatteryBlockEntity plasma(BlockPos pos, BlockState state) {
         return new EnergyBatteryBlockEntity(ModBlockEntities.PLASMA_ENERGY_BATTERY.get(), ModMenus.PLASMA_ENERGY_BATTERY.get(),
-                pos, state, PLASMA_CAPACITY, PLASMA_TRANSFER_RATE);
+                pos, state, PLASMA_CAPACITY.get(), PLASMA_TRANSFER_RATE.get());
     }
 
     /** Tier 4 Fusion Energy Battery. */
     public static EnergyBatteryBlockEntity fusion(BlockPos pos, BlockState state) {
         return new EnergyBatteryBlockEntity(ModBlockEntities.FUSION_ENERGY_BATTERY.get(), ModMenus.FUSION_ENERGY_BATTERY.get(),
-                pos, state, FUSION_CAPACITY, FUSION_TRANSFER_RATE);
+                pos, state, FUSION_CAPACITY.get(), FUSION_TRANSFER_RATE.get());
     }
 
     private EnergyBatteryBlockEntity(BlockEntityType<?> type, MenuType<EnergyBatteryMenu> menuType, BlockPos pos,

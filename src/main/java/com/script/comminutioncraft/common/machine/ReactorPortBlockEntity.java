@@ -30,7 +30,7 @@ import org.jspecify.annotations.Nullable;
  */
 public class ReactorPortBlockEntity extends BlockEntity implements TickingMachine, ControllableMachine {
     /** Max mB of tritium pushed per tick, across all output faces. */
-    public static final int MAX_TRITIUM_OUTPUT = 500;
+    public static final com.script.comminutioncraft.common.config.ConfigInt MAX_TRITIUM_OUTPUT = com.script.comminutioncraft.common.config.MachineConfig.FUSION_REACTOR_PORT_TRITIUM_OUTPUT;
 
     private final MachineControls controls = new MachineControls(MachineControls.outputBelow(), this::onControlsChanged);
     private @Nullable BlockPos controllerPos;
@@ -94,8 +94,8 @@ public class ReactorPortBlockEntity extends BlockEntity implements TickingMachin
         if (reactor == null) {
             return;
         }
-        int energyBudget = Math.min(FusionReactorBlockEntity.MAX_ENERGY_OUTPUT, reactor.getEnergy().getEnergy());
-        int tritiumBudget = Math.min(MAX_TRITIUM_OUTPUT, reactor.getTritium().getAmount());
+        int energyBudget = Math.min(FusionReactorBlockEntity.MAX_ENERGY_OUTPUT.get(), reactor.getEnergy().getEnergy());
+        int tritiumBudget = Math.min(MAX_TRITIUM_OUTPUT.get(), reactor.getTritium().getAmount());
         for (Direction direction : Direction.values()) {
             if (sideMode(direction) != SideMode.OUTPUT) {
                 continue;
