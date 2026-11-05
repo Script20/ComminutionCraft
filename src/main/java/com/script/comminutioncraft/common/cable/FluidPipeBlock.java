@@ -18,7 +18,7 @@ public class FluidPipeBlock extends ConduitBlock {
     /** Fluid Pipe: any fluid. */
     public static final int FLUID_PIPE_RATE = 1_000;
     /** Plasma Cable: plasma only. */
-    public static final int PLASMA_CABLE_RATE = 4_000;
+    public static final int PLASMA_CABLE_RATE = 8_000;
 
     private final int transferRate;
     private final Predicate<FluidResource> carries;
