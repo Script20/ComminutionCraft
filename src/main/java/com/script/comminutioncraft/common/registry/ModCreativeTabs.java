@@ -20,46 +20,51 @@ public final class ModCreativeTabs {
                     .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
                     .icon(() -> new ItemStack(ModItems.WRENCH.get()))
                     .displayItems((parameters, output) -> {
+                        // Tools
+                        output.accept(ModItems.WRENCH.get());
+                        // Processing, by tier
                         output.accept(ModItems.COAL_GRANULATOR.get());
-                        output.accept(ModItems.COAL_SMELTER.get());
-                        output.accept(ModItems.ELECTRIC_GENERATOR.get());
                         output.accept(ModItems.ELECTRIC_GRANULATOR.get());
+                        output.accept(ModItems.PLASMA_GRANULATOR.get());
+                        output.accept(ModItems.COAL_SMELTER.get());
                         output.accept(ModItems.ELECTRIC_SMELTER.get());
-                        output.accept(ModItems.ENERGY_BATTERY.get());
-                        output.accept(ModItems.ENERGY_CABLE.get());
-                        output.accept(ModItems.ELECTRONIC_CIRCUIT.get());
+                        output.accept(ModItems.PLASMA_SMELTER.get());
+                        output.accept(ModItems.ORE_WASHER.get());
+                        output.accept(ModItems.ORE_PURIFIER.get());
+                        // Power
+                        output.accept(ModItems.ELECTRIC_GENERATOR.get());
                         output.accept(ModItems.ATMOSPHERIC_WATER_GENERATOR.get());
                         output.accept(ModItems.ELECTROLYSER.get());
                         output.accept(ModItems.PLASMA_GENERATOR.get());
                         output.accept(ModItems.MHD_GENERATOR.get());
-                        output.accept(ModItems.FLUID_PIPE.get());
-                        output.accept(ModItems.FLUID_TANK.get());
-                        output.accept(ModItems.AIR_FILTER.get());
-                        output.accept(ModItems.PLASMA_GRANULATOR.get());
-                        output.accept(ModItems.PLASMA_SMELTER.get());
-                        output.accept(ModItems.ORE_WASHER.get());
-                        output.accept(ModItems.CIRCUIT_ASSEMBLER.get());
-                        output.accept(ModItems.PLASMA_ENERGY_BATTERY.get());
-                        output.accept(ModItems.PLASMA_CABLE.get());
-                        output.accept(ModItems.PLASMA_CIRCUIT.get());
-                        output.accept(ModItems.ISOTOPE_SEPARATOR.get());
-                        output.accept(ModItems.TRITIUM_BREEDER.get());
-                        output.accept(ModItems.PELLET_PRESS.get());
-                        output.accept(ModItems.REACTOR_PLATING.get());
-                        output.accept(ModItems.FUSION_CIRCUIT.get());
-                        output.accept(ModItems.FUSION_FUEL_PELLET.get());
-                        output.accept(ModItems.ORE_PURIFIER.get());
+                        // Fusion reactor
                         output.accept(ModItems.REACTOR_CONTROLLER.get());
                         output.accept(ModItems.REACTOR_CASING.get());
                         output.accept(ModItems.REACTOR_GLASS.get());
                         output.accept(ModItems.REACTOR_PORT.get());
-                        output.accept(ModItems.FUSION_CABLE.get());
+                        // Fuel and parts
+                        output.accept(ModItems.ISOTOPE_SEPARATOR.get());
+                        output.accept(ModItems.TRITIUM_BREEDER.get());
+                        output.accept(ModItems.PELLET_PRESS.get());
+                        output.accept(ModItems.CIRCUIT_ASSEMBLER.get());
+                        // Storage
+                        output.accept(ModItems.ENERGY_BATTERY.get());
+                        output.accept(ModItems.PLASMA_ENERGY_BATTERY.get());
                         output.accept(ModItems.FUSION_ENERGY_BATTERY.get());
-                        output.accept(ModItems.WRENCH.get());
-                        output.accept(ModItems.CREATIVE_ENERGY_BATTERY.get());
-                        output.accept(ModItems.CREATIVE_FLUID_TANK.get());
-                        ModBlocks.STONE_SETS.forEach(set -> set.all().forEach(block -> output.accept(block.get())));
-                        // Other mods' metals only appear when some installed mod adds that metal.
+                        output.accept(ModItems.FLUID_TANK.get());
+                        // Cables and pipes
+                        output.accept(ModItems.ENERGY_CABLE.get());
+                        output.accept(ModItems.FUSION_CABLE.get());
+                        output.accept(ModItems.FLUID_PIPE.get());
+                        output.accept(ModItems.PLASMA_CABLE.get());
+                        // Items
+                        output.accept(ModItems.ELECTRONIC_CIRCUIT.get());
+                        output.accept(ModItems.PLASMA_CIRCUIT.get());
+                        output.accept(ModItems.FUSION_CIRCUIT.get());
+                        output.accept(ModItems.AIR_FILTER.get());
+                        output.accept(ModItems.REACTOR_PLATING.get());
+                        output.accept(ModItems.FUSION_FUEL_PELLET.get());
+                        // Ores: washed, purified, granulated per metal. Other mods' metals only appear when some installed mod adds them.
                         ProcessedMetal.ALL.stream()
                                 .filter(ProcessedMetal::isAvailable)
                                 .forEach(metal -> {
@@ -67,6 +72,11 @@ public final class ModCreativeTabs {
                                     output.accept(metal.purified().get());
                                     output.accept(metal.granulated().get());
                                 });
+                        // Creative only
+                        output.accept(ModItems.CREATIVE_ENERGY_BATTERY.get());
+                        output.accept(ModItems.CREATIVE_FLUID_TANK.get());
+                        // Decorative stone
+                        ModBlocks.STONE_SETS.forEach(set -> set.all().forEach(block -> output.accept(block.get())));
                     })
                     .build());
 
