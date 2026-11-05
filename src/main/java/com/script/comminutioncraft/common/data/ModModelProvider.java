@@ -125,6 +125,9 @@ public class ModModelProvider extends ModelProvider {
         conduit(blockModels, itemModels, ModBlocks.FLUID_PIPE.get(), ModItems.FLUID_PIPE.get());
         // fluid_tank_side has a transparent window, so the model renders cutout; the contents are a renderer
         blockModels.createTrivialBlock(ModBlocks.FLUID_TANK.get(), TexturedModel.COLUMN);
+        // Soaryn Chest: drawn by the vanilla ChestRenderer; the block model is particles only, the item a special model
+        blockModels.createChest(ModBlocks.SOARYN_CHEST.get(), net.minecraft.world.level.block.Blocks.OAK_PLANKS,
+                net.minecraft.client.renderer.special.ChestSpecialRenderer.REGULAR, true);
         itemModels.generateFlatItem(ModItems.AIR_FILTER.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.ELECTRONIC_CIRCUIT.get(), ModelTemplates.FLAT_ITEM);
         blockModels.createFurnace(ModBlocks.PLASMA_GRANULATOR.get(), TexturedModel.ORIENTABLE_ONLY_TOP);

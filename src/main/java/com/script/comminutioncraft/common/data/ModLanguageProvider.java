@@ -85,6 +85,17 @@ public class ModLanguageProvider extends LanguageProvider {
         add("jade.comminutioncraft.water_generator", "Intake %s/6 · Humidity %s%% · %s mB/t");
         add(ModBlocks.FLUID_PIPE.get(), "Fluid Pipe");
         add(ModBlocks.FLUID_TANK.get(), "Fluid Tank");
+        add(ModBlocks.SOARYN_CHEST.get(), "Soaryn Chest");
+        add("container.comminutioncraft.soaryn_chest", "Soaryn Chest");
+        add("tooltip.comminutioncraft.soaryn_chest", "Takes your inventory when placed");
+        add("tooltip.comminutioncraft.soaryn_chest_hotbar", "Hotbar too (config)");
+        add("comminutioncraft.configuration.title", "Comminution Craft Config");
+        add("comminutioncraft.configuration.section.comminutioncraft.common.toml", "Common Settings");
+        add("comminutioncraft.configuration.section.comminutioncraft.common.toml.title", "Common Settings");
+        add("comminutioncraft.configuration.soaryn_chest", "Soaryn Chest");
+        add("comminutioncraft.configuration.includeHotbar", "Include Hotbar");
+        add("comminutioncraft.configuration.includeHotbar.tooltip",
+                "If on, placing a Soaryn Chest also takes your hotbar, not just the main inventory.");
         add(ModItems.AIR_FILTER.get(), "Air Filter");
         add(ModBlocks.PLASMA_GRANULATOR.get(), "Plasma Granulator");
         add(ModBlocks.PLASMA_SMELTER.get(), "Plasma Smelter");

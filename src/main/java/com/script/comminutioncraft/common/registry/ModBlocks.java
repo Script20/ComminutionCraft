@@ -174,6 +174,15 @@ public final class ModBlocks {
     public static final DeferredBlock<CreativeEnergyBatteryBlock> CREATIVE_ENERGY_BATTERY = BLOCKS.registerBlock(
             "creative_energy_battery", CreativeEnergyBatteryBlock::new, ModBlocks::tier2MachineProperties);
 
+    /** Soaryn Chest: vanilla chest properties (wood, 2.5 strength, burns in lava). */
+    public static final DeferredBlock<com.script.comminutioncraft.common.storage.SoarynChestBlock> SOARYN_CHEST = BLOCKS.registerBlock(
+            "soaryn_chest", com.script.comminutioncraft.common.storage.SoarynChestBlock::new, properties -> properties
+                    .mapColor(net.minecraft.world.level.material.MapColor.WOOD)
+                    .instrument(net.minecraft.world.level.block.state.properties.NoteBlockInstrument.BASS)
+                    .strength(2.5F)
+                    .sound(net.minecraft.world.level.block.SoundType.WOOD)
+                    .ignitedByLava());
+
     public static final DeferredBlock<CreativeFluidTankBlock> CREATIVE_FLUID_TANK = BLOCKS.registerBlock(
             "creative_fluid_tank", CreativeFluidTankBlock::new, properties -> tier2MachineProperties(properties)
                     .noOcclusion()

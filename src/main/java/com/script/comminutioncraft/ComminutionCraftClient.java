@@ -42,7 +42,10 @@ import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 /** Client-only entrypoint. Only loaded on the physical client (and for the data run). */
 @Mod(value = ComminutionCraft.MODID, dist = Dist.CLIENT)
 public class ComminutionCraftClient {
-    public ComminutionCraftClient(IEventBus modEventBus) {
+    public ComminutionCraftClient(IEventBus modEventBus, net.neoforged.fml.ModContainer modContainer) {
+        // Mods menu > Comminution Craft > Config: NeoForge's generated screen for our config spec
+        modContainer.registerExtensionPoint(net.neoforged.neoforge.client.gui.IConfigScreenFactory.class,
+                net.neoforged.neoforge.client.gui.ConfigurationScreen::new);
         modEventBus.addListener(ComminutionCraftClient::registerScreens);
         modEventBus.addListener(ModDataGenerators::gatherData);
         NeoForge.EVENT_BUS.addListener(ClientRecipes::onRecipesReceived);
@@ -85,6 +88,7 @@ public class ComminutionCraftClient {
         event.registerBlockEntityRenderer(ModBlockEntities.FLUID_TANK.get(), context -> new FluidTankRenderer(context.sprites()));
         event.registerBlockEntityRenderer(ModBlockEntities.CREATIVE_FLUID_TANK.get(), context -> new FluidTankRenderer(context.sprites()));
         event.registerBlockEntityRenderer(ModBlockEntities.FUSION_REACTOR.get(), context -> new FusionReactorRenderer(context.sprites()));
+        event.registerBlockEntityRenderer(ModBlockEntities.SOARYN_CHEST.get(), net.minecraft.client.renderer.blockentity.ChestRenderer::new);
     }
 
     /** Our fluids' textures (they have no world blocks, but tanks, GUIs and JEI draw them from these models). */

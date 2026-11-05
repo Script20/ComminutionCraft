@@ -484,6 +484,12 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_iron", has(Items.IRON_INGOT))
                 .save(output, key("wrench"));
 
+        shapeless(RecipeCategory.MISC, ModItems.SOARYN_CHEST.get())
+                .requires(Items.CHEST)
+                .requires(Items.HOPPER)
+                .unlockedBy("has_hopper", has(Items.HOPPER))
+                .save(output, key("soaryn_chest"));
+
         ModBlocks.STONE_SETS.forEach(this::stoneRecipes);
     }
 

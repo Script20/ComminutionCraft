@@ -57,6 +57,8 @@ public class ComminutionCraft {
         ModRecipes.RECIPE_TYPES.register(modEventBus);
         ModRecipes.RECIPE_SERIALIZERS.register(modEventBus);
         ModCreativeTabs.CREATIVE_MODE_TABS.register(modEventBus);
+        modContainer.registerConfig(net.neoforged.fml.config.ModConfig.Type.COMMON,
+                com.script.comminutioncraft.common.config.ComminutionConfig.SPEC);
 
         ModGameTests.TEST_FUNCTIONS.register(modEventBus);
 

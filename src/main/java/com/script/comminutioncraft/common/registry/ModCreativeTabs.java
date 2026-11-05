@@ -52,6 +52,7 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.PLASMA_ENERGY_BATTERY.get());
                         output.accept(ModItems.FUSION_ENERGY_BATTERY.get());
                         output.accept(ModItems.FLUID_TANK.get());
+                        output.accept(ModItems.SOARYN_CHEST.get());
                         // Cables and pipes
                         output.accept(ModItems.ENERGY_CABLE.get());
                         output.accept(ModItems.FUSION_CABLE.get());

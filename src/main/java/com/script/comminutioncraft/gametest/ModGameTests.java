@@ -111,6 +111,7 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("pickaxe_drop_forgets_settings", () -> ModGameTests::pickaxeDropForgetsSettings);
         TEST_FUNCTIONS.register("wrench_pickup_keeps_settings", () -> ModGameTests::wrenchPickupKeepsSettings);
         TEST_FUNCTIONS.register("wrench_acts_before_machine_gui", () -> ModGameTests::wrenchActsBeforeMachineGui);
+        TEST_FUNCTIONS.register("soaryn_chest_takes_inventory", () -> ModGameTests::soarynChestTakesInventory);
         TEST_FUNCTIONS.register("water_generator_breathes", () -> ModGameTests::waterGeneratorBreathes);
         TEST_FUNCTIONS.register("walled_in_generator_makes_nothing", () -> ModGameTests::walledInGeneratorMakesNothing);
         TEST_FUNCTIONS.register("filter_doubles_water", () -> ModGameTests::filterDoublesWater);
@@ -426,6 +427,35 @@ public final class ModGameTests {
         helper.assertTrue(placed.getEnergy() == stored, "The placed battery has " + placed.getEnergy() + " FE, expected " + stored);
         helper.assertTrue(placed.getControls().side(RelativeSide.LEFT) == SideMode.NONE, "The placed battery lost its side config");
         helper.assertTrue(placed.getControls().redstone() == RedstoneMode.HIGH, "The placed battery lost its redstone mode");
+        helper.succeed();
+    }
+
+    /**
+     * Placing a Soaryn Chest through the real right-click path takes the player's main inventory and (by default)
+     * leaves the hotbar alone.
+     */
+    @SuppressWarnings("removal") // makeMockServerPlayerInLevel: vanilla has no replacement yet
+    private static void soarynChestTakesInventory(GameTestHelper helper) {
+        BlockPos floor = new BlockPos(2, 0, 2);
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ItemStack chestItem = new ItemStack(ModItems.SOARYN_CHEST.get());
+        player.setItemInHand(InteractionHand.MAIN_HAND, chestItem);
+        player.getInventory().setItem(1, new ItemStack(Items.TORCH, 16));   // hotbar
+        player.getInventory().setItem(9, new ItemStack(Items.RAW_IRON, 20)); // main inventory
+        player.getInventory().setItem(30, new ItemStack(Items.COAL, 5));
+        BlockPos absolute = helper.absolutePos(floor);
+        player.gameMode.useItemOn(player, helper.getLevel(), chestItem, InteractionHand.MAIN_HAND,
+                new BlockHitResult(Vec3.atCenterOf(absolute).add(0, 0.5, 0), Direction.UP, absolute, false));
+
+        BlockPos chestPos = floor.above();
+        helper.assertBlockPresent(ModBlocks.SOARYN_CHEST.get(), chestPos);
+        var chest = helper.getBlockEntity(chestPos, com.script.comminutioncraft.common.storage.SoarynChestBlockEntity.class);
+        helper.assertTrue(chest.getItem(0).is(Items.RAW_IRON) && chest.getItem(0).getCount() == 20,
+                "The chest's first slot should hold the 20 raw iron, found " + chest.getItem(0));
+        helper.assertTrue(chest.getItem(1).is(Items.COAL), "The chest's second slot should hold the coal, found " + chest.getItem(1));
+        helper.assertTrue(player.getInventory().getItem(9).isEmpty() && player.getInventory().getItem(30).isEmpty(),
+                "The main inventory should be empty after placing");
+        helper.assertTrue(player.getInventory().getItem(1).is(Items.TORCH), "The hotbar torches should stay with the player");
         helper.succeed();
     }
 

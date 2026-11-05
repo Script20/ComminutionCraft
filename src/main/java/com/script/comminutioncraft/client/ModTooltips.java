@@ -76,6 +76,11 @@ public final class ModTooltips {
                     ? gray("tooltip.comminutioncraft.tank_amount", "0", capacity)
                     : gray("tooltip.comminutioncraft.tank_amount_fluid", contents.getHoverName(), number(contents.getAmount()), capacity));
             contents = FluidStack.EMPTY;  // shown already
+        } else if (block instanceof com.script.comminutioncraft.common.storage.SoarynChestBlock) {
+            lines.add(gray("tooltip.comminutioncraft.soaryn_chest"));
+            if (com.script.comminutioncraft.common.config.ComminutionConfig.SOARYN_CHEST_INCLUDE_HOTBAR.get()) {
+                lines.add(gray("tooltip.comminutioncraft.soaryn_chest_hotbar"));
+            }
         } else if (block instanceof CreativeEnergyBatteryBlock) {
             lines.add(gray("tooltip.comminutioncraft.creative_battery"));
         }
