@@ -25,6 +25,8 @@ import net.minecraft.network.chat.Component;
 import com.script.comminutioncraft.common.registry.ModItems;
 import com.script.comminutioncraft.common.registry.ModMenus;
 import com.script.comminutioncraft.common.registry.ModRecipes;
+import com.script.comminutioncraft.common.registry.ModFluids;
+import net.minecraft.world.level.material.Fluids;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -89,22 +91,25 @@ public class ComminutionJeiPlugin implements IModPlugin {
                 new ProcessingCategory<>(gui, ASSEMBLING.get(), Component.translatable("jei.comminutioncraft.assembling"),
                         ModItems.CIRCUIT_ASSEMBLER.get(), List.of(
                         new ProcessingCategory.Station("jei.comminutioncraft.time.circuit_assembler", CircuitAssemblerBlockEntity.PROCESS_TIME)),
-                        List.of(Component.translatable("jei.comminutioncraft.uses_plasma", CircuitAssemblerBlockEntity.PLASMA_PER_OPERATION))),
+                        List.of()).withFluids(
+                        new ProcessingCategory.FluidCost(ModFluids.PLASMA.get(), CircuitAssemblerBlockEntity.PLASMA_PER_OPERATION)),
                 new ProcessingCategory<>(gui, WASHING.get(), Component.translatable("jei.comminutioncraft.washing"),
                         ModItems.ORE_WASHER.get(), List.of(
                         new ProcessingCategory.Station("jei.comminutioncraft.time.ore_washer", OreWasherBlockEntity.PROCESS_TIME)),
-                        List.of(Component.translatable("jei.comminutioncraft.uses_water", OreWasherBlockEntity.WATER_PER_OPERATION))),
+                        List.of()).withFluids(new ProcessingCategory.FluidCost(Fluids.WATER, OreWasherBlockEntity.WATER_PER_OPERATION)),
                 new ProcessingCategory<>(gui, PRESSING.get(), Component.translatable("jei.comminutioncraft.pressing"),
                         ModItems.PELLET_PRESS.get(), List.of(
                         new ProcessingCategory.Station("jei.comminutioncraft.time.pellet_press", PelletPressBlockEntity.PROCESS_TIME)),
-                        List.of(Component.translatable("jei.comminutioncraft.uses_fusion_fuel",
-                                PelletPressBlockEntity.DEUTERIUM_PER_PELLET, PelletPressBlockEntity.TRITIUM_PER_PELLET))),
+                        List.of()).withFluids(
+                        new ProcessingCategory.FluidCost(ModFluids.DEUTERIUM.get(), PelletPressBlockEntity.DEUTERIUM_PER_PELLET),
+                        new ProcessingCategory.FluidCost(ModFluids.TRITIUM.get(), PelletPressBlockEntity.TRITIUM_PER_PELLET)),
                 new ProcessingCategory<>(gui, PURIFYING.get(), Component.translatable("jei.comminutioncraft.purifying"),
                         ModItems.ORE_PURIFIER.get(), List.of(
                         new ProcessingCategory.Station("jei.comminutioncraft.time.ore_purifier", OrePurifierBlockEntity.PROCESS_TIME)),
-                        List.of(Component.translatable("jei.comminutioncraft.uses_oxygen", OrePurifierBlockEntity.OXYGEN_PER_OPERATION)),
-                        recipe -> List.of(),
-                        new ProcessingCategory.SecondOutput<>(PurifyingRecipe::getByproduct, PurifyingRecipe::getChance)));
+                        List.of(), recipe -> List.of(),
+                        new ProcessingCategory.SecondOutput<>(PurifyingRecipe::getByproduct, PurifyingRecipe::getChance)).withFluids(
+                        new ProcessingCategory.FluidCost(ModFluids.OXYGEN.get(), OrePurifierBlockEntity.OXYGEN_PER_OPERATION)),
+                new FusionReactorCategory(gui));
     }
 
     @Override
@@ -114,6 +119,7 @@ public class ComminutionJeiPlugin implements IModPlugin {
         registration.addRecipes(WASHING.get(), ClientRecipes.washing());
         registration.addRecipes(PRESSING.get(), ClientRecipes.pressing());
         registration.addRecipes(PURIFYING.get(), ClientRecipes.purifying());
+        registration.addRecipes(FusionReactorCategory.TYPE, List.of(FusionReactorCategory.Structure.INSTANCE));
     }
 
     @Override
@@ -126,6 +132,7 @@ public class ComminutionJeiPlugin implements IModPlugin {
         registration.addCraftingStation(WASHING.get(), ModItems.ORE_WASHER.get());
         registration.addCraftingStation(PRESSING.get(), ModItems.PELLET_PRESS.get());
         registration.addCraftingStation(PURIFYING.get(), ModItems.ORE_PURIFIER.get());
+        registration.addCraftingStation(FusionReactorCategory.TYPE, ModItems.REACTOR_CONTROLLER.get());
         // Everything that burns furnace fuel
         registration.addCraftingStation(RecipeTypes.SMELTING_FUEL,
                 ModItems.COAL_GRANULATOR.get(), ModItems.COAL_SMELTER.get(), ModItems.ELECTRIC_GENERATOR.get());

@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.function.Function;
 import net.minecraft.ChatFormatting;
 import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.level.material.Fluid;
 import org.jspecify.annotations.Nullable;
 import java.util.stream.Collectors;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
@@ -25,11 +26,13 @@ import net.minecraft.world.level.ItemLike;
 /**
  * One item in -> a stack out (granulating, assembling, washing, ...). Times and costs come from the machines, so every
  * recipe in a category shows the same line: each machine's time, plus any extra cost (plasma, water) in the tooltip.
- * A category can also show a {@link SecondOutput} that only comes some of the time (the Ore Purifier's by-product).
+ * A category can also show a {@link SecondOutput} that only comes some of the time (the Ore Purifier's by-product),
+ * and the fluids each operation uses ({@link #withFluids}) as fluid input slots under the item input.
  */
 public class ProcessingCategory<R extends ItemProcessingRecipe> extends AbstractRecipeCategory<RecipeHolder<R>> {
     private static final int WIDTH = 82;
-    private static final int HEIGHT = 38;
+    /** Tall enough for a row of fluid slots under the item input (JEI fixes the height per category type). */
+    private static final int HEIGHT = 42;
 
     /** A machine that runs this category's recipes: its time line's translation key and its process time. */
     public record Station(String timeKey, int ticks) {}
@@ -37,12 +40,17 @@ public class ProcessingCategory<R extends ItemProcessingRecipe> extends Abstract
     /** A second result each recipe gives only some of the time: what it is and the chance (0-1) of getting it. */
     public record SecondOutput<R>(Function<R, ItemStackTemplate> stack, Function<R, Float> chance) {}
 
+    /** A fluid each operation uses, and how much (mB). */
+    public record FluidCost(Fluid fluid, int amount) {}
+
     private static final int SECOND_OUTPUT_X = 83;
+    private static final int FLUID_Y = 24;
 
     private final List<Station> stations;
     private final List<Component> notes;
     private final Function<R, List<Component>> recipeNotes;
     private final @Nullable SecondOutput<R> secondOutput;
+    private List<FluidCost> fluids = List.of();
 
     public ProcessingCategory(IGuiHelper guiHelper, IRecipeHolderType<R> type, Component title, ItemLike icon,
                               List<Station> stations, List<Component> notes) {
@@ -66,6 +74,12 @@ public class ProcessingCategory<R extends ItemProcessingRecipe> extends Abstract
         this.secondOutput = secondOutput;
     }
 
+    /** Shows these fluids as input slots under the item input (they replace a "Uses X mB" note). */
+    public ProcessingCategory<R> withFluids(FluidCost... costs) {
+        fluids = List.of(costs);
+        return this;
+    }
+
     private static Component chanceText(float chance) {
         return Component.translatable("jei.comminutioncraft.chance", Math.round(chance * 100));
     }
@@ -78,6 +92,13 @@ public class ProcessingCategory<R extends ItemProcessingRecipe> extends Abstract
         builder.addOutputSlot(61, 5)
                 .setOutputSlotBackground()
                 .add(recipe.value().getResult());
+        for (int i = 0; i < fluids.size(); i++) {
+            FluidCost cost = fluids.get(i);
+            builder.addInputSlot(1 + i * 18, FLUID_Y)
+                    .setStandardSlotBackground()
+                    .setFluidRenderer(cost.amount(), false, 16, 16)
+                    .addFluidStack(cost.fluid(), cost.amount());
+        }
         if (secondOutput != null) {
             float chance = secondOutput.chance().apply(recipe.value());
             builder.addOutputSlot(SECOND_OUTPUT_X, 5)
@@ -97,14 +118,15 @@ public class ProcessingCategory<R extends ItemProcessingRecipe> extends Abstract
         tooltip.addAll(notes);
         tooltip.addAll(recipeNotes.apply(recipe.value()));
         String times = stations.stream().map(station -> seconds(station.ticks())).collect(Collectors.joining(" · "));
-        builder.addText(Component.literal(times), WIDTH, 10)
-                .setPosition(0, 28)
+        int textX = fluids.size() * 18;  // beside the fluid slots, if there are any
+        builder.addText(Component.literal(times), WIDTH - textX, 10)
+                .setPosition(textX, fluids.isEmpty() ? 28 : FLUID_Y + 4)
                 .setTextAlignment(HorizontalAlignment.CENTER)
                 .setColor(0xFF808080)
                 .setTooltip(tooltip);
         if (secondOutput != null) {
             builder.addText(chanceText(secondOutput.chance().apply(recipe.value())), 18, 10)
-                    .setPosition(SECOND_OUTPUT_X, 28)
+                    .setPosition(SECOND_OUTPUT_X, fluids.isEmpty() ? 28 : FLUID_Y + 4)
                     .setTextAlignment(HorizontalAlignment.CENTER)
                     .setColor(0xFFC08A20);
         }

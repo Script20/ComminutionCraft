@@ -37,8 +37,19 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.comminutioncraft.creative_tank.none", "No fluid");
         add("jei.comminutioncraft.purifying", "Ore Purifying");
         add("jei.comminutioncraft.time.ore_purifier", "Ore Purifier: %s");
-        add("jei.comminutioncraft.uses_oxygen", "Uses %s mB oxygen");
         add("jei.comminutioncraft.chance", "%s%% chance");
+        add("jei.comminutioncraft.fusion_reactor", "Fusion Reactor");
+        add("jei.comminutioncraft.fusion_reactor.bottom", "Bottom");
+        add("jei.comminutioncraft.fusion_reactor.middle", "Middle");
+        add("jei.comminutioncraft.fusion_reactor.top", "Top");
+        add("jei.comminutioncraft.fusion_reactor.core", "core");
+        add("jei.comminutioncraft.fusion_reactor.frame", "Edge or corner: Reactor Casing or a Reactor Port");
+        add("jei.comminutioncraft.fusion_reactor.face_centre", "Face centre: Reactor Casing, Reactor Glass or a Reactor Port");
+        add("jei.comminutioncraft.fusion_reactor.controller", "The Controller: the middle of one face, facing out (the core is behind it)");
+        add("jei.comminutioncraft.fusion_reactor.ignite", "Heats the core to ignition (1,000 mB from cold)");
+        add("jei.comminutioncraft.fusion_reactor.tritium", "Given back by each spent pellet");
+        add("jei.comminutioncraft.fusion_reactor.output", "%s FE/t");
+        add("jei.comminutioncraft.fusion_reactor.hint", "Seen from above; the controller's face is at the bottom");
         add(ModBlocks.REACTOR_CASING.get(), "Reactor Casing");
         add(ModBlocks.REACTOR_GLASS.get(), "Reactor Glass");
         add(ModBlocks.REACTOR_PORT.get(), "Reactor Port");
@@ -59,7 +70,6 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.comminutioncraft.tritium", "Tritium: %s / %s mB");
         add("jei.comminutioncraft.pressing", "Pellet Pressing");
         add("jei.comminutioncraft.time.pellet_press", "Pellet Press: %s");
-        add("jei.comminutioncraft.uses_fusion_fuel", "Uses %s mB deuterium and %s mB tritium");
         add("fluid_type.comminutioncraft.hydrogen", "Hydrogen");
         add("fluid_type.comminutioncraft.oxygen", "Oxygen");
         add("gui.comminutioncraft.hydrogen", "Hydrogen: %s / %s mB");
@@ -137,10 +147,8 @@ public class ModLanguageProvider extends LanguageProvider {
         add("jei.comminutioncraft.electric_granulators_only", "Electric or Plasma Granulator only");
         add("jei.comminutioncraft.assembling", "Circuit Assembling");
         add("jei.comminutioncraft.time.circuit_assembler", "Circuit Assembler: %s");
-        add("jei.comminutioncraft.uses_plasma", "Uses %s mB plasma");
         add("jei.comminutioncraft.washing", "Ore Washing");
         add("jei.comminutioncraft.time.ore_washer", "Ore Washer: %s");
-        add("jei.comminutioncraft.uses_water", "Uses %s mB water");
 
         add("config.jade.plugin_comminutioncraft.machine", "Comminution Craft machines");
         add("config.jade.plugin_comminutioncraft.generator", "Comminution Craft generator");
