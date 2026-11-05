@@ -193,7 +193,7 @@
   "jade.comminutioncraft.no_filter": "No Air Filter (half as much water)",
   "jade.comminutioncraft.water_generator": "Intake %s/6 · Humidity %s%% · %s mB/t",
   "jei.comminutioncraft.assembling": "Circuit Assembling",
-  "jei.comminutioncraft.byproduct": "Sometimes also: %s (%s%%)",
+  "jei.comminutioncraft.chance": "%s%% chance",
   "jei.comminutioncraft.electric_granulators_only": "Electric or Plasma Granulator only",
   "jei.comminutioncraft.granulating": "Granulating",
   "jei.comminutioncraft.pressing": "Pellet Pressing",

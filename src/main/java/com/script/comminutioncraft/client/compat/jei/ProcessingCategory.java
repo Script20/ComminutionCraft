@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Function;
+import net.minecraft.ChatFormatting;
+import net.minecraft.world.item.ItemStackTemplate;
+import org.jspecify.annotations.Nullable;
 import java.util.stream.Collectors;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.placement.HorizontalAlignment;
@@ -20,8 +23,9 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.ItemLike;
 
 /**
- * One item in -> a stack out (granulating, assembling, washing). Times and costs come from the machines, so every
+ * One item in -> a stack out (granulating, assembling, washing, ...). Times and costs come from the machines, so every
  * recipe in a category shows the same line: each machine's time, plus any extra cost (plasma, water) in the tooltip.
+ * A category can also show a {@link SecondOutput} that only comes some of the time (the Ore Purifier's by-product).
  */
 public class ProcessingCategory<R extends ItemProcessingRecipe> extends AbstractRecipeCategory<RecipeHolder<R>> {
     private static final int WIDTH = 82;
@@ -30,9 +34,15 @@ public class ProcessingCategory<R extends ItemProcessingRecipe> extends Abstract
     /** A machine that runs this category's recipes: its time line's translation key and its process time. */
     public record Station(String timeKey, int ticks) {}
 
+    /** A second result each recipe gives only some of the time: what it is and the chance (0-1) of getting it. */
+    public record SecondOutput<R>(Function<R, ItemStackTemplate> stack, Function<R, Float> chance) {}
+
+    private static final int SECOND_OUTPUT_X = 83;
+
     private final List<Station> stations;
     private final List<Component> notes;
     private final Function<R, List<Component>> recipeNotes;
+    private final @Nullable SecondOutput<R> secondOutput;
 
     public ProcessingCategory(IGuiHelper guiHelper, IRecipeHolderType<R> type, Component title, ItemLike icon,
                               List<Station> stations, List<Component> notes) {
@@ -42,10 +52,22 @@ public class ProcessingCategory<R extends ItemProcessingRecipe> extends Abstract
     /** {@code recipeNotes} adds tooltip lines for particular recipes (e.g. "Electric or Plasma Granulator only"). */
     public ProcessingCategory(IGuiHelper guiHelper, IRecipeHolderType<R> type, Component title, ItemLike icon,
                               List<Station> stations, List<Component> notes, Function<R, List<Component>> recipeNotes) {
-        super(type, title, guiHelper.createDrawableItemLike(icon), WIDTH, HEIGHT);
+        this(guiHelper, type, title, icon, stations, notes, recipeNotes, null);
+    }
+
+    /** With a {@code secondOutput}, the recipe gets a second output slot (to the right) with its chance under it. */
+    public ProcessingCategory(IGuiHelper guiHelper, IRecipeHolderType<R> type, Component title, ItemLike icon,
+                              List<Station> stations, List<Component> notes, Function<R, List<Component>> recipeNotes,
+                              @Nullable SecondOutput<R> secondOutput) {
+        super(type, title, guiHelper.createDrawableItemLike(icon), secondOutput == null ? WIDTH : WIDTH + 22, HEIGHT);
         this.stations = stations;
         this.notes = notes;
         this.recipeNotes = recipeNotes;
+        this.secondOutput = secondOutput;
+    }
+
+    private static Component chanceText(float chance) {
+        return Component.translatable("jei.comminutioncraft.chance", Math.round(chance * 100));
     }
 
     @Override
@@ -56,6 +78,13 @@ public class ProcessingCategory<R extends ItemProcessingRecipe> extends Abstract
         builder.addOutputSlot(61, 5)
                 .setOutputSlotBackground()
                 .add(recipe.value().getResult());
+        if (secondOutput != null) {
+            float chance = secondOutput.chance().apply(recipe.value());
+            builder.addOutputSlot(SECOND_OUTPUT_X, 5)
+                    .setOutputSlotBackground()
+                    .add(secondOutput.stack().apply(recipe.value()))
+                    .addRichTooltipCallback((view, tooltip) -> tooltip.add(chanceText(chance).copy().withStyle(ChatFormatting.GOLD)));
+        }
     }
 
     @Override
@@ -73,6 +102,12 @@ public class ProcessingCategory<R extends ItemProcessingRecipe> extends Abstract
                 .setTextAlignment(HorizontalAlignment.CENTER)
                 .setColor(0xFF808080)
                 .setTooltip(tooltip);
+        if (secondOutput != null) {
+            builder.addText(chanceText(secondOutput.chance().apply(recipe.value())), 18, 10)
+                    .setPosition(SECOND_OUTPUT_X, 28)
+                    .setTextAlignment(HorizontalAlignment.CENTER)
+                    .setColor(0xFFC08A20);
+        }
     }
 
     /** 150 -> "7.5s", 75 -> "3.75s" */

@@ -38,7 +38,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("jei.comminutioncraft.purifying", "Ore Purifying");
         add("jei.comminutioncraft.time.ore_purifier", "Ore Purifier: %s");
         add("jei.comminutioncraft.uses_oxygen", "Uses %s mB oxygen");
-        add("jei.comminutioncraft.byproduct", "Sometimes also: %s (%s%%)");
+        add("jei.comminutioncraft.chance", "%s%% chance");
         add(ModBlocks.REACTOR_CASING.get(), "Reactor Casing");
         add(ModBlocks.REACTOR_GLASS.get(), "Reactor Glass");
         add(ModBlocks.REACTOR_PORT.get(), "Reactor Port");

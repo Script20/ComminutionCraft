@@ -103,8 +103,8 @@ public class ComminutionJeiPlugin implements IModPlugin {
                         ModItems.ORE_PURIFIER.get(), List.of(
                         new ProcessingCategory.Station("jei.comminutioncraft.time.ore_purifier", OrePurifierBlockEntity.PROCESS_TIME)),
                         List.of(Component.translatable("jei.comminutioncraft.uses_oxygen", OrePurifierBlockEntity.OXYGEN_PER_OPERATION)),
-                        recipe -> List.of(Component.translatable("jei.comminutioncraft.byproduct",
-                                recipe.getByproduct().create().getHoverName(), Math.round(recipe.getChance() * 100)))));
+                        recipe -> List.of(),
+                        new ProcessingCategory.SecondOutput<>(PurifyingRecipe::getByproduct, PurifyingRecipe::getChance)));
     }
 
     @Override
