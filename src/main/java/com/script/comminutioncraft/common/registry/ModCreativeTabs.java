@@ -18,7 +18,7 @@ public final class ModCreativeTabs {
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.comminutioncraft"))
                     .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
-                    .icon(() -> new ItemStack(ModItems.COAL_GRANULATOR.get()))
+                    .icon(() -> new ItemStack(ModItems.WRENCH.get()))
                     .displayItems((parameters, output) -> {
                         output.accept(ModItems.COAL_GRANULATOR.get());
                         output.accept(ModItems.COAL_SMELTER.get());
