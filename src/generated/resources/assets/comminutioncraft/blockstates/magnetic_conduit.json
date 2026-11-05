@@ -1,0 +1,115 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "comminutioncraft:block/magnetic_conduit_core"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/magnetic_conduit_arm",
+        "x": 90
+      },
+      "when": {
+        "down": "cable|machine"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/magnetic_conduit_plate",
+        "x": 90
+      },
+      "when": {
+        "down": "machine"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/magnetic_conduit_arm",
+        "x": 270
+      },
+      "when": {
+        "up": "cable|machine"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/magnetic_conduit_plate",
+        "x": 270
+      },
+      "when": {
+        "up": "machine"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/magnetic_conduit_arm"
+      },
+      "when": {
+        "north": "cable|machine"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/magnetic_conduit_plate"
+      },
+      "when": {
+        "north": "machine"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/magnetic_conduit_arm",
+        "y": 180
+      },
+      "when": {
+        "south": "cable|machine"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/magnetic_conduit_plate",
+        "y": 180
+      },
+      "when": {
+        "south": "machine"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/magnetic_conduit_arm",
+        "y": 270
+      },
+      "when": {
+        "west": "cable|machine"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/magnetic_conduit_plate",
+        "y": 270
+      },
+      "when": {
+        "west": "machine"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/magnetic_conduit_arm",
+        "y": 90
+      },
+      "when": {
+        "east": "cable|machine"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/magnetic_conduit_plate",
+        "y": 90
+      },
+      "when": {
+        "east": "machine"
+      }
+    }
+  ]
+}

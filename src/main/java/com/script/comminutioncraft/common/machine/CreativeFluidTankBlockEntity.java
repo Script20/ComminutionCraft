@@ -53,7 +53,8 @@ public class CreativeFluidTankBlockEntity extends FluidTankBlockEntity implement
     };
 
     public CreativeFluidTankBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.CREATIVE_FLUID_TANK.get(), pos, state);
+        // any fluid, antimatter included (it's creative): it only ever pushes out, so containment still decides
+        super(ModBlockEntities.CREATIVE_FLUID_TANK.get(), pos, state, CAPACITY.get(), resource -> true);
     }
 
     /** Every fluid that can be picked: the still form of every registered fluid, in registry order (same on both sides). */

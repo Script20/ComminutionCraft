@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "comminutioncraft:block/containment_cell_top",
+    "side": "comminutioncraft:block/containment_cell_side"
+  }
+}

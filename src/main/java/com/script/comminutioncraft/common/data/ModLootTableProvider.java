@@ -50,6 +50,8 @@ public class ModLootTableProvider extends LootTableProvider {
             dropSelf(ModBlocks.FUSION_ENERGY_BATTERY.get());
             dropSelf(ModBlocks.FLUID_PIPE.get());
             dropSelf(ModBlocks.FLUID_TANK.get());
+            dropSelf(ModBlocks.CONTAINMENT_CELL.get());
+            dropSelf(ModBlocks.MAGNETIC_CONDUIT.get());
             add(ModBlocks.SOARYN_CHEST.get(), createNameableBlockEntityTable(ModBlocks.SOARYN_CHEST.get()));
             dropSelf(ModBlocks.PLASMA_GRANULATOR.get());
             dropSelf(ModBlocks.PLASMA_SMELTER.get());

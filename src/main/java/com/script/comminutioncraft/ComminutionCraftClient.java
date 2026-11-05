@@ -87,6 +87,7 @@ public class ComminutionCraftClient {
     private static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(ModBlockEntities.FLUID_TANK.get(), context -> new FluidTankRenderer(context.sprites()));
         event.registerBlockEntityRenderer(ModBlockEntities.CREATIVE_FLUID_TANK.get(), context -> new FluidTankRenderer(context.sprites()));
+        event.registerBlockEntityRenderer(ModBlockEntities.CONTAINMENT_CELL.get(), context -> new FluidTankRenderer(context.sprites()));
         event.registerBlockEntityRenderer(ModBlockEntities.FUSION_REACTOR.get(), context -> new FusionReactorRenderer(context.sprites()));
         event.registerBlockEntityRenderer(ModBlockEntities.SOARYN_CHEST.get(), net.minecraft.client.renderer.blockentity.ChestRenderer::new);
     }
@@ -98,6 +99,7 @@ public class ComminutionCraftClient {
         fluidModel(event, "oxygen", ModFluids.OXYGEN, ModFluids.FLOWING_OXYGEN);
         fluidModel(event, "deuterium", ModFluids.DEUTERIUM, ModFluids.FLOWING_DEUTERIUM);
         fluidModel(event, "tritium", ModFluids.TRITIUM, ModFluids.FLOWING_TRITIUM);
+        fluidModel(event, "antimatter", ModFluids.ANTIMATTER, ModFluids.FLOWING_ANTIMATTER);
     }
 
     private static void fluidModel(RegisterFluidModelsEvent event, String name,

@@ -32,6 +32,13 @@ public final class ModFluids {
     public static final DeferredHolder<FluidType, FluidType> HYDROGEN_TYPE = FLUID_TYPES.register("hydrogen", () -> gas("hydrogen"));
     public static final DeferredHolder<FluidType, FluidType> OXYGEN_TYPE = FLUID_TYPES.register("oxygen", () -> gas("oxygen"));
     public static final DeferredHolder<FluidType, FluidType> DEUTERIUM_TYPE = FLUID_TYPES.register("deuterium", () -> gas("deuterium"));
+    /** Tier 5: only Containment Cells and Magnetic Conduits hold or carry it (see {@link #isAntimatter}). */
+    public static final DeferredHolder<FluidType, FluidType> ANTIMATTER_TYPE = FLUID_TYPES.register("antimatter",
+            () -> new FluidType(FluidType.Properties.create()
+                    .descriptionId("fluid_type.comminutioncraft.antimatter")
+                    .lightLevel(10)
+                    .density(-1000)
+                    .viscosity(100)));
     public static final DeferredHolder<FluidType, FluidType> TRITIUM_TYPE = FLUID_TYPES.register("tritium",
             () -> new FluidType(FluidType.Properties.create()
                     .descriptionId("fluid_type.comminutioncraft.tritium")
@@ -62,6 +69,20 @@ public final class ModFluids {
             FLUIDS.register("tritium", () -> new BaseFlowingFluid.Source(tritiumProperties()));
     public static final DeferredHolder<Fluid, BaseFlowingFluid.Flowing> FLOWING_TRITIUM =
             FLUIDS.register("flowing_tritium", () -> new BaseFlowingFluid.Flowing(tritiumProperties()));
+
+    public static final DeferredHolder<Fluid, BaseFlowingFluid.Source> ANTIMATTER =
+            FLUIDS.register("antimatter", () -> new BaseFlowingFluid.Source(antimatterProperties()));
+    public static final DeferredHolder<Fluid, BaseFlowingFluid.Flowing> FLOWING_ANTIMATTER =
+            FLUIDS.register("flowing_antimatter", () -> new BaseFlowingFluid.Flowing(antimatterProperties()));
+
+    /** Antimatter needs containment: ordinary tanks and pipes refuse it. */
+    public static boolean isAntimatter(net.neoforged.neoforge.transfer.fluid.FluidResource resource) {
+        return resource.is(ANTIMATTER_TYPE.get());
+    }
+
+    private static BaseFlowingFluid.Properties antimatterProperties() {
+        return properties(ANTIMATTER_TYPE, ANTIMATTER, FLOWING_ANTIMATTER);
+    }
 
     private static FluidType gas(String name) {
         return new FluidType(FluidType.Properties.create()

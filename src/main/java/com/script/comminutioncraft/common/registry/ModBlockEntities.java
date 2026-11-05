@@ -137,5 +137,9 @@ public final class ModBlockEntities {
             BLOCK_ENTITY_TYPES.register("soaryn_chest",
                     () -> new BlockEntityType<>(com.script.comminutioncraft.common.storage.SoarynChestBlockEntity::new, ModBlocks.SOARYN_CHEST.get()));
 
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.script.comminutioncraft.common.machine.ContainmentCellBlockEntity>> CONTAINMENT_CELL =
+            BLOCK_ENTITY_TYPES.register("containment_cell",
+                    () -> new BlockEntityType<>(com.script.comminutioncraft.common.machine.ContainmentCellBlockEntity::new, ModBlocks.CONTAINMENT_CELL.get()));
+
     private ModBlockEntities() {}
 }

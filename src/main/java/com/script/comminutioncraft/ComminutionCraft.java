@@ -103,10 +103,11 @@ public class ComminutionCraft {
             event.registerBlockEntity(Capabilities.Fluid.BLOCK, type, FluidMachineBlockEntity::getFluidHandler);
         }
         event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.FLUID_TANK.get(), FluidTankBlockEntity::getFluidHandler);
+        event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.CONTAINMENT_CELL.get(), FluidTankBlockEntity::getFluidHandler);
         event.registerBlock(Capabilities.Fluid.BLOCK, (level, pos, state, blockEntity, side) ->
                 side != null && state.getValue(ConduitBlock.CONNECTIONS.get(side)) == CableConnection.DISABLED
                         ? null : new PipeFluidHandler(level, pos, side, (FluidPipeBlock) state.getBlock()),
-                ModBlocks.FLUID_PIPE.get(), ModBlocks.PLASMA_CABLE.get());
+                ModBlocks.FLUID_PIPE.get(), ModBlocks.PLASMA_CABLE.get(), ModBlocks.MAGNETIC_CONDUIT.get());
         event.registerBlock(Capabilities.Energy.BLOCK, (level, pos, state, blockEntity, side) ->
                 side != null && state.getValue(EnergyCableBlock.CONNECTIONS.get(side)) == CableConnection.DISABLED
                         ? null : new CableEnergyHandler(level, pos, side, ((EnergyCableBlock) state.getBlock()).getTransferRate()),

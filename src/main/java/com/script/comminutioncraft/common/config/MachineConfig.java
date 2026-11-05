@@ -21,6 +21,9 @@ public final class MachineConfig {
     public static final ConfigInt CABLES_FUSION_CABLE;
     public static final ConfigInt CABLES_FLUID_PIPE;
     public static final ConfigInt CABLES_PLASMA_CABLE;
+    public static final ConfigInt CABLES_MAGNETIC_CONDUIT;
+    public static final ConfigInt CONTAINMENT_CELL_CAPACITY;
+    public static final ConfigInt CONTAINMENT_CELL_OUTPUT_RATE;
     public static final ConfigInt COAL_GRANULATOR_PROCESS_TIME;
     public static final ConfigDouble COAL_GRANULATOR_BURN_TIME_MULTIPLIER;
     public static final ConfigInt COAL_SMELTER_PROCESS_TIME;
@@ -119,6 +122,7 @@ public final class MachineConfig {
         CABLES_FUSION_CABLE = integer(builder, "cables", "fusionCable", "Fusion cable", "Fusion Cable: FE per tick, per network", 32_000);
         CABLES_FLUID_PIPE = integer(builder, "cables", "fluidPipe", "Fluid pipe", "Fluid Pipe: mB per transfer", 1_000);
         CABLES_PLASMA_CABLE = integer(builder, "cables", "plasmaCable", "Plasma cable", "Plasma Cable: mB per transfer", 8_000);
+        CABLES_MAGNETIC_CONDUIT = integer(builder, "cables", "magneticConduit", "Magnetic conduit", "Magnetic Conduit (antimatter only): mB per transfer", 1_000);
         builder.pop();
         section(builder, "coal_granulator", "Coal Granulator");
         COAL_GRANULATOR_PROCESS_TIME = integer(builder, "coal_granulator", "processTime", "Process time", "Ticks per operation", 150);
@@ -202,6 +206,10 @@ public final class MachineConfig {
         section(builder, "fluid_tank", "Fluid Tank");
         FLUID_TANK_CAPACITY = integer(builder, "fluid_tank", "capacity", "Capacity", "mB stored", 32_000);
         FLUID_TANK_OUTPUT_RATE = integer(builder, "fluid_tank", "outputRate", "Output rate", "Max mB per tick pushed out of Output faces", 1_000);
+        builder.pop();
+        section(builder, "containment_cell", "Containment Cell (antimatter only)");
+        CONTAINMENT_CELL_CAPACITY = integer(builder, "containment_cell", "capacity", "Capacity", "mB of antimatter stored", 4_000);
+        CONTAINMENT_CELL_OUTPUT_RATE = integer(builder, "containment_cell", "outputRate", "Output rate", "Max mB per tick pushed out of Output faces", 1_000);
         builder.pop();
         section(builder, "fluid_machines", "Electrolyser, Plasma Generator, MHD Generator, Isotope Separator, Tritium Breeder");
         FLUID_MACHINES_TANK_CAPACITY = integer(builder, "fluid_machines", "tankCapacity", "Tank capacity", "Each tank, mB", 8_000);

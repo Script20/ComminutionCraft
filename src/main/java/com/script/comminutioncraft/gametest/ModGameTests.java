@@ -126,6 +126,8 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("oxygen_leaves_by_byproduct_face", () -> ModGameTests::oxygenLeavesByByproductFace);
         TEST_FUNCTIONS.register("energy_cable_caps_per_tick", () -> ModGameTests::energyCableCapsPerTick);
         TEST_FUNCTIONS.register("plasma_cable_carries_only_plasma", () -> ModGameTests::plasmaCableCarriesOnlyPlasma);
+        TEST_FUNCTIONS.register("containment_cell_holds_only_antimatter", () -> ModGameTests::containmentCellHoldsOnlyAntimatter);
+        TEST_FUNCTIONS.register("magnetic_conduit_carries_only_antimatter", () -> ModGameTests::magneticConduitCarriesOnlyAntimatter);
         TEST_FUNCTIONS.register("cable_tiers_dont_join", () -> ModGameTests::cableTiersDontJoin);
         TEST_FUNCTIONS.register("circuit_assembler_makes_plasma_circuit", () -> ModGameTests::circuitAssemblerMakesPlasmaCircuit);
         TEST_FUNCTIONS.register("ore_washer_triples_with_water", () -> ModGameTests::oreWasherTriplesWithWater);
@@ -770,6 +772,63 @@ public final class ModGameTests {
         helper.assertTrue(water == 0, "The plasma cable carried " + water + " mB of water");
         helper.assertTrue(plasma == FluidPipeBlock.PLASMA_CABLE_RATE.get() && tank.getTank().getAmount() == plasma,
                 "Expected one insert's worth of plasma in the tank, carried " + plasma + ", tank has " + tank.getTank().getAmount());
+        helper.succeed();
+    }
+
+    /** A Containment Cell takes antimatter and nothing else; a Fluid Tank refuses antimatter. */
+    private static void containmentCellHoldsOnlyAntimatter(GameTestHelper helper) {
+        BlockPos cellPos = new BlockPos(1, 1, 2);
+        BlockPos tankPos = new BlockPos(3, 1, 2);
+        helper.setBlock(cellPos, ModBlocks.CONTAINMENT_CELL.get());
+        helper.setBlock(tankPos, ModBlocks.FLUID_TANK.get());
+        var cell = helper.getBlockEntity(cellPos, com.script.comminutioncraft.common.machine.ContainmentCellBlockEntity.class).getTank();
+        var tank = helper.getBlockEntity(tankPos, FluidTankBlockEntity.class).getTank();
+        FluidResource antimatter = FluidResource.of(ModFluids.ANTIMATTER.get());
+        int water;
+        int contained;
+        int tanked;
+        try (Transaction transaction = Transaction.openRoot()) {
+            water = cell.insert(FluidResource.of(Fluids.WATER), 1_000, transaction);
+            contained = cell.insert(antimatter, 1_000, transaction);
+            tanked = tank.insert(antimatter, 1_000, transaction);
+            transaction.commit();
+        }
+        helper.assertTrue(water == 0, "The Containment Cell took " + water + " mB of water");
+        helper.assertTrue(contained == 1_000 && cell.getAmount() == 1_000, "The Containment Cell should hold 1,000 mB of antimatter, took " + contained);
+        helper.assertTrue(tanked == 0 && tank.getAmount() == 0, "The Fluid Tank took " + tanked + " mB of antimatter");
+        helper.assertTrue(cell.getCapacity() == com.script.comminutioncraft.common.machine.ContainmentCellBlockEntity.CAPACITY.get(),
+                "The Containment Cell should be its configured size");
+        helper.succeed();
+    }
+
+    /** Magnetic Conduit -> Containment Cell carries antimatter only, never joins a Fluid Pipe, and the pipe refuses antimatter. */
+    private static void magneticConduitCarriesOnlyAntimatter(GameTestHelper helper) {
+        BlockPos pipe = new BlockPos(1, 1, 2);
+        BlockPos conduit = new BlockPos(2, 1, 2);
+        BlockPos cellPos = new BlockPos(3, 1, 2);
+        helper.setBlock(cellPos, ModBlocks.CONTAINMENT_CELL.get());
+        placeConduit(helper, pipe, ModBlocks.FLUID_PIPE.get());
+        placeConduit(helper, conduit, ModBlocks.MAGNETIC_CONDUIT.get());
+        assertConnection(helper, conduit, Direction.EAST, CableConnection.MACHINE);
+        assertConnection(helper, conduit, Direction.WEST, CableConnection.NONE);
+
+        var conduitHandler = helper.getLevel().getCapability(Capabilities.Fluid.BLOCK, helper.absolutePos(conduit), Direction.UP);
+        var pipeHandler = helper.getLevel().getCapability(Capabilities.Fluid.BLOCK, helper.absolutePos(pipe), Direction.UP);
+        helper.assertTrue(conduitHandler != null && pipeHandler != null, "The conduit or pipe has no fluid capability");
+        FluidResource antimatter = FluidResource.of(ModFluids.ANTIMATTER.get());
+        int water;
+        int carried;
+        int piped;
+        try (Transaction transaction = Transaction.openRoot()) {
+            water = conduitHandler.insert(FluidResource.of(Fluids.WATER), 500, transaction);
+            carried = conduitHandler.insert(antimatter, 500, transaction);
+            piped = pipeHandler.insert(antimatter, 500, transaction);
+            transaction.commit();
+        }
+        var cell = helper.getBlockEntity(cellPos, com.script.comminutioncraft.common.machine.ContainmentCellBlockEntity.class).getTank();
+        helper.assertTrue(water == 0, "The Magnetic Conduit carried " + water + " mB of water");
+        helper.assertTrue(carried == 500 && cell.getAmount() == 500, "Expected 500 mB of antimatter in the cell, carried " + carried);
+        helper.assertTrue(piped == 0, "The Fluid Pipe carried " + piped + " mB of antimatter");
         helper.succeed();
     }
 

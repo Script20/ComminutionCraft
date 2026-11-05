@@ -38,7 +38,7 @@ public class FluidTankBlockEntity extends BlockEntity implements TickingMachine,
     /** At most one client sync every this many ticks while the contents keep changing. */
     private static final int SYNC_INTERVAL = 5;
 
-    private final MachineFluidTank tank = new MachineFluidTank(CAPACITY.get(), resource -> true, this::onTankChanged);
+    private final MachineFluidTank tank;
     private final MachineControls controls = new MachineControls(MachineControls.outputBelow(), this::onControlsChanged);
     private boolean needsSync;
     private int lastComparatorSignal;
@@ -47,9 +47,21 @@ public class FluidTankBlockEntity extends BlockEntity implements TickingMachine,
         this(ModBlockEntities.FLUID_TANK.get(), pos, state);
     }
 
-    /** For the Creative Fluid Tank. */
+    /** For the Creative Fluid Tank: any fluid but antimatter, {@link #CAPACITY} mB. */
     protected FluidTankBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        this(type, pos, state, CAPACITY.get(), resource -> !com.script.comminutioncraft.common.registry.ModFluids.isAntimatter(resource));
+    }
+
+    /** For the Containment Cell: its own size and the fluids it takes. */
+    protected FluidTankBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, int capacity,
+                                   java.util.function.Predicate<FluidResource> accepts) {
         super(type, pos, state);
+        tank = new MachineFluidTank(capacity, accepts, this::onTankChanged);
+    }
+
+    /** mB per tick pushed out of Output faces. */
+    protected int outputRate() {
+        return OUTPUT_RATE.get();
     }
 
     public MachineFluidTank getTank() {
@@ -70,7 +82,7 @@ public class FluidTankBlockEntity extends BlockEntity implements TickingMachine,
 
     public int getComparatorSignal() {
         int amount = tank.getAmount();
-        return amount <= 0 ? 0 : 1 + (int) ((long) (amount - 1) * 14 / CAPACITY.get());
+        return amount <= 0 ? 0 : 1 + (int) ((long) (amount - 1) * 14 / tank.getCapacity());
     }
 
     private void onTankChanged() {
@@ -107,7 +119,7 @@ public class FluidTankBlockEntity extends BlockEntity implements TickingMachine,
     }
 
     private void pushFluid(ServerLevel level, BlockPos pos) {
-        int budget = Math.min(OUTPUT_RATE.get(), tank.getAmount());
+        int budget = Math.min(outputRate(), tank.getAmount());
         for (Direction direction : Direction.values()) {
             if (budget <= 0) {
                 return;

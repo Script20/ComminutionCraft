@@ -18,6 +18,8 @@ public class FluidPipeBlock extends ConduitBlock {
     /** Fluid Pipe: any fluid. */
     public static final com.script.comminutioncraft.common.config.ConfigInt FLUID_PIPE_RATE = com.script.comminutioncraft.common.config.MachineConfig.CABLES_FLUID_PIPE;
     /** Plasma Cable: plasma only. */
+    /** Tier 5 Magnetic Conduit (antimatter only). */
+    public static final com.script.comminutioncraft.common.config.ConfigInt MAGNETIC_CONDUIT_RATE = com.script.comminutioncraft.common.config.MachineConfig.CABLES_MAGNETIC_CONDUIT;
     public static final com.script.comminutioncraft.common.config.ConfigInt PLASMA_CABLE_RATE = com.script.comminutioncraft.common.config.MachineConfig.CABLES_PLASMA_CABLE;
 
     private final java.util.function.IntSupplier transferRate;
@@ -35,7 +37,8 @@ public class FluidPipeBlock extends ConduitBlock {
 
     /** A pipe for any fluid. */
     public FluidPipeBlock(Properties properties, java.util.function.IntSupplier transferRate) {
-        this(properties, transferRate, resource -> true, () -> FluidResource.EMPTY);
+        this(properties, transferRate, resource -> !com.script.comminutioncraft.common.registry.ModFluids.isAntimatter(resource),
+                () -> FluidResource.EMPTY);
     }
 
     /** Most mB one insert carries. */

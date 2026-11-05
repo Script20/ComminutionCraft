@@ -123,6 +123,25 @@ public final class ModBlocks {
                     .isSuffocating((state, level, pos) -> false)
                     .isRedstoneConductor((state, level, pos) -> false));
 
+    // Tier 5 (antimatter), phase 5A part 1: containment
+    /** Antimatter tank; see-through window like the Fluid Tank. */
+    public static final DeferredBlock<com.script.comminutioncraft.common.machine.ContainmentCellBlock> CONTAINMENT_CELL = BLOCKS.registerBlock(
+            "containment_cell", com.script.comminutioncraft.common.machine.ContainmentCellBlock::new, properties -> tier2MachineProperties(properties)
+                    .noOcclusion()
+                    .isViewBlocking((state, level, pos) -> false)
+                    .isSuffocating((state, level, pos) -> false)
+                    .isRedstoneConductor((state, level, pos) -> false));
+
+    /** A pipe for antimatter only; never joins other pipes or cables. */
+    public static final DeferredBlock<FluidPipeBlock> MAGNETIC_CONDUIT = BLOCKS.registerBlock(
+            "magnetic_conduit", properties -> new FluidPipeBlock(properties, FluidPipeBlock.MAGNETIC_CONDUIT_RATE,
+                    ModFluids::isAntimatter, () -> FluidResource.of(ModFluids.ANTIMATTER.get())),
+            properties -> properties
+                    .mapColor(MapColor.SNOW)
+                    .strength(0.5F)
+                    .sound(SoundType.COPPER)
+                    .noOcclusion());
+
     // Tier 4 (fusion), phase 4A: the fuel chain
     public static final DeferredBlock<IsotopeSeparatorBlock> ISOTOPE_SEPARATOR = BLOCKS.registerBlock(
             "isotope_separator", IsotopeSeparatorBlock::new, ModBlocks::tier2MachineProperties);

@@ -71,6 +71,10 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModItems.FUSION_FUEL_PELLET.get(), "Fusion Fuel Pellet");
         add("fluid_type.comminutioncraft.deuterium", "Deuterium");
         add("fluid_type.comminutioncraft.tritium", "Tritium");
+        add("fluid_type.comminutioncraft.antimatter", "Antimatter");
+        add(ModBlocks.CONTAINMENT_CELL.get(), "Containment Cell");
+        add(ModBlocks.MAGNETIC_CONDUIT.get(), "Magnetic Conduit");
+        add("tooltip.comminutioncraft.antimatter_only", "Antimatter only");
         add("gui.comminutioncraft.deuterium", "Deuterium: %s / %s mB");
         add("gui.comminutioncraft.tritium", "Tritium: %s / %s mB");
         add("jei.comminutioncraft.pressing", "Pellet Pressing");

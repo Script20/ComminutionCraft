@@ -43,6 +43,8 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
                 .add(ModBlocks.FUSION_ENERGY_BATTERY.get())
                 .add(ModBlocks.FLUID_PIPE.get())
                 .add(ModBlocks.FLUID_TANK.get())
+                .add(ModBlocks.CONTAINMENT_CELL.get())
+                .add(ModBlocks.MAGNETIC_CONDUIT.get())
                 .add(ModBlocks.ENERGY_CABLE.get())
                 .add(ModBlocks.PLASMA_GRANULATOR.get())
                 .add(ModBlocks.PLASMA_SMELTER.get())

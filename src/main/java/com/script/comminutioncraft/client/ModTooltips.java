@@ -65,13 +65,20 @@ public final class ModTooltips {
             lines.add(gray("tooltip.comminutioncraft.cable_rate", number(cable.getTransferRate())));
         } else if (block instanceof FluidPipeBlock pipe) {
             lines.add(gray("tooltip.comminutioncraft.pipe_rate", number(pipe.getTransferRate())));
-            if (!pipe.carries(FluidResource.of(Fluids.WATER))) {
+            if (pipe.carries(FluidResource.of(com.script.comminutioncraft.common.registry.ModFluids.ANTIMATTER.get()))) {
+                lines.add(Component.translatable("tooltip.comminutioncraft.antimatter_only").withStyle(ChatFormatting.WHITE));
+            } else if (!pipe.carries(FluidResource.of(Fluids.WATER))) {
                 lines.add(Component.translatable("tooltip.comminutioncraft.plasma_only").withStyle(ChatFormatting.LIGHT_PURPLE));
             }
         } else if (block instanceof CreativeFluidTankBlock) {
             lines.add(gray("tooltip.comminutioncraft.creative_tank"));
         } else if (block instanceof FluidTankBlock) {
-            String capacity = number(FluidTankBlockEntity.CAPACITY.get());
+            boolean cell = block instanceof com.script.comminutioncraft.common.machine.ContainmentCellBlock;
+            String capacity = number(cell ? com.script.comminutioncraft.common.machine.ContainmentCellBlockEntity.CAPACITY.get()
+                    : FluidTankBlockEntity.CAPACITY.get());
+            if (cell) {
+                lines.add(Component.translatable("tooltip.comminutioncraft.antimatter_only").withStyle(ChatFormatting.WHITE));
+            }
             lines.add(contents.isEmpty()
                     ? gray("tooltip.comminutioncraft.tank_amount", "0", capacity)
                     : gray("tooltip.comminutioncraft.tank_amount_fluid", contents.getHoverName(), number(contents.getAmount()), capacity));

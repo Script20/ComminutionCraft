@@ -447,6 +447,28 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_plasma_circuit", has(ModItems.PLASMA_CIRCUIT.get()))
                 .save(output, key("plasma_cable"));
 
+        // Tier 5 containment: copper magnet coils round fusion-tier parts
+        shaped(RecipeCategory.MISC, ModItems.CONTAINMENT_CELL.get())
+                .pattern("PCP")
+                .pattern("FTF")
+                .pattern("PCP")
+                .define('P', ModItems.REACTOR_PLATING.get())
+                .define('C', tag(ProcessedMetal.commonItemTag("storage_blocks/copper")))
+                .define('F', ModItems.FUSION_CIRCUIT.get())
+                .define('T', ModItems.FLUID_TANK.get())
+                .unlockedBy("has_fusion_circuit", has(ModItems.FUSION_CIRCUIT.get()))
+                .save(output, key("containment_cell"));
+
+        shaped(RecipeCategory.MISC, ModItems.MAGNETIC_CONDUIT.get(), 8)
+                .pattern("PCP")
+                .pattern("CFC")
+                .pattern("PCP")
+                .define('P', ModItems.FLUID_PIPE.get())
+                .define('C', tag(ProcessedMetal.commonItemTag("ingots/copper")))
+                .define('F', ModItems.FUSION_CIRCUIT.get())
+                .unlockedBy("has_fusion_circuit", has(ModItems.FUSION_CIRCUIT.get()))
+                .save(output, key("magnetic_conduit"));
+
         shaped(RecipeCategory.MISC, ModItems.AIR_FILTER.get())
                 .pattern(" P ")
                 .pattern("PCP")
