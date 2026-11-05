@@ -276,7 +276,7 @@ def reactor_controller(f=None):
 
 # ================================================================ Fusion Cable and Battery
 def fusion_cable_sheet():
-    """Same UV layout as the other cables: green core, heavy steel bands, a triple-ringed plate (the fast power cable)."""
+    """Same UV layout as the other cables: green core, heavy grey bands, a triple-ringed plate (the fast power cable)."""
     img = t3.plasma_cable_sheet().copy()
     px = img.load()
     for y in range(16):
@@ -290,10 +290,10 @@ def fusion_cable_sheet():
                 px[x, y] = tuple(int(v) for v in mix(F['off'], F['on'], k)[:3]) + (a,)
             elif r > 200 and g > 150 and b > 200:  # magenta highlight -> green highlight
                 px[x, y] = tuple(F['hi'][:3]) + (a,)
-    for x in range(16):  # an extra steel band on the arm, at every 4th pixel
+    for x in range(16):  # an extra band on the arm, at every 4th pixel
         if x % 8 == 4:
-            px[x, 9] = tuple(STEEL[3][:3]) + (255,)
-            px[x, 10] = tuple(STEEL[2][:3]) + (255,)
+            px[x, 9] = tuple(t3.CONDUIT_COLLAR[1][:3]) + (255,)
+            px[x, 10] = tuple(t3.CONDUIT_COLLAR[2][:3]) + (255,)
     for i in range(8, 16):  # the plate gets an outer green ring
         px[i, 0] = tuple(shade(F['on'], 0.7)[:3]) + (255,)
     return img

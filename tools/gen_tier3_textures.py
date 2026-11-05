@@ -157,13 +157,17 @@ def air_filter():
 
 
 # ================================================================ Fluid Pipe (same sheet layout as the cable)
+CONDUIT_BOLT = (96, 101, 112)
+CONDUIT_COLLAR = [K['hi'], K['l'], K['m'], K['d']]  # a band round a pipe/cable, top to bottom
+
+
 def pipe_sheet():
     """Dark Chassis pipe with a blue glass window along the tube, casing-grey collars and bolts (design/previews/
     fluid_pipe_preview.py option_b2, owner-approved 2026-11-05). UVs: core 6x6 at (0,0), plate 8x8 at (8,0), tube
     strip 16x4 at y 8 with a collar every 4th texel (a 5-long arm reads collar-tube-tube-tube-collar either way round)."""
     img = Image.new('RGBA', (16, 16), (0, 0, 0, 0))
     water = [(24, 60, 112), (40, 96, 168), (70, 140, 210), (150, 200, 240)]
-    bolt = (96, 101, 112)
+    bolt = CONDUIT_BOLT
 
     def px(x, y, c):
         img.putpixel((x, y), tuple(int(v) for v in c[:3]) + (255,))
@@ -195,7 +199,7 @@ def pipe_sheet():
             px(8 + x, y, K['o'] if x in (2, 5) or y in (2, 5) else (14, 18, 26))
     px(8 + 3, 3, water[3])
     rows = [K['l'], water[2], water[1], K['o']]  # tube: casing rim, blue glass (two rows), shadow
-    collar = [K['hi'], K['l'], K['m'], K['d']]
+    collar = CONDUIT_COLLAR
     for x in range(16):
         for y in range(4):
             c = collar[y] if x % 4 == 0 else rows[y]
@@ -569,7 +573,8 @@ def oxygen_still(f):
 
 # ================================================================ Plasma Cable (same UVs as the energy cable)
 def plasma_cable_sheet():
-    """Like the energy cable but magenta, with steel bands on the arm and a double ring on the plate (heavier duty)."""
+    """Like the energy cable but magenta, with bands on the arm and a double ring on the plate (heavier duty). Bands,
+    bolts and the plate's outer ring are casing grey, like the Fluid Pipe (owner, 2026-11-05; they were light steel)."""
     img = Image.new('RGBA', (16, 16), (0, 0, 0, 0))
 
     def px(x, y, c):
@@ -582,7 +587,7 @@ def plasma_cable_sheet():
     for (x, y) in ((2, 2), (3, 2), (2, 3), (3, 3)):
         px(x, y, P['hi'] if (x, y) == (2, 2) else P['on'])
     for (x, y) in ((1, 1), (4, 1), (1, 4), (4, 4)):
-        px(x, y, STEEL[2])
+        px(x, y, CONDUIT_BOLT)
     for y in range(8):
         for x in range(8):
             c = mix(K['l'], K['d'], y / 7)
@@ -596,7 +601,7 @@ def plasma_cable_sheet():
             outer = x in (1, 6) or y in (1, 6)
             inner = x in (2, 5) or y in (2, 5)
             if outer:
-                px(8 + x, y, STEEL[1])
+                px(8 + x, y, CONDUIT_BOLT)
             elif inner:
                 px(8 + x, y, shade(P['on'], 0.8))
             else:
@@ -606,7 +611,7 @@ def plasma_cable_sheet():
     for x in range(16):
         for y, c in enumerate(rows):
             if x % 8 in (0, 1):
-                c = STEEL[3] if y == 0 else (STEEL[2] if y < 3 else STEEL[0])  # steel bands
+                c = CONDUIT_COLLAR[y]  # bands
             elif y == 1 and x % 8 == 4:
                 c = P['hi']
             px(x, 8 + y, c)
