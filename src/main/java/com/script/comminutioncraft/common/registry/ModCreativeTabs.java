@@ -56,6 +56,8 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.FUSION_CABLE.get());
                         output.accept(ModItems.FUSION_ENERGY_BATTERY.get());
                         output.accept(ModItems.WRENCH.get());
+                        output.accept(ModItems.CREATIVE_ENERGY_BATTERY.get());
+                        output.accept(ModItems.CREATIVE_FLUID_TANK.get());
                         ModBlocks.STONE_SETS.forEach(set -> set.all().forEach(block -> output.accept(block.get())));
                         // Other mods' metals only appear when some installed mod adds that metal.
                         ProcessedMetal.ALL.stream()

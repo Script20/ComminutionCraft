@@ -32,6 +32,9 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModBlocks.TRITIUM_BREEDER.get(), "Tritium Breeder");
         add(ModBlocks.PELLET_PRESS.get(), "Pellet Press");
         add(ModBlocks.ORE_PURIFIER.get(), "Ore Purifier");
+        add(ModBlocks.CREATIVE_ENERGY_BATTERY.get(), "Creative Energy Battery");
+        add(ModBlocks.CREATIVE_FLUID_TANK.get(), "Creative Fluid Tank");
+        add("gui.comminutioncraft.creative_tank.none", "No fluid");
         add("jei.comminutioncraft.purifying", "Ore Purifying");
         add("jei.comminutioncraft.time.ore_purifier", "Ore Purifier: %s");
         add("jei.comminutioncraft.uses_oxygen", "Uses %s mB oxygen");

@@ -557,6 +557,18 @@ def ore_purifier_sheet():
     return s.img
 
 
+def creative_tank_sheet():
+    """Creative Fluid Tank: 8 fluid buttons (4 x 2 at (12 + 22c, 20 + 22r), 18x18), a fluid tube at x 155, inventory.
+    The screen draws each fluid's own sprite in the buttons and the tube."""
+    s = Sheet()
+    body(s)
+    for i in range(8):
+        slot(s, 12 + (i % 4) * 22, 20 + (i // 4) * 22)
+    gauge_well(s, 155)
+    player_inventory(s)
+    return s.img
+
+
 os.makedirs(OUT, exist_ok=True)
 coal_sheet(granulator_arrow).save(os.path.join(OUT, 'coal_granulator.png'))
 coal_sheet(smelter_arrow).save(os.path.join(OUT, 'coal_smelter.png'))
@@ -575,6 +587,7 @@ fusion_fluid_sheet((50, 155), fade_arrow(DEUTERIUM[2], TRITIUM[2])).save(os.path
 pellet_press_sheet().save(os.path.join(OUT, 'pellet_press.png'))
 fusion_reactor_sheet().save(os.path.join(OUT, 'reactor_controller.png'))
 ore_purifier_sheet().save(os.path.join(OUT, 'ore_purifier.png'))
+creative_tank_sheet().save(os.path.join(OUT, 'creative_fluid_tank.png'))
 tier3_sheet(plasma_granulator_arrow).save(os.path.join(OUT, 'plasma_granulator.png'))
 tier3_sheet(smelter_arrow).save(os.path.join(OUT, 'plasma_smelter.png'))
 plasma_machine_sheet(plasma_granulator_arrow).save(os.path.join(OUT, 'circuit_assembler.png'))

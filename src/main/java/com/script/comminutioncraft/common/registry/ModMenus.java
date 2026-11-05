@@ -14,6 +14,7 @@ import com.script.comminutioncraft.common.machine.PelletPressMenu;
 import com.script.comminutioncraft.common.machine.TritiumBreederBlockEntity;
 import com.script.comminutioncraft.common.machine.FusionReactorMenu;
 import com.script.comminutioncraft.common.machine.OrePurifierMenu;
+import com.script.comminutioncraft.common.machine.CreativeFluidTankMenu;
 import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlockEntity;
 import com.script.comminutioncraft.common.machine.PlasmaMachineMenu;
 import com.script.comminutioncraft.common.machine.OreWasherMenu;
@@ -93,6 +94,9 @@ public final class ModMenus {
 
     public static final DeferredHolder<MenuType<?>, MenuType<OrePurifierMenu>> ORE_PURIFIER =
             MENUS.register("ore_purifier", () -> new MenuType<>(OrePurifierMenu::client, FeatureFlags.VANILLA_SET));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<CreativeFluidTankMenu>> CREATIVE_FLUID_TANK =
+            MENUS.register("creative_fluid_tank", () -> new MenuType<>(CreativeFluidTankMenu::client, FeatureFlags.VANILLA_SET));
 
     private ModMenus() {}
 }

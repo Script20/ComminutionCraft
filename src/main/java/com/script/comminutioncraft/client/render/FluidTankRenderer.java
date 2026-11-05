@@ -32,8 +32,6 @@ import org.jspecify.annotations.Nullable;
  * off light are drawn full bright.
  */
 public class FluidTankRenderer implements BlockEntityRenderer<FluidTankBlockEntity, FluidTankRenderer.State> {
-    private static final SpriteId SIDE = new SpriteId(TextureAtlas.LOCATION_BLOCKS, ComminutionCraft.id("block/fluid_tank_side"));
-    private static final SpriteId END = new SpriteId(TextureAtlas.LOCATION_BLOCKS, ComminutionCraft.id("block/fluid_tank_top"));
     private static final float WALL = 0.002F;   // inner walls, just inside the block faces
     private static final float FLUID = 0.01F;   // the fluid, just inside the walls
     // The window spans texture rows 1-14: an empty tank shows nothing, a full one fills the window.
@@ -47,6 +45,9 @@ public class FluidTankRenderer implements BlockEntityRenderer<FluidTankBlockEnti
     }
 
     public static class State extends BlockEntityRenderState {
+        /** The tank block's own side / end textures (Fluid Tank or Creative Fluid Tank) for the inner walls. */
+        @Nullable SpriteId side;
+        @Nullable SpriteId end;
         @Nullable TextureAtlasSprite sprite;
         int color;
         float fill;
@@ -62,6 +63,9 @@ public class FluidTankRenderer implements BlockEntityRenderer<FluidTankBlockEnti
     public void extractRenderState(FluidTankBlockEntity tank, State state, float partialTicks, Vec3 cameraPosition,
                                    ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
         BlockEntityRenderer.super.extractRenderState(tank, state, partialTicks, cameraPosition, breakProgress);
+        String block = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(tank.getBlockState().getBlock()).getPath();
+        state.side = new SpriteId(TextureAtlas.LOCATION_BLOCKS, ComminutionCraft.id("block/" + block + "_side"));
+        state.end = new SpriteId(TextureAtlas.LOCATION_BLOCKS, ComminutionCraft.id("block/" + block + "_top"));
         FluidStack stack = tank.getTank().getStack();
         if (stack.isEmpty() || !(tank.getLevel() instanceof BlockAndTintGetter level)) {
             state.sprite = null;
@@ -79,8 +83,11 @@ public class FluidTankRenderer implements BlockEntityRenderer<FluidTankBlockEnti
 
     @Override
     public void submit(State state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
-        TextureAtlasSprite side = sprites.get(SIDE);
-        TextureAtlasSprite end = sprites.get(END);
+        if (state.side == null || state.end == null) {
+            return;
+        }
+        TextureAtlasSprite side = sprites.get(state.side);
+        TextureAtlasSprite end = sprites.get(state.end);
         TextureAtlasSprite fluid = state.sprite;
         int light = state.lightCoords;
         collector.submitCustomGeometry(poseStack, Sheets.translucentBlockSheet(), (pose, buffer) -> {

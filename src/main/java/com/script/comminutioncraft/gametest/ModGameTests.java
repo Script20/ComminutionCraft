@@ -21,6 +21,9 @@ import com.script.comminutioncraft.common.machine.TritiumBreederBlockEntity;
 import com.script.comminutioncraft.common.machine.FusionReactorBlockEntity;
 import com.script.comminutioncraft.common.machine.ReactorPortBlockEntity;
 import com.script.comminutioncraft.common.machine.OrePurifierBlockEntity;
+import com.script.comminutioncraft.common.machine.CreativeFluidTankBlockEntity;
+import com.script.comminutioncraft.common.machine.CreativeFluidTankMenu;
+import net.minecraft.world.inventory.SimpleContainerData;
 import com.script.comminutioncraft.common.energy.MachineEnergyStorage;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.transfer.energy.EnergyHandler;
@@ -134,6 +137,8 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("reactor_burns_pellets_for_fe", () -> ModGameTests::reactorBurnsPelletsForFe);
         TEST_FUNCTIONS.register("ore_purifier_purifies_with_oxygen", () -> ModGameTests::orePurifierPurifiesWithOxygen);
         TEST_FUNCTIONS.register("granulator_takes_purified_ore", () -> ModGameTests::granulatorTakesPurifiedOre);
+        TEST_FUNCTIONS.register("creative_battery_powers_every_side", () -> ModGameTests::creativeBatteryPowersEverySide);
+        TEST_FUNCTIONS.register("creative_tank_fills_and_stays_full", () -> ModGameTests::creativeTankFillsAndStaysFull);
     }
 
     public static void registerTests(RegisterGameTestsEvent event) {
@@ -943,6 +948,42 @@ public final class ModGameTests {
         helper.succeedWhen(() -> {
             ItemStack output = machine.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT);
             helper.assertTrue(output.is(ModItems.GRANULATED_COPPER.get()) && output.getCount() == 2, "Expected 2 granulated copper, got " + output);
+        });
+    }
+
+    /** A Creative Energy Battery charges batteries on two different sides at once, and never runs down. */
+    private static void creativeBatteryPowersEverySide(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, ModBlocks.CREATIVE_ENERGY_BATTERY.get());
+        helper.setBlock(pos.east(), ModBlocks.ENERGY_BATTERY.get());
+        helper.setBlock(pos.west(), ModBlocks.ENERGY_BATTERY.get());
+        EnergyBatteryBlockEntity east = helper.getBlockEntity(pos.east(), EnergyBatteryBlockEntity.class);
+        EnergyBatteryBlockEntity west = helper.getBlockEntity(pos.west(), EnergyBatteryBlockEntity.class);
+        helper.succeedWhen(() -> helper.assertTrue(east.getEnergy() >= 10_000 && west.getEnergy() >= 10_000,
+                "Both batteries should be charging: " + east.getEnergy() + " / " + west.getEnergy() + " FE"));
+    }
+
+    /**
+     * The GUI's menu button picks the fluid; the Creative Fluid Tank then fills a Fluid Tank next to it and is still
+     * full afterwards. Button 0 empties it again.
+     */
+    private static void creativeTankFillsAndStaysFull(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, ModBlocks.CREATIVE_FLUID_TANK.get());
+        helper.setBlock(pos.east(), ModBlocks.FLUID_TANK.get());
+        CreativeFluidTankBlockEntity creative = helper.getBlockEntity(pos, CreativeFluidTankBlockEntity.class);
+        FluidTankBlockEntity tank = helper.getBlockEntity(pos.east(), FluidTankBlockEntity.class);
+        CreativeFluidTankMenu menu = new CreativeFluidTankMenu(0, helper.makeMockPlayer(GameType.CREATIVE).getInventory(), creative,
+                new SimpleContainerData(CreativeFluidTankBlockEntity.DATA_COUNT));
+        int water = CreativeFluidTankBlockEntity.fluids().indexOf(Fluids.WATER) + 1;
+        helper.assertTrue(water > 0, "Water isn't in the picker's list");
+        helper.assertTrue(menu.clickMenuButton(helper.makeMockPlayer(GameType.CREATIVE), water), "The picker refused water");
+        helper.succeedWhen(() -> {
+            helper.assertTrue(tank.getTank().getAmount() >= 1_000 && tank.getTank().getFluid().is(NeoForgeMod.WATER_TYPE.value()),
+                    "The tank next to it should be filling with water, has " + tank.getTank().getStack());
+            helper.assertTrue(creative.getTank().getAmount() == FluidTankBlockEntity.CAPACITY, "The creative tank should stay full");
+            menu.clickMenuButton(helper.makeMockPlayer(GameType.CREATIVE), 0);
+            helper.assertTrue(creative.getFluid() == null && creative.getTank().getAmount() == 0, "Button 0 should empty it");
         });
     }
 

@@ -101,6 +101,9 @@ public final class ModItems {
             properties -> new EnergyBatteryItem(ModBlocks.FUSION_ENERGY_BATTERY.get(), properties, EnergyBatteryBlockEntity.FUSION_CAPACITY, 0x60FF80),
             properties -> properties.useBlockDescriptionPrefix());
     public static final DeferredItem<BlockItem> ORE_PURIFIER = ITEMS.registerSimpleBlockItem("ore_purifier", ModBlocks.ORE_PURIFIER);
+    public static final DeferredItem<BlockItem> CREATIVE_ENERGY_BATTERY =
+            ITEMS.registerSimpleBlockItem("creative_energy_battery", ModBlocks.CREATIVE_ENERGY_BATTERY);
+    public static final DeferredItem<BlockItem> CREATIVE_FLUID_TANK = ITEMS.registerSimpleBlockItem("creative_fluid_tank", ModBlocks.CREATIVE_FLUID_TANK);
     public static final DeferredItem<BlockItem> PLASMA_CABLE = ITEMS.registerSimpleBlockItem("plasma_cable", ModBlocks.PLASMA_CABLE);
     public static final DeferredItem<BlockItem> FLUID_PIPE = ITEMS.registerSimpleBlockItem("fluid_pipe", ModBlocks.FLUID_PIPE);
     public static final DeferredItem<BlockItem> FLUID_TANK = ITEMS.registerSimpleBlockItem("fluid_tank", ModBlocks.FLUID_TANK);

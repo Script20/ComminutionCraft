@@ -18,6 +18,8 @@ import com.script.comminutioncraft.common.machine.TritiumBreederBlockEntity;
 import com.script.comminutioncraft.common.machine.FusionReactorBlockEntity;
 import com.script.comminutioncraft.common.machine.ReactorPortBlockEntity;
 import com.script.comminutioncraft.common.machine.OrePurifierBlockEntity;
+import com.script.comminutioncraft.common.machine.CreativeEnergyBatteryBlockEntity;
+import com.script.comminutioncraft.common.machine.CreativeFluidTankBlockEntity;
 import com.script.comminutioncraft.common.machine.PlasmaGranulatorBlockEntity;
 import com.script.comminutioncraft.common.machine.CircuitAssemblerBlockEntity;
 import com.script.comminutioncraft.common.machine.OreWasherBlockEntity;
@@ -122,6 +124,14 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<OrePurifierBlockEntity>> ORE_PURIFIER =
             BLOCK_ENTITY_TYPES.register("ore_purifier",
                     () -> new BlockEntityType<>(OrePurifierBlockEntity::new, ModBlocks.ORE_PURIFIER.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CreativeEnergyBatteryBlockEntity>> CREATIVE_ENERGY_BATTERY =
+            BLOCK_ENTITY_TYPES.register("creative_energy_battery",
+                    () -> new BlockEntityType<>(CreativeEnergyBatteryBlockEntity::new, ModBlocks.CREATIVE_ENERGY_BATTERY.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CreativeFluidTankBlockEntity>> CREATIVE_FLUID_TANK =
+            BLOCK_ENTITY_TYPES.register("creative_fluid_tank",
+                    () -> new BlockEntityType<>(CreativeFluidTankBlockEntity::new, ModBlocks.CREATIVE_FLUID_TANK.get()));
 
     private ModBlockEntities() {}
 }

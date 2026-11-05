@@ -15,6 +15,7 @@ import com.script.comminutioncraft.client.gui.PlasmaMachineScreen;
 import com.script.comminutioncraft.client.gui.OreWasherScreen;
 import com.script.comminutioncraft.client.gui.PelletPressScreen;
 import com.script.comminutioncraft.client.gui.FusionReactorScreen;
+import com.script.comminutioncraft.client.gui.CreativeFluidTankScreen;
 import com.script.comminutioncraft.client.gui.OrePurifierScreen;
 import com.script.comminutioncraft.common.machine.OrePurifierMenu;
 import com.script.comminutioncraft.client.render.FusionReactorRenderer;
@@ -66,6 +67,7 @@ public class ComminutionCraftClient {
         event.register(ModMenus.ISOTOPE_SEPARATOR.get(), FluidMachineScreen::isotopeSeparator);
         event.register(ModMenus.TRITIUM_BREEDER.get(), FluidMachineScreen::tritiumBreeder);
         event.register(ModMenus.FUSION_REACTOR.get(), FusionReactorScreen::new);
+        event.register(ModMenus.CREATIVE_FLUID_TANK.get(), CreativeFluidTankScreen::new);
         event.<ElectricMachineMenu, OrePurifierScreen>register(ModMenus.ORE_PURIFIER.get(),
                 (menu, inventory, title) -> new OrePurifierScreen((OrePurifierMenu) menu, inventory, title));
         event.register(ModMenus.FUSION_ENERGY_BATTERY.get(), EnergyBatteryScreen::fusion);
@@ -81,6 +83,7 @@ public class ComminutionCraftClient {
 
     private static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(ModBlockEntities.FLUID_TANK.get(), context -> new FluidTankRenderer(context.sprites()));
+        event.registerBlockEntityRenderer(ModBlockEntities.CREATIVE_FLUID_TANK.get(), context -> new FluidTankRenderer(context.sprites()));
         event.registerBlockEntityRenderer(ModBlockEntities.FUSION_REACTOR.get(), context -> new FusionReactorRenderer(context.sprites()));
     }
 

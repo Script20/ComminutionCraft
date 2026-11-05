@@ -16,6 +16,7 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -43,7 +44,12 @@ public class FluidTankBlockEntity extends BlockEntity implements TickingMachine,
     private int lastComparatorSignal;
 
     public FluidTankBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.FLUID_TANK.get(), pos, state);
+        this(ModBlockEntities.FLUID_TANK.get(), pos, state);
+    }
+
+    /** For the Creative Fluid Tank. */
+    protected FluidTankBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
     }
 
     public MachineFluidTank getTank() {

@@ -11,6 +11,8 @@ import com.script.comminutioncraft.common.machine.OreWasherBlockEntity;
 import com.script.comminutioncraft.common.machine.PelletPressBlockEntity;
 import com.script.comminutioncraft.common.machine.ReactorPortBlockEntity;
 import com.script.comminutioncraft.common.machine.OrePurifierBlockEntity;
+import com.script.comminutioncraft.common.machine.CreativeEnergyBatteryBlockEntity;
+import com.script.comminutioncraft.common.machine.CreativeFluidTankBlockEntity;
 import com.script.comminutioncraft.common.machine.PlasmaMachineBlockEntity;
 import com.script.comminutioncraft.common.cable.ConduitBlock;
 import com.script.comminutioncraft.common.cable.EnergyCableBlock;
@@ -116,6 +118,10 @@ public class ComminutionCraft {
         event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.FUSION_REACTOR.get(),
                 (reactor, side) -> side == null ? reactor.getEnergy() : null);
         event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.FUSION_ENERGY_BATTERY.get(), EnergyBatteryBlockEntity::getEnergyHandler);
+        // Creative blocks: endless FE / fluid out of every face
+        event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.CREATIVE_ENERGY_BATTERY.get(),
+                (battery, side) -> CreativeEnergyBatteryBlockEntity.ENDLESS);
+        event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.CREATIVE_FLUID_TANK.get(), CreativeFluidTankBlockEntity::getFluidHandler);
         // Ore Purifier: items and FE like any machine, oxygen in through Input faces
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.ORE_PURIFIER.get(), WorldlyContainerWrapper::new);
         event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.ORE_PURIFIER.get(), (machine, side) -> machine.getEnergyHandler());

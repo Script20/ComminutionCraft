@@ -24,7 +24,7 @@ public class FluidTankBlock extends MachineBlock {
     }
 
     @Override
-    protected BlockEntityType<FluidTankBlockEntity> getBlockEntityType() {
+    protected BlockEntityType<? extends FluidTankBlockEntity> getBlockEntityType() {
         return ModBlockEntities.FLUID_TANK.get();
     }
 

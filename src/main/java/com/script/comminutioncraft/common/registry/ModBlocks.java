@@ -25,6 +25,8 @@ import com.script.comminutioncraft.common.machine.ReactorControllerBlock;
 import com.script.comminutioncraft.common.machine.ReactorGlassBlock;
 import com.script.comminutioncraft.common.machine.ReactorPortBlock;
 import com.script.comminutioncraft.common.machine.OrePurifierBlock;
+import com.script.comminutioncraft.common.machine.CreativeEnergyBatteryBlock;
+import com.script.comminutioncraft.common.machine.CreativeFluidTankBlock;
 import com.script.comminutioncraft.common.machine.PlasmaGranulatorBlock;
 import com.script.comminutioncraft.common.machine.CircuitAssemblerBlock;
 import com.script.comminutioncraft.common.machine.OreWasherBlock;
@@ -167,6 +169,17 @@ public final class ModBlocks {
     public static final DeferredBlock<EnergyBatteryBlock> FUSION_ENERGY_BATTERY = BLOCKS.registerBlock(
             "fusion_energy_battery", properties -> new EnergyBatteryBlock(properties, () -> ModBlockEntities.FUSION_ENERGY_BATTERY.get()),
             ModBlocks::tier2MachineProperties);
+
+    // Creative only (no recipes): endless FE / endless fluid of a picked kind
+    public static final DeferredBlock<CreativeEnergyBatteryBlock> CREATIVE_ENERGY_BATTERY = BLOCKS.registerBlock(
+            "creative_energy_battery", CreativeEnergyBatteryBlock::new, ModBlocks::tier2MachineProperties);
+
+    public static final DeferredBlock<CreativeFluidTankBlock> CREATIVE_FLUID_TANK = BLOCKS.registerBlock(
+            "creative_fluid_tank", CreativeFluidTankBlock::new, properties -> tier2MachineProperties(properties)
+                    .noOcclusion()
+                    .isViewBlocking((state, level, pos) -> false)
+                    .isSuffocating((state, level, pos) -> false)
+                    .isRedstoneConductor((state, level, pos) -> false));
 
     // Decorative stone (marble generates like granite; volcanic basalt crusts underground lava pools)
     public static final StoneSet MARBLE = new StoneSet(BLOCKS, "marble", MapColor.QUARTZ, 1.5F, 6.0F, SoundType.STONE);

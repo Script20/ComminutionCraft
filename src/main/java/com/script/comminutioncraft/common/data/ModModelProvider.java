@@ -109,6 +109,8 @@ public class ModModelProvider extends ModelProvider {
         blockModels.createFurnace(ModBlocks.TRITIUM_BREEDER.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         blockModels.createFurnace(ModBlocks.PELLET_PRESS.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         blockModels.createFurnace(ModBlocks.ORE_PURIFIER.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
+        blockModels.createFurnace(ModBlocks.CREATIVE_ENERGY_BATTERY.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
+        blockModels.createTrivialBlock(ModBlocks.CREATIVE_FLUID_TANK.get(), TexturedModel.COLUMN);
         // Fusion Reactor: casing and ports glow while it burns (an _on texture); the glass is cutout; the controller is
         // a furnace-style front over casing sides.
         litCube(blockModels, ModBlocks.REACTOR_CASING.get());
