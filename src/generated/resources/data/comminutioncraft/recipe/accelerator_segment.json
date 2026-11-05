@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": "#c:storage_blocks/copper",
+    "M": "comminutioncraft:magnetic_conduit",
+    "P": "comminutioncraft:reactor_plating"
+  },
+  "pattern": [
+    "PCP",
+    "CMC",
+    "PCP"
+  ],
+  "result": {
+    "count": 8,
+    "id": "comminutioncraft:accelerator_segment"
+  }
+}

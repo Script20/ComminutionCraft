@@ -142,6 +142,16 @@ public final class ModBlocks {
                     .sound(SoundType.COPPER)
                     .noOcclusion());
 
+    // Tier 5 (antimatter), phase 5A part 2: the Particle Accelerator ring
+    public static final DeferredBlock<com.script.comminutioncraft.common.machine.AcceleratorSegmentBlock> ACCELERATOR_SEGMENT = BLOCKS.registerBlock(
+            "accelerator_segment", com.script.comminutioncraft.common.machine.AcceleratorSegmentBlock::new, ModBlocks::tier2MachineProperties);
+
+    public static final DeferredBlock<com.script.comminutioncraft.common.machine.AcceleratorPortBlock> ACCELERATOR_PORT = BLOCKS.registerBlock(
+            "accelerator_port", com.script.comminutioncraft.common.machine.AcceleratorPortBlock::new, ModBlocks::tier2MachineProperties);
+
+    public static final DeferredBlock<com.script.comminutioncraft.common.machine.AcceleratorControllerBlock> ACCELERATOR_CONTROLLER = BLOCKS.registerBlock(
+            "accelerator_controller", com.script.comminutioncraft.common.machine.AcceleratorControllerBlock::new, ModBlocks::tier2MachineProperties);
+
     // Tier 4 (fusion), phase 4A: the fuel chain
     public static final DeferredBlock<IsotopeSeparatorBlock> ISOTOPE_SEPARATOR = BLOCKS.registerBlock(
             "isotope_separator", IsotopeSeparatorBlock::new, ModBlocks::tier2MachineProperties);

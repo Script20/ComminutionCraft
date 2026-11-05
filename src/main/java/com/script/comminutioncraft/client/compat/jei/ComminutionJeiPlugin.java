@@ -115,7 +115,8 @@ public class ComminutionJeiPlugin implements IModPlugin {
                         List.of(), recipe -> List.of(),
                         new ProcessingCategory.SecondOutput<>(PurifyingRecipe::getByproduct, PurifyingRecipe::getChance)).withFluids(
                         new ProcessingCategory.FluidCost(ModFluids.OXYGEN.get(), OrePurifierBlockEntity.OXYGEN_PER_OPERATION.get())),
-                new FusionReactorCategory(gui));
+                new FusionReactorCategory(gui),
+                new ParticleAcceleratorCategory(gui));
         for (FluidMachinePage page : fluidMachinePages()) {
             registration.addRecipeCategories(new FluidConversionCategory(gui, page.type(), page.machine()));
         }
@@ -129,6 +130,7 @@ public class ComminutionJeiPlugin implements IModPlugin {
         registration.addRecipes(PRESSING.get(), ClientRecipes.pressing());
         registration.addRecipes(PURIFYING.get(), ClientRecipes.purifying());
         registration.addRecipes(FusionReactorCategory.TYPE, List.of(FusionReactorCategory.Structure.INSTANCE));
+        registration.addRecipes(ParticleAcceleratorCategory.TYPE, List.of(ParticleAcceleratorCategory.Structure.INSTANCE));
         for (FluidMachinePage page : fluidMachinePages()) {
             registration.addRecipes(page.type(), List.of(page.conversion()));
         }
@@ -145,6 +147,8 @@ public class ComminutionJeiPlugin implements IModPlugin {
         registration.addCraftingStation(PRESSING.get(), ModItems.PELLET_PRESS.get());
         registration.addCraftingStation(PURIFYING.get(), ModItems.ORE_PURIFIER.get());
         registration.addCraftingStation(FusionReactorCategory.TYPE, ModItems.REACTOR_CONTROLLER.get());
+        registration.addCraftingStation(ParticleAcceleratorCategory.TYPE,
+                ModItems.ACCELERATOR_CONTROLLER.get(), ModItems.ACCELERATOR_SEGMENT.get(), ModItems.ACCELERATOR_PORT.get());
         for (FluidMachinePage page : fluidMachinePages()) {
             registration.addCraftingStation(page.type(), page.machine());
         }

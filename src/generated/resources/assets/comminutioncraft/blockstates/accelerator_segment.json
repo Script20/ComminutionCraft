@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "comminutioncraft:block/accelerator_segment"
+    },
+    "lit=true": {
+      "model": "comminutioncraft:block/accelerator_segment_on"
+    }
+  }
+}

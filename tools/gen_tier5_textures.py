@@ -2,7 +2,9 @@
 design/previews/phase_5a_preview.py (approved 2026-11-05).
 
 Part 1 of phase 5A: the Antimatter fluid, the Containment Cell (cutout window; the renderer draws the contents) and
-the Magnetic Conduit sheet (same UVs as the other conduits). The accelerator blocks follow in part 2.
+the Magnetic Conduit sheet (same UVs as the other conduits). Part 2: the Particle Accelerator ring - Accelerator Segment
+(top / side, + animated _on strips), Accelerator Port (+ _on) and Accelerator Controller (front + animated _front_on;
+top / side = segment).
 
 Run: tools/.venv/Scripts/python tools/gen_tier5_textures.py
 """
@@ -24,4 +26,17 @@ if __name__ == '__main__':
     p5.cell_side(preview=False).img.save(os.path.join(BLOCK, 'containment_cell_side.png'))
     p5.cell_top().img.save(os.path.join(BLOCK, 'containment_cell_top.png'))
     p5.conduit_sheet().save(os.path.join(BLOCK, 'magnetic_conduit.png'))
+    # Part 2: the accelerator ring
+    p5.segment_side().img.save(os.path.join(BLOCK, 'accelerator_segment_side.png'))
+    t3.save_strip(os.path.join(BLOCK, 'accelerator_segment_side_on.png'), p5.segment_side)
+    p5.segment_top().img.save(os.path.join(BLOCK, 'accelerator_segment_top.png'))
+    t3.save_strip(os.path.join(BLOCK, 'accelerator_segment_top_on.png'), lambda f: p5.segment_top(True, f))
+    p5.port_side().img.save(os.path.join(BLOCK, 'accelerator_port_side.png'))
+    t3.save_strip(os.path.join(BLOCK, 'accelerator_port_side_on.png'), lambda f: p5.port_side(True, f))
+    p5.segment_top().img.save(os.path.join(BLOCK, 'accelerator_port_top.png'))
+    t3.save_strip(os.path.join(BLOCK, 'accelerator_port_top_on.png'), lambda f: p5.segment_top(True, f))
+    p5.segment_top().img.save(os.path.join(BLOCK, 'accelerator_controller_top.png'))
+    p5.segment_side().img.save(os.path.join(BLOCK, 'accelerator_controller_side.png'))
+    p5.controller_front().img.save(os.path.join(BLOCK, 'accelerator_controller_front.png'))
+    t3.save_strip(os.path.join(BLOCK, 'accelerator_controller_front_on.png'), p5.controller_front)
     print('ok')

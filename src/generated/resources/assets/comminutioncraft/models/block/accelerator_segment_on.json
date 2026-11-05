@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "comminutioncraft:block/accelerator_segment_top_on",
+    "side": "comminutioncraft:block/accelerator_segment_side_on"
+  }
+}

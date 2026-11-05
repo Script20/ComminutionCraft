@@ -127,6 +127,10 @@ public class ModModelProvider extends ModelProvider {
         blockModels.createTrivialBlock(ModBlocks.FLUID_TANK.get(), TexturedModel.COLUMN);
         blockModels.createTrivialBlock(ModBlocks.CONTAINMENT_CELL.get(), TexturedModel.COLUMN);
         conduit(blockModels, itemModels, ModBlocks.MAGNETIC_CONDUIT.get(), ModItems.MAGNETIC_CONDUIT.get());
+        // Particle Accelerator: segments and ports light up while it runs (_on textures); the controller is a furnace
+        litColumn(blockModels, ModBlocks.ACCELERATOR_SEGMENT.get());
+        litColumn(blockModels, ModBlocks.ACCELERATOR_PORT.get());
+        blockModels.createFurnace(ModBlocks.ACCELERATOR_CONTROLLER.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         // Soaryn Chest: drawn by the vanilla ChestRenderer; the block model is particles only, the item a special model
         blockModels.createChest(ModBlocks.SOARYN_CHEST.get(), net.minecraft.world.level.block.Blocks.OAK_PLANKS,
                 net.minecraft.client.renderer.special.ChestSpecialRenderer.REGULAR, true);
@@ -172,6 +176,19 @@ public class ModModelProvider extends ModelProvider {
         Identifier off = TexturedModel.CUBE.create(block, blockModels.modelOutput);
         Identifier on = TexturedModel.CUBE.get(block)
                 .updateTextures(t -> t.put(TextureSlot.ALL, TextureMapping.getBlockTexture(block, "_on")))
+                .createWithSuffix(block, "_on", blockModels.modelOutput);
+        blockModels.blockStateOutput.accept(MultiVariantGenerator.dispatch(block)
+                .with(BlockModelGenerators.createBooleanModelDispatch(BlockStateProperties.LIT,
+                        BlockModelGenerators.plainVariant(on), BlockModelGenerators.plainVariant(off))));
+    }
+
+    /** A column block (<block>_side / <block>_top) with lit variants (<block>_side_on / <block>_top_on). */
+    private static void litColumn(BlockModelGenerators blockModels, Block block) {
+        Identifier off = TexturedModel.COLUMN.create(block, blockModels.modelOutput);
+        Identifier on = TexturedModel.COLUMN.get(block)
+                .updateTextures(t -> t
+                        .put(TextureSlot.SIDE, TextureMapping.getBlockTexture(block, "_side_on"))
+                        .put(TextureSlot.END, TextureMapping.getBlockTexture(block, "_top_on")))
                 .createWithSuffix(block, "_on", blockModels.modelOutput);
         blockModels.blockStateOutput.accept(MultiVariantGenerator.dispatch(block)
                 .with(BlockModelGenerators.createBooleanModelDispatch(BlockStateProperties.LIT,

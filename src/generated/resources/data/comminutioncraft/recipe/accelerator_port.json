@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": "comminutioncraft:fusion_cable",
+    "F": "comminutioncraft:fusion_circuit",
+    "P": "comminutioncraft:fluid_pipe",
+    "S": "comminutioncraft:accelerator_segment"
+  },
+  "pattern": [
+    " F ",
+    "PSC",
+    " F "
+  ],
+  "result": {
+    "id": "comminutioncraft:accelerator_port"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_accelerator_segment": {
+      "conditions": {
+        "items": [
+          {
+            "items": "comminutioncraft:accelerator_segment"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "comminutioncraft:accelerator_controller"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_accelerator_segment"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "comminutioncraft:accelerator_controller"
+    ]
+  }
+}

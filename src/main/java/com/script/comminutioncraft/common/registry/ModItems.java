@@ -107,6 +107,9 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> SOARYN_CHEST = ITEMS.registerSimpleBlockItem("soaryn_chest", ModBlocks.SOARYN_CHEST);
     public static final DeferredItem<BlockItem> CONTAINMENT_CELL = ITEMS.registerSimpleBlockItem("containment_cell", ModBlocks.CONTAINMENT_CELL);
     public static final DeferredItem<BlockItem> MAGNETIC_CONDUIT = ITEMS.registerSimpleBlockItem("magnetic_conduit", ModBlocks.MAGNETIC_CONDUIT);
+    public static final DeferredItem<BlockItem> ACCELERATOR_SEGMENT = ITEMS.registerSimpleBlockItem("accelerator_segment", ModBlocks.ACCELERATOR_SEGMENT);
+    public static final DeferredItem<BlockItem> ACCELERATOR_PORT = ITEMS.registerSimpleBlockItem("accelerator_port", ModBlocks.ACCELERATOR_PORT);
+    public static final DeferredItem<BlockItem> ACCELERATOR_CONTROLLER = ITEMS.registerSimpleBlockItem("accelerator_controller", ModBlocks.ACCELERATOR_CONTROLLER);
     public static final DeferredItem<BlockItem> PLASMA_CABLE = ITEMS.registerSimpleBlockItem("plasma_cable", ModBlocks.PLASMA_CABLE);
     public static final DeferredItem<BlockItem> FLUID_PIPE = ITEMS.registerSimpleBlockItem("fluid_pipe", ModBlocks.FLUID_PIPE);
     public static final DeferredItem<BlockItem> FLUID_TANK = ITEMS.registerSimpleBlockItem("fluid_tank", ModBlocks.FLUID_TANK);

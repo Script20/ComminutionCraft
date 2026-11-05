@@ -20,6 +20,7 @@ import com.script.comminutioncraft.common.machine.PelletPressBlockEntity;
 import com.script.comminutioncraft.common.machine.TritiumBreederBlockEntity;
 import com.script.comminutioncraft.common.machine.FusionReactorBlockEntity;
 import com.script.comminutioncraft.common.machine.ReactorPortBlockEntity;
+import com.script.comminutioncraft.common.machine.ParticleAcceleratorBlockEntity;
 import com.script.comminutioncraft.common.machine.OrePurifierBlockEntity;
 import com.script.comminutioncraft.common.machine.CreativeFluidTankBlockEntity;
 import com.script.comminutioncraft.common.machine.CreativeFluidTankMenu;
@@ -143,6 +144,8 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("granulator_takes_purified_ore", () -> ModGameTests::granulatorTakesPurifiedOre);
         TEST_FUNCTIONS.register("creative_battery_powers_every_side", () -> ModGameTests::creativeBatteryPowersEverySide);
         TEST_FUNCTIONS.register("creative_tank_fills_and_stays_full", () -> ModGameTests::creativeTankFillsAndStaysFull);
+        TEST_FUNCTIONS.register("accelerator_ring_forms_and_unforms", () -> ModGameTests::acceleratorRingFormsAndUnforms);
+        TEST_FUNCTIONS.register("accelerator_makes_antimatter", () -> ModGameTests::acceleratorMakesAntimatter);
     }
 
     public static void registerTests(RegisterGameTestsEvent event) {
@@ -1097,7 +1100,78 @@ public final class ModGameTests {
         });
     }
 
+    /**
+     * A 5x5 ring forms; a missing corner unforms it; an extra segment touching the inside of the ring keeps it unformed;
+     * taking that away forms it again.
+     */
+    private static void acceleratorRingFormsAndUnforms(GameTestHelper helper) {
+        ParticleAcceleratorBlockEntity accelerator = buildAccelerator(helper);
+        BlockPos corner = new BlockPos(0, 1, 0);
+        BlockPos inside = new BlockPos(1, 1, 1);
+        int wait = ParticleAcceleratorBlockEntity.FORM_CHECK_INTERVAL + 2;
+        helper.runAfterDelay(2, () -> {
+            helper.assertTrue(accelerator.isFormed() && accelerator.getRingSide() == 5,
+                    "The 5x5 ring didn't form (side " + accelerator.getRingSide() + ")");
+            helper.setBlock(corner, Blocks.AIR);
+            helper.runAfterDelay(wait, () -> {
+                helper.assertTrue(!accelerator.isFormed(), "The ring stayed formed with a corner missing");
+                helper.setBlock(corner, ModBlocks.ACCELERATOR_SEGMENT.get());
+                helper.setBlock(inside, ModBlocks.ACCELERATOR_SEGMENT.get());
+                helper.runAfterDelay(wait, () -> {
+                    helper.assertTrue(!accelerator.isFormed(), "A segment touching the inside of the ring should break it");
+                    helper.setBlock(inside, Blocks.AIR);
+                    helper.runAfterDelay(wait, () -> {
+                        helper.assertTrue(accelerator.isFormed(), "The ring should form again");
+                        helper.succeed();
+                    });
+                });
+            });
+        });
+    }
+
+    /**
+     * A 5x5 ring fed through its port (FE from a Creative Energy Battery above, hydrogen from a Creative Fluid Tank
+     * inside the ring) makes antimatter and pushes it out of the port's bottom (Output) face into a Containment Cell;
+     * the ring glows while it runs.
+     */
+    private static void acceleratorMakesAntimatter(GameTestHelper helper) {
+        ParticleAcceleratorBlockEntity accelerator = buildAccelerator(helper);
+        BlockPos port = new BlockPos(0, 1, 2);
+        helper.setBlock(port.below(), ModBlocks.CONTAINMENT_CELL.get());
+        helper.setBlock(port.above(), ModBlocks.CREATIVE_ENERGY_BATTERY.get());
+        helper.setBlock(port.east(), ModBlocks.CREATIVE_FLUID_TANK.get());
+        CreativeFluidTankBlockEntity creative = helper.getBlockEntity(port.east(), CreativeFluidTankBlockEntity.class);
+        CreativeFluidTankMenu menu = new CreativeFluidTankMenu(0, helper.makeMockPlayer(GameType.CREATIVE).getInventory(), creative,
+                new SimpleContainerData(CreativeFluidTankBlockEntity.DATA_COUNT));
+        int hydrogen = CreativeFluidTankBlockEntity.fluids().indexOf(ModFluids.HYDROGEN.get()) + 1;
+        helper.assertTrue(hydrogen > 0 && menu.clickMenuButton(helper.makeMockPlayer(GameType.CREATIVE), hydrogen), "The picker refused hydrogen");
+        var cell = helper.getBlockEntity(port.below(), com.script.comminutioncraft.common.machine.ContainmentCellBlockEntity.class).getTank();
+        helper.succeedWhen(() -> {
+            helper.assertTrue(cell.getAmount() >= 2 && ModFluids.isAntimatter(cell.getFluid()),
+                    "Expected antimatter in the cell, has " + cell.getStack() + " (accelerator: " + accelerator.getStatus() + ")");
+            helper.assertTrue(helper.getBlockState(new BlockPos(1, 1, 0)).getValue(MachineBlock.LIT), "The ring should glow while running");
+        });
+    }
+
     // ---- Helpers ----
+
+    /**
+     * Builds a 5x5 Particle Accelerator ring at x 0-4, y 1, z 0-4: segments, the controller in the middle of the south
+     * side (facing south) and a port in the middle of the west side (default sides: bottom Output, rest Input).
+     */
+    private static ParticleAcceleratorBlockEntity buildAccelerator(GameTestHelper helper) {
+        for (int x = 0; x < 5; x++) {
+            for (int z = 0; z < 5; z++) {
+                if (x == 0 || x == 4 || z == 0 || z == 4) {
+                    helper.setBlock(new BlockPos(x, 1, z), ModBlocks.ACCELERATOR_SEGMENT.get());
+                }
+            }
+        }
+        BlockPos controller = new BlockPos(2, 1, 4);
+        helper.setBlock(controller, ModBlocks.ACCELERATOR_CONTROLLER.get().defaultBlockState().setValue(MachineBlock.FACING, Direction.SOUTH));
+        helper.setBlock(new BlockPos(0, 1, 2), ModBlocks.ACCELERATOR_PORT.get());
+        return helper.getBlockEntity(controller, ParticleAcceleratorBlockEntity.class);
+    }
 
     /**
      * Builds a 3x3x3 Fusion Reactor at x 1-3, y 0-2, z 1-3 (it replaces part of the floor): casing frame, glass in

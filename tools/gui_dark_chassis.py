@@ -557,6 +557,34 @@ def ore_purifier_sheet():
     return s.img
 
 
+ANTIMATTER = dict(off=(86, 90, 104), on=(214, 228, 255), hi=(255, 255, 255))
+ANTIMATTER_FLUID = [(40, 50, 92), (110, 130, 200), (190, 206, 245), (246, 250, 255)]
+
+
+def accelerator_sheet():
+    """Particle Accelerator controller: energy left, hydrogen (x 141) and antimatter (x 155) tubes, status text from
+    x 30, a beam-progress bar well at (29, 55)-(108, 61) with its fill sprite at (176, 90), 78x5. Antimatter fill
+    sprite at (246, 31)."""
+    s = Sheet()
+    body(s)
+    energy_well(s)
+    gauge_well(s, 141)
+    gauge_well(s, 155)
+    x0, y0, x1, y1 = 29, 55, 108, 61
+    s.rect(x0, y0, x1, y1, GLASS)
+    s.hline(x0, x1, y0, K['o']); s.vline(x0, y0, y1, K['o'])
+    s.hline(x0, x1, y1, K['hi']); s.vline(x1, y0, y1, K['hi'])
+    player_inventory(s)
+    energy_sprite(s)
+    all_fluid_sprites(s)
+    fluid_sprite(s, 246, ANTIMATTER_FLUID)
+    for x in range(78):
+        for y in range(5):
+            c = mix(ANTIMATTER['off'], ANTIMATTER['on'], x / 70) if x < 70 else mix(ANTIMATTER['on'], ANTIMATTER['hi'], (x - 70) / 7)
+            s.px(176 + x, 90 + y, shade(c, 0.8) if y in (0, 4) else c)
+    return s.img
+
+
 def creative_tank_sheet():
     """Creative Fluid Tank: 8 fluid buttons (4 x 2 at (12 + 22c, 20 + 22r), 18x18), a fluid tube at x 155, inventory.
     The screen draws each fluid's own sprite in the buttons and the tube."""
@@ -588,6 +616,8 @@ pellet_press_sheet().save(os.path.join(OUT, 'pellet_press.png'))
 fusion_reactor_sheet().save(os.path.join(OUT, 'reactor_controller.png'))
 ore_purifier_sheet().save(os.path.join(OUT, 'ore_purifier.png'))
 creative_tank_sheet().save(os.path.join(OUT, 'creative_fluid_tank.png'))
+# tier 5 (antimatter), phase 5A
+accelerator_sheet().save(os.path.join(OUT, 'accelerator_controller.png'))
 tier3_sheet(plasma_granulator_arrow).save(os.path.join(OUT, 'plasma_granulator.png'))
 tier3_sheet(smelter_arrow).save(os.path.join(OUT, 'plasma_smelter.png'))
 plasma_machine_sheet(plasma_granulator_arrow).save(os.path.join(OUT, 'circuit_assembler.png'))

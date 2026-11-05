@@ -469,6 +469,38 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_fusion_circuit", has(ModItems.FUSION_CIRCUIT.get()))
                 .save(output, key("magnetic_conduit"));
 
+        // The Particle Accelerator: magnet coils (copper blocks) round a Magnetic Conduit beam tube
+        shaped(RecipeCategory.MISC, ModItems.ACCELERATOR_SEGMENT.get(), 8)
+                .pattern("PCP")
+                .pattern("CMC")
+                .pattern("PCP")
+                .define('P', ModItems.REACTOR_PLATING.get())
+                .define('C', tag(ProcessedMetal.commonItemTag("storage_blocks/copper")))
+                .define('M', ModItems.MAGNETIC_CONDUIT.get())
+                .unlockedBy("has_magnetic_conduit", has(ModItems.MAGNETIC_CONDUIT.get()))
+                .save(output, key("accelerator_segment"));
+
+        shaped(RecipeCategory.MISC, ModItems.ACCELERATOR_PORT.get())
+                .pattern(" F ")
+                .pattern("PSC")
+                .pattern(" F ")
+                .define('F', ModItems.FUSION_CIRCUIT.get())
+                .define('P', ModItems.FLUID_PIPE.get())
+                .define('S', ModItems.ACCELERATOR_SEGMENT.get())
+                .define('C', ModItems.FUSION_CABLE.get())
+                .unlockedBy("has_accelerator_segment", has(ModItems.ACCELERATOR_SEGMENT.get()))
+                .save(output, key("accelerator_port"));
+
+        shaped(RecipeCategory.MISC, ModItems.ACCELERATOR_CONTROLLER.get())
+                .pattern("FSF")
+                .pattern("SXS")
+                .pattern("FSF")
+                .define('F', ModItems.FUSION_CIRCUIT.get())
+                .define('S', ModItems.ACCELERATOR_SEGMENT.get())
+                .define('X', ModItems.CONTAINMENT_CELL.get())
+                .unlockedBy("has_accelerator_segment", has(ModItems.ACCELERATOR_SEGMENT.get()))
+                .save(output, key("accelerator_controller"));
+
         shaped(RecipeCategory.MISC, ModItems.AIR_FILTER.get())
                 .pattern(" P ")
                 .pattern("PCP")

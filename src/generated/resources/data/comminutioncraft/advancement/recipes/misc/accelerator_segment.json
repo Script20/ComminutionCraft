@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_magnetic_conduit": {
+      "conditions": {
+        "items": [
+          {
+            "items": "comminutioncraft:magnetic_conduit"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "comminutioncraft:accelerator_segment"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_magnetic_conduit"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "comminutioncraft:accelerator_segment"
+    ]
+  }
+}

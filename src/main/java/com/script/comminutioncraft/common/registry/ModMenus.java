@@ -95,6 +95,9 @@ public final class ModMenus {
     public static final DeferredHolder<MenuType<?>, MenuType<OrePurifierMenu>> ORE_PURIFIER =
             MENUS.register("ore_purifier", () -> new MenuType<>(OrePurifierMenu::client, FeatureFlags.VANILLA_SET));
 
+    public static final DeferredHolder<MenuType<?>, MenuType<com.script.comminutioncraft.common.machine.ParticleAcceleratorMenu>> PARTICLE_ACCELERATOR =
+            MENUS.register("accelerator_controller", () -> new MenuType<>(com.script.comminutioncraft.common.machine.ParticleAcceleratorMenu::client, FeatureFlags.VANILLA_SET));
+
     public static final DeferredHolder<MenuType<?>, MenuType<CreativeFluidTankMenu>> CREATIVE_FLUID_TANK =
             MENUS.register("creative_fluid_tank", () -> new MenuType<>(CreativeFluidTankMenu::client, FeatureFlags.VANILLA_SET));
 

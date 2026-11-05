@@ -70,6 +70,7 @@ public class ComminutionCraftClient {
         event.register(ModMenus.ISOTOPE_SEPARATOR.get(), FluidMachineScreen::isotopeSeparator);
         event.register(ModMenus.TRITIUM_BREEDER.get(), FluidMachineScreen::tritiumBreeder);
         event.register(ModMenus.FUSION_REACTOR.get(), FusionReactorScreen::new);
+        event.register(ModMenus.PARTICLE_ACCELERATOR.get(), com.script.comminutioncraft.client.gui.ParticleAcceleratorScreen::new);
         event.register(ModMenus.CREATIVE_FLUID_TANK.get(), CreativeFluidTankScreen::new);
         event.<ElectricMachineMenu, OrePurifierScreen>register(ModMenus.ORE_PURIFIER.get(),
                 (menu, inventory, title) -> new OrePurifierScreen((OrePurifierMenu) menu, inventory, title));

@@ -124,6 +124,13 @@ public class ComminutionCraft {
         event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.FUSION_REACTOR.get(),
                 (reactor, side) -> side == null ? reactor.getEnergy() : null);
         event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.FUSION_ENERGY_BATTERY.get(), EnergyBatteryBlockEntity::getEnergyHandler);
+        // Tier 5 Particle Accelerator: like the reactor, through its ports (the controller answers only "no side")
+        event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.ACCELERATOR_PORT.get(), com.script.comminutioncraft.common.machine.AcceleratorPortBlockEntity::getFluidHandler);
+        event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.ACCELERATOR_PORT.get(), com.script.comminutioncraft.common.machine.AcceleratorPortBlockEntity::getEnergyHandler);
+        event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.PARTICLE_ACCELERATOR.get(),
+                (accelerator, side) -> side == null ? accelerator.getTanks() : null);
+        event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.PARTICLE_ACCELERATOR.get(),
+                (accelerator, side) -> side == null ? accelerator.getEnergy() : null);
         // Creative blocks: endless FE / fluid out of every face
         event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.CREATIVE_ENERGY_BATTERY.get(),
                 (battery, side) -> CreativeEnergyBatteryBlockEntity.ENDLESS);

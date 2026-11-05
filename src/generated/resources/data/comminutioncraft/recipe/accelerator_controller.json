@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "F": "comminutioncraft:fusion_circuit",
+    "S": "comminutioncraft:accelerator_segment",
+    "X": "comminutioncraft:containment_cell"
+  },
+  "pattern": [
+    "FSF",
+    "SXS",
+    "FSF"
+  ],
+  "result": {
+    "id": "comminutioncraft:accelerator_controller"
+  }
+}

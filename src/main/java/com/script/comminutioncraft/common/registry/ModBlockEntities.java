@@ -141,5 +141,13 @@ public final class ModBlockEntities {
             BLOCK_ENTITY_TYPES.register("containment_cell",
                     () -> new BlockEntityType<>(com.script.comminutioncraft.common.machine.ContainmentCellBlockEntity::new, ModBlocks.CONTAINMENT_CELL.get()));
 
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.script.comminutioncraft.common.machine.ParticleAcceleratorBlockEntity>> PARTICLE_ACCELERATOR =
+            BLOCK_ENTITY_TYPES.register("particle_accelerator",
+                    () -> new BlockEntityType<>(com.script.comminutioncraft.common.machine.ParticleAcceleratorBlockEntity::new, ModBlocks.ACCELERATOR_CONTROLLER.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.script.comminutioncraft.common.machine.AcceleratorPortBlockEntity>> ACCELERATOR_PORT =
+            BLOCK_ENTITY_TYPES.register("accelerator_port",
+                    () -> new BlockEntityType<>(com.script.comminutioncraft.common.machine.AcceleratorPortBlockEntity::new, ModBlocks.ACCELERATOR_PORT.get()));
+
     private ModBlockEntities() {}
 }

@@ -42,6 +42,10 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.REACTOR_CASING.get());
                         output.accept(ModItems.REACTOR_GLASS.get());
                         output.accept(ModItems.REACTOR_PORT.get());
+                        // Particle accelerator
+                        output.accept(ModItems.ACCELERATOR_CONTROLLER.get());
+                        output.accept(ModItems.ACCELERATOR_SEGMENT.get());
+                        output.accept(ModItems.ACCELERATOR_PORT.get());
                         // Fuel and parts
                         output.accept(ModItems.ISOTOPE_SEPARATOR.get());
                         output.accept(ModItems.TRITIUM_BREEDER.get());

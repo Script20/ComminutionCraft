@@ -112,6 +112,16 @@ public final class MachineConfig {
     public static final ConfigInt FUSION_REACTOR_MAX_ENERGY_OUTPUT;
     public static final ConfigInt FUSION_REACTOR_TANK_CAPACITY;
     public static final ConfigInt FUSION_REACTOR_PORT_TRITIUM_OUTPUT;
+    public static final ConfigInt ACCELERATOR_ENERGY_PER_RING_BLOCK;
+    public static final ConfigInt ACCELERATOR_RING_TICKS_PER_MB;
+    public static final ConfigInt ACCELERATOR_HYDROGEN_PER_MB;
+    public static final ConfigInt ACCELERATOR_MIN_RING_SIDE;
+    public static final ConfigInt ACCELERATOR_MAX_RING_SIDE;
+    public static final ConfigInt ACCELERATOR_ENERGY_CAPACITY;
+    public static final ConfigInt ACCELERATOR_MAX_ENERGY_INPUT;
+    public static final ConfigInt ACCELERATOR_HYDROGEN_CAPACITY;
+    public static final ConfigInt ACCELERATOR_ANTIMATTER_CAPACITY;
+    public static final ConfigInt ACCELERATOR_PORT_ANTIMATTER_OUTPUT;
 
     public static final ModConfigSpec SPEC;
 
@@ -268,6 +278,19 @@ public final class MachineConfig {
         FUSION_REACTOR_TANK_CAPACITY = integer(builder, "fusion_reactor", "tankCapacity", "Tank capacity", "Plasma and tritium tanks, mB each", 8_000);
         FUSION_REACTOR_PORT_TRITIUM_OUTPUT = integer(builder, "fusion_reactor", "portTritiumOutput", "Port tritium output", "Max mB of tritium per tick pushed out of each port", 500);
         builder.pop();
+
+        section(builder, "particle_accelerator", "Particle Accelerator");
+        ACCELERATOR_ENERGY_PER_RING_BLOCK = integer(builder, "particle_accelerator", "energyPerRingBlock", "Energy per ring block", "FE per tick per block of the ring while running (a 7x7 ring has 24)", 333);
+        ACCELERATOR_RING_TICKS_PER_MB = integer(builder, "particle_accelerator", "ringTicksPerMb", "Ring block ticks per mB", "Each ring block adds 1 per tick; this much makes 1 mB of antimatter (480: a 7x7 ring makes 1 mB per second)", 480);
+        ACCELERATOR_HYDROGEN_PER_MB = integer(builder, "particle_accelerator", "hydrogenPerMb", "Hydrogen per mB", "mB of hydrogen used per mB of antimatter", 100);
+        ACCELERATOR_MIN_RING_SIDE = integer(builder, "particle_accelerator", "minRingSide", "Smallest ring", "Smallest ring side, in blocks (3 at least)", 5);
+        ACCELERATOR_MAX_RING_SIDE = integer(builder, "particle_accelerator", "maxRingSide", "Biggest ring", "Biggest ring side, in blocks", 15);
+        ACCELERATOR_ENERGY_CAPACITY = integer(builder, "particle_accelerator", "energyCapacity", "Energy capacity", "FE buffer", 1_000_000);
+        ACCELERATOR_MAX_ENERGY_INPUT = integer(builder, "particle_accelerator", "maxEnergyInput", "Max energy input", "Max FE per insert through a port", 40_000);
+        ACCELERATOR_HYDROGEN_CAPACITY = integer(builder, "particle_accelerator", "hydrogenCapacity", "Hydrogen capacity", "Hydrogen tank, mB", 16_000);
+        ACCELERATOR_ANTIMATTER_CAPACITY = integer(builder, "particle_accelerator", "antimatterCapacity", "Antimatter capacity", "Antimatter tank, mB (pipe it into a Containment Cell)", 1_000);
+        ACCELERATOR_PORT_ANTIMATTER_OUTPUT = integer(builder, "particle_accelerator", "portAntimatterOutput", "Port antimatter output", "Max mB of antimatter per tick pushed out of each port", 1_000);
+        builder.pop();
         SPEC = builder.build();
     }
 
@@ -287,7 +310,7 @@ public final class MachineConfig {
     /** Times, sizes and ratios the code divides by can't be 0; costs, outputs and rates can (0 = free / none). */
     private static boolean atLeastOne(String key) {
         for (String part : new String[] {"processTime", "apacity", "energyPerMb", "energyPerHydrogen", "waterPerHydrogen",
-                "waterPerDeuterium", "waterPerFilterWear", "pelletBurnTicks", "ignitionPlasmaPerTick"}) {
+                "waterPerDeuterium", "waterPerFilterWear", "pelletBurnTicks", "ignitionPlasmaPerTick", "TicksPerMb", "RingSide"}) {
             if (key.contains(part)) {
                 return true;
             }
