@@ -158,37 +158,49 @@ def air_filter():
 
 # ================================================================ Fluid Pipe (same sheet layout as the cable)
 def pipe_sheet():
+    """Dark Chassis pipe with a blue glass window along the tube, casing-grey collars and bolts (design/previews/
+    fluid_pipe_preview.py option_b2, owner-approved 2026-11-05). UVs: core 6x6 at (0,0), plate 8x8 at (8,0), tube
+    strip 16x4 at y 8 with a collar every 4th texel (a 5-long arm reads collar-tube-tube-tube-collar either way round)."""
     img = Image.new('RGBA', (16, 16), (0, 0, 0, 0))
+    water = [(24, 60, 112), (40, 96, 168), (70, 140, 210), (150, 200, 240)]
+    bolt = (96, 101, 112)
 
     def px(x, y, c):
-        img.putpixel((x, y), tuple(c[:3]) + (255,))
+        img.putpixel((x, y), tuple(int(v) for v in c[:3]) + (255,))
 
-    for y in range(6):  # core: steel junction box with bolts
+    for y in range(6):  # core: casing box, four bolts, a blue glass eye
         for x in range(6):
-            edge = x in (0, 5) or y in (0, 5)
-            px(x, y, STEEL[0] if edge else mix(STEEL[3], STEEL[1], y / 5))
+            c = mix(K['l'], K['m'], y / 5)
+            if x == 0 or y == 0:
+                c = K['hi']
+            if x == 5 or y == 5:
+                c = K['o']
+            px(x, y, c)
     for (x, y) in ((1, 1), (4, 1), (1, 4), (4, 4)):
-        px(x, y, STEEL[4])
-    for y in range(8):  # flange plate with four bolts and a dark port
+        px(x, y, bolt)
+    for (x, y), c in zip(((2, 2), (3, 2), (2, 3), (3, 3)), (water[3], water[2], water[2], water[1])):
+        px(x, y, c)
+    for y in range(8):  # connector plate: casing flange, four bolts, a dark port with a glint
         for x in range(8):
-            c = mix(STEEL[3], STEEL[1], y / 7)
-            if y == 0 or x == 0:
-                c = STEEL[4]
-            if y == 7 or x == 7:
-                c = STEEL[0]
+            c = mix(K['l'], K['d'], y / 7)
+            if x == 0 or y == 0:
+                c = K['hi']
+            if x == 7 or y == 7:
+                c = K['o']
             px(8 + x, y, c)
     for (x, y) in ((1, 1), (6, 1), (1, 6), (6, 6)):
-        px(8 + x, y, K['o'])
+        px(8 + x, y, bolt)
     for y in range(2, 6):
         for x in range(2, 6):
-            px(8 + x, y, (18, 20, 24) if x not in (2, 5) and y not in (2, 5) else STEEL[0])
-    rows = [STEEL[3], (26, 28, 34), (20, 22, 26), STEEL[0]]  # tube: steel rim, dark glass, shadow
+            px(8 + x, y, K['o'] if x in (2, 5) or y in (2, 5) else (14, 18, 26))
+    px(8 + 3, 3, water[3])
+    rows = [K['l'], water[2], water[1], K['o']]  # tube: casing rim, blue glass (two rows), shadow
+    collar = [K['hi'], K['l'], K['m'], K['d']]
     for x in range(16):
-        for y, c in enumerate(rows):
-            if x % 8 in (0, 1):
-                c = STEEL[4] if y == 0 else (STEEL[2] if y < 3 else STEEL[0])  # clamp rings
-            elif y == 1 and x % 8 == 4:
-                c = (120, 128, 140)  # glint
+        for y in range(4):
+            c = collar[y] if x % 4 == 0 else rows[y]
+            if x % 4 == 2 and y == 1:
+                c = water[3]  # glint
             px(x, 8 + y, c)
     return img
 
