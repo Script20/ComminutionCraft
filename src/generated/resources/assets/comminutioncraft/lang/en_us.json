@@ -227,6 +227,12 @@
   "key.comminutioncraft.wrench_mode": "Switch Wrench Mode",
   "message.comminutioncraft.wrench.cable_cut": "Cable connection cut",
   "message.comminutioncraft.wrench.cable_restored": "Cable connection restored",
+  "tooltip.comminutioncraft.cable_rate": "Carries up to %s FE/t per network",
+  "tooltip.comminutioncraft.creative_battery": "Endless FE out of every face",
+  "tooltip.comminutioncraft.creative_tank": "Endless fluid of the kind picked in its GUI",
   "tooltip.comminutioncraft.machine_settings": "Keeps its side and redstone settings",
-  "tooltip.comminutioncraft.stored_fluid": "%s: %s mB"
+  "tooltip.comminutioncraft.pipe_rate": "Carries up to %s mB per transfer",
+  "tooltip.comminutioncraft.plasma_only": "Plasma only",
+  "tooltip.comminutioncraft.stored_fluid": "%s: %s mB",
+  "tooltip.comminutioncraft.tank_capacity": "Holds %s mB of one fluid"
 }
