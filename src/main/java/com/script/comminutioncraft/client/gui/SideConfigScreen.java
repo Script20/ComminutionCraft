@@ -26,8 +26,8 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * Side configuration: the machine drawn as a cube with its own textures, each face tinted by its {@link SideMode}.
- * Left-click a face to cycle Input / Output / None; right-drag to turn the cube (a right-click without dragging turns
- * it a quarter). Changes go to the server as menu button clicks, so the parent machine menu stays open throughout.
+ * Left-click a face to cycle Input / Output / None; hold the right button and drag to turn the cube (a plain
+ * right-click does nothing). Changes go to the server as menu button clicks, so the parent machine menu stays open throughout.
  * <p>
  * Each visible face of an orthographically projected cube is a parallelogram, i.e. an affine image of the square
  * texture, so faces are drawn with a 2D affine pose and picked by inverting that same mapping.
@@ -81,7 +81,6 @@ public class SideConfigScreen extends Screen {
     private float yaw = 35;
     private float pitch = 25;
     private boolean rotating;
-    private double dragDistance;
 
     public <M extends AbstractContainerMenu & ControllableMenu> SideConfigScreen(Screen parent, M menu, int accent) {
         super(Component.translatable("gui.comminutioncraft.side_config"));
@@ -295,7 +294,6 @@ public class SideConfigScreen extends Screen {
             }
         } else if (event.button() == 1) {
             rotating = true;
-            dragDistance = 0;
             return true;
         }
         return super.mouseClicked(event, doubleClick);
@@ -306,7 +304,6 @@ public class SideConfigScreen extends Screen {
         if (rotating && event.button() == 1) {
             yaw = Mth.wrapDegrees(yaw + (float) dx * 1.5F);
             pitch = Mth.clamp(pitch + (float) dy * 1.5F, -85, 85);
-            dragDistance += Math.abs(dx) + Math.abs(dy);
             return true;
         }
         return super.mouseDragged(event, dx, dy);
@@ -316,10 +313,6 @@ public class SideConfigScreen extends Screen {
     public boolean mouseReleased(MouseButtonEvent event) {
         if (rotating && event.button() == 1) {
             rotating = false;
-            if (dragDistance < 2) {
-                // A plain right-click turns the machine a quarter.
-                yaw = Mth.wrapDegrees(yaw + 90);
-            }
             return true;
         }
         return super.mouseReleased(event);
