@@ -195,9 +195,11 @@ public class ComminutionJeiPlugin implements IModPlugin {
         return new FluidMachinePage(pageType(name), machine, new FluidConversionCategory.Conversion(in, out, line));
     }
 
-    /** A generator's page: fluid in, FE out. */
-    private static FluidMachinePage generatorPage(String name, ItemLike machine, List<FluidConversionCategory.Amount> in, Component line) {
-        return new FluidMachinePage(pageType(name), machine, new FluidConversionCategory.Conversion(in, List.of(), line, true));
+    /** A generator's page: fluid in, FE out, with "X FE per mB" and its rate on two lines. */
+    private static FluidMachinePage generatorPage(String name, ItemLike machine, List<FluidConversionCategory.Amount> in,
+                                                  int energyPerMb, Component rate) {
+        Component perMb = Component.translatable("jei.comminutioncraft.generator.per_mb", String.format(java.util.Locale.ROOT, "%,d", energyPerMb));
+        return new FluidMachinePage(pageType(name), machine, new FluidConversionCategory.Conversion(in, List.of(), List.of(perMb, rate), true));
     }
 
     private static List<FluidMachinePage> fluidMachinePages() {
@@ -220,14 +222,14 @@ public class ComminutionJeiPlugin implements IModPlugin {
                         Component.translatable("jei.comminutioncraft.fe_per_mb", PlasmaGeneratorBlockEntity.ENERGY_PER_MB.get(),
                                 PlasmaGeneratorBlockEntity.MAX_PLASMA_PER_TICK.get())),
                 generatorPage("mhd_generator", ModItems.MHD_GENERATOR.get(),
-                        List.of(new FluidConversionCategory.Amount(ModFluids.PLASMA.get(), 1)),
-                        Component.translatable("jei.comminutioncraft.mhd.line", MhdGeneratorBlockEntity.ENERGY_PER_MB.get(),
-                                MhdGeneratorBlockEntity.ENERGY_PER_MB.get() * MhdGeneratorBlockEntity.MAX_PLASMA_PER_TICK.get())),
+                        List.of(new FluidConversionCategory.Amount(ModFluids.PLASMA.get(), 1)), MhdGeneratorBlockEntity.ENERGY_PER_MB.get(),
+                        Component.translatable("jei.comminutioncraft.generator.up_to", String.format(java.util.Locale.ROOT, "%,d",
+                                MhdGeneratorBlockEntity.ENERGY_PER_MB.get() * MhdGeneratorBlockEntity.MAX_PLASMA_PER_TICK.get()))),
                 generatorPage("annihilation_generator", ModItems.ANNIHILATION_GENERATOR.get(),
                         List.of(new FluidConversionCategory.Amount(ModFluids.ANTIMATTER.get(), 1)),
-                        Component.translatable("jei.comminutioncraft.annihilation.line",
-                                String.format(java.util.Locale.ROOT, "%,d", com.script.comminutioncraft.common.machine.AnnihilationGeneratorBlockEntity.ENERGY_PER_MB.get()),
-                                String.format(java.util.Locale.ROOT, "%,d", com.script.comminutioncraft.common.machine.AnnihilationGeneratorBlockEntity.energyPerTick()))),
+                        com.script.comminutioncraft.common.machine.AnnihilationGeneratorBlockEntity.ENERGY_PER_MB.get(),
+                        Component.translatable("jei.comminutioncraft.generator.while_burning", String.format(java.util.Locale.ROOT, "%,d",
+                                com.script.comminutioncraft.common.machine.AnnihilationGeneratorBlockEntity.energyPerTick()))),
                 page("isotope_separator", ModItems.ISOTOPE_SEPARATOR.get(),
                         List.of(new FluidConversionCategory.Amount(Fluids.WATER, IsotopeSeparatorBlockEntity.WATER_PER_MB.get())),
                         List.of(new FluidConversionCategory.Amount(ModFluids.DEUTERIUM.get(), 1)),

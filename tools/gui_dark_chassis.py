@@ -616,6 +616,32 @@ def antimatter_sheet(arrow_colour, gauges=(), byproduct=False):
     return s.img
 
 
+ENERGY_RED = [(90, 10, 14), (150, 20, 24), (214, 40, 38), (255, 96, 80), (255, 178, 160)]
+BOLT = [(255, 214, 90), (255, 246, 200)]
+
+
+def jei_energy_icon():
+    """16x16 FE icon for JEI's generator pages: a red energy fill (bright at the top, gauge bands) with a lightning bolt."""
+    img = Image.new('RGBA', (16, 16), (0, 0, 0, 0))
+    for y in range(16):
+        for x in range(16):
+            c = mix(ENERGY_RED[3], ENERGY_RED[2], y / 4) if y < 4 else mix(ENERGY_RED[2], ENERGY_RED[0], (y - 4) / 11)
+            if x in (0, 15):
+                c = shade(c, 0.7)
+            if y % 4 == 3:
+                c = shade(c, 0.8)
+            if y == 0:
+                c = ENERGY_RED[4]
+            img.putpixel((x, y), rgba(c))
+    bolt = [(9, 1), (8, 2), (9, 2), (7, 3), (8, 3), (6, 4), (7, 4), (5, 5), (6, 5), (5, 6), (6, 6), (7, 6), (8, 6), (9, 6),
+            (10, 6), (8, 7), (9, 7), (7, 8), (8, 8), (6, 9), (7, 9), (5, 10), (6, 10), (4, 11), (5, 11), (3, 12), (4, 12)]
+    for (x, y) in bolt:
+        img.putpixel((x, y), rgba(BOLT[0]))
+    for (x, y) in ((8, 3), (7, 4), (6, 5), (7, 6), (8, 6), (7, 8), (6, 9), (5, 10), (4, 11)):
+        img.putpixel((x, y), rgba(BOLT[1]))
+    return img
+
+
 def creative_tank_sheet():
     """Creative Fluid Tank: 8 fluid buttons (4 x 2 at (12 + 22c, 20 + 22r), 18x18), a fluid tube at x 155, inventory.
     The screen draws each fluid's own sprite in the buttons and the tube."""
@@ -664,4 +690,5 @@ tier3_sheet(plasma_granulator_arrow).save(os.path.join(OUT, 'plasma_granulator.p
 tier3_sheet(smelter_arrow).save(os.path.join(OUT, 'plasma_smelter.png'))
 plasma_machine_sheet(plasma_granulator_arrow).save(os.path.join(OUT, 'circuit_assembler.png'))
 ore_washer_sheet().save(os.path.join(OUT, 'ore_washer.png'))
+jei_energy_icon().save(os.path.join(OUT, '..', 'jei_energy.png'))
 print('ok')

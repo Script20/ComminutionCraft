@@ -39,7 +39,6 @@ public class ModLanguageProvider extends LanguageProvider {
         add("jei.comminutioncraft.time.ore_purifier", "Ore Purifier: %s");
         add("jei.comminutioncraft.chance", "%s%% chance");
         add("jei.comminutioncraft.fe_per_mb", "%s FE per mB · up to %s mB/t");
-        add("jei.comminutioncraft.mhd.line", "%s FE per mB · up to %s FE/t");
         add("jei.comminutioncraft.water_generator.line", "Water from the air, no FE");
         add("jei.comminutioncraft.water_generator.note", "1 mB/t per open face x the biome's humidity; x2 with an Air Filter");
         add("jei.comminutioncraft.byproduct_face", "Leaves through By-product faces");
@@ -75,8 +74,10 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModBlocks.ANTIMATTER_CABLE.get(), "Antimatter Cable");
         add(ModBlocks.ANTIMATTER_ENERGY_BATTERY.get(), "Antimatter Energy Battery");
         add(ModItems.ANTIMATTER_CIRCUIT.get(), "Antimatter Circuit");
-        add("jei.comminutioncraft.annihilation.line", "%s FE per mB · %s FE/t while burning");
         add("jei.comminutioncraft.energy_out", "Energy (FE)");
+        add("jei.comminutioncraft.generator.per_mb", "%s FE per mB");
+        add("jei.comminutioncraft.generator.up_to", "up to %s FE/t");
+        add("jei.comminutioncraft.generator.while_burning", "%s FE/t while burning");
         add("gui.comminutioncraft.reactor.not_formed", "Not formed");
         add("gui.comminutioncraft.reactor.running", "Running");
         add("gui.comminutioncraft.reactor.heating", "Heating: %s%%");
