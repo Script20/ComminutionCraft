@@ -153,12 +153,12 @@ public final class MachineConfig {
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
         section(builder, "cables", "Cables and pipes");
-        CABLES_ENERGY_CABLE = integer(builder, "cables", "energyCable", "Energy cable", "Energy Cable: FE per tick, per network", 320);
-        CABLES_FUSION_CABLE = integer(builder, "cables", "fusionCable", "Fusion cable", "Fusion Cable: FE per tick, per network", 16_000);
+        CABLES_ENERGY_CABLE = integer(builder, "cables", "energyCable", "Energy cable", "Energy Cable: FE per tick, per network", 1000);
+        CABLES_FUSION_CABLE = integer(builder, "cables", "fusionCable", "Fusion cable", "Fusion Cable: FE per tick, per network", 32_000);
+        CABLES_ANTIMATTER_CABLE = integer(builder, "cables", "antimatterCable", "Antimatter cable", "Antimatter Cable: FE per tick, per network", 128_000);
         CABLES_FLUID_PIPE = integer(builder, "cables", "fluidPipe", "Fluid pipe", "Fluid Pipe: mB per transfer", 1_000);
         CABLES_PLASMA_CABLE = integer(builder, "cables", "plasmaCable", "Plasma cable", "Plasma Cable: mB per transfer", 8_000);
         CABLES_MAGNETIC_CONDUIT = integer(builder, "cables", "magneticConduit", "Magnetic conduit", "Magnetic Conduit (antimatter only): mB per transfer", 1_000);
-        CABLES_ANTIMATTER_CABLE = integer(builder, "cables", "antimatterCable", "Antimatter cable", "Antimatter Cable: FE per tick, per network", 128_000);
         builder.pop();
         section(builder, "coal_granulator", "Coal Granulator");
         COAL_GRANULATOR_PROCESS_TIME = integer(builder, "coal_granulator", "processTime", "Process time", "Ticks per operation", 150);
