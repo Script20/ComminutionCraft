@@ -90,6 +90,11 @@ public final class ModTooltips {
             }
         } else if (block instanceof CreativeEnergyBatteryBlock) {
             lines.add(gray("tooltip.comminutioncraft.creative_battery"));
+        } else if (block instanceof com.script.comminutioncraft.common.machine.HorizonPortBlock) {
+            lines.add(gray("tooltip.comminutioncraft.horizon_port"));
+            lines.add(Component.translatable("tooltip.comminutioncraft.accelerator_port.switch").withStyle(ChatFormatting.DARK_GRAY));
+        } else if (block instanceof com.script.comminutioncraft.common.machine.HorizonControllerBlock) {
+            lines.add(Component.translatable("tooltip.comminutioncraft.horizon_controller").withStyle(ChatFormatting.GOLD));
         } else if (block instanceof com.script.comminutioncraft.common.machine.AcceleratorPortBlock) {
             lines.add(gray("tooltip.comminutioncraft.accelerator_port"));
             lines.add(Component.translatable("tooltip.comminutioncraft.accelerator_port.switch").withStyle(ChatFormatting.DARK_GRAY));

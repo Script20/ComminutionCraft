@@ -116,8 +116,9 @@ public class WrenchItem extends Item {
             if (!level.isClientSide()) {
                 boolean output = com.script.comminutioncraft.common.machine.AcceleratorPortBlock.toggle(level, pos);
                 if (context.getPlayer() != null) {
-                    context.getPlayer().sendOverlayMessage(Component.translatable(output
-                            ? "message.comminutioncraft.wrench.port_output" : "message.comminutioncraft.wrench.port_input"));
+                    String port = level.getBlockState(pos).getBlock() instanceof com.script.comminutioncraft.common.machine.HorizonPortBlock
+                            ? "horizon_port" : "port";
+                    context.getPlayer().sendOverlayMessage(Component.translatable("message.comminutioncraft.wrench." + port + (output ? "_output" : "_input")));
                 }
                 level.playSound(null, pos, SoundEvents.UI_BUTTON_CLICK.value(), SoundSource.BLOCKS, 0.4F, 1.2F);
             }

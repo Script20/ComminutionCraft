@@ -66,6 +66,7 @@ public class ComminutionCraft {
         ModGameTests.TEST_FUNCTIONS.register(modEventBus);
 
         modEventBus.addListener(this::registerCapabilities);
+        modEventBus.addListener(com.script.comminutioncraft.common.registry.ModDataMaps::register);
         modEventBus.addListener(ModGameTests::registerTests);
         modEventBus.addListener(SwitchWrenchModePayload::register);
 
@@ -129,6 +130,15 @@ public class ComminutionCraft {
         // Tier 5 Particle Accelerator: like the reactor, through its ports (the controller answers only "no side")
         event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.ACCELERATOR_PORT.get(), com.script.comminutioncraft.common.machine.AcceleratorPortBlockEntity::getFluidHandler);
         event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.ACCELERATOR_PORT.get(), com.script.comminutioncraft.common.machine.AcceleratorPortBlockEntity::getEnergyHandler);
+        // Tier 6 Event Horizon Reactor: through its ports (the controller answers "no side" and takes items from hoppers)
+        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.HORIZON_PORT.get(), com.script.comminutioncraft.common.machine.HorizonPortBlockEntity::getItemHandler);
+        event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.HORIZON_PORT.get(), com.script.comminutioncraft.common.machine.HorizonPortBlockEntity::getFluidHandler);
+        event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.HORIZON_PORT.get(), com.script.comminutioncraft.common.machine.HorizonPortBlockEntity::getEnergyHandler);
+        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.EVENT_HORIZON_REACTOR.get(), WorldlyContainerWrapper::new);
+        event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.EVENT_HORIZON_REACTOR.get(),
+                (reactor, side) -> side == null ? reactor.getTanks() : null);
+        event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.EVENT_HORIZON_REACTOR.get(),
+                (reactor, side) -> side == null ? reactor.getEnergy() : null);
         event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.PARTICLE_ACCELERATOR.get(),
                 (accelerator, side) -> side == null ? accelerator.getTanks() : null);
         event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.PARTICLE_ACCELERATOR.get(),

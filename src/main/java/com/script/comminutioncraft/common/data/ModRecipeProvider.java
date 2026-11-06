@@ -423,6 +423,36 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_antimatter_circuit", has(ModItems.ANTIMATTER_CIRCUIT.get()))
                 .save(output, key("froth_flotation_cell"));
 
+        // Tier 6: the Event Horizon Reactor
+        shaped(RecipeCategory.MISC, ModItems.CONTAINMENT_FRAME.get(), 8)
+                .pattern("PGP")
+                .pattern("GAG")
+                .pattern("PGP")
+                .define('P', ModItems.REACTOR_PLATING.get())
+                .define('G', tag(ProcessedMetal.commonItemTag("ingots/gold")))
+                .define('A', ModItems.ANTIMATTER_CIRCUIT.get())
+                .unlockedBy("has_antimatter_circuit", has(ModItems.ANTIMATTER_CIRCUIT.get()))
+                .save(output, key("containment_frame"));
+        shaped(RecipeCategory.MISC, ModItems.HORIZON_CONTROLLER.get())
+                .pattern("FAF")
+                .pattern("AXA")
+                .pattern("FAF")
+                .define('F', ModItems.CONTAINMENT_FRAME.get())
+                .define('A', ModItems.ANTIMATTER_CIRCUIT.get())
+                .define('X', ModItems.ANNIHILATION_GENERATOR.get())
+                .unlockedBy("has_containment_frame", has(ModItems.CONTAINMENT_FRAME.get()))
+                .save(output, key("horizon_controller"));
+        shaped(RecipeCategory.MISC, ModItems.HORIZON_PORT.get())
+                .pattern(" A ")
+                .pattern("MFC")
+                .pattern(" A ")
+                .define('A', ModItems.ANTIMATTER_CIRCUIT.get())
+                .define('M', ModItems.MAGNETIC_CONDUIT.get())
+                .define('F', ModItems.CONTAINMENT_FRAME.get())
+                .define('C', ModItems.ANTIMATTER_CABLE.get())
+                .unlockedBy("has_containment_frame", has(ModItems.CONTAINMENT_FRAME.get()))
+                .save(output, key("horizon_port"));
+
         // Tier 5 power: the Annihilation Generator, Antimatter Cable and Antimatter Energy Battery
         shaped(RecipeCategory.MISC, ModItems.ANNIHILATION_GENERATOR.get())
                 .pattern("PAP")

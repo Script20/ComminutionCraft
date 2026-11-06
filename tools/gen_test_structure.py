@@ -1,4 +1,5 @@
-"""Writes the GameTest structure: a 5x3x5 box with a stone floor and air above.
+"""Writes the GameTest structures: boxes with a stone floor and air above - floor_5x3x5 (most tests) and
+floor_9x10x9 (room for the 7x7x7 Event Horizon Reactor).
 
 Usage: python tools/gen_test_structure.py   (no third-party packages needed)
 
@@ -9,9 +10,8 @@ import os
 import struct
 
 DATA_VERSION = 4790  # Minecraft 26.1.2
-SIZE = (5, 3, 5)
-OUT = os.path.join(os.path.dirname(__file__), '..', 'src', 'main', 'resources',
-                   'data', 'comminutioncraft', 'structure', 'gametest', 'floor_5x3x5.nbt')
+DIR = os.path.join(os.path.dirname(__file__), '..', 'src', 'main', 'resources',
+                   'data', 'comminutioncraft', 'structure', 'gametest')
 
 TAG_END, TAG_INT, TAG_STRING, TAG_LIST, TAG_COMPOUND = 0, 3, 8, 9, 10
 
@@ -41,28 +41,33 @@ def compound(entries):
     return out + struct.pack('>b', TAG_END)
 
 
-palette = [
-    compound([(TAG_STRING, 'Name', string_tag('minecraft:stone'))]),
-    compound([(TAG_STRING, 'Name', string_tag('minecraft:air'))]),
-]
-blocks = []
-for y in range(SIZE[1]):
-    for z in range(SIZE[2]):
-        for x in range(SIZE[0]):
-            blocks.append(compound([
-                (TAG_LIST, 'pos', list_tag(TAG_INT, [int_tag(x), int_tag(y), int_tag(z)])),
-                (TAG_INT, 'state', int_tag(0 if y == 0 else 1)),
-            ]))
+def write(size):
+    palette = [
+        compound([(TAG_STRING, 'Name', string_tag('minecraft:stone'))]),
+        compound([(TAG_STRING, 'Name', string_tag('minecraft:air'))]),
+    ]
+    blocks = []
+    for y in range(size[1]):
+        for z in range(size[2]):
+            for x in range(size[0]):
+                blocks.append(compound([
+                    (TAG_LIST, 'pos', list_tag(TAG_INT, [int_tag(x), int_tag(y), int_tag(z)])),
+                    (TAG_INT, 'state', int_tag(0 if y == 0 else 1)),
+                ]))
 
-root = struct.pack('>b', TAG_COMPOUND) + name('') + compound([
-    (TAG_INT, 'DataVersion', int_tag(DATA_VERSION)),
-    (TAG_LIST, 'size', list_tag(TAG_INT, [int_tag(v) for v in SIZE])),
-    (TAG_LIST, 'palette', list_tag(TAG_COMPOUND, palette)),
-    (TAG_LIST, 'blocks', list_tag(TAG_COMPOUND, blocks)),
-    (TAG_LIST, 'entities', list_tag(TAG_END, [])),
-])
+    root = struct.pack('>b', TAG_COMPOUND) + name('') + compound([
+        (TAG_INT, 'DataVersion', int_tag(DATA_VERSION)),
+        (TAG_LIST, 'size', list_tag(TAG_INT, [int_tag(v) for v in size])),
+        (TAG_LIST, 'palette', list_tag(TAG_COMPOUND, palette)),
+        (TAG_LIST, 'blocks', list_tag(TAG_COMPOUND, blocks)),
+        (TAG_LIST, 'entities', list_tag(TAG_END, [])),
+    ])
+    out = os.path.join(DIR, 'floor_%dx%dx%d.nbt' % size)
+    os.makedirs(DIR, exist_ok=True)
+    with gzip.GzipFile(out, "wb", mtime=0) as fh:  # mtime=0: same bytes on every run
+        fh.write(root)
 
-os.makedirs(os.path.dirname(OUT), exist_ok=True)
-with gzip.GzipFile(OUT, "wb", mtime=0) as fh:  # mtime=0: same bytes on every run
-    fh.write(root)
+
+write((5, 3, 5))
+write((9, 10, 9))
 print('ok')

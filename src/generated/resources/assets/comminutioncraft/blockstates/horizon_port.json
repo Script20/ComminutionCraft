@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "lit=false,output=false": {
+      "model": "comminutioncraft:block/horizon_port"
+    },
+    "lit=false,output=true": {
+      "model": "comminutioncraft:block/horizon_port_output"
+    },
+    "lit=true,output=false": {
+      "model": "comminutioncraft:block/horizon_port_on"
+    },
+    "lit=true,output=true": {
+      "model": "comminutioncraft:block/horizon_port_output_on"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": "comminutioncraft:antimatter_circuit",
+    "C": "comminutioncraft:antimatter_cable",
+    "F": "comminutioncraft:containment_frame",
+    "M": "comminutioncraft:magnetic_conduit"
+  },
+  "pattern": [
+    " A ",
+    "MFC",
+    " A "
+  ],
+  "result": {
+    "id": "comminutioncraft:horizon_port"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "comminutioncraft:block/containment_frame"
+    },
+    "lit=true": {
+      "model": "comminutioncraft:block/containment_frame_on"
+    }
+  }
+}

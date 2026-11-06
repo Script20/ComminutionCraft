@@ -10,6 +10,8 @@ public final class ModDataGenerators {
         event.createProvider(ModRecipeProvider.Runner::new);
         event.createProvider(ModBlockTagsProvider::new);
         event.createProvider(ModItemTagsProvider::new);
+        event.createProvider(ModDamageTypeTagsProvider::new);
+        event.createProvider(ModDataMapProvider::new);
         event.createProvider(ModLootTableProvider::new);
         event.createProvider(ModModelProvider::new);
         event.createProvider(ModLanguageProvider::new);

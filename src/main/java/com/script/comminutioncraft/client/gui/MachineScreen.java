@@ -42,7 +42,8 @@ public abstract class MachineScreen<M extends AbstractContainerMenu & Controllab
         ELECTRIC(0xFF1E4256, 0xFF40C4FF, 0x6040C4FF),
         PLASMA(0xFF5C2254, 0xFFFF50D2, 0x60FF50D2),
         FUSION(0xFF20542C, 0xFF60FF80, 0x6060FF80),
-        ANTIMATTER(0xFF565A68, 0xFFD6E4FF, 0x60D6E4FF);
+        ANTIMATTER(0xFF565A68, 0xFFD6E4FF, 0x60D6E4FF),
+        SINGULARITY(0xFF564018, 0xFFFFBA38, 0x60FFBA38);
 
         final int seamOff;
         final int seamOn;

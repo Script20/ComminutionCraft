@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_containment_frame": {
+      "conditions": {
+        "items": [
+          {
+            "items": "comminutioncraft:containment_frame"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "comminutioncraft:horizon_controller"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_containment_frame"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "comminutioncraft:horizon_controller"
+    ]
+  }
+}

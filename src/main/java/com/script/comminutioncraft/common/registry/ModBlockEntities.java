@@ -172,5 +172,12 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.script.comminutioncraft.common.machine.AntimatterPurifierBlockEntity>> ANTIMATTER_PURIFIER =
             BLOCK_ENTITY_TYPES.register("antimatter_purifier", () -> new BlockEntityType<>(com.script.comminutioncraft.common.machine.AntimatterPurifierBlockEntity::new, ModBlocks.ANTIMATTER_PURIFIER.get()));
 
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.script.comminutioncraft.common.machine.EventHorizonReactorBlockEntity>> EVENT_HORIZON_REACTOR =
+            BLOCK_ENTITY_TYPES.register("event_horizon_reactor",
+                    () -> new BlockEntityType<>(com.script.comminutioncraft.common.machine.EventHorizonReactorBlockEntity::new, ModBlocks.HORIZON_CONTROLLER.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.script.comminutioncraft.common.machine.HorizonPortBlockEntity>> HORIZON_PORT =
+            BLOCK_ENTITY_TYPES.register("horizon_port", () -> new BlockEntityType<>(com.script.comminutioncraft.common.machine.HorizonPortBlockEntity::new, ModBlocks.HORIZON_PORT.get()));
+
     private ModBlockEntities() {}
 }

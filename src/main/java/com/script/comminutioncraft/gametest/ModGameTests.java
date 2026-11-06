@@ -96,6 +96,8 @@ public final class ModGameTests {
             DeferredRegister.create(Registries.TEST_FUNCTION, ComminutionCraft.MODID);
 
     private static final Identifier FLOOR = ComminutionCraft.id("gametest/floor_5x3x5");
+    /** Room for the 7x7x7 Event Horizon Reactor (tests named horizon_*). */
+    private static final Identifier BIG_FLOOR = ComminutionCraft.id("gametest/floor_9x10x9");
 
     static {
         TEST_FUNCTIONS.register("generator_powers_machine_through_cable", () -> ModGameTests::generatorPowersMachineThroughCable);
@@ -150,6 +152,8 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("annihilation_generator_charges_battery", () -> ModGameTests::annihilationGeneratorChargesBattery);
         TEST_FUNCTIONS.register("assembler_makes_antimatter_circuit", () -> ModGameTests::assemblerMakesAntimatterCircuit);
         TEST_FUNCTIONS.register("flotation_cell_makes_concentrate", () -> ModGameTests::flotationCellMakesConcentrate);
+        TEST_FUNCTIONS.register("horizon_reactor_eats_items_for_fe", () -> ModGameTests::horizonReactorEatsItemsForFe);
+        TEST_FUNCTIONS.register("horizon_field_kills_even_creative", () -> ModGameTests::horizonFieldKillsEvenCreative);
         TEST_FUNCTIONS.register("antimatter_suite_runs_the_chain", () -> ModGameTests::antimatterSuiteRunsTheChain);
     }
 
@@ -157,7 +161,7 @@ public final class ModGameTests {
         Holder<TestEnvironmentDefinition<?>> environment = event.registerEnvironment(ComminutionCraft.id("default"));
         TEST_FUNCTIONS.getEntries().forEach(function -> event.registerTest(function.getId(),
                 new FunctionGameTestInstance(ResourceKey.create(Registries.TEST_FUNCTION, function.getId()),
-                        new TestData<>(environment, FLOOR, 400, 0, true))));
+                        new TestData<>(environment, function.getId().getPath().startsWith("horizon_") ? BIG_FLOOR : FLOOR, 400, 0, true))));
     }
 
     // ---- Tests ----
@@ -1282,7 +1286,78 @@ public final class ModGameTests {
         helper.succeed();
     }
 
+    /**
+     * The 7x7x7 forms only with its inside empty; 1,000 mB antimatter ignites it; a stack of cobblestone dropped into
+     * the field is eaten (64 mass) and burned into FE, which the Output port pushes into a battery.
+     */
+    private static void horizonReactorEatsItemsForFe(GameTestHelper helper) {
+        var reactor = buildHorizon(helper);
+        BlockPos inside = new BlockPos(3, 3, 3);
+        helper.setBlock(inside, Blocks.STONE);
+        helper.setBlock(new BlockPos(0, 1, 4), ModBlocks.ANTIMATTER_ENERGY_BATTERY.get());
+        EnergyBatteryBlockEntity battery = helper.getBlockEntity(new BlockPos(0, 1, 4), EnergyBatteryBlockEntity.class);
+        int wait = com.script.comminutioncraft.common.machine.EventHorizonReactorBlockEntity.FORM_CHECK_INTERVAL + 2;
+        helper.runAfterDelay(wait, () -> {
+            helper.assertTrue(!reactor.isFormed(), "It formed with a block inside");
+            helper.setBlock(inside, Blocks.AIR);
+            reactor.getAntimatter().fill(FluidResource.of(ModFluids.ANTIMATTER.get()), com.script.comminutioncraft.common.machine.EventHorizonReactorBlockEntity.IGNITION_ANTIMATTER.get());
+            helper.runAfterDelay(wait, () -> {
+                helper.assertTrue(reactor.isFormed() && reactor.isIgnited(), "It should have formed and ignited (" + reactor.getStatus() + ")");
+                helper.assertTrue(reactor.getAntimatter().getAmount() == 0, "Ignition should use the antimatter");
+                helper.spawnItem(Items.COBBLESTONE, new Vec3(4.5, 4.5, 4.5)).getItem().setCount(64);
+                helper.succeedWhen(() -> {
+                    helper.assertTrue(helper.getLevel().getEntitiesOfClass(ItemEntity.class, reactor.getField()).isEmpty(), "The cobblestone wasn't eaten");
+                    helper.assertTrue(battery.getEnergy() >= 64L * com.script.comminutioncraft.common.machine.EventHorizonReactorBlockEntity.ENERGY_PER_MASS.get() - 1,
+                            "Expected 64 mass worth of FE in the battery, has " + battery.getEnergy() + " (mass left " + reactor.getMass() + ")");
+                    helper.assertTrue(helper.getBlockState(new BlockPos(1, 1, 1)).getValue(MachineBlock.LIT), "The frame should glow");
+                });
+            });
+        });
+    }
+
+    /** Anything alive that walks into a running reactor's field dies - a pig, and a player in creative mode. */
+    private static void horizonFieldKillsEvenCreative(GameTestHelper helper) {
+        var reactor = buildHorizon(helper);
+        reactor.getAntimatter().fill(FluidResource.of(ModFluids.ANTIMATTER.get()), com.script.comminutioncraft.common.machine.EventHorizonReactorBlockEntity.IGNITION_ANTIMATTER.get());
+        helper.runAfterDelay(com.script.comminutioncraft.common.machine.EventHorizonReactorBlockEntity.FORM_CHECK_INTERVAL + 2, () -> {
+            helper.assertTrue(reactor.isIgnited(), "It should have ignited (" + reactor.getStatus() + ")");
+            var pig = helper.spawn(net.minecraft.world.entity.EntityType.PIG, new Vec3(4.5, 3.0, 4.5));
+            ServerPlayer player = helper.makeMockServerPlayerInLevel();
+            player.setGameMode(GameType.CREATIVE);
+            Vec3 centre = helper.absoluteVec(new Vec3(3.5, 3.0, 3.5));
+            player.teleportTo(centre.x, centre.y, centre.z);
+            helper.succeedWhen(() -> {
+                helper.assertTrue(!pig.isAlive(), "The pig survived the field");
+                helper.assertTrue(player.isDeadOrDying(), "The creative player survived the field");
+            });
+        });
+    }
+
     // ---- Helpers ----
+
+    /**
+     * Builds a 7x7x7 Event Horizon Reactor at x/y/z 1-7 (on the 9x10x9 floor): Containment Frame on every edge, the
+     * controller in the middle of the south bottom edge facing south, an Input port in the east bottom edge and an
+     * Output port in the west bottom edge. Its middle is (4, 4, 4).
+     */
+    private static com.script.comminutioncraft.common.machine.EventHorizonReactorBlockEntity buildHorizon(GameTestHelper helper) {
+        for (int x = 1; x <= 7; x++) {
+            for (int y = 1; y <= 7; y++) {
+                for (int z = 1; z <= 7; z++) {
+                    int outer = (x == 1 || x == 7 ? 1 : 0) + (y == 1 || y == 7 ? 1 : 0) + (z == 1 || z == 7 ? 1 : 0);
+                    if (outer >= 2) {
+                        helper.setBlock(new BlockPos(x, y, z), ModBlocks.CONTAINMENT_FRAME.get());
+                    }
+                }
+            }
+        }
+        BlockPos controller = new BlockPos(4, 1, 7);
+        helper.setBlock(controller, ModBlocks.HORIZON_CONTROLLER.get().defaultBlockState().setValue(MachineBlock.FACING, Direction.SOUTH));
+        helper.setBlock(new BlockPos(7, 1, 4), ModBlocks.HORIZON_PORT.get());
+        helper.setBlock(new BlockPos(1, 1, 4), ModBlocks.HORIZON_PORT.get().defaultBlockState()
+                .setValue(com.script.comminutioncraft.common.machine.AcceleratorPortBlock.OUTPUT, true));
+        return helper.getBlockEntity(controller, com.script.comminutioncraft.common.machine.EventHorizonReactorBlockEntity.class);
+    }
 
     /**
      * Builds a 5x5 Particle Accelerator ring at x 0-4, y 1, z 0-4: segments, the controller in the middle of the south

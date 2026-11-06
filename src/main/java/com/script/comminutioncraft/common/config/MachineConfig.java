@@ -30,6 +30,14 @@ public final class MachineConfig {
     public static final ConfigInt ANNIHILATION_GENERATOR_ENERGY_CAPACITY;
     public static final ConfigInt ANNIHILATION_GENERATOR_MAX_ENERGY_OUTPUT;
     public static final ConfigInt CIRCUIT_ASSEMBLER_ANTIMATTER_CAPACITY;
+    public static final ConfigInt EVENT_HORIZON_IGNITION_ANTIMATTER;
+    public static final ConfigInt EVENT_HORIZON_ENERGY_PER_MASS;
+    public static final ConfigInt EVENT_HORIZON_MASS_PER_TICK;
+    public static final ConfigInt EVENT_HORIZON_MASS_CAPACITY;
+    public static final ConfigInt EVENT_HORIZON_STARVE_TICKS;
+    public static final ConfigInt EVENT_HORIZON_ENERGY_CAPACITY;
+    public static final ConfigInt EVENT_HORIZON_MAX_ENERGY_OUTPUT;
+    public static final ConfigInt EVENT_HORIZON_ANTIMATTER_CAPACITY;
     public static final ConfigInt ANTIMATTER_MACHINES_ENERGY_CAPACITY;
     public static final ConfigInt ANTIMATTER_MACHINES_MAX_ENERGY_INPUT;
     public static final ConfigInt ANTIMATTER_GRANULATOR_PROCESS_TIME;
@@ -310,6 +318,16 @@ public final class MachineConfig {
         FUSION_REACTOR_PORT_TRITIUM_OUTPUT = integer(builder, "fusion_reactor", "portTritiumOutput", "Port tritium output", "Max mB of tritium per tick pushed out of each port", 500);
         builder.pop();
 
+        section(builder, "event_horizon_reactor", "Event Horizon Reactor");
+        EVENT_HORIZON_IGNITION_ANTIMATTER = integer(builder, "event_horizon_reactor", "ignitionAntimatter", "Ignition antimatter", "mB of antimatter that forms the black hole", 1_000);
+        EVENT_HORIZON_ENERGY_PER_MASS = integer(builder, "event_horizon_reactor", "energyPerMass", "Energy per mass", "FE made per unit of mass (an item's comminutioncraft:matter_mass, 1 by default)", 50_000);
+        EVENT_HORIZON_MASS_PER_TICK = integer(builder, "event_horizon_reactor", "massPerTick", "Mass per tick", "Max mass burned per tick", 5);
+        EVENT_HORIZON_MASS_CAPACITY = integer(builder, "event_horizon_reactor", "massCapacity", "Mass capacity", "Most mass the black hole holds at once", 10_000);
+        EVENT_HORIZON_STARVE_TICKS = integer(builder, "event_horizon_reactor", "starveTicks", "Starve ticks", "Ticks with no mass before the black hole evaporates", 1_200);
+        EVENT_HORIZON_ENERGY_CAPACITY = integer(builder, "event_horizon_reactor", "energyCapacity", "Energy capacity", "FE buffer", 50_000_000);
+        EVENT_HORIZON_MAX_ENERGY_OUTPUT = integer(builder, "event_horizon_reactor", "maxEnergyOutput", "Max energy output", "Max FE per tick pushed out of each Output port", 250_000);
+        EVENT_HORIZON_ANTIMATTER_CAPACITY = integer(builder, "event_horizon_reactor", "antimatterCapacity", "Antimatter capacity", "Antimatter tank, mB", 2_000);
+        builder.pop();
         section(builder, "antimatter_machines", "Antimatter Granulator, Smelter, Washer, Purifier and the Froth Flotation Cell");
         ANTIMATTER_MACHINES_ENERGY_CAPACITY = integer(builder, "antimatter_machines", "energyCapacity", "Energy capacity", "FE buffer", 200_000);
         ANTIMATTER_MACHINES_MAX_ENERGY_INPUT = integer(builder, "antimatter_machines", "maxEnergyInput", "Max energy input", "Max FE per insert", 5_000);

@@ -139,6 +139,10 @@ public class ModModelProvider extends ModelProvider {
         // Particle Accelerator: segments and ports light up while it runs (_on textures); the controller is a furnace
         litColumn(blockModels, ModBlocks.ACCELERATOR_SEGMENT.get());
         acceleratorPort(blockModels, ModBlocks.ACCELERATOR_PORT.get());
+        // Event Horizon Reactor: frame lights up while the black hole lives; ports like the accelerator's
+        litCube(blockModels, ModBlocks.CONTAINMENT_FRAME.get());
+        acceleratorPort(blockModels, ModBlocks.HORIZON_PORT.get());
+        blockModels.createFurnace(ModBlocks.HORIZON_CONTROLLER.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         blockModels.createFurnace(ModBlocks.ACCELERATOR_CONTROLLER.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         // Soaryn Chest: drawn by the vanilla ChestRenderer; the block model is particles only, the item a special model
         blockModels.createChest(ModBlocks.SOARYN_CHEST.get(), net.minecraft.world.level.block.Blocks.OAK_PLANKS,

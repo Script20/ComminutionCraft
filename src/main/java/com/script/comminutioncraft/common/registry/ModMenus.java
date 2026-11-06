@@ -120,6 +120,9 @@ public final class ModMenus {
     public static final DeferredHolder<MenuType<?>, MenuType<com.script.comminutioncraft.common.machine.FrothFlotationCellMenu>> FROTH_FLOTATION_CELL =
             MENUS.register("froth_flotation_cell", () -> new MenuType<>(com.script.comminutioncraft.common.machine.FrothFlotationCellMenu::client, FeatureFlags.VANILLA_SET));
 
+    public static final DeferredHolder<MenuType<?>, MenuType<com.script.comminutioncraft.common.machine.EventHorizonMenu>> EVENT_HORIZON =
+            MENUS.register("horizon_controller", () -> new MenuType<>(com.script.comminutioncraft.common.machine.EventHorizonMenu::client, FeatureFlags.VANILLA_SET));
+
     public static final DeferredHolder<MenuType<?>, MenuType<CreativeFluidTankMenu>> CREATIVE_FLUID_TANK =
             MENUS.register("creative_fluid_tank", () -> new MenuType<>(CreativeFluidTankMenu::client, FeatureFlags.VANILLA_SET));
 

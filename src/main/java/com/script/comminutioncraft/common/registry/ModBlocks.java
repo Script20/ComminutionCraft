@@ -152,6 +152,16 @@ public final class ModBlocks {
     public static final DeferredBlock<com.script.comminutioncraft.common.machine.AcceleratorControllerBlock> ACCELERATOR_CONTROLLER = BLOCKS.registerBlock(
             "accelerator_controller", com.script.comminutioncraft.common.machine.AcceleratorControllerBlock::new, ModBlocks::tier2MachineProperties);
 
+    // Tier 6 phase 6A: the Event Horizon Reactor
+    public static final DeferredBlock<com.script.comminutioncraft.common.machine.ContainmentFrameBlock> CONTAINMENT_FRAME = BLOCKS.registerBlock(
+            "containment_frame", com.script.comminutioncraft.common.machine.ContainmentFrameBlock::new, ModBlocks::tier2MachineProperties);
+
+    public static final DeferredBlock<com.script.comminutioncraft.common.machine.HorizonControllerBlock> HORIZON_CONTROLLER = BLOCKS.registerBlock(
+            "horizon_controller", com.script.comminutioncraft.common.machine.HorizonControllerBlock::new, ModBlocks::tier2MachineProperties);
+
+    public static final DeferredBlock<com.script.comminutioncraft.common.machine.HorizonPortBlock> HORIZON_PORT = BLOCKS.registerBlock(
+            "horizon_port", com.script.comminutioncraft.common.machine.HorizonPortBlock::new, ModBlocks::tier2MachineProperties);
+
     // Tier 5 phase 5C: the 4x step and the antimatter machine suite
     public static final DeferredBlock<com.script.comminutioncraft.common.machine.AntimatterGranulatorBlock> ANTIMATTER_GRANULATOR = BLOCKS.registerBlock(
             "antimatter_granulator", com.script.comminutioncraft.common.machine.AntimatterGranulatorBlock::new, ModBlocks::tier2MachineProperties);

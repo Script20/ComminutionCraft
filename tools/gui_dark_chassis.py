@@ -620,6 +620,32 @@ ENERGY_RED = [(90, 10, 14), (150, 20, 24), (214, 40, 38), (255, 96, 80), (255, 1
 BOLT = [(255, 214, 90), (255, 246, 200)]
 
 
+SINGULARITY = dict(off=(86, 64, 24), on=(255, 186, 56), hi=(255, 236, 168))
+
+
+def horizon_sheet():
+    """Event Horizon Controller: energy left, antimatter tube (x 155), status text from x 30, the matter intake slot at
+    (125, 51), and a mass bar well at (29, 55)-(108, 61) with its gold fill sprite at (176, 90), 78x5."""
+    s = Sheet()
+    body(s)
+    energy_well(s)
+    gauge_well(s, 155)
+    slot(s, 125, 51, rim=SINGULARITY['off'])
+    x0, y0, x1, y1 = 29, 55, 108, 61
+    s.rect(x0, y0, x1, y1, GLASS)
+    s.hline(x0, x1, y0, K['o']); s.vline(x0, y0, y1, K['o'])
+    s.hline(x0, x1, y1, K['hi']); s.vline(x1, y0, y1, K['hi'])
+    player_inventory(s)
+    energy_sprite(s)
+    all_fluid_sprites(s)
+    fluid_sprite(s, 246, ANTIMATTER_FLUID)
+    for x in range(78):
+        for y in range(5):
+            c = mix(SINGULARITY['off'], SINGULARITY['on'], x / 70) if x < 70 else mix(SINGULARITY['on'], SINGULARITY['hi'], (x - 70) / 7)
+            s.px(176 + x, 90 + y, shade(c, 0.8) if y in (0, 4) else c)
+    return s.img
+
+
 def jei_energy_icon():
     """16x16 FE icon for JEI's generator pages: a red energy fill (bright at the top, gauge bands) with a lightning bolt."""
     img = Image.new('RGBA', (16, 16), (0, 0, 0, 0))
@@ -691,4 +717,6 @@ tier3_sheet(smelter_arrow).save(os.path.join(OUT, 'plasma_smelter.png'))
 plasma_machine_sheet(plasma_granulator_arrow).save(os.path.join(OUT, 'circuit_assembler.png'))
 ore_washer_sheet().save(os.path.join(OUT, 'ore_washer.png'))
 jei_energy_icon().save(os.path.join(OUT, '..', 'jei_energy.png'))
+# tier 6, phase 6A
+horizon_sheet().save(os.path.join(OUT, 'horizon_controller.png'))
 print('ok')

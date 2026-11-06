@@ -29,7 +29,7 @@ public class AcceleratorPortBlock extends MachineBlock {
     }
 
     @Override
-    protected BlockEntityType<AcceleratorPortBlockEntity> getBlockEntityType() {
+    protected BlockEntityType<? extends net.minecraft.world.level.block.entity.BlockEntity> getBlockEntityType() {
         return ModBlockEntities.ACCELERATOR_PORT.get();
     }
 
@@ -42,7 +42,7 @@ public class AcceleratorPortBlock extends MachineBlock {
         BlockState state = level.getBlockState(pos);
         boolean output = !state.getValue(OUTPUT);
         level.setBlock(pos, state.setValue(OUTPUT, output), Block.UPDATE_ALL);
-        if (level.getBlockEntity(pos) instanceof AcceleratorPortBlockEntity port) {
+        if (level.getBlockEntity(pos) instanceof com.script.comminutioncraft.common.machine.control.ControllableMachine port) {
             port.refreshFaces(); // pipes and cables next to it re-check what it now offers
         }
         return output;

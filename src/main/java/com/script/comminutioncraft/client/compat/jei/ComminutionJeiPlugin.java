@@ -134,7 +134,8 @@ public class ComminutionJeiPlugin implements IModPlugin {
                         new ProcessingCategory.FluidCost(Fluids.WATER, com.script.comminutioncraft.common.machine.FrothFlotationCellBlockEntity.WATER_PER_OPERATION.get()),
                         new ProcessingCategory.FluidCost(ModFluids.OXYGEN.get(), com.script.comminutioncraft.common.machine.FrothFlotationCellBlockEntity.OXYGEN_PER_OPERATION.get())),
                 new FusionReactorCategory(gui),
-                new ParticleAcceleratorCategory(gui));
+                new ParticleAcceleratorCategory(gui),
+                new EventHorizonCategory(gui));
         for (FluidMachinePage page : fluidMachinePages()) {
             registration.addRecipeCategories(new FluidConversionCategory(gui, page.type(), page.machine()));
         }
@@ -150,6 +151,7 @@ public class ComminutionJeiPlugin implements IModPlugin {
         registration.addRecipes(PURIFYING.get(), ClientRecipes.purifying());
         registration.addRecipes(FusionReactorCategory.TYPE, List.of(FusionReactorCategory.Structure.INSTANCE));
         registration.addRecipes(ParticleAcceleratorCategory.TYPE, List.of(ParticleAcceleratorCategory.Structure.INSTANCE));
+        registration.addRecipes(EventHorizonCategory.TYPE, List.of(EventHorizonCategory.Structure.INSTANCE));
         for (FluidMachinePage page : fluidMachinePages()) {
             registration.addRecipes(page.type(), List.of(page.conversion()));
         }
@@ -169,6 +171,8 @@ public class ComminutionJeiPlugin implements IModPlugin {
         registration.addCraftingStation(PRESSING.get(), ModItems.PELLET_PRESS.get());
         registration.addCraftingStation(PURIFYING.get(), ModItems.ORE_PURIFIER.get(), ModItems.ANTIMATTER_PURIFIER.get());
         registration.addCraftingStation(FusionReactorCategory.TYPE, ModItems.REACTOR_CONTROLLER.get());
+        registration.addCraftingStation(EventHorizonCategory.TYPE,
+                ModItems.HORIZON_CONTROLLER.get(), ModItems.CONTAINMENT_FRAME.get(), ModItems.HORIZON_PORT.get());
         registration.addCraftingStation(ParticleAcceleratorCategory.TYPE,
                 ModItems.ACCELERATOR_CONTROLLER.get(), ModItems.ACCELERATOR_SEGMENT.get(), ModItems.ACCELERATOR_PORT.get());
         for (FluidMachinePage page : fluidMachinePages()) {

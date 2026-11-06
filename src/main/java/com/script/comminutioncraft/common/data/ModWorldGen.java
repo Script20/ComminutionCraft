@@ -53,7 +53,8 @@ public final class ModWorldGen {
     public static final RegistrySetBuilder BUILDER = new RegistrySetBuilder()
             .add(Registries.CONFIGURED_FEATURE, ModWorldGen::configuredFeatures)
             .add(Registries.PLACED_FEATURE, ModWorldGen::placedFeatures)
-            .add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, ModWorldGen::biomeModifiers);
+            .add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, ModWorldGen::biomeModifiers)
+            .add(Registries.DAMAGE_TYPE, com.script.comminutioncraft.common.registry.ModDamageTypes::bootstrap);
 
     private static void configuredFeatures(BootstrapContext<ConfiguredFeature<?, ?>> context) {
         HolderGetter<Block> blocks = context.lookup(Registries.BLOCK);

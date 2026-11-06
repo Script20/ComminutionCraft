@@ -53,6 +53,10 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.ACCELERATOR_CONTROLLER.get());
                         output.accept(ModItems.ACCELERATOR_SEGMENT.get());
                         output.accept(ModItems.ACCELERATOR_PORT.get());
+                        // Event horizon reactor
+                        output.accept(ModItems.HORIZON_CONTROLLER.get());
+                        output.accept(ModItems.CONTAINMENT_FRAME.get());
+                        output.accept(ModItems.HORIZON_PORT.get());
                         // Fuel and parts
                         output.accept(ModItems.CIRCUIT_ASSEMBLER.get());
                         output.accept(ModItems.ISOTOPE_SEPARATOR.get());
