@@ -269,6 +269,10 @@ public class ModRecipeProvider extends RecipeProvider {
         output.accept(key("assembling/fusion_circuit"),
                 new AssemblingRecipe(Ingredient.of(ModItems.PLASMA_CIRCUIT.get()), new ItemStackTemplate(ModItems.FUSION_CIRCUIT.get())),
                 null);
+        // Tier 5: a Fusion Circuit + 10 mB antimatter -> Antimatter Circuit
+        output.accept(key("assembling/antimatter_circuit"),
+                new AssemblingRecipe(Ingredient.of(ModItems.FUSION_CIRCUIT.get()), new ItemStackTemplate(ModItems.ANTIMATTER_CIRCUIT.get()), 10),
+                null);
         // A fuel pellet is an iron-nugget casing filled with deuterium and tritium in the Pellet Press.
         output.accept(key("pressing/fusion_fuel_pellet"),
                 new PressingRecipe(tag(ProcessedMetal.commonItemTag("nuggets/iron")), new ItemStackTemplate(ModItems.FUSION_FUEL_PELLET.get())),
@@ -374,6 +378,39 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('X', tag(ProcessedMetal.commonItemTag("storage_blocks/redstone")))
                 .unlockedBy("has_fusion_circuit", has(ModItems.FUSION_CIRCUIT.get()))
                 .save(output, key("fusion_energy_battery"));
+
+        // Tier 5 power: the Annihilation Generator, Antimatter Cable and Antimatter Energy Battery
+        shaped(RecipeCategory.MISC, ModItems.ANNIHILATION_GENERATOR.get())
+                .pattern("PAP")
+                .pattern("CMC")
+                .pattern("PAP")
+                .define('P', ModItems.REACTOR_PLATING.get())
+                .define('A', ModItems.ANTIMATTER_CIRCUIT.get())
+                .define('C', ModItems.CONTAINMENT_CELL.get())
+                .define('M', ModItems.MHD_GENERATOR.get())
+                .unlockedBy("has_antimatter_circuit", has(ModItems.ANTIMATTER_CIRCUIT.get()))
+                .save(output, key("annihilation_generator"));
+
+        shaped(RecipeCategory.MISC, ModItems.ANTIMATTER_CABLE.get(), 8)
+                .pattern("CCC")
+                .pattern("MAM")
+                .pattern("CCC")
+                .define('C', ModItems.FUSION_CABLE.get())
+                .define('M', ModItems.MAGNETIC_CONDUIT.get())
+                .define('A', ModItems.ANTIMATTER_CIRCUIT.get())
+                .unlockedBy("has_antimatter_circuit", has(ModItems.ANTIMATTER_CIRCUIT.get()))
+                .save(output, key("antimatter_cable"));
+
+        shaped(RecipeCategory.MISC, ModItems.ANTIMATTER_ENERGY_BATTERY.get())
+                .pattern("BAB")
+                .pattern("DCD")
+                .pattern("BAB")
+                .define('B', ModItems.FUSION_ENERGY_BATTERY.get())
+                .define('A', ModItems.ANTIMATTER_CIRCUIT.get())
+                .define('D', tag(ProcessedMetal.commonItemTag("storage_blocks/diamond")))
+                .define('C', ModItems.CONTAINMENT_CELL.get())
+                .unlockedBy("has_antimatter_circuit", has(ModItems.ANTIMATTER_CIRCUIT.get()))
+                .save(output, key("antimatter_energy_battery"));
 
         // The Circuit Assembler makes Plasma Circuits, so it can't need one itself.
         output.accept(key("assembling/plasma_circuit"),

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": "comminutioncraft:antimatter_circuit",
+    "B": "comminutioncraft:fusion_energy_battery",
+    "C": "comminutioncraft:containment_cell",
+    "D": "#c:storage_blocks/diamond"
+  },
+  "pattern": [
+    "BAB",
+    "DCD",
+    "BAB"
+  ],
+  "result": {
+    "id": "comminutioncraft:antimatter_energy_battery"
+  }
+}

@@ -9,6 +9,9 @@ import net.minecraft.world.entity.player.Inventory;
 
 /** GUI for tier-3 machines that use plasma (the Circuit Assembler): energy bar, input, progress arrow, output, plasma gauge. */
 public class PlasmaMachineScreen extends MachineScreen<PlasmaMachineMenu> {
+    /** The Circuit Assembler's antimatter tube, left of the plasma one. */
+    private static final int ANTIMATTER_X = 141;
+
     public PlasmaMachineScreen(PlasmaMachineMenu menu, Inventory inventory, Component title, Identifier texture) {
         super(menu, inventory, title, texture, Tier.PLASMA);
     }
@@ -27,6 +30,7 @@ public class PlasmaMachineScreen extends MachineScreen<PlasmaMachineMenu> {
         super.extractBackground(graphics, mouseX, mouseY, partialTick);
         drawEnergyBar(graphics, menu.getEnergy(), menu.getEnergyCapacity());
         drawPlasmaGauge(graphics, menu.getPlasma(), menu.getPlasmaCapacity());
+        drawGauge(graphics, ANTIMATTER_X, ANTIMATTER_U, menu.getAntimatter(), menu.getAntimatterCapacity());
         drawArrow(graphics, 79, 34, menu.getProgress());
     }
 
@@ -35,5 +39,6 @@ public class PlasmaMachineScreen extends MachineScreen<PlasmaMachineMenu> {
         super.extractTooltip(graphics, mouseX, mouseY);
         energyTooltip(graphics, mouseX, mouseY, menu.getEnergy(), menu.getEnergyCapacity());
         plasmaTooltip(graphics, mouseX, mouseY, menu.getPlasma(), menu.getPlasmaCapacity());
+        gaugeTooltip(graphics, mouseX, mouseY, ANTIMATTER_X, "gui.comminutioncraft.antimatter", menu.getAntimatter(), menu.getAntimatterCapacity());
     }
 }

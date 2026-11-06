@@ -104,7 +104,7 @@ public class FluidMachineMenu extends AbstractContainerMenu implements Controlla
 
     /** mB/t (or FE/t for the MHD Generator) last tick. */
     public int getRate() {
-        return data.get(FluidMachineBlockEntity.DATA_RATE);
+        return EnergySync.join(data.get(FluidMachineBlockEntity.DATA_RATE), data.get(FluidMachineBlockEntity.DATA_RATE_HIGH));
     }
 
     public int getTankAmount(int tank) {

@@ -135,6 +135,11 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
         return true;
     }
 
+    /** Like {@link #hasOperationResources()}, for this recipe (the Circuit Assembler checks a recipe's antimatter). */
+    protected boolean hasOperationResources(RecipeHolder<? extends Recipe<SingleRecipeInput>> recipe) {
+        return hasOperationResources();
+    }
+
     /** Called when an operation finishes (tier 3 uses up its plasma here). */
     protected void onOperationDone() {}
 
@@ -198,7 +203,7 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
 
         if (!canProcess) {
             progress = 0;
-        } else if (hasOperationResources() && energy.consume(getEnergyPerTick())) {
+        } else if (hasOperationResources(recipe) && energy.consume(getEnergyPerTick())) {
             litCooldown = LIT_COOLDOWN;
             progress++;
             if (progress >= getProcessTime()) {

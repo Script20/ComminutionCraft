@@ -37,6 +37,7 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.ELECTROLYSER.get());
                         output.accept(ModItems.PLASMA_GENERATOR.get());
                         output.accept(ModItems.MHD_GENERATOR.get());
+                        output.accept(ModItems.ANNIHILATION_GENERATOR.get());
                         // Fusion reactor
                         output.accept(ModItems.REACTOR_CONTROLLER.get());
                         output.accept(ModItems.REACTOR_CASING.get());
@@ -55,12 +56,14 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.ENERGY_BATTERY.get());
                         output.accept(ModItems.PLASMA_ENERGY_BATTERY.get());
                         output.accept(ModItems.FUSION_ENERGY_BATTERY.get());
+                        output.accept(ModItems.ANTIMATTER_ENERGY_BATTERY.get());
                         output.accept(ModItems.FLUID_TANK.get());
                         output.accept(ModItems.CONTAINMENT_CELL.get());
                         output.accept(ModItems.SOARYN_CHEST.get());
                         // Cables and pipes
                         output.accept(ModItems.ENERGY_CABLE.get());
                         output.accept(ModItems.FUSION_CABLE.get());
+                        output.accept(ModItems.ANTIMATTER_CABLE.get());
                         output.accept(ModItems.FLUID_PIPE.get());
                         output.accept(ModItems.PLASMA_CABLE.get());
                         output.accept(ModItems.MAGNETIC_CONDUIT.get());
@@ -68,6 +71,7 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.ELECTRONIC_CIRCUIT.get());
                         output.accept(ModItems.PLASMA_CIRCUIT.get());
                         output.accept(ModItems.FUSION_CIRCUIT.get());
+                        output.accept(ModItems.ANTIMATTER_CIRCUIT.get());
                         output.accept(ModItems.AIR_FILTER.get());
                         output.accept(ModItems.REACTOR_PLATING.get());
                         output.accept(ModItems.FUSION_FUEL_PELLET.get());

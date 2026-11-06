@@ -61,6 +61,11 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModBlocks.REACTOR_CONTROLLER.get(), "Fusion Reactor Controller");
         add(ModBlocks.FUSION_CABLE.get(), "Fusion Cable");
         add(ModBlocks.FUSION_ENERGY_BATTERY.get(), "Fusion Energy Battery");
+        add(ModBlocks.ANNIHILATION_GENERATOR.get(), "Annihilation Generator");
+        add(ModBlocks.ANTIMATTER_CABLE.get(), "Antimatter Cable");
+        add(ModBlocks.ANTIMATTER_ENERGY_BATTERY.get(), "Antimatter Energy Battery");
+        add(ModItems.ANTIMATTER_CIRCUIT.get(), "Antimatter Circuit");
+        add("jei.comminutioncraft.annihilation.line", "%s FE per mB · %s FE/t while burning");
         add("gui.comminutioncraft.reactor.not_formed", "Not formed");
         add("gui.comminutioncraft.reactor.running", "Running");
         add("gui.comminutioncraft.reactor.heating", "Heating: %s%%");

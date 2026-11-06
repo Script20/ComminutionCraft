@@ -98,7 +98,10 @@ public class ComminutionJeiPlugin implements IModPlugin {
                         ModItems.CIRCUIT_ASSEMBLER.get(), List.of(
                         new ProcessingCategory.Station("jei.comminutioncraft.time.circuit_assembler", CircuitAssemblerBlockEntity.PROCESS_TIME.get())),
                         List.of()).withFluids(
-                        new ProcessingCategory.FluidCost(ModFluids.PLASMA.get(), CircuitAssemblerBlockEntity.PLASMA_PER_OPERATION.get())),
+                        new ProcessingCategory.FluidCost(ModFluids.PLASMA.get(), CircuitAssemblerBlockEntity.PLASMA_PER_OPERATION.get()))
+                        .withRecipeFluids(recipe -> recipe.getAntimatter() > 0
+                                ? List.of(new ProcessingCategory.FluidCost(ModFluids.ANTIMATTER.get(), recipe.getAntimatter()))
+                                : List.of()),
                 new ProcessingCategory<>(gui, WASHING.get(), Component.translatable("jei.comminutioncraft.washing"),
                         ModItems.ORE_WASHER.get(), List.of(
                         new ProcessingCategory.Station("jei.comminutioncraft.time.ore_washer", OreWasherBlockEntity.PROCESS_TIME.get())),
@@ -196,6 +199,11 @@ public class ComminutionJeiPlugin implements IModPlugin {
                         List.of(new FluidConversionCategory.Amount(ModFluids.PLASMA.get(), 1)), List.of(),
                         Component.translatable("jei.comminutioncraft.mhd.line", MhdGeneratorBlockEntity.ENERGY_PER_MB.get(),
                                 MhdGeneratorBlockEntity.ENERGY_PER_MB.get() * MhdGeneratorBlockEntity.MAX_PLASMA_PER_TICK.get())),
+                page("annihilation_generator", ModItems.ANNIHILATION_GENERATOR.get(),
+                        List.of(new FluidConversionCategory.Amount(ModFluids.ANTIMATTER.get(), 1)), List.of(),
+                        Component.translatable("jei.comminutioncraft.annihilation.line",
+                                String.format(java.util.Locale.ROOT, "%,d", com.script.comminutioncraft.common.machine.AnnihilationGeneratorBlockEntity.ENERGY_PER_MB.get()),
+                                String.format(java.util.Locale.ROOT, "%,d", com.script.comminutioncraft.common.machine.AnnihilationGeneratorBlockEntity.energyPerTick()))),
                 page("isotope_separator", ModItems.ISOTOPE_SEPARATOR.get(),
                         List.of(new FluidConversionCategory.Amount(Fluids.WATER, IsotopeSeparatorBlockEntity.WATER_PER_MB.get())),
                         List.of(new FluidConversionCategory.Amount(ModFluids.DEUTERIUM.get(), 1)),

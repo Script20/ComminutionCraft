@@ -98,6 +98,13 @@ public final class ModMenus {
     public static final DeferredHolder<MenuType<?>, MenuType<com.script.comminutioncraft.common.machine.ParticleAcceleratorMenu>> PARTICLE_ACCELERATOR =
             MENUS.register("accelerator_controller", () -> new MenuType<>(com.script.comminutioncraft.common.machine.ParticleAcceleratorMenu::client, FeatureFlags.VANILLA_SET));
 
+    public static final DeferredHolder<MenuType<?>, MenuType<FluidMachineMenu>> ANNIHILATION_GENERATOR = MENUS.register("annihilation_generator",
+            () -> new MenuType<>((id, inventory) -> FluidMachineMenu.client(ModMenus.ANNIHILATION_GENERATOR.get(), id, inventory,
+                    com.script.comminutioncraft.common.machine.AnnihilationGeneratorBlockEntity.TANK_COUNT), FeatureFlags.VANILLA_SET));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<EnergyBatteryMenu>> ANTIMATTER_ENERGY_BATTERY =
+            MENUS.register("antimatter_energy_battery", () -> new MenuType<>(EnergyBatteryMenu::clientAntimatter, FeatureFlags.VANILLA_SET));
+
     public static final DeferredHolder<MenuType<?>, MenuType<CreativeFluidTankMenu>> CREATIVE_FLUID_TANK =
             MENUS.register("creative_fluid_tank", () -> new MenuType<>(CreativeFluidTankMenu::client, FeatureFlags.VANILLA_SET));
 

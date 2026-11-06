@@ -98,7 +98,8 @@ public class ComminutionCraft {
         event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.ATMOSPHERIC_WATER_GENERATOR.get(),
                 AtmosphericWaterGeneratorBlockEntity::getFluidHandler);
         for (var type : java.util.List.of(ModBlockEntities.ELECTROLYSER.get(), ModBlockEntities.PLASMA_GENERATOR.get(),
-                ModBlockEntities.MHD_GENERATOR.get(), ModBlockEntities.ISOTOPE_SEPARATOR.get(), ModBlockEntities.TRITIUM_BREEDER.get())) {
+                ModBlockEntities.MHD_GENERATOR.get(), ModBlockEntities.ISOTOPE_SEPARATOR.get(), ModBlockEntities.TRITIUM_BREEDER.get(),
+                ModBlockEntities.ANNIHILATION_GENERATOR.get())) {
             event.registerBlockEntity(Capabilities.Energy.BLOCK, type, (machine, side) -> machine.getEnergyHandler());
             event.registerBlockEntity(Capabilities.Fluid.BLOCK, type, FluidMachineBlockEntity::getFluidHandler);
         }
@@ -111,7 +112,7 @@ public class ComminutionCraft {
         event.registerBlock(Capabilities.Energy.BLOCK, (level, pos, state, blockEntity, side) ->
                 side != null && state.getValue(EnergyCableBlock.CONNECTIONS.get(side)) == CableConnection.DISABLED
                         ? null : new CableEnergyHandler(level, pos, side, ((EnergyCableBlock) state.getBlock()).getTransferRate()),
-                ModBlocks.ENERGY_CABLE.get(), ModBlocks.FUSION_CABLE.get());
+                ModBlocks.ENERGY_CABLE.get(), ModBlocks.FUSION_CABLE.get(), ModBlocks.ANTIMATTER_CABLE.get());
 
         // Tier 4 Fusion Reactor: everything goes through its ports; the controller itself only answers "no side"
         // queries (Jade) and takes pellets from hoppers.
@@ -124,6 +125,7 @@ public class ComminutionCraft {
         event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.FUSION_REACTOR.get(),
                 (reactor, side) -> side == null ? reactor.getEnergy() : null);
         event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.FUSION_ENERGY_BATTERY.get(), EnergyBatteryBlockEntity::getEnergyHandler);
+        event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.ANTIMATTER_ENERGY_BATTERY.get(), EnergyBatteryBlockEntity::getEnergyHandler);
         // Tier 5 Particle Accelerator: like the reactor, through its ports (the controller answers only "no side")
         event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.ACCELERATOR_PORT.get(), com.script.comminutioncraft.common.machine.AcceleratorPortBlockEntity::getFluidHandler);
         event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.ACCELERATOR_PORT.get(), com.script.comminutioncraft.common.machine.AcceleratorPortBlockEntity::getEnergyHandler);

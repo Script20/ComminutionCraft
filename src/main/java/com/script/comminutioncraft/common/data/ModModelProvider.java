@@ -119,6 +119,10 @@ public class ModModelProvider extends ModelProvider {
         blockModels.createFurnace(ModBlocks.REACTOR_CONTROLLER.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         conduit(blockModels, itemModels, ModBlocks.FUSION_CABLE.get(), ModItems.FUSION_CABLE.get());
         energyBattery(blockModels, ModBlocks.FUSION_ENERGY_BATTERY.get());
+        blockModels.createFurnace(ModBlocks.ANNIHILATION_GENERATOR.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
+        conduit(blockModels, itemModels, ModBlocks.ANTIMATTER_CABLE.get(), ModItems.ANTIMATTER_CABLE.get());
+        energyBattery(blockModels, ModBlocks.ANTIMATTER_ENERGY_BATTERY.get());
+        itemModels.generateFlatItem(ModItems.ANTIMATTER_CIRCUIT.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.FUSION_CIRCUIT.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.REACTOR_PLATING.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.FUSION_FUEL_PELLET.get(), ModelTemplates.FLAT_ITEM);

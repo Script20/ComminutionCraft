@@ -341,11 +341,14 @@ def tier3_sheet(arrow_colour):
 
 
 def plasma_machine_sheet(arrow_colour):
-    """The Circuit Assembler: the electric layout (energy left, input, arrow, output) plus the plasma tube right."""
+    """The Circuit Assembler: the electric layout (energy left, input, arrow, output) plus the plasma tube right and,
+    left of it (x 141), the antimatter tube for the Antimatter Circuit (fill sprite at (246, 31))."""
     s = Sheet()
     body(s)
     energy_well(s)
     plasma_well(s)
+    gauge_well(s, 141)
+    fluid_sprite(s, 246, ANTIMATTER_FLUID)
     slot(s, 55, 34)
     slot(s, 111, 30, 26, rim=PLASMA['off'])
     arrow_silhouette(s, 79, 34)
@@ -618,6 +621,11 @@ ore_purifier_sheet().save(os.path.join(OUT, 'ore_purifier.png'))
 creative_tank_sheet().save(os.path.join(OUT, 'creative_fluid_tank.png'))
 # tier 5 (antimatter), phase 5A
 accelerator_sheet().save(os.path.join(OUT, 'accelerator_controller.png'))
+# phase 5B: antimatter in (x 50) -> FE
+_gen = Sheet()
+_gen.img = fluid_machine_sheet((50,), fade_arrow(ANTIMATTER_FLUID[2], ELEC['on']))
+fluid_sprite(_gen, 246, ANTIMATTER_FLUID)
+_gen.img.save(os.path.join(OUT, 'annihilation_generator.png'))
 tier3_sheet(plasma_granulator_arrow).save(os.path.join(OUT, 'plasma_granulator.png'))
 tier3_sheet(smelter_arrow).save(os.path.join(OUT, 'plasma_smelter.png'))
 plasma_machine_sheet(plasma_granulator_arrow).save(os.path.join(OUT, 'circuit_assembler.png'))

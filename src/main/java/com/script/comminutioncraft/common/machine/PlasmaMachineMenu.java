@@ -15,7 +15,7 @@ public class PlasmaMachineMenu extends ElectricMachineMenu {
     // Client-side constructor (called when the server tells the client to open the GUI)
     public static PlasmaMachineMenu clientAssembler(int containerId, Inventory inventory) {
         return new PlasmaMachineMenu(ModMenus.CIRCUIT_ASSEMBLER.get(), containerId, inventory,
-                new SimpleContainer(ElectricMachineBlockEntity.SLOT_COUNT), new SimpleContainerData(PlasmaMachineBlockEntity.DATA_COUNT));
+                new SimpleContainer(ElectricMachineBlockEntity.SLOT_COUNT), new SimpleContainerData(CircuitAssemblerBlockEntity.DATA_COUNT));
     }
 
     public PlasmaMachineMenu(MenuType<?> type, int containerId, Inventory inventory, Container container, ContainerData data) {
@@ -30,5 +30,14 @@ public class PlasmaMachineMenu extends ElectricMachineMenu {
 
     public int getPlasmaCapacity() {
         return data.get(PlasmaMachineBlockEntity.DATA_PLASMA_CAPACITY);
+    }
+
+    /** The Circuit Assembler's antimatter tank (only it uses this menu). */
+    public int getAntimatter() {
+        return data.getCount() > CircuitAssemblerBlockEntity.DATA_ANTIMATTER ? data.get(CircuitAssemblerBlockEntity.DATA_ANTIMATTER) : 0;
+    }
+
+    public int getAntimatterCapacity() {
+        return data.getCount() > CircuitAssemblerBlockEntity.DATA_ANTIMATTER_CAPACITY ? data.get(CircuitAssemblerBlockEntity.DATA_ANTIMATTER_CAPACITY) : 0;
     }
 }

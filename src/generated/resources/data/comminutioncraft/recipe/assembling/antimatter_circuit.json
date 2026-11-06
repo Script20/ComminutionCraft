@@ -1,0 +1,8 @@
+{
+  "type": "comminutioncraft:assembling",
+  "antimatter": 10,
+  "ingredient": "comminutioncraft:fusion_circuit",
+  "result": {
+    "id": "comminutioncraft:antimatter_circuit"
+  }
+}

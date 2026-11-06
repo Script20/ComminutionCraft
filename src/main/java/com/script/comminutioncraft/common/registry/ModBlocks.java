@@ -152,6 +152,21 @@ public final class ModBlocks {
     public static final DeferredBlock<com.script.comminutioncraft.common.machine.AcceleratorControllerBlock> ACCELERATOR_CONTROLLER = BLOCKS.registerBlock(
             "accelerator_controller", com.script.comminutioncraft.common.machine.AcceleratorControllerBlock::new, ModBlocks::tier2MachineProperties);
 
+    // Tier 5 phase 5B: antimatter power
+    public static final DeferredBlock<com.script.comminutioncraft.common.machine.AnnihilationGeneratorBlock> ANNIHILATION_GENERATOR = BLOCKS.registerBlock(
+            "annihilation_generator", com.script.comminutioncraft.common.machine.AnnihilationGeneratorBlock::new, ModBlocks::tier2MachineProperties);
+
+    public static final DeferredBlock<EnergyCableBlock> ANTIMATTER_CABLE = BLOCKS.registerBlock(
+            "antimatter_cable", properties -> new EnergyCableBlock(properties, EnergyCableBlock.ANTIMATTER_CABLE_RATE), properties -> properties
+                    .mapColor(MapColor.SNOW)
+                    .strength(0.5F)
+                    .sound(SoundType.COPPER)
+                    .noOcclusion());
+
+    public static final DeferredBlock<EnergyBatteryBlock> ANTIMATTER_ENERGY_BATTERY = BLOCKS.registerBlock(
+            "antimatter_energy_battery", properties -> new EnergyBatteryBlock(properties, () -> ModBlockEntities.ANTIMATTER_ENERGY_BATTERY.get()),
+            ModBlocks::tier2MachineProperties);
+
     // Tier 4 (fusion), phase 4A: the fuel chain
     public static final DeferredBlock<IsotopeSeparatorBlock> ISOTOPE_SEPARATOR = BLOCKS.registerBlock(
             "isotope_separator", IsotopeSeparatorBlock::new, ModBlocks::tier2MachineProperties);

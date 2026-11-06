@@ -75,6 +75,7 @@ public abstract class MachineScreen<M extends AbstractContainerMenu & Controllab
     protected static final int OXYGEN_U = 216;
     protected static final int DEUTERIUM_U = 226;
     protected static final int TRITIUM_U = 236;
+    protected static final int ANTIMATTER_U = 246;
 
     private static final int TAB_GAP = 2;
 

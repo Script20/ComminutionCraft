@@ -146,6 +146,8 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("creative_tank_fills_and_stays_full", () -> ModGameTests::creativeTankFillsAndStaysFull);
         TEST_FUNCTIONS.register("accelerator_ring_forms_and_unforms", () -> ModGameTests::acceleratorRingFormsAndUnforms);
         TEST_FUNCTIONS.register("accelerator_makes_antimatter", () -> ModGameTests::acceleratorMakesAntimatter);
+        TEST_FUNCTIONS.register("annihilation_generator_charges_battery", () -> ModGameTests::annihilationGeneratorChargesBattery);
+        TEST_FUNCTIONS.register("assembler_makes_antimatter_circuit", () -> ModGameTests::assemblerMakesAntimatterCircuit);
     }
 
     public static void registerTests(RegisterGameTestsEvent event) {
@@ -1150,6 +1152,45 @@ public final class ModGameTests {
             helper.assertTrue(cell.getAmount() >= 2 && ModFluids.isAntimatter(cell.getFluid()),
                     "Expected antimatter in the cell, has " + cell.getStack() + " (accelerator: " + accelerator.getStatus() + ")");
             helper.assertTrue(helper.getBlockState(new BlockPos(1, 1, 0)).getValue(MachineBlock.LIT), "The ring should glow while running");
+        });
+    }
+
+    /**
+     * 2 mB of antimatter in an Annihilation Generator become 2 x 2,000,000 FE, all pushed into an Antimatter Energy
+     * Battery next to it (far more than a 16-bit GUI slot could show, so this also covers the split rate).
+     */
+    private static void annihilationGeneratorChargesBattery(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, ModBlocks.ANNIHILATION_GENERATOR.get());
+        helper.setBlock(pos.east(), ModBlocks.ANTIMATTER_ENERGY_BATTERY.get());
+        var generator = helper.getBlockEntity(pos, com.script.comminutioncraft.common.machine.AnnihilationGeneratorBlockEntity.class);
+        EnergyBatteryBlockEntity battery = helper.getBlockEntity(pos.east(), EnergyBatteryBlockEntity.class);
+        generator.getAntimatter().fill(FluidResource.of(ModFluids.ANTIMATTER.get()), 2);
+        int expected = 2 * com.script.comminutioncraft.common.machine.AnnihilationGeneratorBlockEntity.ENERGY_PER_MB.get();
+        helper.succeedWhen(() -> {
+            helper.assertTrue(generator.getAntimatter().getAmount() == 0, "The generator should have burned both mB");
+            helper.assertTrue(battery.getEnergy() == expected, "Expected " + expected + " FE in the battery, has " + battery.getEnergy());
+        });
+    }
+
+    /**
+     * A Fusion Circuit + 10 mB antimatter -> Antimatter Circuit in the Circuit Assembler. With 15 mB and two Fusion
+     * Circuits, it makes one and waits (5 mB isn't enough for the second); an Electronic Circuit still needs no antimatter.
+     */
+    private static void assemblerMakesAntimatterCircuit(GameTestHelper helper) {
+        PlasmaMachineBlockEntity assembler = placeAssembler(helper, new BlockPos(1, 1, 2), new ItemStack(ModItems.FUSION_CIRCUIT.get(), 2));
+        var antimatter = ((com.script.comminutioncraft.common.machine.CircuitAssemblerBlockEntity) assembler).getAntimatter();
+        antimatter.fill(FluidResource.of(ModFluids.ANTIMATTER.get()), 15);
+        PlasmaMachineBlockEntity plain = placeAssembler(helper, new BlockPos(3, 1, 2), new ItemStack(ModItems.ELECTRONIC_CIRCUIT.get()));
+        int time = com.script.comminutioncraft.common.machine.CircuitAssemblerBlockEntity.PROCESS_TIME.get();
+        helper.runAfterDelay(time * 2 + 20, () -> {
+            ItemStack output = assembler.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT);
+            helper.assertTrue(output.is(ModItems.ANTIMATTER_CIRCUIT.get()) && output.getCount() == 1,
+                    "Expected exactly one Antimatter Circuit, got " + output);
+            helper.assertTrue(antimatter.getAmount() == 5, "Expected 5 mB antimatter left, has " + antimatter.getAmount());
+            helper.assertTrue(plain.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT).is(ModItems.PLASMA_CIRCUIT.get()),
+                    "The Electronic Circuit should still become a Plasma Circuit without antimatter");
+            helper.succeed();
         });
     }
 

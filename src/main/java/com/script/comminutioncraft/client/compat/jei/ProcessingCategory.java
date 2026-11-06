@@ -51,6 +51,7 @@ public class ProcessingCategory<R extends ItemProcessingRecipe> extends Abstract
     private final Function<R, List<Component>> recipeNotes;
     private final @Nullable SecondOutput<R> secondOutput;
     private List<FluidCost> fluids = List.of();
+    private Function<R, List<FluidCost>> recipeFluids = recipe -> List.of();
 
     public ProcessingCategory(IGuiHelper guiHelper, IRecipeHolderType<R> type, Component title, ItemLike icon,
                               List<Station> stations, List<Component> notes) {
@@ -80,6 +81,22 @@ public class ProcessingCategory<R extends ItemProcessingRecipe> extends Abstract
         return this;
     }
 
+    /** Adds fluid slots that only some recipes use (the Antimatter Circuit's antimatter), after the shared ones. */
+    public ProcessingCategory<R> withRecipeFluids(Function<R, List<FluidCost>> costs) {
+        recipeFluids = costs;
+        return this;
+    }
+
+    private List<FluidCost> fluidsFor(R recipe) {
+        List<FluidCost> own = recipeFluids.apply(recipe);
+        if (own.isEmpty()) {
+            return fluids;
+        }
+        List<FluidCost> all = new ArrayList<>(fluids);
+        all.addAll(own);
+        return all;
+    }
+
     private static Component chanceText(float chance) {
         return Component.translatable("jei.comminutioncraft.chance", Math.round(chance * 100));
     }
@@ -96,6 +113,7 @@ public class ProcessingCategory<R extends ItemProcessingRecipe> extends Abstract
         builder.addOutputSlot(61, 5)
                 .setOutputSlotBackground()
                 .add(recipe.value().getResult());
+        List<FluidCost> fluids = fluidsFor(recipe.value());
         for (int i = 0; i < fluids.size(); i++) {
             FluidCost cost = fluids.get(i);
             builder.addInputSlot(1 + i * 18, FLUID_Y)
@@ -121,6 +139,7 @@ public class ProcessingCategory<R extends ItemProcessingRecipe> extends Abstract
         }
         tooltip.addAll(notes);
         tooltip.addAll(recipeNotes.apply(recipe.value()));
+        List<FluidCost> fluids = fluidsFor(recipe.value());
         String times = stations.stream().map(station -> seconds(station.ticks())).collect(Collectors.joining(" · "));
         int textX = fluids.size() * 18;  // beside the fluid slots, if there are any
         builder.addText(Component.literal(times), WIDTH - textX, 10)

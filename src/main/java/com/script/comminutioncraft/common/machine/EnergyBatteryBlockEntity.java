@@ -45,6 +45,8 @@ public class EnergyBatteryBlockEntity extends BlockEntity implements TickingMach
     public static final com.script.comminutioncraft.common.config.ConfigInt PLASMA_TRANSFER_RATE = com.script.comminutioncraft.common.config.MachineConfig.PLASMA_ENERGY_BATTERY_TRANSFER_RATE;
     public static final com.script.comminutioncraft.common.config.ConfigInt FUSION_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.FUSION_ENERGY_BATTERY_CAPACITY;
     public static final com.script.comminutioncraft.common.config.ConfigInt FUSION_TRANSFER_RATE = com.script.comminutioncraft.common.config.MachineConfig.FUSION_ENERGY_BATTERY_TRANSFER_RATE;
+    public static final com.script.comminutioncraft.common.config.ConfigInt ANTIMATTER_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.ANTIMATTER_ENERGY_BATTERY_CAPACITY;
+    public static final com.script.comminutioncraft.common.config.ConfigInt ANTIMATTER_TRANSFER_RATE = com.script.comminutioncraft.common.config.MachineConfig.ANTIMATTER_ENERGY_BATTERY_TRANSFER_RATE;
     /** Charge cells on the front texture (blockstate {@code charge} 0..CELLS). */
     public static final int CELLS = 6;
 
@@ -57,7 +59,9 @@ public class EnergyBatteryBlockEntity extends BlockEntity implements TickingMach
     public static final int DATA_SIDES = 5;
     public static final int DATA_RECEIVED = 6;
     public static final int DATA_SENT = 7;
-    public static final int DATA_COUNT = 8;
+    public static final int DATA_RECEIVED_HIGH = 8;
+    public static final int DATA_SENT_HIGH = 9;
+    public static final int DATA_COUNT = 10;
 
     private final int capacity;
     private final int transferRate;
@@ -82,8 +86,10 @@ public class EnergyBatteryBlockEntity extends BlockEntity implements TickingMach
                 case DATA_CAPACITY_HIGH -> EnergySync.high(energy.getCapacity());
                 case DATA_REDSTONE -> controls.redstone().ordinal();
                 case DATA_SIDES -> controls.packSides();
-                case DATA_RECEIVED -> received;
-                case DATA_SENT -> sent;
+                case DATA_RECEIVED -> EnergySync.low(received);
+                case DATA_SENT -> EnergySync.low(sent);
+                case DATA_RECEIVED_HIGH -> EnergySync.high(received);
+                case DATA_SENT_HIGH -> EnergySync.high(sent);
                 default -> 0;
             };
         }
@@ -112,6 +118,12 @@ public class EnergyBatteryBlockEntity extends BlockEntity implements TickingMach
     public static EnergyBatteryBlockEntity fusion(BlockPos pos, BlockState state) {
         return new EnergyBatteryBlockEntity(ModBlockEntities.FUSION_ENERGY_BATTERY.get(), ModMenus.FUSION_ENERGY_BATTERY.get(),
                 pos, state, FUSION_CAPACITY.get(), FUSION_TRANSFER_RATE.get());
+    }
+
+    /** Tier 5 Antimatter Energy Battery. */
+    public static EnergyBatteryBlockEntity antimatter(BlockPos pos, BlockState state) {
+        return new EnergyBatteryBlockEntity(ModBlockEntities.ANTIMATTER_ENERGY_BATTERY.get(), ModMenus.ANTIMATTER_ENERGY_BATTERY.get(),
+                pos, state, ANTIMATTER_CAPACITY.get(), ANTIMATTER_TRANSFER_RATE.get());
     }
 
     private EnergyBatteryBlockEntity(BlockEntityType<?> type, MenuType<EnergyBatteryMenu> menuType, BlockPos pos,

@@ -58,6 +58,13 @@ public class FluidMachineScreen extends MachineScreen<FluidMachineMenu> {
                 "gui.comminutioncraft.generating");
     }
 
+    /** Antimatter (in) -> FE. */
+    public static FluidMachineScreen annihilationGenerator(FluidMachineMenu menu, Inventory inventory, Component title) {
+        return new FluidMachineScreen(menu, inventory, title, ComminutionCraft.id("textures/gui/container/annihilation_generator.png"),
+                List.of(new Gauge(0, 50, ANTIMATTER_U, "gui.comminutioncraft.antimatter")),
+                "gui.comminutioncraft.generating", Tier.ANTIMATTER);
+    }
+
     /** Water (in) -> deuterium (out). */
     public static FluidMachineScreen isotopeSeparator(FluidMachineMenu menu, Inventory inventory, Component title) {
         return new FluidMachineScreen(menu, inventory, title, ComminutionCraft.id("textures/gui/container/isotope_separator.png"),

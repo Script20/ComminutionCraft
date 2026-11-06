@@ -60,7 +60,8 @@ public abstract class FluidMachineBlockEntity extends BlockEntity implements Tic
     public static final int DATA_REDSTONE = 4;
     public static final int DATA_SIDES = 5;
     public static final int DATA_RATE = 6;
-    public static final int DATA_TANKS = 7;
+    public static final int DATA_RATE_HIGH = 7;
+    public static final int DATA_TANKS = 8;
 
     /** What a tank is for, which decides the faces it fills or empties through. */
     public enum TankRole { INPUT, OUTPUT, BYPRODUCT }
@@ -91,7 +92,8 @@ public abstract class FluidMachineBlockEntity extends BlockEntity implements Tic
                 case DATA_CAPACITY_HIGH -> EnergySync.high(energy.getCapacity());
                 case DATA_REDSTONE -> controls.redstone().ordinal();
                 case DATA_SIDES -> controls.packSides();
-                case DATA_RATE -> rate;
+                case DATA_RATE -> EnergySync.low(rate);
+                case DATA_RATE_HIGH -> EnergySync.high(rate);
                 default -> 0;
             };
         }

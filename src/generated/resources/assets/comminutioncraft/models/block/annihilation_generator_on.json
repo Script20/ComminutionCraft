@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "comminutioncraft:block/annihilation_generator_front_on",
+    "side": "comminutioncraft:block/annihilation_generator_side",
+    "top": "comminutioncraft:block/annihilation_generator_top"
+  }
+}

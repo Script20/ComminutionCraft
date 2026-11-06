@@ -149,5 +149,13 @@ public final class ModBlockEntities {
             BLOCK_ENTITY_TYPES.register("accelerator_port",
                     () -> new BlockEntityType<>(com.script.comminutioncraft.common.machine.AcceleratorPortBlockEntity::new, ModBlocks.ACCELERATOR_PORT.get()));
 
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.script.comminutioncraft.common.machine.AnnihilationGeneratorBlockEntity>> ANNIHILATION_GENERATOR =
+            BLOCK_ENTITY_TYPES.register("annihilation_generator",
+                    () -> new BlockEntityType<>(com.script.comminutioncraft.common.machine.AnnihilationGeneratorBlockEntity::new, ModBlocks.ANNIHILATION_GENERATOR.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<EnergyBatteryBlockEntity>> ANTIMATTER_ENERGY_BATTERY =
+            BLOCK_ENTITY_TYPES.register("antimatter_energy_battery",
+                    () -> new BlockEntityType<>(EnergyBatteryBlockEntity::antimatter, ModBlocks.ANTIMATTER_ENERGY_BATTERY.get()));
+
     private ModBlockEntities() {}
 }

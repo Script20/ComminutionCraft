@@ -22,6 +22,14 @@ public final class MachineConfig {
     public static final ConfigInt CABLES_FLUID_PIPE;
     public static final ConfigInt CABLES_PLASMA_CABLE;
     public static final ConfigInt CABLES_MAGNETIC_CONDUIT;
+    public static final ConfigInt CABLES_ANTIMATTER_CABLE;
+    public static final ConfigInt ANTIMATTER_ENERGY_BATTERY_CAPACITY;
+    public static final ConfigInt ANTIMATTER_ENERGY_BATTERY_TRANSFER_RATE;
+    public static final ConfigInt ANNIHILATION_GENERATOR_ENERGY_PER_MB;
+    public static final ConfigInt ANNIHILATION_GENERATOR_BURN_TICKS_PER_MB;
+    public static final ConfigInt ANNIHILATION_GENERATOR_ENERGY_CAPACITY;
+    public static final ConfigInt ANNIHILATION_GENERATOR_MAX_ENERGY_OUTPUT;
+    public static final ConfigInt CIRCUIT_ASSEMBLER_ANTIMATTER_CAPACITY;
     public static final ConfigInt CONTAINMENT_CELL_CAPACITY;
     public static final ConfigInt CONTAINMENT_CELL_OUTPUT_RATE;
     public static final ConfigInt COAL_GRANULATOR_PROCESS_TIME;
@@ -133,6 +141,7 @@ public final class MachineConfig {
         CABLES_FLUID_PIPE = integer(builder, "cables", "fluidPipe", "Fluid pipe", "Fluid Pipe: mB per transfer", 1_000);
         CABLES_PLASMA_CABLE = integer(builder, "cables", "plasmaCable", "Plasma cable", "Plasma Cable: mB per transfer", 8_000);
         CABLES_MAGNETIC_CONDUIT = integer(builder, "cables", "magneticConduit", "Magnetic conduit", "Magnetic Conduit (antimatter only): mB per transfer", 1_000);
+        CABLES_ANTIMATTER_CABLE = integer(builder, "cables", "antimatterCable", "Antimatter cable", "Antimatter Cable: FE per tick, per network", 128_000);
         builder.pop();
         section(builder, "coal_granulator", "Coal Granulator");
         COAL_GRANULATOR_PROCESS_TIME = integer(builder, "coal_granulator", "processTime", "Process time", "Ticks per operation", 150);
@@ -184,6 +193,7 @@ public final class MachineConfig {
         CIRCUIT_ASSEMBLER_ENERGY_PER_TICK = integer(builder, "circuit_assembler", "energyPerTick", "Energy per tick", "FE used per tick while working", 20);
         CIRCUIT_ASSEMBLER_PLASMA_PER_OPERATION = integer(builder, "circuit_assembler", "plasmaPerOperation", "Plasma per operation", "mB of plasma per operation", 100);
         CIRCUIT_ASSEMBLER_PLASMA_CAPACITY = integer(builder, "circuit_assembler", "plasmaCapacity", "Plasma capacity", "Plasma tank, mB", 8_000);
+        CIRCUIT_ASSEMBLER_ANTIMATTER_CAPACITY = integer(builder, "circuit_assembler", "antimatterCapacity", "Antimatter capacity", "Antimatter tank, mB (for recipes that need antimatter)", 1_000);
         builder.pop();
         section(builder, "ore_purifier", "Ore Purifier");
         ORE_PURIFIER_PROCESS_TIME = integer(builder, "ore_purifier", "processTime", "Process time", "Ticks per operation", 60);
@@ -209,6 +219,10 @@ public final class MachineConfig {
         section(builder, "fusion_energy_battery", "Fusion Energy Battery");
         FUSION_ENERGY_BATTERY_CAPACITY = integer(builder, "fusion_energy_battery", "capacity", "Capacity", "FE stored", 64_000_000);
         FUSION_ENERGY_BATTERY_TRANSFER_RATE = integer(builder, "fusion_energy_battery", "transferRate", "Transfer rate", "Max FE per tick in and out", 32_000);
+        builder.pop();
+        section(builder, "antimatter_energy_battery", "Antimatter Energy Battery");
+        ANTIMATTER_ENERGY_BATTERY_CAPACITY = integer(builder, "antimatter_energy_battery", "capacity", "Capacity", "FE stored", 512_000_000);
+        ANTIMATTER_ENERGY_BATTERY_TRANSFER_RATE = integer(builder, "antimatter_energy_battery", "transferRate", "Transfer rate", "Max FE per tick in and out", 128_000);
         builder.pop();
         section(builder, "creative_energy_battery", "Creative Energy Battery");
         CREATIVE_ENERGY_BATTERY_PUSH_PER_FACE = integer(builder, "creative_energy_battery", "pushPerFace", "Push per face", "FE per tick pushed into each face", 1_000_000);
@@ -277,6 +291,13 @@ public final class MachineConfig {
         FUSION_REACTOR_MAX_ENERGY_OUTPUT = integer(builder, "fusion_reactor", "maxEnergyOutput", "Max energy output", "Max FE per tick out of the ports", 16_000);
         FUSION_REACTOR_TANK_CAPACITY = integer(builder, "fusion_reactor", "tankCapacity", "Tank capacity", "Plasma and tritium tanks, mB each", 8_000);
         FUSION_REACTOR_PORT_TRITIUM_OUTPUT = integer(builder, "fusion_reactor", "portTritiumOutput", "Port tritium output", "Max mB of tritium per tick pushed out of each port", 500);
+        builder.pop();
+
+        section(builder, "annihilation_generator", "Annihilation Generator");
+        ANNIHILATION_GENERATOR_ENERGY_PER_MB = integer(builder, "annihilation_generator", "energyPerMb", "Energy per mB", "FE made per mB of antimatter", 2_000_000);
+        ANNIHILATION_GENERATOR_BURN_TICKS_PER_MB = integer(builder, "annihilation_generator", "burnTicksPerMb", "Burn ticks per mB", "Ticks one mB burns for (FE per tick = energy per mB / this)", 20);
+        ANNIHILATION_GENERATOR_ENERGY_CAPACITY = integer(builder, "annihilation_generator", "energyCapacity", "Energy capacity", "FE buffer", 4_000_000);
+        ANNIHILATION_GENERATOR_MAX_ENERGY_OUTPUT = integer(builder, "annihilation_generator", "maxEnergyOutput", "Max energy output", "Max FE per tick pushed out", 128_000);
         builder.pop();
 
         section(builder, "particle_accelerator", "Particle Accelerator");

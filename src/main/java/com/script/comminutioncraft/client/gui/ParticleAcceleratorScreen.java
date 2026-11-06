@@ -22,7 +22,6 @@ public class ParticleAcceleratorScreen extends MachineScreen<ParticleAccelerator
     private static final int GOOD_COLOR = 0xFFD6E4FF;
     private static final int WARNING_COLOR = 0xFFFFB04A;
     private static final int HYDROGEN_X = 141;
-    private static final int ANTIMATTER_U = 246;
     private static final int TEXT_X = 30;
     private static final int BAR_X = 30;
     private static final int BAR_Y = 56;

@@ -75,6 +75,8 @@ public class ComminutionCraftClient {
         event.<ElectricMachineMenu, OrePurifierScreen>register(ModMenus.ORE_PURIFIER.get(),
                 (menu, inventory, title) -> new OrePurifierScreen((OrePurifierMenu) menu, inventory, title));
         event.register(ModMenus.FUSION_ENERGY_BATTERY.get(), EnergyBatteryScreen::fusion);
+        event.register(ModMenus.ANTIMATTER_ENERGY_BATTERY.get(), EnergyBatteryScreen::antimatter);
+        event.register(ModMenus.ANNIHILATION_GENERATOR.get(), FluidMachineScreen::annihilationGenerator);
         event.<ElectricMachineMenu, PelletPressScreen>register(ModMenus.PELLET_PRESS.get(),
                 (menu, inventory, title) -> new PelletPressScreen((PelletPressMenu) menu, inventory, title));
         event.register(ModMenus.PLASMA_GRANULATOR.get(), ElectricMachineScreen::plasmaGranulator);

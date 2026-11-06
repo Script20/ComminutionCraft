@@ -59,6 +59,7 @@ public final class ModItems {
     public static final DeferredItem<Item> PLASMA_CIRCUIT = ITEMS.registerSimpleItem("plasma_circuit");
     // Tier 4: the "plasma-forged parts" (Circuit Assembler) and the reactor's fuel (Pellet Press)
     public static final DeferredItem<Item> FUSION_CIRCUIT = ITEMS.registerSimpleItem("fusion_circuit");
+    public static final DeferredItem<Item> ANTIMATTER_CIRCUIT = ITEMS.registerSimpleItem("antimatter_circuit");
     public static final DeferredItem<Item> REACTOR_PLATING = ITEMS.registerSimpleItem("reactor_plating");
     public static final DeferredItem<Item> FUSION_FUEL_PELLET = ITEMS.registerSimpleItem("fusion_fuel_pellet");
     /** Doubles an Atmospheric Water Generator's output; wears down by 1 per 100 mB of water it makes. */
@@ -107,6 +108,10 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> SOARYN_CHEST = ITEMS.registerSimpleBlockItem("soaryn_chest", ModBlocks.SOARYN_CHEST);
     public static final DeferredItem<BlockItem> CONTAINMENT_CELL = ITEMS.registerSimpleBlockItem("containment_cell", ModBlocks.CONTAINMENT_CELL);
     public static final DeferredItem<BlockItem> MAGNETIC_CONDUIT = ITEMS.registerSimpleBlockItem("magnetic_conduit", ModBlocks.MAGNETIC_CONDUIT);
+    public static final DeferredItem<BlockItem> ANNIHILATION_GENERATOR = ITEMS.registerSimpleBlockItem("annihilation_generator", ModBlocks.ANNIHILATION_GENERATOR);
+    public static final DeferredItem<BlockItem> ANTIMATTER_CABLE = ITEMS.registerSimpleBlockItem("antimatter_cable", ModBlocks.ANTIMATTER_CABLE);
+    public static final DeferredItem<EnergyBatteryItem> ANTIMATTER_ENERGY_BATTERY = ITEMS.registerItem("antimatter_energy_battery",
+            properties -> new EnergyBatteryItem(ModBlocks.ANTIMATTER_ENERGY_BATTERY.get(), properties, EnergyBatteryBlockEntity.ANTIMATTER_CAPACITY, 0xD6E4FF));
     public static final DeferredItem<BlockItem> ACCELERATOR_SEGMENT = ITEMS.registerSimpleBlockItem("accelerator_segment", ModBlocks.ACCELERATOR_SEGMENT);
     public static final DeferredItem<BlockItem> ACCELERATOR_PORT = ITEMS.registerSimpleBlockItem("accelerator_port", ModBlocks.ACCELERATOR_PORT);
     public static final DeferredItem<BlockItem> ACCELERATOR_CONTROLLER = ITEMS.registerSimpleBlockItem("accelerator_controller", ModBlocks.ACCELERATOR_CONTROLLER);

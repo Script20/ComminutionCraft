@@ -38,6 +38,11 @@ public class EnergyBatteryMenu extends AbstractContainerMenu implements Controll
                 new SimpleContainerData(EnergyBatteryBlockEntity.DATA_COUNT));
     }
 
+    public static EnergyBatteryMenu clientAntimatter(int containerId, Inventory inventory) {
+        return new EnergyBatteryMenu(ModMenus.ANTIMATTER_ENERGY_BATTERY.get(), containerId, inventory, null,
+                new SimpleContainerData(EnergyBatteryBlockEntity.DATA_COUNT));
+    }
+
     public static EnergyBatteryMenu clientFusion(int containerId, Inventory inventory) {
         return new EnergyBatteryMenu(ModMenus.FUSION_ENERGY_BATTERY.get(), containerId, inventory, null,
                 new SimpleContainerData(EnergyBatteryBlockEntity.DATA_COUNT));
@@ -109,10 +114,10 @@ public class EnergyBatteryMenu extends AbstractContainerMenu implements Controll
     }
 
     public int getReceived() {
-        return data.get(EnergyBatteryBlockEntity.DATA_RECEIVED);
+        return EnergySync.join(data.get(EnergyBatteryBlockEntity.DATA_RECEIVED), data.get(EnergyBatteryBlockEntity.DATA_RECEIVED_HIGH));
     }
 
     public int getSent() {
-        return data.get(EnergyBatteryBlockEntity.DATA_SENT);
+        return EnergySync.join(data.get(EnergyBatteryBlockEntity.DATA_SENT), data.get(EnergyBatteryBlockEntity.DATA_SENT_HIGH));
     }
 }

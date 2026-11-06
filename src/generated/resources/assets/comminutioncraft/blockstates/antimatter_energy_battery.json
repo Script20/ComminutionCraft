@@ -1,0 +1,109 @@
+{
+  "variants": {
+    "charge=0,facing=east": {
+      "model": "comminutioncraft:block/antimatter_energy_battery_charge_0",
+      "y": 90
+    },
+    "charge=0,facing=north": {
+      "model": "comminutioncraft:block/antimatter_energy_battery_charge_0"
+    },
+    "charge=0,facing=south": {
+      "model": "comminutioncraft:block/antimatter_energy_battery_charge_0",
+      "y": 180
+    },
+    "charge=0,facing=west": {
+      "model": "comminutioncraft:block/antimatter_energy_battery_charge_0",
+      "y": 270
+    },
+    "charge=1,facing=east": {
+      "model": "comminutioncraft:block/antimatter_energy_battery_charge_1",
+      "y": 90
+    },
+    "charge=1,facing=north": {
+      "model": "comminutioncraft:block/antimatter_energy_battery_charge_1"
+    },
+    "charge=1,facing=south": {
+      "model": "comminutioncraft:block/antimatter_energy_battery_charge_1",
+      "y": 180
+    },
+    "charge=1,facing=west": {
+      "model": "comminutioncraft:block/antimatter_energy_battery_charge_1",
+      "y": 270
+    },
+    "charge=2,facing=east": {
+      "model": "comminutioncraft:block/antimatter_energy_battery_charge_2",
+      "y": 90
+    },
+    "charge=2,facing=north": {
+      "model": "comminutioncraft:block/antimatter_energy_battery_charge_2"
+    },
+    "charge=2,facing=south": {
+      "model": "comminutioncraft:block/antimatter_energy_battery_charge_2",
+      "y": 180
+    },
+    "charge=2,facing=west": {
+      "model": "comminutioncraft:block/antimatter_energy_battery_charge_2",
+      "y": 270
+    },
+    "charge=3,facing=east": {
+      "model": "comminutioncraft:block/antimatter_energy_battery_charge_3",
+      "y": 90
+    },
+    "charge=3,facing=north": {
+      "model": "comminutioncraft:block/antimatter_energy_battery_charge_3"
+    },
+    "charge=3,facing=south": {
+      "model": "comminutioncraft:block/antimatter_energy_battery_charge_3",
+      "y": 180
+    },
+    "charge=3,facing=west": {
+      "model": "comminutioncraft:block/antimatter_energy_battery_charge_3",
+      "y": 270
+    },
+    "charge=4,facing=east": {
+      "model": "comminutioncraft:block/antimatter_energy_battery_charge_4",
+      "y": 90
+    },
+    "charge=4,facing=north": {
+      "model": "comminutioncraft:block/antimatter_energy_battery_charge_4"
+    },
+    "charge=4,facing=south": {
+      "model": "comminutioncraft:block/antimatter_energy_battery_charge_4",
+      "y": 180
+    },
+    "charge=4,facing=west": {
+      "model": "comminutioncraft:block/antimatter_energy_battery_charge_4",
+      "y": 270
+    },
+    "charge=5,facing=east": {
+      "model": "comminutioncraft:block/antimatter_energy_battery_charge_5",
+      "y": 90
+    },
+    "charge=5,facing=north": {
+      "model": "comminutioncraft:block/antimatter_energy_battery_charge_5"
+    },
+    "charge=5,facing=south": {
+      "model": "comminutioncraft:block/antimatter_energy_battery_charge_5",
+      "y": 180
+    },
+    "charge=5,facing=west": {
+      "model": "comminutioncraft:block/antimatter_energy_battery_charge_5",
+      "y": 270
+    },
+    "charge=6,facing=east": {
+      "model": "comminutioncraft:block/antimatter_energy_battery_charge_6",
+      "y": 90
+    },
+    "charge=6,facing=north": {
+      "model": "comminutioncraft:block/antimatter_energy_battery_charge_6"
+    },
+    "charge=6,facing=south": {
+      "model": "comminutioncraft:block/antimatter_energy_battery_charge_6",
+      "y": 180
+    },
+    "charge=6,facing=west": {
+      "model": "comminutioncraft:block/antimatter_energy_battery_charge_6",
+      "y": 270
+    }
+  }
+}
