@@ -111,7 +111,8 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> ANNIHILATION_GENERATOR = ITEMS.registerSimpleBlockItem("annihilation_generator", ModBlocks.ANNIHILATION_GENERATOR);
     public static final DeferredItem<BlockItem> ANTIMATTER_CABLE = ITEMS.registerSimpleBlockItem("antimatter_cable", ModBlocks.ANTIMATTER_CABLE);
     public static final DeferredItem<EnergyBatteryItem> ANTIMATTER_ENERGY_BATTERY = ITEMS.registerItem("antimatter_energy_battery",
-            properties -> new EnergyBatteryItem(ModBlocks.ANTIMATTER_ENERGY_BATTERY.get(), properties, EnergyBatteryBlockEntity.ANTIMATTER_CAPACITY, 0xD6E4FF));
+            properties -> new EnergyBatteryItem(ModBlocks.ANTIMATTER_ENERGY_BATTERY.get(), properties, EnergyBatteryBlockEntity.ANTIMATTER_CAPACITY, 0xD6E4FF),
+            properties -> properties.useBlockDescriptionPrefix());
     public static final DeferredItem<BlockItem> ACCELERATOR_SEGMENT = ITEMS.registerSimpleBlockItem("accelerator_segment", ModBlocks.ACCELERATOR_SEGMENT);
     public static final DeferredItem<BlockItem> ACCELERATOR_PORT = ITEMS.registerSimpleBlockItem("accelerator_port", ModBlocks.ACCELERATOR_PORT);
     public static final DeferredItem<BlockItem> ACCELERATOR_CONTROLLER = ITEMS.registerSimpleBlockItem("accelerator_controller", ModBlocks.ACCELERATOR_CONTROLLER);
