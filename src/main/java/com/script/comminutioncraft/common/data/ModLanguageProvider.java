@@ -75,6 +75,8 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModBlocks.ANTIMATTER_ENERGY_BATTERY.get(), "Antimatter Energy Battery");
         add(ModItems.ANTIMATTER_CIRCUIT.get(), "Antimatter Circuit");
         add("jei.comminutioncraft.energy_out", "Energy (FE)");
+        add("jei.comminutioncraft.energy_in", "Energy (FE)");
+        add("jei.comminutioncraft.particle_accelerator.energy", "%s FE/t per ring block (7x7: %s FE/t)");
         add("jei.comminutioncraft.generator.per_mb", "%s FE per mB");
         add("jei.comminutioncraft.generator.up_to", "up to %s FE/t");
         add("jei.comminutioncraft.generator.while_burning", "%s FE/t while burning");
