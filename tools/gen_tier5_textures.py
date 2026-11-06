@@ -24,6 +24,7 @@ import gen_tier3_textures as t3  # noqa: E402
 import phase_5a_preview as p5  # noqa: E402
 import phase_5b_preview as p5b  # noqa: E402
 import phase_5c_preview as p5c  # noqa: E402
+import accelerator_ports_preview as ports  # noqa: E402  (Input / Output port faces, approved 2026-11-06)
 import dark_chassis_system as dcs  # noqa: E402
 
 BLOCK = os.path.join(TOOLS, '..', 'src', 'main', 'resources', 'assets', 'comminutioncraft', 'textures', 'block')
@@ -41,8 +42,10 @@ if __name__ == '__main__':
     t3.save_strip(os.path.join(BLOCK, 'accelerator_segment_side_on.png'), p5.segment_side)
     p5.segment_top().img.save(os.path.join(BLOCK, 'accelerator_segment_top.png'))
     t3.save_strip(os.path.join(BLOCK, 'accelerator_segment_top_on.png'), lambda f: p5.segment_top(True, f))
-    p5.port_side().img.save(os.path.join(BLOCK, 'accelerator_port_side.png'))
-    t3.save_strip(os.path.join(BLOCK, 'accelerator_port_side_on.png'), lambda f: p5.port_side(True, f))
+    ports.port_side(False).img.save(os.path.join(BLOCK, 'accelerator_port_side.png'))
+    t3.save_strip(os.path.join(BLOCK, 'accelerator_port_side_on.png'), lambda f: ports.port_side(False, True, f))
+    ports.port_side(True).img.save(os.path.join(BLOCK, 'accelerator_port_output_side.png'))
+    t3.save_strip(os.path.join(BLOCK, 'accelerator_port_output_side_on.png'), lambda f: ports.port_side(True, True, f))
     p5.segment_top().img.save(os.path.join(BLOCK, 'accelerator_port_top.png'))
     t3.save_strip(os.path.join(BLOCK, 'accelerator_port_top_on.png'), lambda f: p5.segment_top(True, f))
     p5.segment_top().img.save(os.path.join(BLOCK, 'accelerator_controller_top.png'))

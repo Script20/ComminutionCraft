@@ -138,7 +138,7 @@ public class ModModelProvider extends ModelProvider {
         conduit(blockModels, itemModels, ModBlocks.MAGNETIC_CONDUIT.get(), ModItems.MAGNETIC_CONDUIT.get());
         // Particle Accelerator: segments and ports light up while it runs (_on textures); the controller is a furnace
         litColumn(blockModels, ModBlocks.ACCELERATOR_SEGMENT.get());
-        litColumn(blockModels, ModBlocks.ACCELERATOR_PORT.get());
+        acceleratorPort(blockModels, ModBlocks.ACCELERATOR_PORT.get());
         blockModels.createFurnace(ModBlocks.ACCELERATOR_CONTROLLER.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         // Soaryn Chest: drawn by the vanilla ChestRenderer; the block model is particles only, the item a special model
         blockModels.createChest(ModBlocks.SOARYN_CHEST.get(), net.minecraft.world.level.block.Blocks.OAK_PLANKS,
@@ -203,6 +203,31 @@ public class ModModelProvider extends ModelProvider {
         blockModels.blockStateOutput.accept(MultiVariantGenerator.dispatch(block)
                 .with(BlockModelGenerators.createBooleanModelDispatch(BlockStateProperties.LIT,
                         BlockModelGenerators.plainVariant(on), BlockModelGenerators.plainVariant(off))));
+    }
+
+    /** The Accelerator Port: Input / Output faces (output = <block>_output_side), each with a lit variant. */
+    private static void acceleratorPort(BlockModelGenerators blockModels, Block block) {
+        Identifier[] models = new Identifier[4];
+        String[] suffixes = {"", "_on", "_output", "_output_on"};
+        for (int i = 0; i < 4; i++) {
+            String side = (i >= 2 ? "_output_side" : "_side") + (i % 2 == 1 ? "_on" : "");
+            String end = i % 2 == 1 ? "_top_on" : "_top";
+            String suffix = suffixes[i];
+            TextureMapping textures = new TextureMapping()
+                    .put(TextureSlot.SIDE, TextureMapping.getBlockTexture(block, side))
+                    .put(TextureSlot.END, TextureMapping.getBlockTexture(block, end))
+                    .put(TextureSlot.PARTICLE, TextureMapping.getBlockTexture(block, side));
+            models[i] = suffix.isEmpty()
+                    ? ModelTemplates.CUBE_COLUMN.create(block, textures, blockModels.modelOutput)
+                    : ModelTemplates.CUBE_COLUMN.createWithSuffix(block, suffix, textures, blockModels.modelOutput);
+        }
+        blockModels.blockStateOutput.accept(MultiVariantGenerator.dispatch(block)
+                .with(net.minecraft.client.data.models.blockstates.PropertyDispatch.initial(BlockStateProperties.LIT,
+                                com.script.comminutioncraft.common.machine.AcceleratorPortBlock.OUTPUT)
+                        .select(false, false, BlockModelGenerators.plainVariant(models[0]))
+                        .select(true, false, BlockModelGenerators.plainVariant(models[1]))
+                        .select(false, true, BlockModelGenerators.plainVariant(models[2]))
+                        .select(true, true, BlockModelGenerators.plainVariant(models[3]))));
     }
 
     /** Cables and pipes: core + one arm per connected side + a plate where it meets a machine (same UV sheet layout). */

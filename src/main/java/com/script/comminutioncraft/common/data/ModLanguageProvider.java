@@ -91,6 +91,11 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModBlocks.MAGNETIC_CONDUIT.get(), "Magnetic Conduit");
         add(ModBlocks.ACCELERATOR_SEGMENT.get(), "Accelerator Segment");
         add(ModBlocks.ACCELERATOR_PORT.get(), "Accelerator Port");
+        add("message.comminutioncraft.wrench.port_input", "Accelerator Port: Input (takes FE and hydrogen)");
+        add("message.comminutioncraft.wrench.port_output", "Accelerator Port: Output (gives antimatter)");
+        add("tooltip.comminutioncraft.accelerator_port", "Input: takes FE and hydrogen · Output: gives antimatter");
+        add("tooltip.comminutioncraft.accelerator_port.switch", "Switch with the wrench in Configure mode");
+        add("jei.comminutioncraft.particle_accelerator.output_port", "Output Port: gives antimatter (switch a port with the wrench, Configure mode)");
         add(ModBlocks.ACCELERATOR_CONTROLLER.get(), "Particle Accelerator Controller");
         add("gui.comminutioncraft.antimatter", "Antimatter: %s / %s mB");
         add("gui.comminutioncraft.accelerator.not_formed", "Not formed");
@@ -106,7 +111,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.comminutioncraft.accelerator.progress", "Next mB: %s%%");
         add("jei.comminutioncraft.particle_accelerator", "Particle Accelerator");
         add("jei.comminutioncraft.particle_accelerator.segment", "The ring: Accelerator Segments (or Ports), one block high");
-        add("jei.comminutioncraft.particle_accelerator.port", "Accelerator Port: FE and hydrogen in, antimatter out (any spot in the ring)");
+        add("jei.comminutioncraft.particle_accelerator.port", "Input Port: takes FE and hydrogen (any spot in the ring)");
         add("jei.comminutioncraft.particle_accelerator.controller", "The Controller: any spot in the ring");
         add("jei.comminutioncraft.particle_accelerator.sizes", "Square ring, %s to %s a side");
         add("jei.comminutioncraft.particle_accelerator.example", "7x7: %s FE/t, %s mB/t");

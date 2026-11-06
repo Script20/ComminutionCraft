@@ -1,10 +1,16 @@
 {
   "variants": {
-    "lit=false": {
+    "lit=false,output=false": {
       "model": "comminutioncraft:block/accelerator_port"
     },
-    "lit=true": {
+    "lit=false,output=true": {
+      "model": "comminutioncraft:block/accelerator_port_output"
+    },
+    "lit=true,output=false": {
       "model": "comminutioncraft:block/accelerator_port_on"
+    },
+    "lit=true,output=true": {
+      "model": "comminutioncraft:block/accelerator_port_output_on"
     }
   }
 }

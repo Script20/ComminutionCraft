@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "comminutioncraft:block/accelerator_port_top",
+    "side": "comminutioncraft:block/accelerator_port_output_side"
+  }
+}

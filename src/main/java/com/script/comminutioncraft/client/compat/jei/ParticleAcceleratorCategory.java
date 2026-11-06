@@ -55,6 +55,9 @@ public class ParticleAcceleratorCategory extends AbstractRecipeCategory<Particle
                 } else if (x == SIDE - 1 && z == mid) {
                     block = ModItems.ACCELERATOR_PORT.get();
                     rule = "port";
+                } else if (x == 0 && z == mid) {
+                    block = ModItems.ACCELERATOR_PORT.get();
+                    rule = "output_port";
                 } else {
                     block = ModItems.ACCELERATOR_SEGMENT.get();
                     rule = "segment";

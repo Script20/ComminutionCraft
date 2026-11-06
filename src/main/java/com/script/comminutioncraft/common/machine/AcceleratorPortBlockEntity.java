@@ -4,7 +4,6 @@ import com.script.comminutioncraft.common.config.ConfigInt;
 import com.script.comminutioncraft.common.config.MachineConfig;
 import com.script.comminutioncraft.common.machine.control.ControllableMachine;
 import com.script.comminutioncraft.common.machine.control.MachineControls;
-import com.script.comminutioncraft.common.machine.control.SideMode;
 import com.script.comminutioncraft.common.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -23,9 +22,10 @@ import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Where a Particle Accelerator meets the world. Each face follows the side config like a machine: Input faces take FE
- * and hydrogen, Output faces give antimatter (and push it into the block there, e.g. a Containment Cell or Magnetic
- * Conduit). The port only works while it's part of a formed ring; the controller links it on every ring check.
+ * Where a Particle Accelerator meets the world. The whole port is Input or Output ({@link AcceleratorPortBlock#OUTPUT},
+ * switched with the wrench): an Input port takes FE and hydrogen on every face; an Output port gives antimatter on
+ * every face and pushes it into the blocks around it (a Containment Cell, a Magnetic Conduit), never into the ring. The
+ * port only works while it's part of a formed ring; the controller links it on every ring check.
  */
 public class AcceleratorPortBlockEntity extends BlockEntity implements TickingMachine, ControllableMachine {
     /** Max mB of antimatter pushed per tick, across all output faces. */
@@ -54,24 +54,24 @@ public class AcceleratorPortBlockEntity extends BlockEntity implements TickingMa
                 ? accelerator : null;
     }
 
+    public boolean isOutput() {
+        return AcceleratorPortBlock.isOutput(getBlockState());
+    }
+
     public @Nullable ResourceHandler<FluidResource> getFluidHandler(@Nullable Direction side) {
         ParticleAcceleratorBlockEntity accelerator = getAccelerator();
         if (accelerator == null) {
             return null;
         }
-        return switch (sideMode(side)) {
-            case INPUT -> accelerator.getHydrogen().insertOnly();
-            case OUTPUT -> accelerator.getAntimatter().extractOnly();
-            case NONE, BYPRODUCT -> null;
-        };
+        return isOutput() ? accelerator.getAntimatter().extractOnly() : accelerator.getHydrogen().insertOnly();
     }
 
     public @Nullable EnergyHandler getEnergyHandler(@Nullable Direction side) {
         ParticleAcceleratorBlockEntity accelerator = getAccelerator();
-        return accelerator != null && sideMode(side) == SideMode.INPUT ? accelerator.getEnergy() : null;
+        return accelerator != null && !isOutput() ? accelerator.getEnergy() : null;
     }
 
-    // ---- Ticking: push antimatter out of Output faces ----
+    // ---- Ticking: an Output port pushes antimatter out of every face ----
 
     @Override
     public MachineControls getControls() {
@@ -86,16 +86,13 @@ public class AcceleratorPortBlockEntity extends BlockEntity implements TickingMa
     @Override
     public void serverTick(ServerLevel level, BlockPos pos, BlockState state) {
         ParticleAcceleratorBlockEntity accelerator = getAccelerator();
-        if (accelerator == null) {
+        if (accelerator == null || !isOutput()) {
             return;
         }
         int budget = Math.min(MAX_ANTIMATTER_OUTPUT.get(), accelerator.getAntimatter().getAmount());
         for (Direction direction : Direction.values()) {
             if (budget <= 0) {
                 return;
-            }
-            if (sideMode(direction) != SideMode.OUTPUT) {
-                continue;
             }
             BlockPos next = pos.relative(direction);
             if (level.getBlockEntity(next) instanceof AcceleratorPortBlockEntity || level.getBlockEntity(next) instanceof ParticleAcceleratorBlockEntity) {

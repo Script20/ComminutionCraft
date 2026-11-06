@@ -146,6 +146,7 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("creative_tank_fills_and_stays_full", () -> ModGameTests::creativeTankFillsAndStaysFull);
         TEST_FUNCTIONS.register("accelerator_ring_forms_and_unforms", () -> ModGameTests::acceleratorRingFormsAndUnforms);
         TEST_FUNCTIONS.register("accelerator_makes_antimatter", () -> ModGameTests::acceleratorMakesAntimatter);
+        TEST_FUNCTIONS.register("wrench_switches_accelerator_port", () -> ModGameTests::wrenchSwitchesAcceleratorPort);
         TEST_FUNCTIONS.register("annihilation_generator_charges_battery", () -> ModGameTests::annihilationGeneratorChargesBattery);
         TEST_FUNCTIONS.register("assembler_makes_antimatter_circuit", () -> ModGameTests::assemblerMakesAntimatterCircuit);
         TEST_FUNCTIONS.register("flotation_cell_makes_concentrate", () -> ModGameTests::flotationCellMakesConcentrate);
@@ -1134,13 +1135,16 @@ public final class ModGameTests {
     }
 
     /**
-     * A 5x5 ring fed through its port (FE from a Creative Energy Battery above, hydrogen from a Creative Fluid Tank
-     * inside the ring) makes antimatter and pushes it out of the port's bottom (Output) face into a Containment Cell;
-     * the ring glows while it runs.
+     * A 5x5 ring with an Input port on the west side (FE from a Creative Energy Battery above, hydrogen from a Creative
+     * Fluid Tank inside the ring) and an Output port opposite it, on the east side, with a Containment Cell under it:
+     * it makes antimatter, the Output port pushes it into the cell, the Input port gives none, and the ring glows.
      */
     private static void acceleratorMakesAntimatter(GameTestHelper helper) {
         ParticleAcceleratorBlockEntity accelerator = buildAccelerator(helper);
         BlockPos port = new BlockPos(0, 1, 2);
+        BlockPos outputPort = new BlockPos(4, 1, 2);
+        helper.setBlock(outputPort, ModBlocks.ACCELERATOR_PORT.get().defaultBlockState().setValue(com.script.comminutioncraft.common.machine.AcceleratorPortBlock.OUTPUT, true));
+        helper.setBlock(outputPort.below(), ModBlocks.CONTAINMENT_CELL.get());
         helper.setBlock(port.below(), ModBlocks.CONTAINMENT_CELL.get());
         helper.setBlock(port.above(), ModBlocks.CREATIVE_ENERGY_BATTERY.get());
         helper.setBlock(port.east(), ModBlocks.CREATIVE_FLUID_TANK.get());
@@ -1149,10 +1153,12 @@ public final class ModGameTests {
                 new SimpleContainerData(CreativeFluidTankBlockEntity.DATA_COUNT));
         int hydrogen = CreativeFluidTankBlockEntity.fluids().indexOf(ModFluids.HYDROGEN.get()) + 1;
         helper.assertTrue(hydrogen > 0 && menu.clickMenuButton(helper.makeMockPlayer(GameType.CREATIVE), hydrogen), "The picker refused hydrogen");
-        var cell = helper.getBlockEntity(port.below(), com.script.comminutioncraft.common.machine.ContainmentCellBlockEntity.class).getTank();
+        var cell = helper.getBlockEntity(outputPort.below(), com.script.comminutioncraft.common.machine.ContainmentCellBlockEntity.class).getTank();
+        var inputSide = helper.getBlockEntity(port.below(), com.script.comminutioncraft.common.machine.ContainmentCellBlockEntity.class).getTank();
         helper.succeedWhen(() -> {
             helper.assertTrue(cell.getAmount() >= 2 && ModFluids.isAntimatter(cell.getFluid()),
                     "Expected antimatter in the cell, has " + cell.getStack() + " (accelerator: " + accelerator.getStatus() + ")");
+            helper.assertTrue(inputSide.getAmount() == 0, "The Input port shouldn't give antimatter");
             helper.assertTrue(helper.getBlockState(new BlockPos(1, 1, 0)).getValue(MachineBlock.LIT), "The ring should glow while running");
         });
     }
@@ -1261,11 +1267,26 @@ public final class ModGameTests {
         });
     }
 
+    /** The wrench in Configure mode switches an Accelerator Port between Input and Output (and back). */
+    private static void wrenchSwitchesAcceleratorPort(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, ModBlocks.ACCELERATOR_PORT.get());
+        Player player = helper.makeMockPlayer(GameType.CREATIVE);
+        ItemStack wrench = new ItemStack(ModItems.WRENCH.get());
+        wrench.set(ModDataComponents.WRENCH_MODE.get(), WrenchMode.CONFIGURE);
+        helper.assertTrue(!helper.getBlockState(pos).getValue(com.script.comminutioncraft.common.machine.AcceleratorPortBlock.OUTPUT), "A new port should be Input");
+        useWrench(helper, player, wrench, pos, new Vec3(0, 0.5, 0), Direction.UP);
+        helper.assertTrue(helper.getBlockState(pos).getValue(com.script.comminutioncraft.common.machine.AcceleratorPortBlock.OUTPUT), "One Configure click should make it Output");
+        useWrench(helper, player, wrench, pos, new Vec3(0.5, 0, 0), Direction.EAST);
+        helper.assertTrue(!helper.getBlockState(pos).getValue(com.script.comminutioncraft.common.machine.AcceleratorPortBlock.OUTPUT), "A second click should make it Input again");
+        helper.succeed();
+    }
+
     // ---- Helpers ----
 
     /**
      * Builds a 5x5 Particle Accelerator ring at x 0-4, y 1, z 0-4: segments, the controller in the middle of the south
-     * side (facing south) and a port in the middle of the west side (default sides: bottom Output, rest Input).
+     * side (facing south) and an Input port in the middle of the west side.
      */
     private static ParticleAcceleratorBlockEntity buildAccelerator(GameTestHelper helper) {
         for (int x = 0; x < 5; x++) {
