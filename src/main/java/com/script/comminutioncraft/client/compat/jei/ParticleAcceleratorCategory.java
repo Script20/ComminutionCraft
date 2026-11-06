@@ -29,7 +29,8 @@ public class ParticleAcceleratorCategory extends AbstractRecipeCategory<Particle
 
     private static final int SIDE = 5;
     private static final int WIDTH = 170;
-    private static final int HEIGHT = 92;
+    private static final int TEXT_Y = SIDE * 18 + 4;
+    private static final int HEIGHT = TEXT_Y + 3 * 10;
     private static final int INFO_X = 96;
     private static final int IO_Y = 2;
 
@@ -83,7 +84,6 @@ public class ParticleAcceleratorCategory extends AbstractRecipeCategory<Particle
         builder.addRecipeArrow().setPosition(INFO_X + 24, IO_Y + 1);
         JeiAmounts.label(builder, INFO_X + 1, IO_Y + 1, ParticleAcceleratorBlockEntity.HYDROGEN_PER_MB.get());
         JeiAmounts.label(builder, WIDTH - 17, IO_Y + 1, 1);
-        int infoWidth = WIDTH - INFO_X;
         int blocks = ParticleAcceleratorBlockEntity.ringBlocks(7);
         String fe = String.format(Locale.ROOT, "%,d", blocks * ParticleAcceleratorBlockEntity.ENERGY_PER_RING_BLOCK.get());
         String rate = String.format(Locale.ROOT, "%.3f", (float) blocks / Math.max(1, ParticleAcceleratorBlockEntity.RING_TICKS_PER_MB.get()))
@@ -94,8 +94,8 @@ public class ParticleAcceleratorCategory extends AbstractRecipeCategory<Particle
                 Component.translatable("jei.comminutioncraft.particle_accelerator.example", fe, rate),
                 Component.translatable("jei.comminutioncraft.particle_accelerator.bigger")};
         for (int i = 0; i < lines.length; i++) {
-            builder.addText(lines[i], infoWidth, 20)
-                    .setPosition(INFO_X, 26 + i * 22)
+            builder.addText(lines[i], WIDTH, 10)
+                    .setPosition(0, TEXT_Y + i * 10)
                     .setColor(0xFF808080);
         }
     }
