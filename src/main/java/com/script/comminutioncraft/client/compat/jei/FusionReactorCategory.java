@@ -29,14 +29,29 @@ public class FusionReactorCategory extends AbstractRecipeCategory<FusionReactorC
     public enum Structure { INSTANCE }
 
     private static final int WIDTH = 170;
-    private static final int HEIGHT = 112;
     private static final int GRID_Y = 12;
     private static final int LAYER_STEP = 58;
-    private static final int IO_Y = 84;
+    private static final int IO_Y = 72;
+    /** The bottom row, centred: [pellet][plasma] -> [FE][tritium]. */
+    private static final int IO_X = (WIDTH - (18 + 18 + 4 + 24 + 4 + 18 + 18)) / 2;
+    private static final int PELLET_X = IO_X + 1;
+    private static final int PLASMA_X = IO_X + 19;
+    private static final int ARROW_X = IO_X + 36 + 4;
+    private static final int ENERGY_X = ARROW_X + 24 + 4 + 1;
+    private static final int TRITIUM_X = ENERGY_X + 18;
+    private static final int HINT_Y = IO_Y + 22;
+    private static final int HEIGHT = HINT_Y + 20;
+
+    private final IGuiHelper guiHelper;
+    private final mezz.jei.api.gui.drawable.IDrawable energyIcon;
 
     public FusionReactorCategory(IGuiHelper guiHelper) {
         super(TYPE, Component.translatable("jei.comminutioncraft.fusion_reactor"),
                 guiHelper.createDrawableItemLike(ModItems.REACTOR_CONTROLLER.get()), WIDTH, HEIGHT);
+        this.guiHelper = guiHelper;
+        energyIcon = guiHelper.drawableBuilder(ComminutionCraft.id("textures/gui/jei_energy.png"), 0, 0, 16, 16)
+                .setTextureSize(16, 16)
+                .build();
     }
 
     /** What the example reactor has at (x, z) on a layer (0 bottom .. 2 top); z = 2 is the controller's face. */
@@ -87,17 +102,17 @@ public class FusionReactorCategory extends AbstractRecipeCategory<FusionReactorC
                 }
             }
         }
-        builder.addSlot(RecipeIngredientRole.INPUT, 1, IO_Y + 1)
+        builder.addSlot(RecipeIngredientRole.INPUT, PELLET_X, IO_Y + 1)
                 .setStandardSlotBackground()
                 .add(ModItems.FUSION_FUEL_PELLET.get());
-        builder.addSlot(RecipeIngredientRole.INPUT, 21, IO_Y + 1)
+        builder.addSlot(RecipeIngredientRole.INPUT, PLASMA_X, IO_Y + 1)
                 .setStandardSlotBackground()
                 .setFluidRenderer(1_000, false, 16, 16)
                 .addFluidStack(ModFluids.PLASMA.get(), 1_000)
                 .addRichTooltipCallback((view, tooltip) -> tooltip.add(
                         Component.translatable("jei.comminutioncraft.fusion_reactor.ignite").withStyle(ChatFormatting.GRAY)));
-        builder.addSlot(RecipeIngredientRole.OUTPUT, WIDTH - 19, IO_Y + 1)
-                .setOutputSlotBackground()
+        builder.addSlot(RecipeIngredientRole.OUTPUT, TRITIUM_X, IO_Y + 1)
+                .setStandardSlotBackground()
                 .setFluidRenderer(FusionReactorBlockEntity.TRITIUM_PER_PELLET.get(), false, 16, 16)
                 .addFluidStack(ModFluids.TRITIUM.get(), FusionReactorBlockEntity.TRITIUM_PER_PELLET.get())
                 .addRichTooltipCallback((view, tooltip) -> tooltip.add(
@@ -113,19 +128,23 @@ public class FusionReactorCategory extends AbstractRecipeCategory<FusionReactorC
                     .setTextAlignment(HorizontalAlignment.CENTER)
                     .setColor(0xFF808080);
         }
-        builder.addText(Component.translatable("jei.comminutioncraft.fusion_reactor.core"), 54, 10)
-                .setPosition(LAYER_STEP, GRID_Y + 19 + 4)
+        // The core: an empty (air) block in the middle of the middle layer
+        builder.addText(Component.translatable("jei.comminutioncraft.fusion_reactor.core"), 18, 10)
+                .setPosition(LAYER_STEP + 18, GRID_Y + 18 + 5)
                 .setTextAlignment(HorizontalAlignment.CENTER)
-                .setColor(0xFF60FF80);
-        builder.addText(Component.translatable("jei.comminutioncraft.fusion_reactor.output",
-                        String.format(java.util.Locale.ROOT, "%,d", FusionReactorBlockEntity.ENERGY_PER_TICK.get())), WIDTH - 62, 10)
-                .setPosition(42, IO_Y + 5)
-                .setTextAlignment(HorizontalAlignment.CENTER)
-                .setColor(0xFF808080);
-        JeiAmounts.label(builder, 21, IO_Y + 1, 1_000);
-        JeiAmounts.label(builder, WIDTH - 19, IO_Y + 1, FusionReactorBlockEntity.TRITIUM_PER_PELLET.get());
-        builder.addText(Component.translatable("jei.comminutioncraft.fusion_reactor.hint"), WIDTH, 10)
-                .setPosition(0, HEIGHT - 10)
+                .setColor(0xFF60FF80)
+                .setTooltip(Component.translatable("jei.comminutioncraft.fusion_reactor.core_tip"));
+        builder.addRecipeArrow().setPosition(ARROW_X, IO_Y + 1);
+        builder.addDrawable(guiHelper.getSlotDrawable(), ENERGY_X - 1, IO_Y);
+        builder.addDrawable(energyIcon, ENERGY_X, IO_Y + 1);
+        builder.addTooltipArea(ENERGY_X, IO_Y + 1, 16, 16).setTooltip(java.util.List.of(
+                Component.translatable("jei.comminutioncraft.energy_out").withStyle(ChatFormatting.RED),
+                Component.translatable("jei.comminutioncraft.fusion_reactor.output",
+                        String.format(java.util.Locale.ROOT, "%,d", FusionReactorBlockEntity.ENERGY_PER_TICK.get())).withStyle(ChatFormatting.GRAY)));
+        JeiAmounts.label(builder, PLASMA_X, IO_Y + 1, 1_000);
+        JeiAmounts.label(builder, TRITIUM_X, IO_Y + 1, FusionReactorBlockEntity.TRITIUM_PER_PELLET.get());
+        builder.addText(Component.translatable("jei.comminutioncraft.fusion_reactor.hint"), WIDTH, 20)
+                .setPosition(0, HINT_Y)
                 .setTextAlignment(HorizontalAlignment.CENTER)
                 .setColor(0xFF606060);
     }

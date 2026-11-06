@@ -46,13 +46,14 @@ public class ModLanguageProvider extends LanguageProvider {
         add("jei.comminutioncraft.fusion_reactor.bottom", "Bottom");
         add("jei.comminutioncraft.fusion_reactor.middle", "Middle");
         add("jei.comminutioncraft.fusion_reactor.top", "Top");
-        add("jei.comminutioncraft.fusion_reactor.core", "core");
+        add("jei.comminutioncraft.fusion_reactor.core", "air");
+        add("jei.comminutioncraft.fusion_reactor.core_tip", "The core: leave this block empty");
         add("jei.comminutioncraft.fusion_reactor.frame", "Edge or corner: Reactor Casing or a Reactor Port");
         add("jei.comminutioncraft.fusion_reactor.face_centre", "Face centre: Reactor Casing, Reactor Glass or a Reactor Port");
         add("jei.comminutioncraft.fusion_reactor.controller", "The Controller: the middle of one face, facing out (the core is behind it)");
         add("jei.comminutioncraft.fusion_reactor.ignite", "Heats the core to ignition (1,000 mB from cold)");
         add("jei.comminutioncraft.fusion_reactor.tritium", "Given back by each spent pellet");
-        add("jei.comminutioncraft.fusion_reactor.output", "%s FE/t");
+        add("jei.comminutioncraft.fusion_reactor.output", "%s FE/t while burning");
         add("jei.comminutioncraft.fusion_reactor.hint", "Seen from above; the controller's face is at the bottom");
         add(ModBlocks.REACTOR_CASING.get(), "Reactor Casing");
         add(ModBlocks.REACTOR_GLASS.get(), "Reactor Glass");
