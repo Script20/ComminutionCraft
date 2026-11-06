@@ -542,6 +542,7 @@
   "jei.comminutioncraft.byproduct_face": "Leaves through By-product faces",
   "jei.comminutioncraft.chance": "%s%% chance",
   "jei.comminutioncraft.electric_granulators_only": "Electric or Plasma Granulator only",
+  "jei.comminutioncraft.energy_out": "Energy (FE)",
   "jei.comminutioncraft.fe_per_mb": "%s FE per mB · up to %s mB/t",
   "jei.comminutioncraft.flotation": "Froth Flotation",
   "jei.comminutioncraft.fusion_reactor": "Fusion Reactor",

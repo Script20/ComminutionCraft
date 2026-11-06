@@ -195,6 +195,11 @@ public class ComminutionJeiPlugin implements IModPlugin {
         return new FluidMachinePage(pageType(name), machine, new FluidConversionCategory.Conversion(in, out, line));
     }
 
+    /** A generator's page: fluid in, FE out. */
+    private static FluidMachinePage generatorPage(String name, ItemLike machine, List<FluidConversionCategory.Amount> in, Component line) {
+        return new FluidMachinePage(pageType(name), machine, new FluidConversionCategory.Conversion(in, List.of(), line, true));
+    }
+
     private static List<FluidMachinePage> fluidMachinePages() {
         int half = ElectrolyserBlockEntity.WATER_PER_HYDROGEN.get();
         return List.of(
@@ -214,12 +219,12 @@ public class ComminutionJeiPlugin implements IModPlugin {
                         List.of(new FluidConversionCategory.Amount(ModFluids.PLASMA.get(), 1)),
                         Component.translatable("jei.comminutioncraft.fe_per_mb", PlasmaGeneratorBlockEntity.ENERGY_PER_MB.get(),
                                 PlasmaGeneratorBlockEntity.MAX_PLASMA_PER_TICK.get())),
-                page("mhd_generator", ModItems.MHD_GENERATOR.get(),
-                        List.of(new FluidConversionCategory.Amount(ModFluids.PLASMA.get(), 1)), List.of(),
+                generatorPage("mhd_generator", ModItems.MHD_GENERATOR.get(),
+                        List.of(new FluidConversionCategory.Amount(ModFluids.PLASMA.get(), 1)),
                         Component.translatable("jei.comminutioncraft.mhd.line", MhdGeneratorBlockEntity.ENERGY_PER_MB.get(),
                                 MhdGeneratorBlockEntity.ENERGY_PER_MB.get() * MhdGeneratorBlockEntity.MAX_PLASMA_PER_TICK.get())),
-                page("annihilation_generator", ModItems.ANNIHILATION_GENERATOR.get(),
-                        List.of(new FluidConversionCategory.Amount(ModFluids.ANTIMATTER.get(), 1)), List.of(),
+                generatorPage("annihilation_generator", ModItems.ANNIHILATION_GENERATOR.get(),
+                        List.of(new FluidConversionCategory.Amount(ModFluids.ANTIMATTER.get(), 1)),
                         Component.translatable("jei.comminutioncraft.annihilation.line",
                                 String.format(java.util.Locale.ROOT, "%,d", com.script.comminutioncraft.common.machine.AnnihilationGeneratorBlockEntity.ENERGY_PER_MB.get()),
                                 String.format(java.util.Locale.ROOT, "%,d", com.script.comminutioncraft.common.machine.AnnihilationGeneratorBlockEntity.energyPerTick()))),
