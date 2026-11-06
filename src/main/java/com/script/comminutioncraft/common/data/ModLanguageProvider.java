@@ -61,6 +61,16 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModBlocks.REACTOR_CONTROLLER.get(), "Fusion Reactor Controller");
         add(ModBlocks.FUSION_CABLE.get(), "Fusion Cable");
         add(ModBlocks.FUSION_ENERGY_BATTERY.get(), "Fusion Energy Battery");
+        add(ModBlocks.ANTIMATTER_GRANULATOR.get(), "Antimatter Granulator");
+        add(ModBlocks.ANTIMATTER_SMELTER.get(), "Antimatter Smelter");
+        add(ModBlocks.FROTH_FLOTATION_CELL.get(), "Froth Flotation Cell");
+        add(ModBlocks.ANTIMATTER_WASHER.get(), "Antimatter Washer");
+        add(ModBlocks.ANTIMATTER_PURIFIER.get(), "Antimatter Purifier");
+        add("jei.comminutioncraft.flotation", "Froth Flotation");
+        add("jei.comminutioncraft.time.froth_flotation_cell", "Froth Flotation Cell: %s");
+        add("jei.comminutioncraft.time.antimatter_granulator", "Antimatter Granulator: %s");
+        add("jei.comminutioncraft.time.antimatter_washer", "Antimatter Washer: %s");
+        add("jei.comminutioncraft.time.antimatter_purifier", "Antimatter Purifier: %s");
         add(ModBlocks.ANNIHILATION_GENERATOR.get(), "Annihilation Generator");
         add(ModBlocks.ANTIMATTER_CABLE.get(), "Antimatter Cable");
         add(ModBlocks.ANTIMATTER_ENERGY_BATTERY.get(), "Antimatter Energy Battery");
@@ -222,6 +232,7 @@ public class ModLanguageProvider extends LanguageProvider {
         for (ProcessedMetal metal : ProcessedMetal.ALL) {
             add(metal.granulated().get(), metal.displayName());
             add(metal.washed().get(), metal.washedDisplayName());
+            add(metal.concentrate().get(), metal.concentrateDisplayName());
             add(metal.purified().get(), metal.purifiedDisplayName());
         }
     }

@@ -11,8 +11,16 @@ public class OrePurifierScreen extends ElectricMachineScreen {
     private final OrePurifierMenu purifier;
 
     public OrePurifierScreen(OrePurifierMenu menu, Inventory inventory, Component title) {
-        super(menu, inventory, title, ComminutionCraft.id("textures/gui/container/ore_purifier.png"), Tier.FUSION);
+        this(menu, inventory, title, "ore_purifier", Tier.FUSION);
+    }
+
+    private OrePurifierScreen(OrePurifierMenu menu, Inventory inventory, Component title, String sheet, Tier tier) {
+        super(menu, inventory, title, ComminutionCraft.id("textures/gui/container/" + sheet + ".png"), tier);
         this.purifier = menu;
+    }
+
+    public static OrePurifierScreen antimatter(OrePurifierMenu menu, Inventory inventory, Component title) {
+        return new OrePurifierScreen(menu, inventory, title, "antimatter_purifier", Tier.ANTIMATTER);
     }
 
     @Override

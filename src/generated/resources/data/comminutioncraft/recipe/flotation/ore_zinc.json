@@ -1,0 +1,31 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:raw_materials/zinc"
+      }
+    },
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ingots/zinc"
+      }
+    },
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ores/zinc"
+      }
+    }
+  ],
+  "type": "comminutioncraft:flotation",
+  "ingredient": "#c:ores/zinc",
+  "result": {
+    "count": 4,
+    "id": "comminutioncraft:concentrate_zinc"
+  }
+}

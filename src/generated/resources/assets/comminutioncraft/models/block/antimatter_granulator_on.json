@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "comminutioncraft:block/antimatter_granulator_front_on",
+    "side": "comminutioncraft:block/antimatter_granulator_side",
+    "top": "comminutioncraft:block/antimatter_granulator_top"
+  }
+}

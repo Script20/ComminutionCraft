@@ -11,8 +11,16 @@ public class OreWasherScreen extends ElectricMachineScreen {
     private final OreWasherMenu washer;
 
     public OreWasherScreen(OreWasherMenu menu, Inventory inventory, Component title) {
-        super(menu, inventory, title, ComminutionCraft.id("textures/gui/container/ore_washer.png"), Tier.PLASMA);
+        this(menu, inventory, title, "ore_washer", Tier.PLASMA);
+    }
+
+    private OreWasherScreen(OreWasherMenu menu, Inventory inventory, Component title, String sheet, Tier tier) {
+        super(menu, inventory, title, ComminutionCraft.id("textures/gui/container/" + sheet + ".png"), tier);
         this.washer = menu;
+    }
+
+    public static OreWasherScreen antimatter(OreWasherMenu menu, Inventory inventory, Component title) {
+        return new OreWasherScreen(menu, inventory, title, "antimatter_washer", Tier.ANTIMATTER);
     }
 
     @Override

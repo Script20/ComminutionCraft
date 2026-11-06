@@ -1,0 +1,24 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:raw_materials/tin"
+      }
+    },
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ingots/tin"
+      }
+    }
+  ],
+  "type": "comminutioncraft:flotation",
+  "ingredient": "#c:raw_materials/tin",
+  "result": {
+    "count": 4,
+    "id": "comminutioncraft:concentrate_tin"
+  }
+}

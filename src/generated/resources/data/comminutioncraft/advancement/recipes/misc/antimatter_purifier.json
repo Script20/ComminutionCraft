@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_antimatter_circuit": {
+      "conditions": {
+        "items": [
+          {
+            "items": "comminutioncraft:antimatter_circuit"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "comminutioncraft:antimatter_purifier"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_antimatter_circuit"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "comminutioncraft:antimatter_purifier"
+    ]
+  }
+}

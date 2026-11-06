@@ -157,5 +157,20 @@ public final class ModBlockEntities {
             BLOCK_ENTITY_TYPES.register("antimatter_energy_battery",
                     () -> new BlockEntityType<>(EnergyBatteryBlockEntity::antimatter, ModBlocks.ANTIMATTER_ENERGY_BATTERY.get()));
 
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.script.comminutioncraft.common.machine.AntimatterGranulatorBlockEntity>> ANTIMATTER_GRANULATOR =
+            BLOCK_ENTITY_TYPES.register("antimatter_granulator", () -> new BlockEntityType<>(com.script.comminutioncraft.common.machine.AntimatterGranulatorBlockEntity::new, ModBlocks.ANTIMATTER_GRANULATOR.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.script.comminutioncraft.common.machine.AntimatterSmelterBlockEntity>> ANTIMATTER_SMELTER =
+            BLOCK_ENTITY_TYPES.register("antimatter_smelter", () -> new BlockEntityType<>(com.script.comminutioncraft.common.machine.AntimatterSmelterBlockEntity::new, ModBlocks.ANTIMATTER_SMELTER.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.script.comminutioncraft.common.machine.FrothFlotationCellBlockEntity>> FROTH_FLOTATION_CELL =
+            BLOCK_ENTITY_TYPES.register("froth_flotation_cell", () -> new BlockEntityType<>(com.script.comminutioncraft.common.machine.FrothFlotationCellBlockEntity::new, ModBlocks.FROTH_FLOTATION_CELL.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.script.comminutioncraft.common.machine.AntimatterWasherBlockEntity>> ANTIMATTER_WASHER =
+            BLOCK_ENTITY_TYPES.register("antimatter_washer", () -> new BlockEntityType<>(com.script.comminutioncraft.common.machine.AntimatterWasherBlockEntity::new, ModBlocks.ANTIMATTER_WASHER.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.script.comminutioncraft.common.machine.AntimatterPurifierBlockEntity>> ANTIMATTER_PURIFIER =
+            BLOCK_ENTITY_TYPES.register("antimatter_purifier", () -> new BlockEntityType<>(com.script.comminutioncraft.common.machine.AntimatterPurifierBlockEntity::new, ModBlocks.ANTIMATTER_PURIFIER.get()));
+
     private ModBlockEntities() {}
 }

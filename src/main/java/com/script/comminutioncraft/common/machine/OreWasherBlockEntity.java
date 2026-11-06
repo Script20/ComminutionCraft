@@ -6,7 +6,10 @@ import com.script.comminutioncraft.common.recipe.WashingRecipe;
 import com.script.comminutioncraft.common.registry.ModBlockEntities;
 import com.script.comminutioncraft.common.registry.ModRecipes;
 import java.util.Optional;
+import com.script.comminutioncraft.common.registry.ModMenus;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
@@ -52,7 +55,21 @@ public class OreWasherBlockEntity extends ElectricMachineBlockEntity {
             RecipeManager.createCheck(ModRecipes.WASHING_TYPE.get());
 
     public OreWasherBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.ORE_WASHER.get(), pos, state, TIER3_ENERGY_CAPACITY.get(), TIER3_MAX_ENERGY_INPUT.get());
+        this(ModBlockEntities.ORE_WASHER.get(), pos, state, TIER3_ENERGY_CAPACITY.get(), TIER3_MAX_ENERGY_INPUT.get());
+    }
+
+    /** For faster washers (the Antimatter Washer): their own type and FE buffer. */
+    protected OreWasherBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, int energyCapacity, int maxEnergyInput) {
+        super(type, pos, state, energyCapacity, maxEnergyInput);
+    }
+
+    /** mB of water one operation uses. */
+    protected int waterPerOperation() {
+        return WATER_PER_OPERATION.get();
+    }
+
+    protected MenuType<OreWasherMenu> menuType() {
+        return ModMenus.ORE_WASHER.get();
     }
 
     public MachineFluidTank getWater() {
@@ -82,12 +99,12 @@ public class OreWasherBlockEntity extends ElectricMachineBlockEntity {
 
     @Override
     protected boolean hasOperationResources() {
-        return water.getAmount() >= WATER_PER_OPERATION.get();
+        return water.getAmount() >= waterPerOperation();
     }
 
     @Override
     protected void onOperationDone() {
-        water.drain(WATER_PER_OPERATION.get());
+        water.drain(waterPerOperation());
     }
 
     @Override
@@ -149,11 +166,11 @@ public class OreWasherBlockEntity extends ElectricMachineBlockEntity {
 
     @Override
     protected Component getDefaultName() {
-        return Component.translatable("block.comminutioncraft.ore_washer");
+        return Component.translatable(getBlockState().getBlock().getDescriptionId());
     }
 
     @Override
     protected AbstractContainerMenu createMenu(int containerId, Inventory inventory) {
-        return new OreWasherMenu(containerId, inventory, this, dataAccess);
+        return new OreWasherMenu(menuType(), containerId, inventory, this, dataAccess);
     }
 }

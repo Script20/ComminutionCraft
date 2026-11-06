@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "comminutioncraft:block/antimatter_purifier_front",
+    "side": "comminutioncraft:block/antimatter_purifier_side",
+    "top": "comminutioncraft:block/antimatter_purifier_top"
+  }
+}

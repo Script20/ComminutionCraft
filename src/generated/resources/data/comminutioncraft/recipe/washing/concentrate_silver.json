@@ -1,0 +1,23 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:raw_materials/silver"
+      }
+    },
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ingots/silver"
+      }
+    }
+  ],
+  "type": "comminutioncraft:washing",
+  "ingredient": "comminutioncraft:concentrate_silver",
+  "result": {
+    "id": "comminutioncraft:washed_silver"
+  }
+}

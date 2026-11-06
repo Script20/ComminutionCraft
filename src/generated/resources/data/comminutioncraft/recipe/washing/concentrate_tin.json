@@ -1,0 +1,23 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:raw_materials/tin"
+      }
+    },
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ingots/tin"
+      }
+    }
+  ],
+  "type": "comminutioncraft:washing",
+  "ingredient": "comminutioncraft:concentrate_tin",
+  "result": {
+    "id": "comminutioncraft:washed_tin"
+  }
+}

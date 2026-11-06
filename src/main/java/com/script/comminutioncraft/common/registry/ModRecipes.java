@@ -44,6 +44,14 @@ public final class ModRecipes {
             RECIPE_SERIALIZERS.register("washing",
                     () -> new RecipeSerializer<>(WashingRecipe.CODEC, WashingRecipe.STREAM_CODEC));
 
+    /** "comminutioncraft:flotation" — Froth Flotation Cell (tier 5, the 4x step). */
+    public static final DeferredHolder<RecipeType<?>, RecipeType<com.script.comminutioncraft.common.recipe.FlotationRecipe>> FLOTATION_TYPE =
+            RECIPE_TYPES.register("flotation", RecipeType::simple);
+
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<com.script.comminutioncraft.common.recipe.FlotationRecipe>> FLOTATION_SERIALIZER =
+            RECIPE_SERIALIZERS.register("flotation", () -> new RecipeSerializer<>(com.script.comminutioncraft.common.recipe.FlotationRecipe.CODEC,
+                    com.script.comminutioncraft.common.recipe.FlotationRecipe.STREAM_CODEC));
+
     /** "comminutioncraft:pressing" — Pellet Press (tier 4). */
     public static final DeferredHolder<RecipeType<?>, RecipeType<PressingRecipe>> PRESSING_TYPE =
             RECIPE_TYPES.register("pressing", RecipeType::simple);

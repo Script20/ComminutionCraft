@@ -3,6 +3,7 @@ package com.script.comminutioncraft.common.data;
 import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.block.StoneSet;
 import com.script.comminutioncraft.common.recipe.AssemblingRecipe;
+import com.script.comminutioncraft.common.recipe.FlotationRecipe;
 import com.script.comminutioncraft.common.recipe.GranulatingRecipe;
 import com.script.comminutioncraft.common.recipe.PressingRecipe;
 import com.script.comminutioncraft.common.recipe.PurifyingRecipe;
@@ -75,6 +76,20 @@ public class ModRecipeProvider extends RecipeProvider {
                 new PurifyingRecipe(washed, result, nugget, BYPRODUCT_CHANCE), null);
     }
 
+    /** {@code PAP / DMD / PAP}: plating, Antimatter Circuits, diamonds round the machine it upgrades. */
+    private void antimatterMachine(net.minecraft.world.item.Item result, net.minecraft.world.item.Item base) {
+        shaped(RecipeCategory.MISC, result)
+                .pattern("PAP")
+                .pattern("DMD")
+                .pattern("PAP")
+                .define('P', ModItems.REACTOR_PLATING.get())
+                .define('A', ModItems.ANTIMATTER_CIRCUIT.get())
+                .define('D', tag(ProcessedMetal.commonItemTag("gems/diamond")))
+                .define('M', base)
+                .unlockedBy("has_antimatter_circuit", has(ModItems.ANTIMATTER_CIRCUIT.get()))
+                .save(output, key(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(result).getPath()));
+    }
+
     @Override
     protected void buildRecipes() {
         for (ProcessedMetal metal : ProcessedMetal.ALL) {
@@ -96,6 +111,16 @@ public class ModRecipeProvider extends RecipeProvider {
                     null);
             out.withConditions(new NotCondition(new TagEmptyCondition<>(metal.oreTag()))).accept(key("washing/ore_" + metal.name()),
                     new WashingRecipe(tag(metal.oreTag()), new ItemStackTemplate(metal.washed(), 3)),
+                    null);
+            // tier 5, the 4x step: raw ore or ore block -> 4 Ore Concentrate (Froth Flotation Cell); 1 concentrate -> 1 washed (Ore Washer)
+            out.accept(key("flotation/raw_" + metal.name()),
+                    new FlotationRecipe(tag(metal.rawTag()), new ItemStackTemplate(metal.concentrate(), 4)),
+                    null);
+            out.withConditions(new NotCondition(new TagEmptyCondition<>(metal.oreTag()))).accept(key("flotation/ore_" + metal.name()),
+                    new FlotationRecipe(tag(metal.oreTag()), new ItemStackTemplate(metal.concentrate(), 4)),
+                    null);
+            out.accept(key("washing/concentrate_" + metal.name()),
+                    new WashingRecipe(Ingredient.of(metal.concentrate()), new ItemStackTemplate(metal.washed())),
                     null);
             // washed ore -> 1 granulated ore, Electric and Plasma Granulators only (tier 2+); purified ore the same
             out.accept(key("granulating/washed_" + metal.name()),
@@ -381,6 +406,22 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('X', tag(ProcessedMetal.commonItemTag("storage_blocks/redstone")))
                 .unlockedBy("has_fusion_circuit", has(ModItems.FUSION_CIRCUIT.get()))
                 .save(output, key("fusion_energy_battery"));
+
+        // Tier 5 ore machines: each is its tier-3/4 machine wrapped in reactor plating with Antimatter Circuits
+        antimatterMachine(ModItems.ANTIMATTER_GRANULATOR.get(), ModItems.PLASMA_GRANULATOR.get());
+        antimatterMachine(ModItems.ANTIMATTER_SMELTER.get(), ModItems.PLASMA_SMELTER.get());
+        antimatterMachine(ModItems.ANTIMATTER_WASHER.get(), ModItems.ORE_WASHER.get());
+        antimatterMachine(ModItems.ANTIMATTER_PURIFIER.get(), ModItems.ORE_PURIFIER.get());
+        shaped(RecipeCategory.MISC, ModItems.FROTH_FLOTATION_CELL.get())
+                .pattern("PAP")
+                .pattern("GWG")
+                .pattern("PAP")
+                .define('P', ModItems.REACTOR_PLATING.get())
+                .define('A', ModItems.ANTIMATTER_CIRCUIT.get())
+                .define('G', tag(ProcessedMetal.commonItemTag("glass_blocks")))
+                .define('W', ModItems.ORE_WASHER.get())
+                .unlockedBy("has_antimatter_circuit", has(ModItems.ANTIMATTER_CIRCUIT.get()))
+                .save(output, key("froth_flotation_cell"));
 
         // Tier 5 power: the Annihilation Generator, Antimatter Cable and Antimatter Energy Battery
         shaped(RecipeCategory.MISC, ModItems.ANNIHILATION_GENERATOR.get())

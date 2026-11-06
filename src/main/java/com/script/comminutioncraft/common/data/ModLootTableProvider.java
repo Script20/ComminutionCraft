@@ -48,6 +48,11 @@ public class ModLootTableProvider extends LootTableProvider {
             dropSelf(ModBlocks.REACTOR_CONTROLLER.get());
             dropSelf(ModBlocks.FUSION_CABLE.get());
             dropSelf(ModBlocks.FUSION_ENERGY_BATTERY.get());
+            dropSelf(ModBlocks.ANTIMATTER_GRANULATOR.get());
+            dropSelf(ModBlocks.ANTIMATTER_SMELTER.get());
+            dropSelf(ModBlocks.FROTH_FLOTATION_CELL.get());
+            dropSelf(ModBlocks.ANTIMATTER_WASHER.get());
+            dropSelf(ModBlocks.ANTIMATTER_PURIFIER.get());
             dropSelf(ModBlocks.ANNIHILATION_GENERATOR.get());
             dropSelf(ModBlocks.ANTIMATTER_CABLE.get());
             dropSelf(ModBlocks.ANTIMATTER_ENERGY_BATTERY.get());

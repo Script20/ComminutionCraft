@@ -6,6 +6,7 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -23,8 +24,17 @@ public class OrePurifierMenu extends ElectricMachineMenu {
                 new SimpleContainer(ElectricMachineBlockEntity.SLOT_COUNT + 1), new SimpleContainerData(OrePurifierBlockEntity.DATA_COUNT));
     }
 
+    public static OrePurifierMenu clientAntimatter(int containerId, Inventory inventory) {
+        return new OrePurifierMenu(ModMenus.ANTIMATTER_PURIFIER.get(), containerId, inventory,
+                new SimpleContainer(ElectricMachineBlockEntity.SLOT_COUNT + 1), new SimpleContainerData(OrePurifierBlockEntity.DATA_COUNT));
+    }
+
     public OrePurifierMenu(int containerId, Inventory inventory, Container container, ContainerData data) {
-        super(ModMenus.ORE_PURIFIER.get(), containerId, inventory, container, data, 24);
+        this(ModMenus.ORE_PURIFIER.get(), containerId, inventory, container, data);
+    }
+
+    public OrePurifierMenu(MenuType<?> type, int containerId, Inventory inventory, Container container, ContainerData data) {
+        super(type, containerId, inventory, container, data, 24);
         checkContainerDataCount(data, OrePurifierBlockEntity.DATA_COUNT);
         this.data = data;
         addSlot(new MachineOutputSlot(inventory.player, container, OrePurifierBlockEntity.SLOT_BYPRODUCT, 116, 46));

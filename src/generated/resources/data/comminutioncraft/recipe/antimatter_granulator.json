@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": "comminutioncraft:antimatter_circuit",
+    "D": "#c:gems/diamond",
+    "M": "comminutioncraft:plasma_granulator",
+    "P": "comminutioncraft:reactor_plating"
+  },
+  "pattern": [
+    "PAP",
+    "DMD",
+    "PAP"
+  ],
+  "result": {
+    "id": "comminutioncraft:antimatter_granulator"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "type": "comminutioncraft:washing",
+  "ingredient": "comminutioncraft:concentrate_gold",
+  "result": {
+    "id": "comminutioncraft:washed_gold"
+  }
+}

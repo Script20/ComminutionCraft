@@ -1,0 +1,8 @@
+{
+  "type": "comminutioncraft:flotation",
+  "ingredient": "#c:raw_materials/copper",
+  "result": {
+    "count": 4,
+    "id": "comminutioncraft:concentrate_copper"
+  }
+}

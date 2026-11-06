@@ -105,6 +105,21 @@ public final class ModMenus {
     public static final DeferredHolder<MenuType<?>, MenuType<EnergyBatteryMenu>> ANTIMATTER_ENERGY_BATTERY =
             MENUS.register("antimatter_energy_battery", () -> new MenuType<>(EnergyBatteryMenu::clientAntimatter, FeatureFlags.VANILLA_SET));
 
+    public static final DeferredHolder<MenuType<?>, MenuType<ElectricMachineMenu>> ANTIMATTER_GRANULATOR =
+            MENUS.register("antimatter_granulator", () -> new MenuType<>(ElectricMachineMenu::clientAntimatterGranulator, FeatureFlags.VANILLA_SET));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<ElectricMachineMenu>> ANTIMATTER_SMELTER =
+            MENUS.register("antimatter_smelter", () -> new MenuType<>(ElectricMachineMenu::clientAntimatterSmelter, FeatureFlags.VANILLA_SET));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<OreWasherMenu>> ANTIMATTER_WASHER =
+            MENUS.register("antimatter_washer", () -> new MenuType<>(OreWasherMenu::clientAntimatter, FeatureFlags.VANILLA_SET));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<OrePurifierMenu>> ANTIMATTER_PURIFIER =
+            MENUS.register("antimatter_purifier", () -> new MenuType<>(OrePurifierMenu::clientAntimatter, FeatureFlags.VANILLA_SET));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<com.script.comminutioncraft.common.machine.FrothFlotationCellMenu>> FROTH_FLOTATION_CELL =
+            MENUS.register("froth_flotation_cell", () -> new MenuType<>(com.script.comminutioncraft.common.machine.FrothFlotationCellMenu::client, FeatureFlags.VANILLA_SET));
+
     public static final DeferredHolder<MenuType<?>, MenuType<CreativeFluidTankMenu>> CREATIVE_FLUID_TANK =
             MENUS.register("creative_fluid_tank", () -> new MenuType<>(CreativeFluidTankMenu::client, FeatureFlags.VANILLA_SET));
 

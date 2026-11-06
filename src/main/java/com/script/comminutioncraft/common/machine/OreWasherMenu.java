@@ -5,6 +5,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.SimpleContainerData;
 
 /** Ore Washer menu: the electric machine layout plus a water gauge. */
@@ -17,8 +18,17 @@ public class OreWasherMenu extends ElectricMachineMenu {
                 new SimpleContainer(ElectricMachineBlockEntity.SLOT_COUNT), new SimpleContainerData(OreWasherBlockEntity.DATA_COUNT));
     }
 
+    public static OreWasherMenu clientAntimatter(int containerId, Inventory inventory) {
+        return new OreWasherMenu(ModMenus.ANTIMATTER_WASHER.get(), containerId, inventory,
+                new SimpleContainer(ElectricMachineBlockEntity.SLOT_COUNT), new SimpleContainerData(OreWasherBlockEntity.DATA_COUNT));
+    }
+
     public OreWasherMenu(int containerId, Inventory inventory, Container container, ContainerData data) {
-        super(ModMenus.ORE_WASHER.get(), containerId, inventory, container, data);
+        this(ModMenus.ORE_WASHER.get(), containerId, inventory, container, data);
+    }
+
+    public OreWasherMenu(MenuType<?> type, int containerId, Inventory inventory, Container container, ContainerData data) {
+        super(type, containerId, inventory, container, data);
         checkContainerDataCount(data, OreWasherBlockEntity.DATA_COUNT);
         this.data = data;
     }

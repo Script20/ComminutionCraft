@@ -588,6 +588,34 @@ def accelerator_sheet():
     return s.img
 
 
+def antimatter_arrow(x, y):
+    """Icy tier glow broken into chevron segments."""
+    base = mix(ANTIMATTER['off'], ANTIMATTER['on'], 0.35 + 0.65 * x / 23)
+    return shade(base, 0.72) if (x + abs(y - 8)) % 6 == 0 else base
+
+
+def antimatter_sheet(arrow_colour, gauges=(), byproduct=False):
+    """Tier-5 machines: the tier-3 layout with icy slot rims, fluid tubes at each x in gauges, and (purifier) an
+    output + by-product slot pair at (116, 24) / (116, 46) like the Ore Purifier."""
+    s = Sheet()
+    body(s)
+    energy_well(s)
+    slot(s, 55, 34)
+    if byproduct:
+        slot(s, 115, 23, rim=ANTIMATTER['off'])
+        slot(s, 115, 45, rim=ANTIMATTER['off'])
+    else:
+        slot(s, 111, 30, 26, rim=ANTIMATTER['off'])
+    arrow_silhouette(s, 79, 34)
+    for x in gauges:
+        gauge_well(s, x)
+    player_inventory(s)
+    arrow_sprite(s, arrow_colour)
+    energy_sprite(s)
+    all_fluid_sprites(s)
+    return s.img
+
+
 def creative_tank_sheet():
     """Creative Fluid Tank: 8 fluid buttons (4 x 2 at (12 + 22c, 20 + 22r), 18x18), a fluid tube at x 155, inventory.
     The screen draws each fluid's own sprite in the buttons and the tube."""
@@ -626,6 +654,12 @@ _gen = Sheet()
 _gen.img = fluid_machine_sheet((50,), fade_arrow(ANTIMATTER_FLUID[2], ELEC['on']))
 fluid_sprite(_gen, 246, ANTIMATTER_FLUID)
 _gen.img.save(os.path.join(OUT, 'annihilation_generator.png'))
+# phase 5C: the antimatter suite and the Froth Flotation Cell (water x141, oxygen x155)
+antimatter_sheet(antimatter_arrow).save(os.path.join(OUT, 'antimatter_granulator.png'))
+antimatter_sheet(smelter_arrow).save(os.path.join(OUT, 'antimatter_smelter.png'))
+antimatter_sheet(washer_arrow, (155,)).save(os.path.join(OUT, 'antimatter_washer.png'))
+antimatter_sheet(fade_arrow(OXYGEN[2], ANTIMATTER['on']), (155,), byproduct=True).save(os.path.join(OUT, 'antimatter_purifier.png'))
+antimatter_sheet(fade_arrow(WATER[2], OXYGEN[2]), (141, 155)).save(os.path.join(OUT, 'froth_flotation_cell.png'))
 tier3_sheet(plasma_granulator_arrow).save(os.path.join(OUT, 'plasma_granulator.png'))
 tier3_sheet(smelter_arrow).save(os.path.join(OUT, 'plasma_smelter.png'))
 plasma_machine_sheet(plasma_granulator_arrow).save(os.path.join(OUT, 'circuit_assembler.png'))

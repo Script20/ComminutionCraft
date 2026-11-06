@@ -66,6 +66,8 @@ public class ComminutionJeiPlugin implements IModPlugin {
             IRecipeHolderType.createDeferred(ModRecipes.ASSEMBLING_TYPE::get);
     public static final Supplier<IRecipeHolderType<WashingRecipe>> WASHING =
             IRecipeHolderType.createDeferred(ModRecipes.WASHING_TYPE::get);
+    public static final Supplier<IRecipeHolderType<com.script.comminutioncraft.common.recipe.FlotationRecipe>> FLOTATION =
+            IRecipeHolderType.createDeferred(ModRecipes.FLOTATION_TYPE::get);
     public static final Supplier<IRecipeHolderType<PressingRecipe>> PRESSING =
             IRecipeHolderType.createDeferred(ModRecipes.PRESSING_TYPE::get);
     public static final Supplier<IRecipeHolderType<PurifyingRecipe>> PURIFYING =
@@ -90,7 +92,9 @@ public class ComminutionJeiPlugin implements IModPlugin {
                         ModItems.COAL_GRANULATOR.get(), List.of(
                         new ProcessingCategory.Station("jei.comminutioncraft.time.coal_granulator", CoalGranulatorBlockEntity.PROCESS_TIME.get()),
                         new ProcessingCategory.Station("jei.comminutioncraft.time.electric_granulator", ElectricGranulatorBlockEntity.PROCESS_TIME.get()),
-                        new ProcessingCategory.Station("jei.comminutioncraft.time.plasma_granulator", PlasmaGranulatorBlockEntity.PROCESS_TIME.get())),
+                        new ProcessingCategory.Station("jei.comminutioncraft.time.plasma_granulator", PlasmaGranulatorBlockEntity.PROCESS_TIME.get()),
+                        new ProcessingCategory.Station("jei.comminutioncraft.time.antimatter_granulator",
+                                com.script.comminutioncraft.common.machine.AntimatterGranulatorBlockEntity.PROCESS_TIME.get())),
                         List.of(), recipe -> recipe.getMinTier() >= 2
                                 ? List.of(Component.translatable("jei.comminutioncraft.electric_granulators_only"))
                                 : List.of()),
@@ -104,7 +108,9 @@ public class ComminutionJeiPlugin implements IModPlugin {
                                 : List.of()),
                 new ProcessingCategory<>(gui, WASHING.get(), Component.translatable("jei.comminutioncraft.washing"),
                         ModItems.ORE_WASHER.get(), List.of(
-                        new ProcessingCategory.Station("jei.comminutioncraft.time.ore_washer", OreWasherBlockEntity.PROCESS_TIME.get())),
+                        new ProcessingCategory.Station("jei.comminutioncraft.time.ore_washer", OreWasherBlockEntity.PROCESS_TIME.get()),
+                        new ProcessingCategory.Station("jei.comminutioncraft.time.antimatter_washer",
+                                com.script.comminutioncraft.common.machine.AntimatterWasherBlockEntity.PROCESS_TIME.get())),
                         List.of()).withFluids(new ProcessingCategory.FluidCost(Fluids.WATER, OreWasherBlockEntity.WATER_PER_OPERATION.get())),
                 new ProcessingCategory<>(gui, PRESSING.get(), Component.translatable("jei.comminutioncraft.pressing"),
                         ModItems.PELLET_PRESS.get(), List.of(
@@ -114,10 +120,19 @@ public class ComminutionJeiPlugin implements IModPlugin {
                         new ProcessingCategory.FluidCost(ModFluids.TRITIUM.get(), PelletPressBlockEntity.TRITIUM_PER_PELLET.get())),
                 new ProcessingCategory<>(gui, PURIFYING.get(), Component.translatable("jei.comminutioncraft.purifying"),
                         ModItems.ORE_PURIFIER.get(), List.of(
-                        new ProcessingCategory.Station("jei.comminutioncraft.time.ore_purifier", OrePurifierBlockEntity.PROCESS_TIME.get())),
+                        new ProcessingCategory.Station("jei.comminutioncraft.time.ore_purifier", OrePurifierBlockEntity.PROCESS_TIME.get()),
+                        new ProcessingCategory.Station("jei.comminutioncraft.time.antimatter_purifier",
+                                com.script.comminutioncraft.common.machine.AntimatterPurifierBlockEntity.PROCESS_TIME.get())),
                         List.of(), recipe -> List.of(),
                         new ProcessingCategory.SecondOutput<>(PurifyingRecipe::getByproduct, PurifyingRecipe::getChance)).withFluids(
                         new ProcessingCategory.FluidCost(ModFluids.OXYGEN.get(), OrePurifierBlockEntity.OXYGEN_PER_OPERATION.get())),
+                new ProcessingCategory<>(gui, FLOTATION.get(), Component.translatable("jei.comminutioncraft.flotation"),
+                        ModItems.FROTH_FLOTATION_CELL.get(), List.of(
+                        new ProcessingCategory.Station("jei.comminutioncraft.time.froth_flotation_cell",
+                                com.script.comminutioncraft.common.machine.FrothFlotationCellBlockEntity.PROCESS_TIME.get())),
+                        List.of()).withFluids(
+                        new ProcessingCategory.FluidCost(Fluids.WATER, com.script.comminutioncraft.common.machine.FrothFlotationCellBlockEntity.WATER_PER_OPERATION.get()),
+                        new ProcessingCategory.FluidCost(ModFluids.OXYGEN.get(), com.script.comminutioncraft.common.machine.FrothFlotationCellBlockEntity.OXYGEN_PER_OPERATION.get())),
                 new FusionReactorCategory(gui),
                 new ParticleAcceleratorCategory(gui));
         for (FluidMachinePage page : fluidMachinePages()) {
@@ -131,6 +146,7 @@ public class ComminutionJeiPlugin implements IModPlugin {
         registration.addRecipes(ASSEMBLING.get(), ClientRecipes.assembling());
         registration.addRecipes(WASHING.get(), ClientRecipes.washing());
         registration.addRecipes(PRESSING.get(), ClientRecipes.pressing());
+        registration.addRecipes(FLOTATION.get(), ClientRecipes.flotation());
         registration.addRecipes(PURIFYING.get(), ClientRecipes.purifying());
         registration.addRecipes(FusionReactorCategory.TYPE, List.of(FusionReactorCategory.Structure.INSTANCE));
         registration.addRecipes(ParticleAcceleratorCategory.TYPE, List.of(ParticleAcceleratorCategory.Structure.INSTANCE));
@@ -142,13 +158,16 @@ public class ComminutionJeiPlugin implements IModPlugin {
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
         registration.addCraftingStation(GRANULATING.get(),
-                ModItems.COAL_GRANULATOR.get(), ModItems.ELECTRIC_GRANULATOR.get(), ModItems.PLASMA_GRANULATOR.get());
+                ModItems.COAL_GRANULATOR.get(), ModItems.ELECTRIC_GRANULATOR.get(), ModItems.PLASMA_GRANULATOR.get(),
+                ModItems.ANTIMATTER_GRANULATOR.get());
         registration.addCraftingStation(RecipeTypes.SMELTING,
-                ModItems.COAL_SMELTER.get(), ModItems.ELECTRIC_SMELTER.get(), ModItems.PLASMA_SMELTER.get());
+                ModItems.COAL_SMELTER.get(), ModItems.ELECTRIC_SMELTER.get(), ModItems.PLASMA_SMELTER.get(),
+                ModItems.ANTIMATTER_SMELTER.get());
         registration.addCraftingStation(ASSEMBLING.get(), ModItems.CIRCUIT_ASSEMBLER.get());
-        registration.addCraftingStation(WASHING.get(), ModItems.ORE_WASHER.get());
+        registration.addCraftingStation(WASHING.get(), ModItems.ORE_WASHER.get(), ModItems.ANTIMATTER_WASHER.get());
+        registration.addCraftingStation(FLOTATION.get(), ModItems.FROTH_FLOTATION_CELL.get());
         registration.addCraftingStation(PRESSING.get(), ModItems.PELLET_PRESS.get());
-        registration.addCraftingStation(PURIFYING.get(), ModItems.ORE_PURIFIER.get());
+        registration.addCraftingStation(PURIFYING.get(), ModItems.ORE_PURIFIER.get(), ModItems.ANTIMATTER_PURIFIER.get());
         registration.addCraftingStation(FusionReactorCategory.TYPE, ModItems.REACTOR_CONTROLLER.get());
         registration.addCraftingStation(ParticleAcceleratorCategory.TYPE,
                 ModItems.ACCELERATOR_CONTROLLER.get(), ModItems.ACCELERATOR_SEGMENT.get(), ModItems.ACCELERATOR_PORT.get());
@@ -222,6 +241,7 @@ public class ComminutionJeiPlugin implements IModPlugin {
         List<ItemStack> unused = ProcessedMetal.ALL.stream()
                 .filter(metal -> !metal.isAvailable())
                 .flatMap(metal -> Stream.of(new ItemStack(metal.granulated().get()), new ItemStack(metal.washed().get()),
+                        new ItemStack(metal.concentrate().get()),
                         new ItemStack(metal.purified().get())))
                 .toList();
         if (!unused.isEmpty()) {
@@ -251,13 +271,16 @@ public class ComminutionJeiPlugin implements IModPlugin {
             public List<IGuiClickableArea> getGuiClickableAreas(ElectricMachineScreen screen, double mouseX, double mouseY) {
                 var menuType = screen.getMenu().getType();
                 IRecipeType<?> type;
-                if (menuType == ModMenus.ELECTRIC_GRANULATOR.get() || menuType == ModMenus.PLASMA_GRANULATOR.get()) {
+                if (menuType == ModMenus.ELECTRIC_GRANULATOR.get() || menuType == ModMenus.PLASMA_GRANULATOR.get()
+                        || menuType == ModMenus.ANTIMATTER_GRANULATOR.get()) {
                     type = GRANULATING.get();
-                } else if (menuType == ModMenus.ORE_WASHER.get()) {
+                } else if (menuType == ModMenus.FROTH_FLOTATION_CELL.get()) {
+                    type = FLOTATION.get();
+                } else if (menuType == ModMenus.ORE_WASHER.get() || menuType == ModMenus.ANTIMATTER_WASHER.get()) {
                     type = WASHING.get();
                 } else if (menuType == ModMenus.PELLET_PRESS.get()) {
                     type = PRESSING.get();
-                } else if (menuType == ModMenus.ORE_PURIFIER.get()) {
+                } else if (menuType == ModMenus.ORE_PURIFIER.get() || menuType == ModMenus.ANTIMATTER_PURIFIER.get()) {
                     type = PURIFYING.get();
                 } else {
                     type = RecipeTypes.SMELTING;

@@ -119,6 +119,11 @@ public class ModModelProvider extends ModelProvider {
         blockModels.createFurnace(ModBlocks.REACTOR_CONTROLLER.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         conduit(blockModels, itemModels, ModBlocks.FUSION_CABLE.get(), ModItems.FUSION_CABLE.get());
         energyBattery(blockModels, ModBlocks.FUSION_ENERGY_BATTERY.get());
+        blockModels.createFurnace(ModBlocks.ANTIMATTER_GRANULATOR.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
+        blockModels.createFurnace(ModBlocks.ANTIMATTER_SMELTER.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
+        blockModels.createFurnace(ModBlocks.FROTH_FLOTATION_CELL.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
+        blockModels.createFurnace(ModBlocks.ANTIMATTER_WASHER.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
+        blockModels.createFurnace(ModBlocks.ANTIMATTER_PURIFIER.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         blockModels.createFurnace(ModBlocks.ANNIHILATION_GENERATOR.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         conduit(blockModels, itemModels, ModBlocks.ANTIMATTER_CABLE.get(), ModItems.ANTIMATTER_CABLE.get());
         energyBattery(blockModels, ModBlocks.ANTIMATTER_ENERGY_BATTERY.get());
@@ -156,6 +161,7 @@ public class ModModelProvider extends ModelProvider {
         for (ProcessedMetal metal : ProcessedMetal.ALL) {
             itemModels.generateFlatItem(metal.granulated().get(), ModelTemplates.FLAT_ITEM);
             itemModels.generateFlatItem(metal.washed().get(), ModelTemplates.FLAT_ITEM);
+            itemModels.generateFlatItem(metal.concentrate().get(), ModelTemplates.FLAT_ITEM);
             itemModels.generateFlatItem(metal.purified().get(), ModelTemplates.FLAT_ITEM);
         }
         wrench(itemModels);

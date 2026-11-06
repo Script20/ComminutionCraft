@@ -44,6 +44,16 @@ public class ElectricMachineMenu extends AbstractContainerMenu implements Contro
                 new SimpleContainer(MACHINE_SLOTS), new SimpleContainerData(ElectricMachineBlockEntity.DATA_COUNT));
     }
 
+    public static ElectricMachineMenu clientAntimatterGranulator(int containerId, Inventory inventory) {
+        return new ElectricMachineMenu(ModMenus.ANTIMATTER_GRANULATOR.get(), containerId, inventory,
+                new SimpleContainer(MACHINE_SLOTS), new SimpleContainerData(ElectricMachineBlockEntity.DATA_COUNT));
+    }
+
+    public static ElectricMachineMenu clientAntimatterSmelter(int containerId, Inventory inventory) {
+        return new ElectricMachineMenu(ModMenus.ANTIMATTER_SMELTER.get(), containerId, inventory,
+                new SimpleContainer(MACHINE_SLOTS), new SimpleContainerData(ElectricMachineBlockEntity.DATA_COUNT));
+    }
+
     public static ElectricMachineMenu clientPlasmaSmelter(int containerId, Inventory inventory) {
         return new ElectricMachineMenu(ModMenus.PLASMA_SMELTER.get(), containerId, inventory,
                 new SimpleContainer(MACHINE_SLOTS), new SimpleContainerData(ElectricMachineBlockEntity.DATA_COUNT));

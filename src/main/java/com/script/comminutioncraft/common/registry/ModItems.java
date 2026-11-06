@@ -52,6 +52,18 @@ public final class ModItems {
     public static final DeferredItem<Item> PURIFIED_ALUMINUM = ITEMS.registerSimpleItem("purified_aluminum");
     public static final DeferredItem<Item> PURIFIED_OSMIUM = ITEMS.registerSimpleItem("purified_osmium");
     public static final DeferredItem<Item> PURIFIED_URANIUM = ITEMS.registerSimpleItem("purified_uranium");
+    // Tier 5: Ore Concentrate from the Froth Flotation Cell (4 per raw ore)
+    public static final DeferredItem<Item> CONCENTRATE_IRON = ITEMS.registerSimpleItem("concentrate_iron");
+    public static final DeferredItem<Item> CONCENTRATE_COPPER = ITEMS.registerSimpleItem("concentrate_copper");
+    public static final DeferredItem<Item> CONCENTRATE_GOLD = ITEMS.registerSimpleItem("concentrate_gold");
+    public static final DeferredItem<Item> CONCENTRATE_TIN = ITEMS.registerSimpleItem("concentrate_tin");
+    public static final DeferredItem<Item> CONCENTRATE_LEAD = ITEMS.registerSimpleItem("concentrate_lead");
+    public static final DeferredItem<Item> CONCENTRATE_SILVER = ITEMS.registerSimpleItem("concentrate_silver");
+    public static final DeferredItem<Item> CONCENTRATE_NICKEL = ITEMS.registerSimpleItem("concentrate_nickel");
+    public static final DeferredItem<Item> CONCENTRATE_ZINC = ITEMS.registerSimpleItem("concentrate_zinc");
+    public static final DeferredItem<Item> CONCENTRATE_ALUMINUM = ITEMS.registerSimpleItem("concentrate_aluminum");
+    public static final DeferredItem<Item> CONCENTRATE_OSMIUM = ITEMS.registerSimpleItem("concentrate_osmium");
+    public static final DeferredItem<Item> CONCENTRATE_URANIUM = ITEMS.registerSimpleItem("concentrate_uranium");
 
     // Crafting components
     public static final DeferredItem<Item> ELECTRONIC_CIRCUIT = ITEMS.registerSimpleItem("electronic_circuit");
@@ -108,6 +120,11 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> SOARYN_CHEST = ITEMS.registerSimpleBlockItem("soaryn_chest", ModBlocks.SOARYN_CHEST);
     public static final DeferredItem<BlockItem> CONTAINMENT_CELL = ITEMS.registerSimpleBlockItem("containment_cell", ModBlocks.CONTAINMENT_CELL);
     public static final DeferredItem<BlockItem> MAGNETIC_CONDUIT = ITEMS.registerSimpleBlockItem("magnetic_conduit", ModBlocks.MAGNETIC_CONDUIT);
+    public static final DeferredItem<BlockItem> ANTIMATTER_GRANULATOR = ITEMS.registerSimpleBlockItem("antimatter_granulator", ModBlocks.ANTIMATTER_GRANULATOR);
+    public static final DeferredItem<BlockItem> ANTIMATTER_SMELTER = ITEMS.registerSimpleBlockItem("antimatter_smelter", ModBlocks.ANTIMATTER_SMELTER);
+    public static final DeferredItem<BlockItem> FROTH_FLOTATION_CELL = ITEMS.registerSimpleBlockItem("froth_flotation_cell", ModBlocks.FROTH_FLOTATION_CELL);
+    public static final DeferredItem<BlockItem> ANTIMATTER_WASHER = ITEMS.registerSimpleBlockItem("antimatter_washer", ModBlocks.ANTIMATTER_WASHER);
+    public static final DeferredItem<BlockItem> ANTIMATTER_PURIFIER = ITEMS.registerSimpleBlockItem("antimatter_purifier", ModBlocks.ANTIMATTER_PURIFIER);
     public static final DeferredItem<BlockItem> ANNIHILATION_GENERATOR = ITEMS.registerSimpleBlockItem("annihilation_generator", ModBlocks.ANNIHILATION_GENERATOR);
     public static final DeferredItem<BlockItem> ANTIMATTER_CABLE = ITEMS.registerSimpleBlockItem("antimatter_cable", ModBlocks.ANTIMATTER_CABLE);
     public static final DeferredItem<EnergyBatteryItem> ANTIMATTER_ENERGY_BATTERY = ITEMS.registerItem("antimatter_energy_battery",

@@ -80,6 +80,15 @@ public class ComminutionCraftClient {
         event.<ElectricMachineMenu, PelletPressScreen>register(ModMenus.PELLET_PRESS.get(),
                 (menu, inventory, title) -> new PelletPressScreen((PelletPressMenu) menu, inventory, title));
         event.register(ModMenus.PLASMA_GRANULATOR.get(), ElectricMachineScreen::plasmaGranulator);
+        event.register(ModMenus.ANTIMATTER_GRANULATOR.get(), ElectricMachineScreen::antimatterGranulator);
+        event.register(ModMenus.ANTIMATTER_SMELTER.get(), ElectricMachineScreen::antimatterSmelter);
+        event.<ElectricMachineMenu, OreWasherScreen>register(ModMenus.ANTIMATTER_WASHER.get(),
+                (menu, inventory, title) -> OreWasherScreen.antimatter((OreWasherMenu) menu, inventory, title));
+        event.<ElectricMachineMenu, OrePurifierScreen>register(ModMenus.ANTIMATTER_PURIFIER.get(),
+                (menu, inventory, title) -> OrePurifierScreen.antimatter((OrePurifierMenu) menu, inventory, title));
+        event.<ElectricMachineMenu, com.script.comminutioncraft.client.gui.FrothFlotationCellScreen>register(ModMenus.FROTH_FLOTATION_CELL.get(),
+                (menu, inventory, title) -> new com.script.comminutioncraft.client.gui.FrothFlotationCellScreen(
+                        (com.script.comminutioncraft.common.machine.FrothFlotationCellMenu) menu, inventory, title));
         event.register(ModMenus.PLASMA_SMELTER.get(), ElectricMachineScreen::plasmaSmelter);
         event.register(ModMenus.PLASMA_ENERGY_BATTERY.get(), EnergyBatteryScreen::plasma);
         event.register(ModMenus.CIRCUIT_ASSEMBLER.get(), PlasmaMachineScreen::assembler);

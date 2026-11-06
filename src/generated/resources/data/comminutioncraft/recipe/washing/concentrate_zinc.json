@@ -1,0 +1,23 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:raw_materials/zinc"
+      }
+    },
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ingots/zinc"
+      }
+    }
+  ],
+  "type": "comminutioncraft:washing",
+  "ingredient": "comminutioncraft:concentrate_zinc",
+  "result": {
+    "id": "comminutioncraft:washed_zinc"
+  }
+}

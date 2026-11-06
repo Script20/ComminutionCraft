@@ -39,5 +39,9 @@ public final class ClientRecipes {
         return List.copyOf(recipes.byType(ModRecipes.PURIFYING_TYPE.get()));
     }
 
+    public static List<RecipeHolder<com.script.comminutioncraft.common.recipe.FlotationRecipe>> flotation() {
+        return List.copyOf(recipes.byType(ModRecipes.FLOTATION_TYPE.get()));
+    }
+
     private ClientRecipes() {}
 }

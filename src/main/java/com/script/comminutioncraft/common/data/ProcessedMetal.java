@@ -21,20 +21,21 @@ import org.jspecify.annotations.Nullable;
  * both {@code c:raw_materials/<metal>} and {@code c:ingots/<metal>} (see {@link #isAvailable()}).
  */
 public record ProcessedMetal(String name, DeferredItem<Item> granulated, DeferredItem<Item> washed, DeferredItem<Item> purified,
+                             DeferredItem<Item> concentrate,
                              @Nullable Item ingot, float experience) {
     public static final List<ProcessedMetal> ALL = List.of(
-            new ProcessedMetal("iron", ModItems.GRANULATED_IRON, ModItems.WASHED_IRON, ModItems.PURIFIED_IRON, Items.IRON_INGOT, 0.7F),
-            new ProcessedMetal("copper", ModItems.GRANULATED_COPPER, ModItems.WASHED_COPPER, ModItems.PURIFIED_COPPER, Items.COPPER_INGOT, 0.7F),
-            new ProcessedMetal("gold", ModItems.GRANULATED_GOLD, ModItems.WASHED_GOLD, ModItems.PURIFIED_GOLD, Items.GOLD_INGOT, 1.0F),
+            new ProcessedMetal("iron", ModItems.GRANULATED_IRON, ModItems.WASHED_IRON, ModItems.PURIFIED_IRON, ModItems.CONCENTRATE_IRON, Items.IRON_INGOT, 0.7F),
+            new ProcessedMetal("copper", ModItems.GRANULATED_COPPER, ModItems.WASHED_COPPER, ModItems.PURIFIED_COPPER, ModItems.CONCENTRATE_COPPER, Items.COPPER_INGOT, 0.7F),
+            new ProcessedMetal("gold", ModItems.GRANULATED_GOLD, ModItems.WASHED_GOLD, ModItems.PURIFIED_GOLD, ModItems.CONCENTRATE_GOLD, Items.GOLD_INGOT, 1.0F),
             // From other mods (Mekanism, Thermal, Immersive Engineering, Create, ...)
-            new ProcessedMetal("tin", ModItems.GRANULATED_TIN, ModItems.WASHED_TIN, ModItems.PURIFIED_TIN, null, 0.7F),
-            new ProcessedMetal("lead", ModItems.GRANULATED_LEAD, ModItems.WASHED_LEAD, ModItems.PURIFIED_LEAD, null, 0.7F),
-            new ProcessedMetal("silver", ModItems.GRANULATED_SILVER, ModItems.WASHED_SILVER, ModItems.PURIFIED_SILVER, null, 1.0F),
-            new ProcessedMetal("nickel", ModItems.GRANULATED_NICKEL, ModItems.WASHED_NICKEL, ModItems.PURIFIED_NICKEL, null, 0.7F),
-            new ProcessedMetal("zinc", ModItems.GRANULATED_ZINC, ModItems.WASHED_ZINC, ModItems.PURIFIED_ZINC, null, 0.7F),
-            new ProcessedMetal("aluminum", ModItems.GRANULATED_ALUMINUM, ModItems.WASHED_ALUMINUM, ModItems.PURIFIED_ALUMINUM, null, 0.7F),
-            new ProcessedMetal("osmium", ModItems.GRANULATED_OSMIUM, ModItems.WASHED_OSMIUM, ModItems.PURIFIED_OSMIUM, null, 0.7F),
-            new ProcessedMetal("uranium", ModItems.GRANULATED_URANIUM, ModItems.WASHED_URANIUM, ModItems.PURIFIED_URANIUM, null, 1.0F)
+            new ProcessedMetal("tin", ModItems.GRANULATED_TIN, ModItems.WASHED_TIN, ModItems.PURIFIED_TIN, ModItems.CONCENTRATE_TIN, null, 0.7F),
+            new ProcessedMetal("lead", ModItems.GRANULATED_LEAD, ModItems.WASHED_LEAD, ModItems.PURIFIED_LEAD, ModItems.CONCENTRATE_LEAD, null, 0.7F),
+            new ProcessedMetal("silver", ModItems.GRANULATED_SILVER, ModItems.WASHED_SILVER, ModItems.PURIFIED_SILVER, ModItems.CONCENTRATE_SILVER, null, 1.0F),
+            new ProcessedMetal("nickel", ModItems.GRANULATED_NICKEL, ModItems.WASHED_NICKEL, ModItems.PURIFIED_NICKEL, ModItems.CONCENTRATE_NICKEL, null, 0.7F),
+            new ProcessedMetal("zinc", ModItems.GRANULATED_ZINC, ModItems.WASHED_ZINC, ModItems.PURIFIED_ZINC, ModItems.CONCENTRATE_ZINC, null, 0.7F),
+            new ProcessedMetal("aluminum", ModItems.GRANULATED_ALUMINUM, ModItems.WASHED_ALUMINUM, ModItems.PURIFIED_ALUMINUM, ModItems.CONCENTRATE_ALUMINUM, null, 0.7F),
+            new ProcessedMetal("osmium", ModItems.GRANULATED_OSMIUM, ModItems.WASHED_OSMIUM, ModItems.PURIFIED_OSMIUM, ModItems.CONCENTRATE_OSMIUM, null, 0.7F),
+            new ProcessedMetal("uranium", ModItems.GRANULATED_URANIUM, ModItems.WASHED_URANIUM, ModItems.PURIFIED_URANIUM, ModItems.CONCENTRATE_URANIUM, null, 1.0F)
     );
 
     /** True for metals that only exist when another mod adds them. */
@@ -80,6 +81,10 @@ public record ProcessedMetal(String name, DeferredItem<Item> granulated, Deferre
 
     public String washedDisplayName() {
         return "Washed " + titleName();
+    }
+
+    public String concentrateDisplayName() {
+        return titleName() + " Concentrate";
     }
 
     public String purifiedDisplayName() {

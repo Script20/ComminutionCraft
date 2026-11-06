@@ -1,0 +1,7 @@
+{
+  "type": "comminutioncraft:washing",
+  "ingredient": "comminutioncraft:concentrate_copper",
+  "result": {
+    "id": "comminutioncraft:washed_copper"
+  }
+}

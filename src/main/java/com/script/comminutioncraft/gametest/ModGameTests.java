@@ -148,6 +148,8 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("accelerator_makes_antimatter", () -> ModGameTests::acceleratorMakesAntimatter);
         TEST_FUNCTIONS.register("annihilation_generator_charges_battery", () -> ModGameTests::annihilationGeneratorChargesBattery);
         TEST_FUNCTIONS.register("assembler_makes_antimatter_circuit", () -> ModGameTests::assemblerMakesAntimatterCircuit);
+        TEST_FUNCTIONS.register("flotation_cell_makes_concentrate", () -> ModGameTests::flotationCellMakesConcentrate);
+        TEST_FUNCTIONS.register("antimatter_suite_runs_the_chain", () -> ModGameTests::antimatterSuiteRunsTheChain);
     }
 
     public static void registerTests(RegisterGameTestsEvent event) {
@@ -1191,6 +1193,71 @@ public final class ModGameTests {
             helper.assertTrue(plain.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT).is(ModItems.PLASMA_CIRCUIT.get()),
                     "The Electronic Circuit should still become a Plasma Circuit without antimatter");
             helper.succeed();
+        });
+    }
+
+    /**
+     * 3 raw iron, but water and oxygen for only two operations: the Froth Flotation Cell makes 2 x 4 Iron Concentrate,
+     * uses all the fluid, and waits with the third raw iron still in its input.
+     */
+    private static void flotationCellMakesConcentrate(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, ModBlocks.FROTH_FLOTATION_CELL.get());
+        var cell = helper.getBlockEntity(pos, com.script.comminutioncraft.common.machine.FrothFlotationCellBlockEntity.class);
+        ((MachineEnergyStorage) cell.getEnergyHandler()).set(com.script.comminutioncraft.common.config.MachineConfig.ANTIMATTER_MACHINES_ENERGY_CAPACITY.get());
+        int water = com.script.comminutioncraft.common.machine.FrothFlotationCellBlockEntity.WATER_PER_OPERATION.get();
+        int oxygen = com.script.comminutioncraft.common.machine.FrothFlotationCellBlockEntity.OXYGEN_PER_OPERATION.get();
+        cell.getWater().fill(FluidResource.of(Fluids.WATER), water * 2);
+        cell.getOxygen().fill(FluidResource.of(ModFluids.OXYGEN.get()), oxygen * 2);
+        cell.setItem(ElectricMachineBlockEntity.SLOT_INPUT, new ItemStack(Items.RAW_IRON, 3));
+        int time = com.script.comminutioncraft.common.machine.FrothFlotationCellBlockEntity.PROCESS_TIME.get();
+        helper.runAfterDelay(time * 3 + 20, () -> {
+            ItemStack output = cell.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT);
+            helper.assertTrue(output.is(ModItems.CONCENTRATE_IRON.get()) && output.getCount() == 8, "Expected 8 Iron Concentrate, got " + output);
+            helper.assertTrue(cell.getWater().getAmount() == 0 && cell.getOxygen().getAmount() == 0, "The fluids for two operations should be used up");
+            helper.assertTrue(cell.getItem(ElectricMachineBlockEntity.SLOT_INPUT).getCount() == 1, "The third raw iron should still be waiting");
+            helper.succeed();
+        });
+    }
+
+    /**
+     * The tier-5 suite, one step each: the Antimatter Washer turns 2 Iron Concentrate into 2 Washed Iron (125 mB water
+     * each), the Purifier 2 Washed into 2 Purified (25 mB oxygen each), the Granulator 1 raw iron into 2 granulated and
+     * the Smelter granulated iron into an ingot.
+     */
+    private static void antimatterSuiteRunsTheChain(GameTestHelper helper) {
+        int fe = com.script.comminutioncraft.common.config.MachineConfig.ANTIMATTER_MACHINES_ENERGY_CAPACITY.get();
+        BlockPos washerPos = new BlockPos(0, 1, 0);
+        BlockPos purifierPos = new BlockPos(4, 1, 0);
+        BlockPos granulatorPos = new BlockPos(0, 1, 4);
+        BlockPos smelterPos = new BlockPos(4, 1, 4);
+        helper.setBlock(washerPos, ModBlocks.ANTIMATTER_WASHER.get());
+        helper.setBlock(purifierPos, ModBlocks.ANTIMATTER_PURIFIER.get());
+        helper.setBlock(granulatorPos, ModBlocks.ANTIMATTER_GRANULATOR.get());
+        helper.setBlock(smelterPos, ModBlocks.ANTIMATTER_SMELTER.get());
+        var washer = helper.getBlockEntity(washerPos, com.script.comminutioncraft.common.machine.AntimatterWasherBlockEntity.class);
+        var purifier = helper.getBlockEntity(purifierPos, com.script.comminutioncraft.common.machine.AntimatterPurifierBlockEntity.class);
+        ElectricMachineBlockEntity granulator = helper.getBlockEntity(granulatorPos, ElectricMachineBlockEntity.class);
+        ElectricMachineBlockEntity smelter = helper.getBlockEntity(smelterPos, ElectricMachineBlockEntity.class);
+        for (ElectricMachineBlockEntity machine : List.of(washer, purifier, granulator, smelter)) {
+            ((MachineEnergyStorage) machine.getEnergyHandler()).set(fe);
+        }
+        washer.getWater().fill(FluidResource.of(Fluids.WATER), 300);
+        purifier.getOxygen().fill(FluidResource.of(ModFluids.OXYGEN.get()), 60);
+        washer.setItem(ElectricMachineBlockEntity.SLOT_INPUT, new ItemStack(ModItems.CONCENTRATE_IRON.get(), 2));
+        purifier.setItem(ElectricMachineBlockEntity.SLOT_INPUT, new ItemStack(ModItems.WASHED_IRON.get(), 2));
+        granulator.setItem(ElectricMachineBlockEntity.SLOT_INPUT, new ItemStack(Items.RAW_IRON));
+        smelter.setItem(ElectricMachineBlockEntity.SLOT_INPUT, new ItemStack(ModItems.GRANULATED_IRON.get()));
+        helper.succeedWhen(() -> {
+            ItemStack washed = washer.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT);
+            helper.assertTrue(washed.is(ModItems.WASHED_IRON.get()) && washed.getCount() == 2, "Washer: expected 2 Washed Iron, got " + washed);
+            helper.assertTrue(washer.getWater().getAmount() == 50, "Washer: expected 50 mB water left, has " + washer.getWater().getAmount());
+            ItemStack purified = purifier.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT);
+            helper.assertTrue(purified.is(ModItems.PURIFIED_IRON.get()) && purified.getCount() == 2, "Purifier: expected 2 Purified Iron, got " + purified);
+            helper.assertTrue(purifier.getOxygen().getAmount() == 10, "Purifier: expected 10 mB oxygen left, has " + purifier.getOxygen().getAmount());
+            ItemStack granulated = granulator.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT);
+            helper.assertTrue(granulated.is(ModItems.GRANULATED_IRON.get()) && granulated.getCount() == 2, "Granulator: expected 2 granulated iron, got " + granulated);
+            helper.assertTrue(smelter.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT).is(Items.IRON_INGOT), "Smelter: no iron ingot yet");
         });
     }
 

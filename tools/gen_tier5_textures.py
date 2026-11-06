@@ -8,6 +8,9 @@ top / side = segment).
 Phase 5B (approved preview: design/previews/phase_5b.png, from phase_5b_preview.py): the Annihilation Generator
 (front + animated _front_on, tier-5 side and top), the Antimatter Circuit item, the Antimatter Cable sheet and the
 Antimatter Energy Battery faces.
+Phase 5C (approved preview: design/previews/phase_5c.png, from phase_5c_preview.py): the Froth Flotation Cell, Ore
+Concentrate for every metal (run gen_granulated_textures.py first: concentrate takes the granulated tones) and the
+antimatter suite (granulator, smelter, washer, purifier: the tier-3/4 tops over the tier-5 bottom).
 
 Run: tools/.venv/Scripts/python tools/gen_tier5_textures.py
 """
@@ -20,6 +23,7 @@ sys.path.insert(0, os.path.join(TOOLS, '..', 'design', 'previews'))
 import gen_tier3_textures as t3  # noqa: E402
 import phase_5a_preview as p5  # noqa: E402
 import phase_5b_preview as p5b  # noqa: E402
+import phase_5c_preview as p5c  # noqa: E402
 import dark_chassis_system as dcs  # noqa: E402
 
 BLOCK = os.path.join(TOOLS, '..', 'src', 'main', 'resources', 'assets', 'comminutioncraft', 'textures', 'block')
@@ -57,4 +61,15 @@ if __name__ == '__main__':
     dcs.battery_front('antimatter', dcs.BATTERY_CELLS).img.save(os.path.join(BLOCK, 'antimatter_energy_battery_front.png'))
     for level in range(dcs.BATTERY_CELLS + 1):
         dcs.battery_front('antimatter', level).img.save(os.path.join(BLOCK, f'antimatter_energy_battery_front_{level}.png'))
+    # Phase 5C
+    top5 = dcs.top('antimatter').img
+    machines = [('froth_flotation_cell', p5c.flotation_front, p5c.flotation_side)]
+    machines += [('antimatter_' + name.split()[1].lower(), front_fn, side_fn) for name, front_fn, side_fn in p5c.SUITE]
+    for name, front_fn, side_fn in machines:
+        top5.save(os.path.join(BLOCK, f'{name}_top.png'))
+        side_fn().img.save(os.path.join(BLOCK, f'{name}_side.png'))
+        front_fn().img.save(os.path.join(BLOCK, f'{name}_front.png'))
+        t3.save_strip(os.path.join(BLOCK, f'{name}_front_on.png'), front_fn)
+    for metal in p5c.gg.ALL_METALS:
+        p5c.concentrate(metal).save(os.path.join(ITEM, f'concentrate_{metal}.png'))
     print('ok')

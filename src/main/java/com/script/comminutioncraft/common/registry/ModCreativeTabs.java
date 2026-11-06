@@ -31,6 +31,11 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.PLASMA_SMELTER.get());
                         output.accept(ModItems.ORE_WASHER.get());
                         output.accept(ModItems.ORE_PURIFIER.get());
+                        output.accept(ModItems.ANTIMATTER_GRANULATOR.get());
+                        output.accept(ModItems.ANTIMATTER_SMELTER.get());
+                        output.accept(ModItems.FROTH_FLOTATION_CELL.get());
+                        output.accept(ModItems.ANTIMATTER_WASHER.get());
+                        output.accept(ModItems.ANTIMATTER_PURIFIER.get());
                         // Machines
                         output.accept(ModItems.ATMOSPHERIC_WATER_GENERATOR.get());
                         output.accept(ModItems.ELECTROLYSER.get());
@@ -80,6 +85,7 @@ public final class ModCreativeTabs {
                         ProcessedMetal.ALL.stream()
                                 .filter(ProcessedMetal::isAvailable)
                                 .forEach(metal -> {
+                                    output.accept(metal.concentrate().get());
                                     output.accept(metal.washed().get());
                                     output.accept(metal.purified().get());
                                     output.accept(metal.granulated().get());

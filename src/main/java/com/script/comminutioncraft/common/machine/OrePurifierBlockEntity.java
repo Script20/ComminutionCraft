@@ -7,7 +7,10 @@ import com.script.comminutioncraft.common.registry.ModBlockEntities;
 import com.script.comminutioncraft.common.registry.ModFluids;
 import com.script.comminutioncraft.common.registry.ModRecipes;
 import java.util.Optional;
+import com.script.comminutioncraft.common.registry.ModMenus;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
@@ -52,8 +55,22 @@ public class OrePurifierBlockEntity extends ElectricMachineBlockEntity {
             RecipeManager.createCheck(ModRecipes.PURIFYING_TYPE.get());
 
     public OrePurifierBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.ORE_PURIFIER.get(), pos, state, TIER3_ENERGY_CAPACITY.get(), TIER3_MAX_ENERGY_INPUT.get());
+        this(ModBlockEntities.ORE_PURIFIER.get(), pos, state, TIER3_ENERGY_CAPACITY.get(), TIER3_MAX_ENERGY_INPUT.get());
+    }
+
+    /** For faster purifiers (the Antimatter Purifier): their own type and FE buffer. */
+    protected OrePurifierBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, int energyCapacity, int maxEnergyInput) {
+        super(type, pos, state, energyCapacity, maxEnergyInput);
         items = NonNullList.withSize(SLOT_COUNT + 1, ItemStack.EMPTY);
+    }
+
+    /** mB of oxygen one operation uses. */
+    protected int oxygenPerOperation() {
+        return OXYGEN_PER_OPERATION.get();
+    }
+
+    protected MenuType<OrePurifierMenu> menuType() {
+        return ModMenus.ORE_PURIFIER.get();
     }
 
     public MachineFluidTank getOxygen() {
@@ -79,12 +96,12 @@ public class OrePurifierBlockEntity extends ElectricMachineBlockEntity {
 
     @Override
     protected boolean hasOperationResources() {
-        return oxygen.getAmount() >= OXYGEN_PER_OPERATION.get();
+        return oxygen.getAmount() >= oxygenPerOperation();
     }
 
     @Override
     protected void onOperationDone(RecipeHolder<? extends Recipe<SingleRecipeInput>> recipe) {
-        oxygen.drain(OXYGEN_PER_OPERATION.get());
+        oxygen.drain(oxygenPerOperation());
         if (recipe.value() instanceof PurifyingRecipe purifying && level != null && level.getRandom().nextFloat() < purifying.getChance()) {
             ItemStack byproduct = purifying.getByproduct().create();
             if (MachineSlots.canFit(items, SLOT_BYPRODUCT, byproduct, getMaxStackSize())) {
@@ -160,11 +177,11 @@ public class OrePurifierBlockEntity extends ElectricMachineBlockEntity {
 
     @Override
     protected Component getDefaultName() {
-        return Component.translatable("block.comminutioncraft.ore_purifier");
+        return Component.translatable(getBlockState().getBlock().getDescriptionId());
     }
 
     @Override
     protected AbstractContainerMenu createMenu(int containerId, Inventory inventory) {
-        return new OrePurifierMenu(containerId, inventory, this, dataAccess);
+        return new OrePurifierMenu(menuType(), containerId, inventory, this, dataAccess);
     }
 }

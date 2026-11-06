@@ -1,0 +1,23 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:raw_materials/osmium"
+      }
+    },
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ingots/osmium"
+      }
+    }
+  ],
+  "type": "comminutioncraft:washing",
+  "ingredient": "comminutioncraft:concentrate_osmium",
+  "result": {
+    "id": "comminutioncraft:washed_osmium"
+  }
+}

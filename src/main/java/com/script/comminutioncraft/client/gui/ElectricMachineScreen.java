@@ -25,6 +25,14 @@ public class ElectricMachineScreen extends MachineScreen<ElectricMachineMenu> {
         return new ElectricMachineScreen(menu, inventory, title, ComminutionCraft.id("textures/gui/container/plasma_smelter.png"), Tier.PLASMA);
     }
 
+    public static ElectricMachineScreen antimatterGranulator(ElectricMachineMenu menu, Inventory inventory, Component title) {
+        return new ElectricMachineScreen(menu, inventory, title, ComminutionCraft.id("textures/gui/container/antimatter_granulator.png"), Tier.ANTIMATTER);
+    }
+
+    public static ElectricMachineScreen antimatterSmelter(ElectricMachineMenu menu, Inventory inventory, Component title) {
+        return new ElectricMachineScreen(menu, inventory, title, ComminutionCraft.id("textures/gui/container/antimatter_smelter.png"), Tier.ANTIMATTER);
+    }
+
     public static ElectricMachineScreen granulator(ElectricMachineMenu menu, Inventory inventory, Component title) {
         return new ElectricMachineScreen(menu, inventory, title, ComminutionCraft.id("textures/gui/container/electric_granulator.png"));
     }

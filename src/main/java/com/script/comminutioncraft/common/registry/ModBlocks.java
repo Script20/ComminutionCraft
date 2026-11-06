@@ -152,6 +152,18 @@ public final class ModBlocks {
     public static final DeferredBlock<com.script.comminutioncraft.common.machine.AcceleratorControllerBlock> ACCELERATOR_CONTROLLER = BLOCKS.registerBlock(
             "accelerator_controller", com.script.comminutioncraft.common.machine.AcceleratorControllerBlock::new, ModBlocks::tier2MachineProperties);
 
+    // Tier 5 phase 5C: the 4x step and the antimatter machine suite
+    public static final DeferredBlock<com.script.comminutioncraft.common.machine.AntimatterGranulatorBlock> ANTIMATTER_GRANULATOR = BLOCKS.registerBlock(
+            "antimatter_granulator", com.script.comminutioncraft.common.machine.AntimatterGranulatorBlock::new, ModBlocks::tier2MachineProperties);
+    public static final DeferredBlock<com.script.comminutioncraft.common.machine.AntimatterSmelterBlock> ANTIMATTER_SMELTER = BLOCKS.registerBlock(
+            "antimatter_smelter", com.script.comminutioncraft.common.machine.AntimatterSmelterBlock::new, ModBlocks::tier2MachineProperties);
+    public static final DeferredBlock<com.script.comminutioncraft.common.machine.FrothFlotationCellBlock> FROTH_FLOTATION_CELL = BLOCKS.registerBlock(
+            "froth_flotation_cell", com.script.comminutioncraft.common.machine.FrothFlotationCellBlock::new, ModBlocks::tier2MachineProperties);
+    public static final DeferredBlock<com.script.comminutioncraft.common.machine.AntimatterWasherBlock> ANTIMATTER_WASHER = BLOCKS.registerBlock(
+            "antimatter_washer", com.script.comminutioncraft.common.machine.AntimatterWasherBlock::new, ModBlocks::tier2MachineProperties);
+    public static final DeferredBlock<com.script.comminutioncraft.common.machine.AntimatterPurifierBlock> ANTIMATTER_PURIFIER = BLOCKS.registerBlock(
+            "antimatter_purifier", com.script.comminutioncraft.common.machine.AntimatterPurifierBlock::new, ModBlocks::tier2MachineProperties);
+
     // Tier 5 phase 5B: antimatter power
     public static final DeferredBlock<com.script.comminutioncraft.common.machine.AnnihilationGeneratorBlock> ANNIHILATION_GENERATOR = BLOCKS.registerBlock(
             "annihilation_generator", com.script.comminutioncraft.common.machine.AnnihilationGeneratorBlock::new, ModBlocks::tier2MachineProperties);

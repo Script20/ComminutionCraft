@@ -1,0 +1,17 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ores/copper"
+      }
+    }
+  ],
+  "type": "comminutioncraft:flotation",
+  "ingredient": "#c:ores/copper",
+  "result": {
+    "count": 4,
+    "id": "comminutioncraft:concentrate_copper"
+  }
+}

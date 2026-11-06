@@ -1,0 +1,7 @@
+{
+  "type": "comminutioncraft:washing",
+  "ingredient": "comminutioncraft:concentrate_iron",
+  "result": {
+    "id": "comminutioncraft:washed_iron"
+  }
+}
