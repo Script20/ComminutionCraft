@@ -156,13 +156,14 @@ public class ModRecipeProvider extends RecipeProvider {
                 .save(output, key("electronic_circuit"));
 
         shaped(RecipeCategory.MISC, ModItems.ELECTRIC_GENERATOR.get())
-                .pattern("III")
+                .pattern("IEI")
                 .pattern("IFI")
-                .pattern("CEC")
+                .pattern("CRC")
                 .define('I', tag(ProcessedMetal.commonItemTag("ingots/iron")))
                 .define('F', Items.FURNACE)
                 .define('C', tag(ProcessedMetal.commonItemTag("ingots/copper")))
                 .define('E', ModItems.ELECTRONIC_CIRCUIT.get())
+                .define('R', tag(ProcessedMetal.commonItemTag("dusts/redstone")))
                 .unlockedBy("has_electronic_circuit", has(ModItems.ELECTRONIC_CIRCUIT.get()))
                 .save(output, key("electric_generator"));
 
@@ -190,22 +191,24 @@ public class ModRecipeProvider extends RecipeProvider {
         shaped(RecipeCategory.MISC, ModItems.ELECTRIC_GRANULATOR.get())
                 .pattern("IEI")
                 .pattern("CMC")
-                .pattern("III")
+                .pattern("IRI")
                 .define('I', tag(ProcessedMetal.commonItemTag("ingots/iron")))
                 .define('E', ModItems.ELECTRONIC_CIRCUIT.get())
                 .define('C', tag(ProcessedMetal.commonItemTag("ingots/copper")))
                 .define('M', ModItems.COAL_GRANULATOR.get())
+                .define('R', tag(ProcessedMetal.commonItemTag("dusts/redstone")))
                 .unlockedBy("has_coal_granulator", has(ModItems.COAL_GRANULATOR.get()))
                 .save(output, key("electric_granulator"));
 
         shaped(RecipeCategory.MISC, ModItems.ELECTRIC_SMELTER.get())
                 .pattern("IEI")
                 .pattern("CMC")
-                .pattern("III")
+                .pattern("IRI")
                 .define('I', tag(ProcessedMetal.commonItemTag("ingots/iron")))
                 .define('E', ModItems.ELECTRONIC_CIRCUIT.get())
                 .define('C', tag(ProcessedMetal.commonItemTag("ingots/copper")))
                 .define('M', ModItems.COAL_SMELTER.get())
+                .define('R', tag(ProcessedMetal.commonItemTag("dusts/redstone")))
                 .unlockedBy("has_coal_smelter", has(ModItems.COAL_SMELTER.get()))
                 .save(output, key("electric_smelter"));
 

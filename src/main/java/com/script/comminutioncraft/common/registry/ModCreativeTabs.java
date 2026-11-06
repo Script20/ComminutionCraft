@@ -24,17 +24,18 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.WRENCH.get());
                         // Processing, by tier
                         output.accept(ModItems.COAL_GRANULATOR.get());
-                        output.accept(ModItems.ELECTRIC_GRANULATOR.get());
-                        output.accept(ModItems.PLASMA_GRANULATOR.get());
                         output.accept(ModItems.COAL_SMELTER.get());
+                        output.accept(ModItems.ELECTRIC_GRANULATOR.get());
                         output.accept(ModItems.ELECTRIC_SMELTER.get());
+                        output.accept(ModItems.PLASMA_GRANULATOR.get());
                         output.accept(ModItems.PLASMA_SMELTER.get());
                         output.accept(ModItems.ORE_WASHER.get());
                         output.accept(ModItems.ORE_PURIFIER.get());
-                        // Power
-                        output.accept(ModItems.ELECTRIC_GENERATOR.get());
+                        // Machines
                         output.accept(ModItems.ATMOSPHERIC_WATER_GENERATOR.get());
                         output.accept(ModItems.ELECTROLYSER.get());
+                        // Power
+                        output.accept(ModItems.ELECTRIC_GENERATOR.get());
                         output.accept(ModItems.PLASMA_GENERATOR.get());
                         output.accept(ModItems.MHD_GENERATOR.get());
                         output.accept(ModItems.ANNIHILATION_GENERATOR.get());
@@ -48,10 +49,10 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.ACCELERATOR_SEGMENT.get());
                         output.accept(ModItems.ACCELERATOR_PORT.get());
                         // Fuel and parts
-                        output.accept(ModItems.ISOTOPE_SEPARATOR.get());
-                        output.accept(ModItems.TRITIUM_BREEDER.get());
-                        output.accept(ModItems.PELLET_PRESS.get());
                         output.accept(ModItems.CIRCUIT_ASSEMBLER.get());
+                        output.accept(ModItems.ISOTOPE_SEPARATOR.get());
+                        output.accept(ModItems.PELLET_PRESS.get());
+                        output.accept(ModItems.TRITIUM_BREEDER.get());
                         // Storage
                         output.accept(ModItems.ENERGY_BATTERY.get());
                         output.accept(ModItems.PLASMA_ENERGY_BATTERY.get());
