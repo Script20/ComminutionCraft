@@ -1,3 +1,6 @@
+<img width="1000" height="1000" alt="AI-W" src="https://github.com/user-attachments/assets/13f460a4-b998-4976-a12c-4d2526007a6a" />
+<img width="1000" height="320" alt="Banner" src="https://github.com/user-attachments/assets/1cf815bc-254c-487b-a68b-bf64684e872b" />
+
 # Comminution Craft
 
 A tech mod about ore processing for Minecraft **26.1.2** (NeoForge **26.1.2.124**). Grind, wash, purify and
