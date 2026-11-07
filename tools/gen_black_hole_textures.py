@@ -28,7 +28,7 @@ OUT = os.path.join(TOOLS, '..', 'src', 'main', 'resources', 'assets', 'comminuti
 
 # Shared with BlackHoleRenderer: in shadow radii.
 HALO_EXTENT = 2.4      # halo quad half-size
-DISC_INNER = 1.45      # disc inner edge
+DISC_INNER = 1.2       # disc inner edge (inside the halo's sides, so the two join)
 DISC_OUTER = 5.4       # disc outer edge (= the disc quad's half-size)
 
 
@@ -66,14 +66,15 @@ def halo(n=512):
     up = np.sin(theta)
     rs = 1.0
     inner = rs * 1.035
-    thick = rs * (0.22 + 0.85 * np.clip(up, 0, 1) ** 0.7 + 0.16 * np.clip(-up, 0, 1))
+    # wide at the sides, where it meets the disc (so they join), tallest over the top, thin underneath
+    thick = rs * (0.55 * (1 - 0.6 * np.clip(-up, 0, 1)) + 0.75 * np.clip(up, 0, 1) ** 0.7)
     u = (r - inner) / thick
     uc = np.clip(u, 0, 1)
     band = np.where((u > 0) & (u < 1), (1 - uc) ** 1.3 * np.clip(uc * 14, 0, 1), 0)
     px = r * 118  # the mock-up's streaks were tuned in pixels at a shadow radius of 118
     streak = (0.1 + 0.9 * mock.streaks(px * 2.1 + 3 * np.cos(theta * 3), mock.RADIAL) ** 2.6) \
         * (0.5 + 0.5 * mock.streaks(theta * 8 + px * 0.05, mock.BREAK))
-    side = 0.55 + 0.45 * np.clip(up, 0, 1) + 0.18 * np.clip(-up, 0, 1)
+    side = 0.8 + 0.2 * np.clip(up, 0, 1) - 0.35 * np.clip(-up, 0, 1)
     light = band * streak * side * 4.2
     temp = (0.45 + 0.35 * (1 - uc) ** 2) * light
     ring = np.exp(-((r - rs * 1.015) * 118) ** 2 / (2 * 2.2 ** 2)) * (1.0 + 0.6 * np.clip(up, 0, 1)) * 0.45

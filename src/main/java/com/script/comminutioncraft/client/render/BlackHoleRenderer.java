@@ -45,7 +45,7 @@ public class BlackHoleRenderer implements BlockEntityRenderer<EventHorizonReacto
 
     private static final float SHADOW = 0.44F;      // shadow radius, blocks
     private static final float HALO_EXTENT = 2.4F;  // halo quad half-size, in shadow radii (as in the texture)
-    private static final float DISC_INNER = 1.45F;
+    private static final float DISC_INNER = 1.2F;   // inside the halo's sides, so the disc and the arch join
     private static final float DISC_OUTER = 5.4F;
     private static final float GLOW_SIZE = 2.6F;    // glow quad half-size, blocks
     private static final int DISC_BANDS = 8;
