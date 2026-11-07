@@ -138,7 +138,7 @@ public class ProcessingCategory<R extends ItemProcessingRecipe> extends Abstract
             builder.addInputSlot(1 + i * 18, FLUID_Y)
                     .setStandardSlotBackground()
                     .setFluidRenderer(cost.amount(), false, 16, 16)
-                    .addFluidStack(cost.fluid(), cost.amount());
+                    .add(cost.fluid(), cost.amount());
         }
         if (secondOutput != null) {
             List<Chance> outputs = secondOutput.outputs().apply(recipe.value());

@@ -82,17 +82,17 @@ public class EventHorizonCategory extends MultiblockCategory<EventHorizonCategor
         builder.addSlot(RecipeIngredientRole.INPUT, ANTIMATTER_X, IO_Y + 1)
                 .setStandardSlotBackground()
                 .setFluidRenderer(ignition, false, 16, 16)
-                .addFluidStack(ModFluids.ANTIMATTER.get(), ignition)
+                .add(ModFluids.ANTIMATTER.get(), ignition)
                 .addRichTooltipCallback((view, tooltip) -> tooltip.add(
                         Component.translatable("jei.comminutioncraft.event_horizon.ignite").withStyle(ChatFormatting.GRAY)));
     }
 
     @Override
     protected void addIoExtras(IRecipeExtrasBuilder builder) {
-        builder.addRecipeArrow().setPosition(ARROW_X, IO_Y + 1);
+        builder.addRecipeArrowWidget().setPosition(ARROW_X, IO_Y + 1);
         JeiAmounts.label(builder, ANTIMATTER_X, IO_Y + 1, EventHorizonReactorBlockEntity.IGNITION_ANTIMATTER.get());
-        builder.addDrawable(guiHelper.getSlotDrawable(), ENERGY_X - 1, IO_Y);
-        builder.addDrawable(energyIcon, ENERGY_X, IO_Y + 1);
+        builder.addDrawableWidget(guiHelper.getSlotDrawable()).setPosition(ENERGY_X - 1, IO_Y);
+        builder.addDrawableWidget(energyIcon).setPosition(ENERGY_X, IO_Y + 1);
         int perMass = EventHorizonReactorBlockEntity.ENERGY_PER_MASS.get();
         builder.addTooltipArea(ENERGY_X, IO_Y + 1, 16, 16).setTooltip(List.of(
                 Component.translatable("jei.comminutioncraft.energy_out").withStyle(ChatFormatting.RED),

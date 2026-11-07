@@ -74,26 +74,26 @@ public class ParticleAcceleratorCategory extends MultiblockCategory<ParticleAcce
         builder.addSlot(RecipeIngredientRole.INPUT, HYDROGEN_X, IO_Y + 1)
                 .setStandardSlotBackground()
                 .setFluidRenderer(hydrogen, false, 16, 16)
-                .addFluidStack(ModFluids.HYDROGEN.get(), hydrogen)
+                .add(ModFluids.HYDROGEN.get(), hydrogen)
                 .addRichTooltipCallback((view, tooltip) -> tooltip.add(
                         Component.translatable("jei.comminutioncraft.particle_accelerator.hydrogen").withStyle(ChatFormatting.GRAY)));
         builder.addSlot(RecipeIngredientRole.OUTPUT, OUTPUT_X, IO_Y + 1)
                 .setStandardSlotBackground()
                 .setFluidRenderer(1, false, 16, 16)
-                .addFluidStack(ModFluids.ANTIMATTER.get(), 1);
+                .add(ModFluids.ANTIMATTER.get(), 1);
     }
 
     @Override
     protected void addIoExtras(IRecipeExtrasBuilder builder) {
-        builder.addRecipeArrow().setPosition(ARROW_X, IO_Y + 1);
+        builder.addRecipeArrowWidget().setPosition(ARROW_X, IO_Y + 1);
         JeiAmounts.label(builder, HYDROGEN_X, IO_Y + 1, ParticleAcceleratorBlockEntity.HYDROGEN_PER_MB.get());
         JeiAmounts.label(builder, OUTPUT_X, IO_Y + 1, 1);
         int blocks = ParticleAcceleratorBlockEntity.ringBlocks(SIDE);
         String fe = String.format(Locale.ROOT, "%,d", blocks * ParticleAcceleratorBlockEntity.ENERGY_PER_RING_BLOCK.get());
         String rate = String.format(Locale.ROOT, "%.3f", (float) blocks / Math.max(1, ParticleAcceleratorBlockEntity.RING_TICKS_PER_MB.get()))
                 .replaceAll("0+$", "").replaceAll("\\.$", "");
-        builder.addDrawable(guiHelper.getSlotDrawable(), ENERGY_X - 1, IO_Y);
-        builder.addDrawable(energyIcon, ENERGY_X, IO_Y + 1);
+        builder.addDrawableWidget(guiHelper.getSlotDrawable()).setPosition(ENERGY_X - 1, IO_Y);
+        builder.addDrawableWidget(energyIcon).setPosition(ENERGY_X, IO_Y + 1);
         builder.addTooltipArea(ENERGY_X, IO_Y + 1, 16, 16).setTooltip(List.of(
                 Component.translatable("jei.comminutioncraft.energy_in").withStyle(ChatFormatting.RED),
                 Component.translatable("jei.comminutioncraft.particle_accelerator.example", fe, rate).withStyle(ChatFormatting.GRAY),

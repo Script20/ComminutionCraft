@@ -85,22 +85,22 @@ public class FusionReactorCategory extends MultiblockCategory<FusionReactorCateg
         builder.addSlot(RecipeIngredientRole.INPUT, PLASMA_X, IO_Y + 1)
                 .setStandardSlotBackground()
                 .setFluidRenderer(1_000, false, 16, 16)
-                .addFluidStack(ModFluids.PLASMA.get(), 1_000)
+                .add(ModFluids.PLASMA.get(), 1_000)
                 .addRichTooltipCallback((view, tooltip) -> tooltip.add(
                         Component.translatable("jei.comminutioncraft.fusion_reactor.ignite").withStyle(ChatFormatting.GRAY)));
         builder.addSlot(RecipeIngredientRole.OUTPUT, TRITIUM_X, IO_Y + 1)
                 .setStandardSlotBackground()
                 .setFluidRenderer(FusionReactorBlockEntity.TRITIUM_PER_PELLET.get(), false, 16, 16)
-                .addFluidStack(ModFluids.TRITIUM.get(), FusionReactorBlockEntity.TRITIUM_PER_PELLET.get())
+                .add(ModFluids.TRITIUM.get(), FusionReactorBlockEntity.TRITIUM_PER_PELLET.get())
                 .addRichTooltipCallback((view, tooltip) -> tooltip.add(
                         Component.translatable("jei.comminutioncraft.fusion_reactor.tritium").withStyle(ChatFormatting.GRAY)));
     }
 
     @Override
     protected void addIoExtras(IRecipeExtrasBuilder builder) {
-        builder.addRecipeArrow().setPosition(ARROW_X, IO_Y + 1);
-        builder.addDrawable(guiHelper.getSlotDrawable(), ENERGY_X - 1, IO_Y);
-        builder.addDrawable(energyIcon, ENERGY_X, IO_Y + 1);
+        builder.addRecipeArrowWidget().setPosition(ARROW_X, IO_Y + 1);
+        builder.addDrawableWidget(guiHelper.getSlotDrawable()).setPosition(ENERGY_X - 1, IO_Y);
+        builder.addDrawableWidget(energyIcon).setPosition(ENERGY_X, IO_Y + 1);
         builder.addTooltipArea(ENERGY_X, IO_Y + 1, 16, 16).setTooltip(List.of(
                 Component.translatable("jei.comminutioncraft.energy_out").withStyle(ChatFormatting.RED),
                 Component.translatable("jei.comminutioncraft.fusion_reactor.output",

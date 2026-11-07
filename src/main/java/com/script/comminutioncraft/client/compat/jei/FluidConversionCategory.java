@@ -81,7 +81,7 @@ public class FluidConversionCategory extends AbstractRecipeCategory<FluidConvers
     private static void slot(IRecipeSlotBuilder slot, Amount amount) {
         slot.setStandardSlotBackground()
                 .setFluidRenderer(amount.millibuckets(), false, 16, 16)
-                .addFluidStack(amount.fluid(), amount.millibuckets());
+                .add(amount.fluid(), amount.millibuckets());
         if (amount.note() != null) {
             Component note = amount.note();
             slot.addRichTooltipCallback((view, tooltip) -> tooltip.add(note.copy().withStyle(ChatFormatting.GRAY)));
@@ -100,7 +100,7 @@ public class FluidConversionCategory extends AbstractRecipeCategory<FluidConvers
 
     @Override
     public void createRecipeExtras(IRecipeExtrasBuilder builder, Conversion recipe, IFocusGroup focuses) {
-        builder.addRecipeArrow().setPosition(arrowX(recipe), SLOT_Y);
+        builder.addRecipeArrowWidget().setPosition(arrowX(recipe), SLOT_Y);
         for (int i = 0; i < recipe.in().size(); i++) {
             JeiAmounts.label(builder, inputX(recipe, i), SLOT_Y, recipe.in().get(i).millibuckets());
         }
@@ -109,7 +109,7 @@ public class FluidConversionCategory extends AbstractRecipeCategory<FluidConvers
         }
         if (recipe.makesEnergy()) {
             int x = outputX(recipe, recipe.out().size());
-            builder.addDrawable(energyIcon, x, SLOT_Y);
+            builder.addDrawableWidget(energyIcon).setPosition(x, SLOT_Y);
             List<FormattedText> tooltip = new ArrayList<>();
             tooltip.add(Component.translatable("jei.comminutioncraft.energy_out").withStyle(ChatFormatting.RED));
             recipe.lines().forEach(line -> tooltip.add(line.copy().withStyle(ChatFormatting.GRAY)));
