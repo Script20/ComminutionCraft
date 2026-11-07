@@ -6,87 +6,73 @@ import com.script.comminutioncraft.common.registry.ModFluids;
 import com.script.comminutioncraft.common.registry.ModItems;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 
 /**
- * How to build the Event Horizon Reactor (press U on its controller, frame or port): the bottom (= top) layer of the
- * 7x7x7 seen from above - frame round the edge, the controller in the middle of the front edge, an Input and an
- * Output port - two lines about the middle layers and the inside, then any item + antimatter -> FE.
+ * The Event Horizon Reactor's page (press U on its controller, frame or port): the 7x7x7 cage as a 3D model with
+ * layer buttons and the blocks needed (see {@link MultiblockCategory}), then any item + antimatter to ignite -> FE.
  */
-public class EventHorizonCategory extends AbstractRecipeCategory<EventHorizonCategory.Structure> {
+public class EventHorizonCategory extends MultiblockCategory<EventHorizonCategory.Structure> {
     public static final IRecipeType<Structure> TYPE = IRecipeType.create(ComminutionCraft.MODID, "event_horizon", Structure.class);
 
     /** The one "recipe" this category shows. */
     public enum Structure { INSTANCE }
 
     private static final int N = 7;
-    private static final int WIDTH = 170;
-    private static final int GRID_X = 0;
-    private static final int GRID_Y = 0;
-    private static final int HEIGHT = N * 18;
-    /** Right of the grid: [item][antimatter], a down arrow, [FE], and a [?] with the building notes. */
-    private static final int COLUMN_X = N * 18 + 4;
-    private static final int COLUMN_W = WIDTH - COLUMN_X;
-    private static final int ITEM_X = COLUMN_X + (COLUMN_W - 36) / 2 + 1;
-    private static final int ANTIMATTER_X = ITEM_X + 18;
-    private static final int IO_Y = 24;
-    private static final int ENERGY_X = COLUMN_X + (COLUMN_W - 18) / 2 + 1;
-    private static final int ENERGY_Y = IO_Y + 36;
+    /** [any item][antimatter] -> [FE], centred. */
+    private static final int IO_X = (WIDTH - (18 + 18 + 4 + 24 + 4 + 18)) / 2;
+    private static final int ITEM_X = IO_X + 1;
+    private static final int ANTIMATTER_X = IO_X + 19;
+    private static final int ARROW_X = IO_X + 36 + 4;
+    private static final int ENERGY_X = ARROW_X + 24 + 4 + 1;
 
     private final IGuiHelper guiHelper;
     private final IDrawable energyIcon;
 
     public EventHorizonCategory(IGuiHelper guiHelper) {
         super(TYPE, Component.translatable("jei.comminutioncraft.event_horizon"),
-                guiHelper.createDrawableItemLike(ModItems.HORIZON_CONTROLLER.get()), WIDTH, HEIGHT);
+                guiHelper.createDrawableItemLike(ModItems.HORIZON_CONTROLLER.get()), N, N, N, blocks());
         this.guiHelper = guiHelper;
-        energyIcon = guiHelper.drawableBuilder(ComminutionCraft.id("textures/gui/jei_energy.png"), 0, 0, 16, 16)
-                .setTextureSize(16, 16)
-                .build();
+        energyIcon = energyIcon(guiHelper);
+        rule(ModItems.CONTAINMENT_FRAME.get(), Component.translatable("jei.comminutioncraft.event_horizon.frame"));
+        rule(ModItems.HORIZON_PORT.get(), Component.translatable("jei.comminutioncraft.multiblock.port_rule"));
+        rule(ModItems.HORIZON_CONTROLLER.get(), Component.translatable("jei.comminutioncraft.event_horizon.controller"));
+    }
+
+    /** The 7x7x7 cage: frame on every edge, the controller in the middle of the front bottom edge, two ports. */
+    private static Map<BlockPos, ItemLike> blocks() {
+        Map<BlockPos, ItemLike> blocks = structure();
+        int mid = N / 2;
+        for (int y = 0; y < N; y++) {
+            for (int z = 0; z < N; z++) {
+                for (int x = 0; x < N; x++) {
+                    int outer = (x == 0 || x == N - 1 ? 1 : 0) + (y == 0 || y == N - 1 ? 1 : 0) + (z == 0 || z == N - 1 ? 1 : 0);
+                    if (outer < 2) {
+                        continue; // the inside and the faces' openings
+                    }
+                    ItemLike block = x == mid && y == 0 && z == N - 1 ? ModItems.HORIZON_CONTROLLER.get()
+                            : (x == N - 1 || x == 0) && y == 0 && z == mid ? ModItems.HORIZON_PORT.get()
+                            : ModItems.CONTAINMENT_FRAME.get();
+                    blocks.put(new BlockPos(x, y, z), block);
+                }
+            }
+        }
+        return blocks;
     }
 
     @Override
-    public void setRecipe(IRecipeLayoutBuilder builder, Structure recipe, IFocusGroup focuses) {
-        int mid = N / 2;
-        for (int z = 0; z < N; z++) {
-            for (int x = 0; x < N; x++) {
-                if (x != 0 && x != N - 1 && z != 0 && z != N - 1) {
-                    continue; // the bottom face's opening: open, or anything
-                }
-                ItemLike block;
-                String rule;
-                if (x == mid && z == N - 1) {
-                    block = ModItems.HORIZON_CONTROLLER.get();
-                    rule = "controller";
-                } else if (x == N - 1 && z == mid) {
-                    block = ModItems.HORIZON_PORT.get();
-                    rule = "input_port";
-                } else if (x == 0 && z == mid) {
-                    block = ModItems.HORIZON_PORT.get();
-                    rule = "output_port";
-                } else {
-                    block = ModItems.CONTAINMENT_FRAME.get();
-                    rule = "frame";
-                }
-                Component tip = Component.translatable("jei.comminutioncraft.event_horizon." + rule);
-                builder.addSlot(RecipeIngredientRole.INPUT, GRID_X + 1 + x * 18, GRID_Y + 1 + z * 18)
-                        .setStandardSlotBackground()
-                        .add(block)
-                        .addRichTooltipCallback((view, tooltip) -> tooltip.add(tip.copy().withStyle(ChatFormatting.GRAY)));
-            }
-        }
+    protected void addIoSlots(IRecipeLayoutBuilder builder) {
         builder.addSlot(RecipeIngredientRole.INPUT, ITEM_X, IO_Y + 1)
                 .setStandardSlotBackground()
                 .add(Items.COBBLESTONE)
@@ -102,31 +88,19 @@ public class EventHorizonCategory extends AbstractRecipeCategory<EventHorizonCat
     }
 
     @Override
-    public void createRecipeExtras(IRecipeExtrasBuilder builder, Structure recipe, IFocusGroup focuses) {
+    protected void addIoExtras(IRecipeExtrasBuilder builder) {
+        builder.addRecipeArrow().setPosition(ARROW_X, IO_Y + 1);
         JeiAmounts.label(builder, ANTIMATTER_X, IO_Y + 1, EventHorizonReactorBlockEntity.IGNITION_ANTIMATTER.get());
-        builder.addText(Component.literal("↓"), COLUMN_W, 10)
-                .setPosition(COLUMN_X, IO_Y + 22)
-                .setTextAlignment(HorizontalAlignment.CENTER)
-                .setColor(0xFF808080);
-        builder.addDrawable(guiHelper.getSlotDrawable(), ENERGY_X - 1, ENERGY_Y - 1);
-        builder.addDrawable(energyIcon, ENERGY_X, ENERGY_Y);
-        // How to build it, on hover (the grid itself shows the bottom / top layer)
-        builder.addText(Component.literal("[?]"), COLUMN_W, 10)
-                .setPosition(COLUMN_X, HEIGHT - 12)
-                .setTextAlignment(HorizontalAlignment.CENTER)
-                .setColor(0xFFB08A30)
-                .setTooltip(List.of(
-                        Component.translatable("jei.comminutioncraft.event_horizon.layer").withStyle(ChatFormatting.GOLD),
-                        Component.translatable("jei.comminutioncraft.event_horizon.middle").withStyle(ChatFormatting.GRAY),
-                        Component.translatable("jei.comminutioncraft.event_horizon.inside").withStyle(ChatFormatting.GRAY),
-                        Component.translatable("jei.comminutioncraft.event_horizon.sides").withStyle(ChatFormatting.GRAY)));
+        builder.addDrawable(guiHelper.getSlotDrawable(), ENERGY_X - 1, IO_Y);
+        builder.addDrawable(energyIcon, ENERGY_X, IO_Y + 1);
         int perMass = EventHorizonReactorBlockEntity.ENERGY_PER_MASS.get();
-        builder.addTooltipArea(ENERGY_X, ENERGY_Y, 16, 16).setTooltip(List.of(
+        builder.addTooltipArea(ENERGY_X, IO_Y + 1, 16, 16).setTooltip(List.of(
                 Component.translatable("jei.comminutioncraft.energy_out").withStyle(ChatFormatting.RED),
                 Component.translatable("jei.comminutioncraft.event_horizon.per_mass", String.format(Locale.ROOT, "%,d", perMass))
                         .withStyle(ChatFormatting.GRAY),
                 Component.translatable("jei.comminutioncraft.event_horizon.max",
                         String.format(Locale.ROOT, "%,d", perMass * EventHorizonReactorBlockEntity.MASS_PER_TICK.get()))
-                        .withStyle(ChatFormatting.GRAY)));
+                        .withStyle(ChatFormatting.GRAY),
+                Component.translatable("jei.comminutioncraft.event_horizon.inside").withStyle(ChatFormatting.DARK_GRAY)));
     }
 }

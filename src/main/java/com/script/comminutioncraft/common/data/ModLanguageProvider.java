@@ -43,6 +43,12 @@ public class ModLanguageProvider extends LanguageProvider {
         add("jei.comminutioncraft.water_generator.note", "1 mB/t per open face x the biome's humidity; x2 with an Air Filter");
         add("jei.comminutioncraft.byproduct_face", "Leaves through By-product faces");
         add("jei.comminutioncraft.fusion_reactor", "Fusion Reactor");
+        add("jei.comminutioncraft.fusion_reactor.port", "Any shell block (pellets, plasma in; FE, tritium out)");
+        add("jei.comminutioncraft.multiblock.layer", "Layer");
+        add("jei.comminutioncraft.multiblock.all", "All");
+        add("jei.comminutioncraft.multiblock.up", "Up a layer (past the top: all)");
+        add("jei.comminutioncraft.multiblock.down", "Down a layer (past the bottom: all)");
+        add("jei.comminutioncraft.multiblock.port_rule", "Input or Output port (switch with the wrench)");
         add("jei.comminutioncraft.fusion_reactor.bottom", "Bottom");
         add("jei.comminutioncraft.fusion_reactor.middle", "Middle");
         add("jei.comminutioncraft.fusion_reactor.top", "Top");
