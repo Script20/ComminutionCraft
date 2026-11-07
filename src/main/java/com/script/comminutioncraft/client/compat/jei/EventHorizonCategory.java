@@ -33,16 +33,17 @@ public class EventHorizonCategory extends AbstractRecipeCategory<EventHorizonCat
 
     private static final int N = 7;
     private static final int WIDTH = 170;
-    private static final int GRID_X = (WIDTH - N * 18) / 2;
-    private static final int GRID_Y = 11;
-    private static final int TEXT_Y = GRID_Y + N * 18 + 3;
-    private static final int IO_Y = TEXT_Y + 22;
-    private static final int HEIGHT = IO_Y + 19;
-    private static final int IO_X = (WIDTH - (18 + 18 + 4 + 24 + 4 + 18)) / 2;
-    private static final int ITEM_X = IO_X + 1;
-    private static final int ANTIMATTER_X = IO_X + 19;
-    private static final int ARROW_X = IO_X + 36 + 4;
-    private static final int ENERGY_X = ARROW_X + 24 + 4 + 1;
+    private static final int GRID_X = 0;
+    private static final int GRID_Y = 0;
+    private static final int HEIGHT = N * 18;
+    /** Right of the grid: [item][antimatter], a down arrow, [FE], and a [?] with the building notes. */
+    private static final int COLUMN_X = N * 18 + 4;
+    private static final int COLUMN_W = WIDTH - COLUMN_X;
+    private static final int ITEM_X = COLUMN_X + (COLUMN_W - 36) / 2 + 1;
+    private static final int ANTIMATTER_X = ITEM_X + 18;
+    private static final int IO_Y = 24;
+    private static final int ENERGY_X = COLUMN_X + (COLUMN_W - 18) / 2 + 1;
+    private static final int ENERGY_Y = IO_Y + 36;
 
     private final IGuiHelper guiHelper;
     private final IDrawable energyIcon;
@@ -102,23 +103,24 @@ public class EventHorizonCategory extends AbstractRecipeCategory<EventHorizonCat
 
     @Override
     public void createRecipeExtras(IRecipeExtrasBuilder builder, Structure recipe, IFocusGroup focuses) {
-        builder.addText(Component.translatable("jei.comminutioncraft.event_horizon.layer"), WIDTH, 10)
-                .setPosition(0, 0)
+        JeiAmounts.label(builder, ANTIMATTER_X, IO_Y + 1, EventHorizonReactorBlockEntity.IGNITION_ANTIMATTER.get());
+        builder.addText(Component.literal("↓"), COLUMN_W, 10)
+                .setPosition(COLUMN_X, IO_Y + 22)
                 .setTextAlignment(HorizontalAlignment.CENTER)
                 .setColor(0xFF808080);
-        String[] lines = {"middle", "inside"};
-        for (int i = 0; i < lines.length; i++) {
-            builder.addText(Component.translatable("jei.comminutioncraft.event_horizon." + lines[i]), WIDTH, 10)
-                    .setPosition(0, TEXT_Y + i * 10)
-                    .setTextAlignment(HorizontalAlignment.CENTER)
-                    .setColor(0xFF808080);
-        }
-        builder.addRecipeArrow().setPosition(ARROW_X, IO_Y + 1);
-        JeiAmounts.label(builder, ANTIMATTER_X, IO_Y + 1, EventHorizonReactorBlockEntity.IGNITION_ANTIMATTER.get());
-        builder.addDrawable(guiHelper.getSlotDrawable(), ENERGY_X - 1, IO_Y);
-        builder.addDrawable(energyIcon, ENERGY_X, IO_Y + 1);
+        builder.addDrawable(guiHelper.getSlotDrawable(), ENERGY_X - 1, ENERGY_Y - 1);
+        builder.addDrawable(energyIcon, ENERGY_X, ENERGY_Y);
+        // How to build it, on hover (the grid itself shows the bottom / top layer)
+        builder.addText(Component.literal("[?]"), COLUMN_W, 10)
+                .setPosition(COLUMN_X, HEIGHT - 12)
+                .setTextAlignment(HorizontalAlignment.CENTER)
+                .setColor(0xFFB08A30)
+                .setTooltip(List.of(
+                        Component.translatable("jei.comminutioncraft.event_horizon.layer").withStyle(ChatFormatting.GOLD),
+                        Component.translatable("jei.comminutioncraft.event_horizon.middle").withStyle(ChatFormatting.GRAY),
+                        Component.translatable("jei.comminutioncraft.event_horizon.inside").withStyle(ChatFormatting.GRAY)));
         int perMass = EventHorizonReactorBlockEntity.ENERGY_PER_MASS.get();
-        builder.addTooltipArea(ENERGY_X, IO_Y + 1, 16, 16).setTooltip(List.of(
+        builder.addTooltipArea(ENERGY_X, ENERGY_Y, 16, 16).setTooltip(List.of(
                 Component.translatable("jei.comminutioncraft.energy_out").withStyle(ChatFormatting.RED),
                 Component.translatable("jei.comminutioncraft.event_horizon.energy", String.format(Locale.ROOT, "%,d", perMass),
                         String.format(Locale.ROOT, "%,d", perMass * EventHorizonReactorBlockEntity.MASS_PER_TICK.get()))
