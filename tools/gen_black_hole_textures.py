@@ -3,9 +3,9 @@ mock-up (design/previews/singularity_mockup.py: same colour ramp and streak nois
 that for this one effect. Needs numpy (tools/.venv).
 
 Writes assets/comminutioncraft/textures/entity/black_hole/:
-  halo.png   - camera-facing lensed arch round the hole + the photon ring (additive: black = nothing)
+  halo.png   - camera-facing lensed arch round the hole + the photon ring (colour + alpha from the brightness)
   glow.png   - soft warm glow behind everything (fakes bloom)
-  disc.png   - the accretion disc seen from above (additive); the renderer spins rings of it at Kepler speeds and
+  disc.png   - the accretion disc seen from above (colour + alpha); the renderer spins rings of it at Kepler speeds and
                brightens the side moving towards the camera
   shadow.png - the black hole itself: a black disc (cutout, writes depth so the far half of the disc hides behind it)
   field.png  - faint gold shimmer for the deadly 5x5x5 field (scrolled by the renderer)
@@ -37,9 +37,14 @@ def tone(rgb, exposure):
 
 
 def save(arr, name, alpha=None, blur=True):
-    a = (np.clip(arr, 0, 1) * 255).astype(np.uint8)
+    arr = np.clip(arr, 0, 1)
     if alpha is None:
-        alpha = np.full(a.shape[:2], 255, np.uint8)
+        # Light-only layers: drawn with normal (translucent) blending, so the brightness becomes the alpha and the
+        # colour is kept at full strength - they keep their gold over a bright sky instead of adding up to white.
+        lum = arr.max(axis=2)
+        alpha = (np.clip(lum * 1.15, 0, 1) * 255).astype(np.uint8)
+        arr = arr / np.maximum(lum, 1e-4)[..., None]
+    a = (np.clip(arr, 0, 1) * 255).astype(np.uint8)
     Image.fromarray(np.dstack([a, alpha]), 'RGBA').save(os.path.join(OUT, name))
     if blur:  # smooth textures: linear filtering, so they don't go blocky up close
         with open(os.path.join(OUT, name + '.mcmeta'), 'w') as fh:

@@ -432,6 +432,7 @@
   "container.comminutioncraft.soaryn_chest": "Soaryn Chest",
   "death.attack.comminutioncraft.event_horizon": "%1$s crossed the event horizon",
   "death.attack.comminutioncraft.event_horizon.player": "%1$s crossed the event horizon whilst fighting %2$s",
+  "entity.comminutioncraft.black_hole": "Black Hole",
   "fluid_type.comminutioncraft.antimatter": "Antimatter",
   "fluid_type.comminutioncraft.deuterium": "Deuterium",
   "fluid_type.comminutioncraft.hydrogen": "Hydrogen",

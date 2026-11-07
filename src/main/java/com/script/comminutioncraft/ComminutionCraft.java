@@ -53,6 +53,7 @@ public class ComminutionCraft {
         ModDataComponents.DATA_COMPONENTS.register(modEventBus);
         ModFeatures.FEATURES.register(modEventBus);
         ModBlockEntities.BLOCK_ENTITY_TYPES.register(modEventBus);
+        com.script.comminutioncraft.common.registry.ModEntities.ENTITY_TYPES.register(modEventBus);
         ModMenus.MENUS.register(modEventBus);
         ModRecipes.RECIPE_TYPES.register(modEventBus);
         ModRecipes.RECIPE_SERIALIZERS.register(modEventBus);

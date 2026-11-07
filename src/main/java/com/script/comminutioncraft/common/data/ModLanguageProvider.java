@@ -73,6 +73,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("jei.comminutioncraft.time.antimatter_purifier", "Antimatter Purifier: %s");
         add(ModBlocks.ANNIHILATION_GENERATOR.get(), "Annihilation Generator");
         add(ModBlocks.CONTAINMENT_FRAME.get(), "Containment Frame");
+        add(com.script.comminutioncraft.common.registry.ModEntities.BLACK_HOLE.get(), "Black Hole");
         add(ModBlocks.HORIZON_CONTROLLER.get(), "Event Horizon Controller");
         add(ModBlocks.HORIZON_PORT.get(), "Horizon Port");
         add("death.attack.comminutioncraft.event_horizon", "%1$s crossed the event horizon");

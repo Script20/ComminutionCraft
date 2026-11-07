@@ -102,6 +102,8 @@ public class ComminutionCraftClient {
         event.registerBlockEntityRenderer(ModBlockEntities.CREATIVE_FLUID_TANK.get(), context -> new FluidTankRenderer(context.sprites()));
         event.registerBlockEntityRenderer(ModBlockEntities.CONTAINMENT_CELL.get(), context -> new FluidTankRenderer(context.sprites()));
         event.registerBlockEntityRenderer(ModBlockEntities.FUSION_REACTOR.get(), context -> new FusionReactorRenderer(context.sprites()));
+        event.registerEntityRenderer(com.script.comminutioncraft.common.registry.ModEntities.BLACK_HOLE.get(),
+                com.script.comminutioncraft.client.render.BlackHoleEntityRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.EVENT_HORIZON_REACTOR.get(),
                 context -> new com.script.comminutioncraft.client.render.BlackHoleRenderer());
         event.registerBlockEntityRenderer(ModBlockEntities.SOARYN_CHEST.get(), net.minecraft.client.renderer.blockentity.ChestRenderer::new);
