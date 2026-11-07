@@ -56,3 +56,7 @@ venv/
 ### Local notes (not in the repo) ###
 CLAUDE.md
 TODO.md
+
+### other ###
+design/
+tools/
