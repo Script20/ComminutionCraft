@@ -220,8 +220,6 @@ The mod needs **Java 25**. Gradle itself has to start on Java 17 or newer, so po
 
 - Everything under `src/generated/resources` comes from datagen (`common/data/`). Don't edit it by hand: change
   the providers and run `runData`.
-- Textures use the "Dark Chassis" style and are drawn by Python scripts in `tools/` (they need Pillow and numpy).
-  See [tools/README.md](tools/README.md).
 
 ## License
 
