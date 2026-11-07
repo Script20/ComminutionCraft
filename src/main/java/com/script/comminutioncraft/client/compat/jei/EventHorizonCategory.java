@@ -118,11 +118,14 @@ public class EventHorizonCategory extends AbstractRecipeCategory<EventHorizonCat
                 .setTooltip(List.of(
                         Component.translatable("jei.comminutioncraft.event_horizon.layer").withStyle(ChatFormatting.GOLD),
                         Component.translatable("jei.comminutioncraft.event_horizon.middle").withStyle(ChatFormatting.GRAY),
-                        Component.translatable("jei.comminutioncraft.event_horizon.inside").withStyle(ChatFormatting.GRAY)));
+                        Component.translatable("jei.comminutioncraft.event_horizon.inside").withStyle(ChatFormatting.GRAY),
+                        Component.translatable("jei.comminutioncraft.event_horizon.sides").withStyle(ChatFormatting.GRAY)));
         int perMass = EventHorizonReactorBlockEntity.ENERGY_PER_MASS.get();
         builder.addTooltipArea(ENERGY_X, ENERGY_Y, 16, 16).setTooltip(List.of(
                 Component.translatable("jei.comminutioncraft.energy_out").withStyle(ChatFormatting.RED),
-                Component.translatable("jei.comminutioncraft.event_horizon.energy", String.format(Locale.ROOT, "%,d", perMass),
+                Component.translatable("jei.comminutioncraft.event_horizon.per_mass", String.format(Locale.ROOT, "%,d", perMass))
+                        .withStyle(ChatFormatting.GRAY),
+                Component.translatable("jei.comminutioncraft.event_horizon.max",
                         String.format(Locale.ROOT, "%,d", perMass * EventHorizonReactorBlockEntity.MASS_PER_TICK.get()))
                         .withStyle(ChatFormatting.GRAY)));
     }
