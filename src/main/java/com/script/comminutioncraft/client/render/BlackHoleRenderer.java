@@ -50,6 +50,7 @@ public class BlackHoleRenderer implements BlockEntityRenderer<EventHorizonReacto
     private static final float GLOW_SIZE = 2.6F;    // glow quad half-size, blocks
     private static final int DISC_BANDS = 8;
     private static final int DISC_SEGMENTS = 72;
+    private static final double TAU = Math.PI * 2;
 
     public static class State extends BlockEntityRenderState {
         boolean lit;
@@ -61,8 +62,8 @@ public class BlackHoleRenderer implements BlockEntityRenderer<EventHorizonReacto
         float camX;
         float camY;
         float camZ;
-        /** Seconds, for the spin and shimmer. */
-        float time;
+        /** Seconds of game time, for the spin and shimmer (double: angles are wrapped from it, it never wraps itself). */
+        double time;
     }
 
     @Override
@@ -83,7 +84,7 @@ public class BlackHoleRenderer implements BlockEntityRenderer<EventHorizonReacto
         state.camX = (float) (cameraPosition.x - (centre.getX() + 0.5));
         state.camY = (float) (cameraPosition.y - (centre.getY() + 0.5));
         state.camZ = (float) (cameraPosition.z - (centre.getZ() + 0.5));
-        state.time = reactor.getLevel() == null ? 0 : ((reactor.getLevel().getGameTime() % 24000) + partialTicks) / 20F;
+        state.time = reactor.getLevel() == null ? 0 : (reactor.getLevel().getGameTime() + (double) partialTicks) / 20.0;
     }
 
     @Override
@@ -116,7 +117,7 @@ public class BlackHoleRenderer implements BlockEntityRenderer<EventHorizonReacto
     // ---- Shared drawing (the pose's origin = the hole's middle) ----
 
     /** The black hole: glow, halo, shadow and disc. {@code toCamera} = from the hole to the camera (any length). */
-    public static void drawHole(PoseStack poseStack, SubmitNodeCollector collector, Quaternionf facing, Vector3f toCamera, float time) {
+    public static void drawHole(PoseStack poseStack, SubmitNodeCollector collector, Quaternionf facing, Vector3f toCamera, double time) {
         Vector3f dir = new Vector3f(toCamera);
         if (dir.lengthSquared() < 1.0E-4F) {
             dir.set(0, 0, 1);
@@ -132,10 +133,10 @@ public class BlackHoleRenderer implements BlockEntityRenderer<EventHorizonReacto
     }
 
     /** The deadly 5x5x5 field: a faint gold shimmer drifting up its faces. */
-    public static void drawField(PoseStack poseStack, SubmitNodeCollector collector, float time) {
-        float pulse = 0.8F + 0.2F * (float) Math.sin(time * 1.7);
+    public static void drawField(PoseStack poseStack, SubmitNodeCollector collector, double time) {
+        float pulse = 0.8F + 0.2F * (float) Math.sin(time * 1.7 % TAU);
         int alpha = Math.round(48 * pulse);
-        float scroll = (time * 0.06F) % 1;
+        float scroll = (float) (time * 0.06 % 1);
         collector.submitCustomGeometry(poseStack, RenderTypes.eyes(FIELD), (pose, buffer) -> field(buffer, pose, alpha << 24 | 0xFFFFFF, scroll));
     }
 
@@ -152,13 +153,13 @@ public class BlackHoleRenderer implements BlockEntityRenderer<EventHorizonReacto
     }
 
     /** The disc as rings, each spinning at its own speed (inner faster), brighter where it moves towards the camera. */
-    private static void disc(VertexConsumer buffer, PoseStack.Pose pose, float time, Vector3f dir) {
+    private static void disc(VertexConsumer buffer, PoseStack.Pose pose, double time, Vector3f dir) {
         float step = (DISC_OUTER - DISC_INNER) / DISC_BANDS;
         for (int band = 0; band < DISC_BANDS; band++) {
             float r0 = DISC_INNER + band * step;
             float r1 = r0 + step;
             float mid = (r0 + r1) / 2;
-            float spin = time * 1.6F * (float) Math.pow(DISC_INNER / mid, 1.5);
+            float spin = (float) (time * 1.6 * Math.pow(DISC_INNER / mid, 1.5) % TAU); // wrapped in double: no jumps
             for (int i = 0; i < DISC_SEGMENTS; i++) {
                 float a0 = (float) (i * Math.PI * 2 / DISC_SEGMENTS);
                 float a1 = (float) ((i + 1) * Math.PI * 2 / DISC_SEGMENTS);
@@ -181,8 +182,7 @@ public class BlackHoleRenderer implements BlockEntityRenderer<EventHorizonReacto
     private static int discColor(float angle, Vector3f dir) {
         float vx = (float) -Math.sin(angle);
         float vz = (float) Math.cos(angle);
-        float flat = (float) Math.sqrt(dir.x * dir.x + dir.z * dir.z);
-        float towards = flat < 1.0E-3F ? 0 : (vx * dir.x + vz * dir.z) / flat * flat;
+        float towards = vx * dir.x + vz * dir.z; // how much of the orbit's motion points at the camera
         float beam = 0.75F + 0.35F * towards;
         int a = Math.min(255, Math.round(255 * beam));
         return a << 24 | 0xFFFFFF;

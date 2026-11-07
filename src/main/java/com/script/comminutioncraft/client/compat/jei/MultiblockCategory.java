@@ -15,6 +15,7 @@ import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.gui.widgets.IRecipeWidget;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.ChatFormatting;
@@ -28,6 +29,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A multiblock's JEI page (owner's design, mock-up design/previews/jei_multiblock.png): the structure as a 3D model
@@ -52,6 +54,8 @@ public abstract class MultiblockCategory<T> extends AbstractRecipeCategory<T> {
     private final int sizeY;
     private final int sizeZ;
     private final Map<BlockPos, ItemLike> blocks;
+    /** The blocks back to front (drawing order), each with its icon stack - worked out once. */
+    private final List<Map.Entry<BlockPos, ItemStack>> drawOrder = new ArrayList<>();
     private final Map<Item, Component> rules = new LinkedHashMap<>();
     /** Pixel steps of the projection (for an item icon drawn at {@link #scale} x 16 px). */
     private final float scale;
@@ -79,6 +83,11 @@ public abstract class MultiblockCategory<T> extends AbstractRecipeCategory<T> {
         }
         originX = MODEL_W / 2F - (minX + maxX) / 2 * scale;
         originY = MODEL_H / 2F - (minY + maxY) / 2 * scale;
+        List<BlockPos> order = new ArrayList<>(blocks.keySet());
+        order.sort(Comparator.<BlockPos>comparingInt(p -> p.getX() + p.getZ()).thenComparingInt(BlockPos::getY));
+        for (BlockPos p : order) {
+            drawOrder.add(Map.entry(p, new ItemStack(blocks.get(p))));
+        }
     }
 
     /** What may go where, shown when hovering that block in the list. */
@@ -100,6 +109,9 @@ public abstract class MultiblockCategory<T> extends AbstractRecipeCategory<T> {
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, T recipe, IFocusGroup focuses) {
         addIoSlots(builder);
+        // The model isn't made of slots, so list its blocks as hidden inputs: U on any of them finds this page.
+        var hidden = builder.addInvisibleIngredients(RecipeIngredientRole.INPUT);
+        blocks.values().stream().map(ItemLike::asItem).distinct().forEach(hidden::add);
     }
 
     @Override
@@ -114,6 +126,9 @@ public abstract class MultiblockCategory<T> extends AbstractRecipeCategory<T> {
     private final class Model implements IRecipeWidget, IJeiInputHandler {
         /** -1 = the whole structure, else the layer (0 = bottom). */
         private int layer = -1;
+        /** {@link #counts()} for {@link #countsLayer} (the list only changes with the layer). */
+        private @Nullable List<Map.Entry<Item, Integer>> counts;
+        private int countsLayer;
 
         @Override
         public ScreenPosition getPosition() {
@@ -131,6 +146,14 @@ public abstract class MultiblockCategory<T> extends AbstractRecipeCategory<T> {
 
         /** Item -> how many, for the layer shown (most first). */
         private List<Map.Entry<Item, Integer>> counts() {
+            if (this.counts == null || countsLayer != layer) {
+                this.counts = countFor();
+                countsLayer = layer;
+            }
+            return this.counts;
+        }
+
+        private List<Map.Entry<Item, Integer>> countFor() {
             Map<Item, Integer> counts = new LinkedHashMap<>();
             blocks.forEach((p, item) -> {
                 if (shown(p)) {
@@ -147,9 +170,8 @@ public abstract class MultiblockCategory<T> extends AbstractRecipeCategory<T> {
             Font font = Minecraft.getInstance().font;
             graphics.fill(0, 0, MODEL_W, MODEL_H, 0x30000000);
             // the model, back to front
-            List<BlockPos> order = new ArrayList<>(blocks.keySet());
-            order.sort(Comparator.<BlockPos>comparingInt(p -> p.getX() + p.getZ()).thenComparingInt(BlockPos::getY));
-            for (BlockPos p : order) {
+            for (Map.Entry<BlockPos, ItemStack> block : drawOrder) {
+                BlockPos p = block.getKey();
                 if (!shown(p)) {
                     continue;
                 }
@@ -157,7 +179,7 @@ public abstract class MultiblockCategory<T> extends AbstractRecipeCategory<T> {
                 graphics.pose().pushMatrix();
                 graphics.pose().translate(originX + s[0] - 8 * scale, originY + s[1] - 8 * scale);
                 graphics.pose().scale(scale, scale);
-                graphics.fakeItem(new ItemStack(blocks.get(p)), 0, 0);
+                graphics.fakeItem(block.getValue(), 0, 0);
                 graphics.pose().popMatrix();
             }
             // layer buttons and the layer between them

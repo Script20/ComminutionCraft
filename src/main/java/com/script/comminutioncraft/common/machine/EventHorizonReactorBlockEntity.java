@@ -41,6 +41,7 @@ import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.energy.EnergyHandler;
 import net.neoforged.neoforge.transfer.energy.LimitingEnergyHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -53,8 +54,11 @@ import org.jspecify.annotations.Nullable;
  * 5x5x5 is a field: items in it are eaten for mass, anything alive in it dies (even in creative), anything else is
  * swallowed. Items also come in through Input ports / the GUI slot. Each mass unit (an item's
  * {@code comminutioncraft:matter_mass}, 1 by default) is worth {@link #ENERGY_PER_MASS} FE; it burns up to
- * {@link #MASS_PER_TICK} a tick (pausing when the FE buffer is full, or when redstone says so). With no mass left it
- * starves: after {@link #STARVE_TICKS} ticks it evaporates and needs igniting again. FE goes out of Output ports.
+ * {@link #MASS_PER_TICK} a tick (pausing when the FE buffer is full). With no mass left it starves: after
+ * {@link #STARVE_TICKS} ticks it evaporates and needs igniting again. FE goes out of Output ports.
+ * <p>
+ * Switched off by redstone, everything pauses: it doesn't ignite, a black hole that already exists goes dormant (dark,
+ * no field, no eating, no starving) and comes back when switched on again - so redstone makes the cage safe to enter.
  */
 public class EventHorizonReactorBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer, TickingMachine, ControllableMachine {
     public static final int SLOT_INTAKE = 0;
@@ -95,8 +99,14 @@ public class EventHorizonReactorBlockEntity extends BaseContainerBlockEntity imp
     public static final int DATA_COUNT = 16;
 
     private NonNullList<ItemStack> items = NonNullList.withSize(1, ItemStack.EMPTY);
-    private final MachineEnergyStorage energy = new MachineEnergyStorage(ENERGY_CAPACITY.get(), 0, MAX_ENERGY_OUTPUT.get(), this::setChanged);
-    private final EnergyHandler energyOut = new LimitingEnergyHandler(energy, 0, MAX_ENERGY_OUTPUT.get());
+    private final MachineEnergyStorage energy = new MachineEnergyStorage(ENERGY_CAPACITY.get(), 0, Integer.MAX_VALUE, this::setChanged);
+    /** What Output ports give: extract-only, at most {@link #MAX_ENERGY_OUTPUT} per call (read live, so config changes apply at once). */
+    private final EnergyHandler energyOut = new LimitingEnergyHandler(energy, 0, Integer.MAX_VALUE) {
+        @Override
+        public int extract(int amount, TransactionContext transaction) {
+            return super.extract(Math.min(amount, MAX_ENERGY_OUTPUT.get()), transaction);
+        }
+    };
     private final MachineFluidTank antimatter = new MachineFluidTank(ANTIMATTER_CAPACITY.get(), ModFluids::isAntimatter, this::setChanged);
     private final MachineControls controls = new MachineControls(MachineControls.outputBelow(), this::setChanged);
     private boolean formed;
@@ -154,9 +164,14 @@ public class EventHorizonReactorBlockEntity extends BaseContainerBlockEntity imp
         return formed;
     }
 
-    /** Whether the black hole exists (and the field is deadly). */
+    /** Whether a black hole exists (it may be dormant, switched off by redstone). */
     public boolean isIgnited() {
         return ignited;
+    }
+
+    /** Whether the black hole exists and is awake: the field is deadly and its gravity works (Singularity Processor). */
+    public boolean isActive() {
+        return ignited && cageLit;
     }
 
     public int getMass() {
@@ -214,6 +229,11 @@ public class EventHorizonReactorBlockEntity extends BaseContainerBlockEntity imp
             setCageLit(level, false);
             return;
         }
+        if (!controls.canRun(level, pos)) {
+            status = Status.OFF; // dormant: no ignition, no field, no eating, no starving
+            setCageLit(level, false);
+            return;
+        }
         if (!ignited) {
             if (antimatter.getAmount() >= IGNITION_ANTIMATTER.get()) {
                 antimatter.drain(IGNITION_ANTIMATTER.get());
@@ -228,7 +248,7 @@ public class EventHorizonReactorBlockEntity extends BaseContainerBlockEntity imp
         }
         feedFromIntake();
         swallow(level);
-        status = burn(level, pos);
+        status = burn();
         if (mass > 0) {
             starve = 0;
         } else if (++starve >= STARVE_TICKS.get()) {
@@ -239,10 +259,7 @@ public class EventHorizonReactorBlockEntity extends BaseContainerBlockEntity imp
         setCageLit(level, ignited);
     }
 
-    private Status burn(ServerLevel level, BlockPos pos) {
-        if (!controls.canRun(level, pos)) {
-            return Status.OFF;
-        }
+    private Status burn() {
         if (mass <= 0) {
             return Status.HUNGRY;
         }
@@ -263,23 +280,31 @@ public class EventHorizonReactorBlockEntity extends BaseContainerBlockEntity imp
         if (stack.isEmpty()) {
             return;
         }
-        int each = Math.max(1, ModDataMaps.massOf(stack));
-        int take = Math.min(stack.getCount(), (MASS_CAPACITY.get() - mass) / each);
+        int each = ModDataMaps.massOf(stack);
+        int capacity = MASS_CAPACITY.get();
+        int take;
+        if (each <= 0) {
+            take = stack.getCount(); // weightless: swallowed for nothing
+        } else if (each > capacity) {
+            take = mass < capacity ? 1 : 0; // heavier than the hole can hold: one at a time, filling it up
+        } else {
+            take = Math.min(stack.getCount(), (capacity - mass) / each);
+        }
         if (take > 0) {
             stack.shrink(take);
-            mass += take * each;
+            mass = (int) Math.min(capacity, mass + (long) take * Math.max(0, each));
             setChanged();
         }
     }
 
     /** The field: eats items, kills anything alive (creative players included), swallows anything else. */
     private void swallow(ServerLevel level) {
-        for (Entity entity : level.getEntitiesOfClass(Entity.class, getField(), Entity::isAlive)) {
+        for (Entity entity : level.getEntitiesOfClass(Entity.class, getField(), entity -> entity.isAlive() && !entity.isSpectator())) {
             if (entity instanceof ItemEntity item) {
                 ItemStack stack = item.getItem();
-                int each = Math.max(1, ModDataMaps.massOf(stack));
-                int take = Math.min(stack.getCount(), Math.max(0, MASS_CAPACITY.get() - mass) / each);
-                mass += take * each;
+                int each = ModDataMaps.massOf(stack);
+                int take = each <= 0 ? stack.getCount() : Math.min(stack.getCount(), Math.max(0, MASS_CAPACITY.get() - mass) / each);
+                mass += take * Math.max(0, each);
                 stack.shrink(take);
                 if (stack.isEmpty() || take == 0) {
                     item.discard(); // a full black hole still swallows it, it just gets nothing from it
@@ -293,6 +318,7 @@ public class EventHorizonReactorBlockEntity extends BaseContainerBlockEntity imp
             } else {
                 entity.discard();
                 mass = Math.min(MASS_CAPACITY.get(), mass + 1);
+                setChanged();
             }
         }
     }
@@ -329,8 +355,12 @@ public class EventHorizonReactorBlockEntity extends BaseContainerBlockEntity imp
                 }
             }
         }
+        boolean changed = !found.equals(cage);
         cage = found;
         ports.forEach(port -> port.setController(worldPosition));
+        if (changed && cageLit) {
+            lightCage(level, true); // a frame or port swapped in while it runs lights up too
+        }
         return true;
     }
 
@@ -344,6 +374,10 @@ public class EventHorizonReactorBlockEntity extends BaseContainerBlockEntity imp
         if (own.getValue(MachineBlock.LIT) != lit) {
             level.setBlock(worldPosition, own.setValue(MachineBlock.LIT, lit), Block.UPDATE_ALL);
         }
+        lightCage(level, lit);
+    }
+
+    private void lightCage(ServerLevel level, boolean lit) {
         for (BlockPos p : cage) {
             BlockState block = level.getBlockState(p);
             if ((block.is(ModBlocks.CONTAINMENT_FRAME.get()) || block.is(ModBlocks.HORIZON_PORT.get()))

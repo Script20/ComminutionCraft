@@ -187,10 +187,9 @@ public class ComminutionJeiPlugin implements IModPlugin {
         registration.addCraftingStation(PRESSING.get(), ModItems.PELLET_PRESS.get());
         registration.addCraftingStation(PURIFYING.get(), ModItems.ORE_PURIFIER.get(), ModItems.ANTIMATTER_PURIFIER.get());
         registration.addCraftingStation(FusionReactorCategory.TYPE, ModItems.REACTOR_CONTROLLER.get());
-        registration.addCraftingStation(EventHorizonCategory.TYPE,
-                ModItems.HORIZON_CONTROLLER.get(), ModItems.CONTAINMENT_FRAME.get(), ModItems.HORIZON_PORT.get());
-        registration.addCraftingStation(ParticleAcceleratorCategory.TYPE,
-                ModItems.ACCELERATOR_CONTROLLER.get(), ModItems.ACCELERATOR_SEGMENT.get(), ModItems.ACCELERATOR_PORT.get());
+        // the multiblocks' other blocks find their page through its hidden inputs (MultiblockCategory)
+        registration.addCraftingStation(EventHorizonCategory.TYPE, ModItems.HORIZON_CONTROLLER.get());
+        registration.addCraftingStation(ParticleAcceleratorCategory.TYPE, ModItems.ACCELERATOR_CONTROLLER.get());
         for (FluidMachinePage page : fluidMachinePages()) {
             registration.addCraftingStation(page.type(), page.machine());
         }

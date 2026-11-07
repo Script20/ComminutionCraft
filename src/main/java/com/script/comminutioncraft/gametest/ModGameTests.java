@@ -155,6 +155,7 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("horizon_reactor_eats_items_for_fe", () -> ModGameTests::horizonReactorEatsItemsForFe);
         TEST_FUNCTIONS.register("horizon_field_kills_even_creative", () -> ModGameTests::horizonFieldKillsEvenCreative);
         TEST_FUNCTIONS.register("horizon_processor_needs_black_hole", () -> ModGameTests::horizonProcessorNeedsBlackHole);
+        TEST_FUNCTIONS.register("horizon_redstone_off_is_safe", () -> ModGameTests::horizonRedstoneOffIsSafe);
         TEST_FUNCTIONS.register("antimatter_suite_runs_the_chain", () -> ModGameTests::antimatterSuiteRunsTheChain);
     }
 
@@ -1330,6 +1331,43 @@ public final class ModGameTests {
             helper.succeedWhen(() -> {
                 helper.assertTrue(!pig.isAlive(), "The pig survived the field");
                 helper.assertTrue(player.isDeadOrDying(), "The creative player survived the field");
+            });
+        });
+    }
+
+    /**
+     * Switched off by redstone, a reactor with antimatter doesn't ignite and a pig inside lives; switched on it ignites
+     * and the pig dies, but a spectator in the field is left alone; off again, the black hole goes dormant (still there,
+     * dark, harmless).
+     */
+    private static void horizonRedstoneOffIsSafe(GameTestHelper helper) {
+        var reactor = buildHorizon(helper);
+        int ignition = com.script.comminutioncraft.common.machine.EventHorizonReactorBlockEntity.IGNITION_ANTIMATTER.get();
+        reactor.getControls().setRedstone(RedstoneMode.HIGH); // no signal: off
+        reactor.getAntimatter().fill(FluidResource.of(ModFluids.ANTIMATTER.get()), ignition);
+        var pig = helper.spawn(net.minecraft.world.entity.EntityType.PIG, new Vec3(4.5, 4.0, 4.5));
+        pig.setNoAi(true);
+        pig.setNoGravity(true); // stays in the field (the bottom layer it would fall to is outside it)
+        int wait = com.script.comminutioncraft.common.machine.EventHorizonReactorBlockEntity.FORM_CHECK_INTERVAL + 2;
+        helper.runAfterDelay(wait, () -> {
+            helper.assertTrue(reactor.isFormed() && !reactor.isIgnited(), "Switched off, it ignited anyway (" + reactor.getStatus() + ")");
+            helper.assertTrue(reactor.getAntimatter().getAmount() == ignition, "Switched off, it used the antimatter");
+            helper.assertTrue(pig.isAlive(), "Switched off, the field killed the pig");
+            ServerPlayer spectator = helper.makeMockServerPlayerInLevel();
+            spectator.setGameMode(GameType.SPECTATOR);
+            Vec3 centre = helper.absoluteVec(new Vec3(3.5, 3.0, 3.5));
+            spectator.teleportTo(centre.x, centre.y, centre.z);
+            reactor.getControls().setRedstone(RedstoneMode.IGNORE);
+            helper.runAfterDelay(10, () -> {
+                helper.assertTrue(reactor.isActive(), "Switched on, it should have ignited (" + reactor.getStatus() + ")");
+                helper.assertTrue(!pig.isAlive(), "The pig survived the field");
+                helper.assertTrue(spectator.isAlive() && !spectator.isDeadOrDying(), "The field killed a spectator");
+                reactor.getControls().setRedstone(RedstoneMode.HIGH);
+                helper.runAfterDelay(2, () -> {
+                    helper.assertTrue(reactor.isIgnited() && !reactor.isActive(), "Off again, the black hole should be dormant");
+                    helper.assertTrue(!helper.getBlockState(new BlockPos(1, 1, 1)).getValue(MachineBlock.LIT), "A dormant reactor's frame should be dark");
+                    helper.succeed();
+                });
             });
         });
     }

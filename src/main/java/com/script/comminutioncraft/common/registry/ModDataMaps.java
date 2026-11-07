@@ -11,7 +11,8 @@ import net.neoforged.neoforge.registries.datamaps.RegisterDataMapTypesEvent;
 
 /**
  * {@code comminutioncraft:matter_mass} - how much mass one of an item gives the Event Horizon Reactor's black hole
- * ({@code data/<ns>/data_maps/item/matter_mass.json}, datapack-editable). Items without an entry weigh 1.
+ * ({@code data/<ns>/data_maps/item/matter_mass.json}, datapack-editable). Items without an entry weigh 1;
+ * 0 = swallowed for nothing.
  */
 public final class ModDataMaps {
     public static final DataMapType<Item, Integer> MATTER_MASS = DataMapType.builder(

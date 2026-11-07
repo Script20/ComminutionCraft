@@ -69,7 +69,7 @@ public class SingularityProcessorBlockEntity extends ElectricMachineBlockEntity 
         }
     }
 
-    /** A lit (running) reactor controller whose black hole is within range, in chunks that are already loaded. */
+    /** An active (ignited, switched on) reactor whose black hole is within range, in chunks that are already loaded. */
     private static boolean findHole(ServerLevel level, BlockPos pos) {
         int range = REACTOR_RANGE.get();
         int reach = range + EventHorizonReactorBlockEntity.HALF + 1; // the controller sits a few blocks from the hole
@@ -79,7 +79,7 @@ public class SingularityProcessorBlockEntity extends ElectricMachineBlockEntity 
                     continue;
                 }
                 for (BlockEntity be : level.getChunk(cx, cz).getBlockEntities().values()) {
-                    if (be instanceof EventHorizonReactorBlockEntity reactor && reactor.isIgnited()
+                    if (be instanceof EventHorizonReactorBlockEntity reactor && reactor.isActive()
                             && reactor.getCentre().closerThan(pos, range)) {
                         return true;
                     }
