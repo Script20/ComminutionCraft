@@ -37,7 +37,8 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.comminutioncraft.creative_tank.none", "No fluid");
         add("jei.comminutioncraft.purifying", "Ore Purifying");
         add("jei.comminutioncraft.time.ore_purifier", "Ore Purifier: %s");
-        add("jei.comminutioncraft.chance", "%s%% chance");
+        add("jei.comminutioncraft.chance", "%s chance");
+        add("jei.comminutioncraft.rare", "Rare");
         add("jei.comminutioncraft.fe_per_mb", "%s FE per mB · up to %s mB/t");
         add("jei.comminutioncraft.water_generator.line", "Water from the air, no FE");
         add("jei.comminutioncraft.water_generator.note", "1 mB/t per open face x the biome's humidity; x2 with an Air Filter");

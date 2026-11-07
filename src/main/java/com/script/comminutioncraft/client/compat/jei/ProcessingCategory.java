@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.function.Function;
 import net.minecraft.ChatFormatting;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.level.material.Fluid;
 import org.jspecify.annotations.Nullable;
@@ -37,8 +38,19 @@ public class ProcessingCategory<R extends ItemProcessingRecipe> extends Abstract
     /** A machine that runs this category's recipes: its time line's translation key and its process time. */
     public record Station(String timeKey, int ticks) {}
 
-    /** A second result each recipe gives only some of the time: what it is and the chance (0-1) of getting it. */
-    public record SecondOutput<R>(Function<R, ItemStackTemplate> stack, Function<R, Float> chance) {}
+    /** A result that only comes some of the time, with its chance (0-1) per operation. */
+    public record Chance(ItemStackTemplate stack, float chance) {}
+
+    /**
+     * Results each recipe gives only some of the time (the Ore Purifier's by-product, the Singularity Processor's rare
+     * drops). They share one output slot, which cycles through them; hovering shows the shown item's chance. Being in a
+     * slot is what lets JEI find the recipe from the item (R on a Singularity Shard).
+     */
+    public record SecondOutput<R>(Function<R, List<Chance>> outputs) {
+        public SecondOutput(Function<R, ItemStackTemplate> stack, Function<R, Float> chance) {
+            this(recipe -> List.of(new Chance(stack.apply(recipe), chance.apply(recipe))));
+        }
+    }
 
     /** A fluid each operation uses, and how much (mB). */
     public record FluidCost(Fluid fluid, int amount) {}
@@ -97,12 +109,19 @@ public class ProcessingCategory<R extends ItemProcessingRecipe> extends Abstract
         return all;
     }
 
-    private static Component chanceText(float chance) {
-        return Component.translatable("jei.comminutioncraft.chance", Math.round(chance * 100));
+    /** 0.2 -> "20%", 0.005 -> "0.5%", 0.0005 -> "0.05%" */
+    public static String percent(float chance) {
+        return new DecimalFormat("0.##", DecimalFormatSymbols.getInstance(Locale.ROOT)).format(chance * 100) + "%";
     }
 
-    private static Component shortChanceText(float chance) {
-        return Component.literal(Math.round(chance * 100) + "%");
+    private static Component chanceText(float chance) {
+        return Component.translatable("jei.comminutioncraft.chance", percent(chance));
+    }
+
+    /** Under the slot: the one chance, or "Rare" when the slot cycles through several. */
+    private static Component shortChanceText(List<Chance> outputs) {
+        return outputs.size() == 1 ? Component.literal(percent(outputs.getFirst().chance()))
+                : Component.translatable("jei.comminutioncraft.rare");
     }
 
     @Override
@@ -122,11 +141,17 @@ public class ProcessingCategory<R extends ItemProcessingRecipe> extends Abstract
                     .addFluidStack(cost.fluid(), cost.amount());
         }
         if (secondOutput != null) {
-            float chance = secondOutput.chance().apply(recipe.value());
-            builder.addOutputSlot(SECOND_OUTPUT_X, 5)
-                    .setOutputSlotBackground()
-                    .add(secondOutput.stack().apply(recipe.value()))
-                    .addRichTooltipCallback((view, tooltip) -> tooltip.add(chanceText(chance).copy().withStyle(ChatFormatting.GOLD)));
+            List<Chance> outputs = secondOutput.outputs().apply(recipe.value());
+            if (!outputs.isEmpty()) {
+                var slot = builder.addOutputSlot(SECOND_OUTPUT_X, 5).setOutputSlotBackground();
+                for (Chance output : outputs) {
+                    slot.add(output.stack());
+                }
+                slot.addRichTooltipCallback((view, tooltip) -> view.getDisplayedItemStack().ifPresent(shown -> outputs.stream()
+                        .filter(output -> ItemStack.isSameItemSameComponents(output.stack().create(), shown))
+                        .findFirst()
+                        .ifPresent(output -> tooltip.add(chanceText(output.chance()).copy().withStyle(ChatFormatting.GOLD)))));
+            }
         }
     }
 
@@ -150,9 +175,10 @@ public class ProcessingCategory<R extends ItemProcessingRecipe> extends Abstract
         for (int i = 0; i < fluids.size(); i++) {
             JeiAmounts.label(builder, 1 + i * 18, FLUID_Y, fluids.get(i).amount());
         }
-        if (secondOutput != null) {
-            builder.addText(shortChanceText(secondOutput.chance().apply(recipe.value())), 18, 10)
-                    .setPosition(SECOND_OUTPUT_X, fluids.isEmpty() ? 28 : FLUID_Y + 4)
+        List<Chance> outputs = secondOutput == null ? List.of() : secondOutput.outputs().apply(recipe.value());
+        if (!outputs.isEmpty()) {
+            builder.addText(shortChanceText(outputs), 24, 10)
+                    .setPosition(SECOND_OUTPUT_X - 3, fluids.isEmpty() ? 28 : FLUID_Y + 4)
                     .setTextAlignment(HorizontalAlignment.CENTER)
                     .setColor(0xFFC08A20);
         }

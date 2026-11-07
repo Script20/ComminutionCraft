@@ -12,6 +12,7 @@ import com.script.comminutioncraft.common.recipe.AssemblingRecipe;
 import com.script.comminutioncraft.common.recipe.GranulatingRecipe;
 import com.script.comminutioncraft.common.recipe.PressingRecipe;
 import com.script.comminutioncraft.common.recipe.PurifyingRecipe;
+import com.script.comminutioncraft.common.recipe.SingularityRecipe;
 import com.script.comminutioncraft.common.machine.OrePurifierBlockEntity;
 import com.script.comminutioncraft.common.machine.PelletPressBlockEntity;
 import com.script.comminutioncraft.common.recipe.WashingRecipe;
@@ -143,7 +144,9 @@ public class ComminutionJeiPlugin implements IModPlugin {
                                 com.script.comminutioncraft.common.machine.SingularityProcessorBlockEntity.REACTOR_RANGE.get())),
                         recipe -> recipe.getByproducts().stream().map(b -> (Component) Component.translatable(
                                 "jei.comminutioncraft.singularity.byproduct", b.item().create().getHoverName(),
-                                (b.chance() * 100 >= 1 ? String.valueOf(Math.round(b.chance() * 100)) : String.valueOf(b.chance() * 100)) + "%")).toList()),
+                                ProcessingCategory.percent(b.chance()))).toList(),
+                        new ProcessingCategory.SecondOutput<SingularityRecipe>(recipe -> recipe.getByproducts().stream()
+                                .map(b -> new ProcessingCategory.Chance(b.item(), b.chance())).toList())),
                 new FusionReactorCategory(gui),
                 new ParticleAcceleratorCategory(gui),
                 new EventHorizonCategory(gui));
