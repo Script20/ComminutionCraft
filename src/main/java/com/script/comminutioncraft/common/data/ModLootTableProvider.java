@@ -55,6 +55,9 @@ public class ModLootTableProvider extends LootTableProvider {
             dropSelf(ModBlocks.ANTIMATTER_PURIFIER.get());
             dropSelf(ModBlocks.ANNIHILATION_GENERATOR.get());
             dropSelf(ModBlocks.CONTAINMENT_FRAME.get());
+            dropSelf(ModBlocks.SINGULARITY_PROCESSOR.get());
+            dropSelf(ModBlocks.SINGULARITY_CABLE.get());
+            dropSelf(ModBlocks.SINGULARITY_ENERGY_BATTERY.get());
             dropSelf(ModBlocks.HORIZON_CONTROLLER.get());
             dropSelf(ModBlocks.HORIZON_PORT.get());
             dropSelf(ModBlocks.ANTIMATTER_CABLE.get());

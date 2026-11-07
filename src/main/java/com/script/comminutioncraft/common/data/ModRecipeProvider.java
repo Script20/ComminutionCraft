@@ -4,6 +4,7 @@ import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.block.StoneSet;
 import com.script.comminutioncraft.common.recipe.AssemblingRecipe;
 import com.script.comminutioncraft.common.recipe.FlotationRecipe;
+import com.script.comminutioncraft.common.recipe.SingularityRecipe;
 import com.script.comminutioncraft.common.recipe.GranulatingRecipe;
 import com.script.comminutioncraft.common.recipe.PressingRecipe;
 import com.script.comminutioncraft.common.recipe.PurifyingRecipe;
@@ -76,6 +77,16 @@ public class ModRecipeProvider extends RecipeProvider {
                 new PurifyingRecipe(washed, result, nugget, BYPRODUCT_CHANCE), null);
     }
 
+    /** The Singularity Processor's rare by-products (each rolled on its own chance per operation). */
+    private static java.util.List<SingularityRecipe.Byproduct> singularityByproducts() {
+        return java.util.List.of(
+                new SingularityRecipe.Byproduct(new ItemStackTemplate(Items.DIAMOND), 0.03F),
+                new SingularityRecipe.Byproduct(new ItemStackTemplate(Items.EMERALD), 0.02F),
+                new SingularityRecipe.Byproduct(new ItemStackTemplate(ModItems.SINGULARITY_SHARD.get()), 0.02F),
+                new SingularityRecipe.Byproduct(new ItemStackTemplate(Items.NETHERITE_SCRAP), 0.005F),
+                new SingularityRecipe.Byproduct(new ItemStackTemplate(Items.NETHER_STAR), 0.0005F));
+    }
+
     /** {@code PAP / DMD / PAP}: plating, Antimatter Circuits, diamonds round the machine it upgrades. */
     private void antimatterMachine(net.minecraft.world.item.Item result, net.minecraft.world.item.Item base) {
         shaped(RecipeCategory.MISC, result)
@@ -111,6 +122,13 @@ public class ModRecipeProvider extends RecipeProvider {
                     null);
             out.withConditions(new NotCondition(new TagEmptyCondition<>(metal.oreTag()))).accept(key("washing/ore_" + metal.name()),
                     new WashingRecipe(tag(metal.oreTag()), new ItemStackTemplate(metal.washed(), 3)),
+                    null);
+            // tier 6, the 5x step: raw ore or ore block -> 5 ingots in one go (Singularity Processor), with rare by-products
+            out.accept(key("singularity/raw_" + metal.name()),
+                    new SingularityRecipe(tag(metal.rawTag()), new TagResult(metal.ingotTag(), 5), singularityByproducts()),
+                    null);
+            out.withConditions(new NotCondition(new TagEmptyCondition<>(metal.oreTag()))).accept(key("singularity/ore_" + metal.name()),
+                    new SingularityRecipe(tag(metal.oreTag()), new TagResult(metal.ingotTag(), 5), singularityByproducts()),
                     null);
             // tier 5, the 4x step: raw ore or ore block -> 4 Ore Concentrate (Froth Flotation Cell); 1 concentrate -> 1 washed (Ore Washer)
             out.accept(key("flotation/raw_" + metal.name()),
@@ -301,6 +319,10 @@ public class ModRecipeProvider extends RecipeProvider {
         output.accept(key("assembling/antimatter_circuit"),
                 new AssemblingRecipe(Ingredient.of(ModItems.FUSION_CIRCUIT.get()), new ItemStackTemplate(ModItems.ANTIMATTER_CIRCUIT.get()), 10),
                 null);
+        // Tier 6: an Antimatter Circuit + 50 mB antimatter -> Singularity Circuit
+        output.accept(key("assembling/singularity_circuit"),
+                new AssemblingRecipe(Ingredient.of(ModItems.ANTIMATTER_CIRCUIT.get()), new ItemStackTemplate(ModItems.SINGULARITY_CIRCUIT.get()), 50),
+                null);
         // A fuel pellet is an iron-nugget casing filled with deuterium and tritium in the Pellet Press.
         output.accept(key("pressing/fusion_fuel_pellet"),
                 new PressingRecipe(tag(ProcessedMetal.commonItemTag("nuggets/iron")), new ItemStackTemplate(ModItems.FUSION_FUEL_PELLET.get())),
@@ -422,6 +444,37 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('W', ModItems.ORE_WASHER.get())
                 .unlockedBy("has_antimatter_circuit", has(ModItems.ANTIMATTER_CIRCUIT.get()))
                 .save(output, key("froth_flotation_cell"));
+
+        // Tier 6 phase B: the Singularity Processor, Cable and Energy Battery (the last two need Singularity Shards)
+        shaped(RecipeCategory.MISC, ModItems.SINGULARITY_PROCESSOR.get())
+                .pattern("FSF")
+                .pattern("GXG")
+                .pattern("FSF")
+                .define('F', ModItems.CONTAINMENT_FRAME.get())
+                .define('S', ModItems.SINGULARITY_CIRCUIT.get())
+                .define('G', tag(ProcessedMetal.commonItemTag("storage_blocks/gold")))
+                .define('X', ModItems.ANTIMATTER_GRANULATOR.get())
+                .unlockedBy("has_singularity_circuit", has(ModItems.SINGULARITY_CIRCUIT.get()))
+                .save(output, key("singularity_processor"));
+        shaped(RecipeCategory.MISC, ModItems.SINGULARITY_CABLE.get(), 8)
+                .pattern("CCC")
+                .pattern("HSH")
+                .pattern("CCC")
+                .define('C', ModItems.ANTIMATTER_CABLE.get())
+                .define('H', ModItems.SINGULARITY_SHARD.get())
+                .define('S', ModItems.SINGULARITY_CIRCUIT.get())
+                .unlockedBy("has_singularity_shard", has(ModItems.SINGULARITY_SHARD.get()))
+                .save(output, key("singularity_cable"));
+        shaped(RecipeCategory.MISC, ModItems.SINGULARITY_ENERGY_BATTERY.get())
+                .pattern("BHB")
+                .pattern("SFS")
+                .pattern("BHB")
+                .define('B', ModItems.ANTIMATTER_ENERGY_BATTERY.get())
+                .define('H', ModItems.SINGULARITY_SHARD.get())
+                .define('S', ModItems.SINGULARITY_CIRCUIT.get())
+                .define('F', ModItems.CONTAINMENT_FRAME.get())
+                .unlockedBy("has_singularity_shard", has(ModItems.SINGULARITY_SHARD.get()))
+                .save(output, key("singularity_energy_battery"));
 
         // Tier 6: the Event Horizon Reactor
         shaped(RecipeCategory.MISC, ModItems.CONTAINMENT_FRAME.get(), 8)

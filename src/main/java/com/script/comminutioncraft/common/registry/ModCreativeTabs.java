@@ -36,6 +36,7 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.FROTH_FLOTATION_CELL.get());
                         output.accept(ModItems.ANTIMATTER_WASHER.get());
                         output.accept(ModItems.ANTIMATTER_PURIFIER.get());
+                        output.accept(ModItems.SINGULARITY_PROCESSOR.get());
                         // Machines
                         output.accept(ModItems.ATMOSPHERIC_WATER_GENERATOR.get());
                         output.accept(ModItems.ELECTROLYSER.get());
@@ -67,6 +68,7 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.PLASMA_ENERGY_BATTERY.get());
                         output.accept(ModItems.FUSION_ENERGY_BATTERY.get());
                         output.accept(ModItems.ANTIMATTER_ENERGY_BATTERY.get());
+                        output.accept(ModItems.SINGULARITY_ENERGY_BATTERY.get());
                         output.accept(ModItems.FLUID_TANK.get());
                         output.accept(ModItems.CONTAINMENT_CELL.get());
                         output.accept(ModItems.SOARYN_CHEST.get());
@@ -74,6 +76,7 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.ENERGY_CABLE.get());
                         output.accept(ModItems.FUSION_CABLE.get());
                         output.accept(ModItems.ANTIMATTER_CABLE.get());
+                        output.accept(ModItems.SINGULARITY_CABLE.get());
                         output.accept(ModItems.FLUID_PIPE.get());
                         output.accept(ModItems.PLASMA_CABLE.get());
                         output.accept(ModItems.MAGNETIC_CONDUIT.get());
@@ -82,6 +85,8 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.PLASMA_CIRCUIT.get());
                         output.accept(ModItems.FUSION_CIRCUIT.get());
                         output.accept(ModItems.ANTIMATTER_CIRCUIT.get());
+                        output.accept(ModItems.SINGULARITY_CIRCUIT.get());
+                        output.accept(ModItems.SINGULARITY_SHARD.get());
                         output.accept(ModItems.AIR_FILTER.get());
                         output.accept(ModItems.REACTOR_PLATING.get());
                         output.accept(ModItems.FUSION_FUEL_PELLET.get());

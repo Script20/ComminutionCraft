@@ -52,6 +52,14 @@ public final class ModRecipes {
             RECIPE_SERIALIZERS.register("flotation", () -> new RecipeSerializer<>(com.script.comminutioncraft.common.recipe.FlotationRecipe.CODEC,
                     com.script.comminutioncraft.common.recipe.FlotationRecipe.STREAM_CODEC));
 
+    /** "comminutioncraft:singularity_processing" — Singularity Processor (tier 6, the 5x step). */
+    public static final DeferredHolder<RecipeType<?>, RecipeType<com.script.comminutioncraft.common.recipe.SingularityRecipe>> SINGULARITY_TYPE =
+            RECIPE_TYPES.register("singularity_processing", RecipeType::simple);
+
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<com.script.comminutioncraft.common.recipe.SingularityRecipe>> SINGULARITY_SERIALIZER =
+            RECIPE_SERIALIZERS.register("singularity_processing", () -> new RecipeSerializer<>(com.script.comminutioncraft.common.recipe.SingularityRecipe.CODEC,
+                    com.script.comminutioncraft.common.recipe.SingularityRecipe.STREAM_CODEC));
+
     /** "comminutioncraft:pressing" — Pellet Press (tier 4). */
     public static final DeferredHolder<RecipeType<?>, RecipeType<PressingRecipe>> PRESSING_TYPE =
             RECIPE_TYPES.register("pressing", RecipeType::simple);

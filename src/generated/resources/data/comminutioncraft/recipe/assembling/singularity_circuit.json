@@ -1,0 +1,8 @@
+{
+  "type": "comminutioncraft:assembling",
+  "antimatter": 50,
+  "ingredient": "comminutioncraft:antimatter_circuit",
+  "result": {
+    "id": "comminutioncraft:singularity_circuit"
+  }
+}

@@ -38,6 +38,11 @@ public class EnergyBatteryMenu extends AbstractContainerMenu implements Controll
                 new SimpleContainerData(EnergyBatteryBlockEntity.DATA_COUNT));
     }
 
+    public static EnergyBatteryMenu clientSingularity(int containerId, Inventory inventory) {
+        return new EnergyBatteryMenu(ModMenus.SINGULARITY_ENERGY_BATTERY.get(), containerId, inventory, null,
+                new SimpleContainerData(EnergyBatteryBlockEntity.DATA_COUNT));
+    }
+
     public static EnergyBatteryMenu clientAntimatter(int containerId, Inventory inventory) {
         return new EnergyBatteryMenu(ModMenus.ANTIMATTER_ENERGY_BATTERY.get(), containerId, inventory, null,
                 new SimpleContainerData(EnergyBatteryBlockEntity.DATA_COUNT));

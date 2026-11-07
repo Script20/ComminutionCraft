@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "F": "comminutioncraft:containment_frame",
+    "G": "#c:storage_blocks/gold",
+    "S": "comminutioncraft:singularity_circuit",
+    "X": "comminutioncraft:antimatter_granulator"
+  },
+  "pattern": [
+    "FSF",
+    "GXG",
+    "FSF"
+  ],
+  "result": {
+    "id": "comminutioncraft:singularity_processor"
+  }
+}

@@ -43,5 +43,9 @@ public final class ClientRecipes {
         return List.copyOf(recipes.byType(ModRecipes.FLOTATION_TYPE.get()));
     }
 
+    public static List<RecipeHolder<com.script.comminutioncraft.common.recipe.SingularityRecipe>> singularity() {
+        return List.copyOf(recipes.byType(ModRecipes.SINGULARITY_TYPE.get()));
+    }
+
     private ClientRecipes() {}
 }

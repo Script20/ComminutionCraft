@@ -15,6 +15,7 @@ public class EnergyCableBlock extends ConduitBlock {
     /** Tier 4 Fusion Cable. */
     public static final com.script.comminutioncraft.common.config.ConfigInt FUSION_CABLE_RATE = com.script.comminutioncraft.common.config.MachineConfig.CABLES_FUSION_CABLE;
     public static final com.script.comminutioncraft.common.config.ConfigInt ANTIMATTER_CABLE_RATE = com.script.comminutioncraft.common.config.MachineConfig.CABLES_ANTIMATTER_CABLE;
+    public static final com.script.comminutioncraft.common.config.ConfigInt SINGULARITY_CABLE_RATE = com.script.comminutioncraft.common.config.MachineConfig.CABLES_SINGULARITY_CABLE;
 
     private final java.util.function.IntSupplier transferRate;
 

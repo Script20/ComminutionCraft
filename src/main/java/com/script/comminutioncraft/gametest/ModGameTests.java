@@ -154,6 +154,7 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("flotation_cell_makes_concentrate", () -> ModGameTests::flotationCellMakesConcentrate);
         TEST_FUNCTIONS.register("horizon_reactor_eats_items_for_fe", () -> ModGameTests::horizonReactorEatsItemsForFe);
         TEST_FUNCTIONS.register("horizon_field_kills_even_creative", () -> ModGameTests::horizonFieldKillsEvenCreative);
+        TEST_FUNCTIONS.register("horizon_processor_needs_black_hole", () -> ModGameTests::horizonProcessorNeedsBlackHole);
         TEST_FUNCTIONS.register("antimatter_suite_runs_the_chain", () -> ModGameTests::antimatterSuiteRunsTheChain);
     }
 
@@ -1329,6 +1330,29 @@ public final class ModGameTests {
             helper.succeedWhen(() -> {
                 helper.assertTrue(!pig.isAlive(), "The pig survived the field");
                 helper.assertTrue(player.isDeadOrDying(), "The creative player survived the field");
+            });
+        });
+    }
+
+    /**
+     * A Singularity Processor next to an unlit Event Horizon Reactor waits; once the reactor ignites (its black hole is
+     * within range), 2 raw iron become 10 iron ingots (by-products are random, so they're not checked).
+     */
+    private static void horizonProcessorNeedsBlackHole(GameTestHelper helper) {
+        var reactor = buildHorizon(helper);
+        BlockPos pos = new BlockPos(8, 1, 8);
+        helper.setBlock(pos, ModBlocks.SINGULARITY_PROCESSOR.get());
+        var processor = helper.getBlockEntity(pos, com.script.comminutioncraft.common.machine.SingularityProcessorBlockEntity.class);
+        ((MachineEnergyStorage) processor.getEnergyHandler()).set(com.script.comminutioncraft.common.config.MachineConfig.SINGULARITY_PROCESSOR_ENERGY_CAPACITY.get());
+        processor.setItem(ElectricMachineBlockEntity.SLOT_INPUT, new ItemStack(Items.RAW_IRON, 2));
+        int time = com.script.comminutioncraft.common.machine.SingularityProcessorBlockEntity.PROCESS_TIME.get();
+        helper.runAfterDelay(time + 25, () -> {
+            helper.assertTrue(processor.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT).isEmpty(), "It worked without a black hole nearby");
+            reactor.getAntimatter().fill(FluidResource.of(ModFluids.ANTIMATTER.get()), com.script.comminutioncraft.common.machine.EventHorizonReactorBlockEntity.IGNITION_ANTIMATTER.get());
+            helper.succeedWhen(() -> {
+                ItemStack output = processor.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT);
+                helper.assertTrue(output.is(Items.IRON_INGOT) && output.getCount() == 10,
+                        "Expected 10 iron ingots, got " + output + " (near hole: " + processor.isNearHole() + ")");
             });
         });
     }

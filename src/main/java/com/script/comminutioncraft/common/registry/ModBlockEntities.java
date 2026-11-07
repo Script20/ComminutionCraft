@@ -179,5 +179,13 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.script.comminutioncraft.common.machine.HorizonPortBlockEntity>> HORIZON_PORT =
             BLOCK_ENTITY_TYPES.register("horizon_port", () -> new BlockEntityType<>(com.script.comminutioncraft.common.machine.HorizonPortBlockEntity::new, ModBlocks.HORIZON_PORT.get()));
 
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.script.comminutioncraft.common.machine.SingularityProcessorBlockEntity>> SINGULARITY_PROCESSOR =
+            BLOCK_ENTITY_TYPES.register("singularity_processor",
+                    () -> new BlockEntityType<>(com.script.comminutioncraft.common.machine.SingularityProcessorBlockEntity::new, ModBlocks.SINGULARITY_PROCESSOR.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<EnergyBatteryBlockEntity>> SINGULARITY_ENERGY_BATTERY =
+            BLOCK_ENTITY_TYPES.register("singularity_energy_battery",
+                    () -> new BlockEntityType<>(EnergyBatteryBlockEntity::singularity, ModBlocks.SINGULARITY_ENERGY_BATTERY.get()));
+
     private ModBlockEntities() {}
 }

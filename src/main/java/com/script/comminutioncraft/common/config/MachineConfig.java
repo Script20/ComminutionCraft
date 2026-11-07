@@ -30,6 +30,14 @@ public final class MachineConfig {
     public static final ConfigInt ANNIHILATION_GENERATOR_ENERGY_CAPACITY;
     public static final ConfigInt ANNIHILATION_GENERATOR_MAX_ENERGY_OUTPUT;
     public static final ConfigInt CIRCUIT_ASSEMBLER_ANTIMATTER_CAPACITY;
+    public static final ConfigInt SINGULARITY_PROCESSOR_PROCESS_TIME;
+    public static final ConfigInt SINGULARITY_PROCESSOR_ENERGY_PER_TICK;
+    public static final ConfigInt SINGULARITY_PROCESSOR_ENERGY_CAPACITY;
+    public static final ConfigInt SINGULARITY_PROCESSOR_MAX_ENERGY_INPUT;
+    public static final ConfigInt SINGULARITY_PROCESSOR_REACTOR_RANGE;
+    public static final ConfigInt CABLES_SINGULARITY_CABLE;
+    public static final ConfigInt SINGULARITY_ENERGY_BATTERY_CAPACITY;
+    public static final ConfigInt SINGULARITY_ENERGY_BATTERY_TRANSFER_RATE;
     public static final ConfigInt EVENT_HORIZON_IGNITION_ANTIMATTER;
     public static final ConfigInt EVENT_HORIZON_ENERGY_PER_MASS;
     public static final ConfigInt EVENT_HORIZON_MASS_PER_TICK;
@@ -164,6 +172,7 @@ public final class MachineConfig {
         CABLES_ENERGY_CABLE = integer(builder, "cables", "energyCable", "Energy cable", "Energy Cable: FE per tick, per network", 1000);
         CABLES_FUSION_CABLE = integer(builder, "cables", "fusionCable", "Fusion cable", "Fusion Cable: FE per tick, per network", 32_000);
         CABLES_ANTIMATTER_CABLE = integer(builder, "cables", "antimatterCable", "Antimatter cable", "Antimatter Cable: FE per tick, per network", 128_000);
+        CABLES_SINGULARITY_CABLE = integer(builder, "cables", "singularityCable", "Singularity cable", "Singularity Cable: FE per tick, per network", 512_000);
         CABLES_FLUID_PIPE = integer(builder, "cables", "fluidPipe", "Fluid pipe", "Fluid Pipe: mB per transfer", 1_000);
         CABLES_PLASMA_CABLE = integer(builder, "cables", "plasmaCable", "Plasma cable", "Plasma Cable: mB per transfer", 8_000);
         CABLES_MAGNETIC_CONDUIT = integer(builder, "cables", "magneticConduit", "Magnetic conduit", "Magnetic Conduit (antimatter only): mB per transfer", 1_000);
@@ -318,6 +327,17 @@ public final class MachineConfig {
         FUSION_REACTOR_PORT_TRITIUM_OUTPUT = integer(builder, "fusion_reactor", "portTritiumOutput", "Port tritium output", "Max mB of tritium per tick pushed out of each port", 500);
         builder.pop();
 
+        section(builder, "singularity_processor", "Singularity Processor");
+        SINGULARITY_PROCESSOR_PROCESS_TIME = integer(builder, "singularity_processor", "processTime", "Process time", "Ticks per operation", 40);
+        SINGULARITY_PROCESSOR_ENERGY_PER_TICK = integer(builder, "singularity_processor", "energyPerTick", "Energy per tick", "FE used per tick while working", 5_000);
+        SINGULARITY_PROCESSOR_ENERGY_CAPACITY = integer(builder, "singularity_processor", "energyCapacity", "Energy capacity", "FE buffer", 400_000);
+        SINGULARITY_PROCESSOR_MAX_ENERGY_INPUT = integer(builder, "singularity_processor", "maxEnergyInput", "Max energy input", "Max FE per insert", 20_000);
+        SINGULARITY_PROCESSOR_REACTOR_RANGE = integer(builder, "singularity_processor", "reactorRange", "Reactor range", "How close (blocks) a running Event Horizon Reactor's black hole must be", 16);
+        builder.pop();
+        section(builder, "singularity_energy_battery", "Singularity Energy Battery");
+        SINGULARITY_ENERGY_BATTERY_CAPACITY = integer(builder, "singularity_energy_battery", "capacity", "Capacity", "FE stored", 2_000_000_000);
+        SINGULARITY_ENERGY_BATTERY_TRANSFER_RATE = integer(builder, "singularity_energy_battery", "transferRate", "Transfer rate", "Max FE per tick in and out", 512_000);
+        builder.pop();
         section(builder, "event_horizon_reactor", "Event Horizon Reactor");
         EVENT_HORIZON_IGNITION_ANTIMATTER = integer(builder, "event_horizon_reactor", "ignitionAntimatter", "Ignition antimatter", "mB of antimatter that forms the black hole", 1_000);
         EVENT_HORIZON_ENERGY_PER_MASS = integer(builder, "event_horizon_reactor", "energyPerMass", "Energy per mass", "FE made per unit of mass (an item's comminutioncraft:matter_mass, 1 by default)", 50_000);

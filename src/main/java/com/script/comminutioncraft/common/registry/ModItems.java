@@ -72,6 +72,8 @@ public final class ModItems {
     // Tier 4: the "plasma-forged parts" (Circuit Assembler) and the reactor's fuel (Pellet Press)
     public static final DeferredItem<Item> FUSION_CIRCUIT = ITEMS.registerSimpleItem("fusion_circuit");
     public static final DeferredItem<Item> ANTIMATTER_CIRCUIT = ITEMS.registerSimpleItem("antimatter_circuit");
+    public static final DeferredItem<Item> SINGULARITY_CIRCUIT = ITEMS.registerSimpleItem("singularity_circuit");
+    public static final DeferredItem<Item> SINGULARITY_SHARD = ITEMS.registerSimpleItem("singularity_shard");
     public static final DeferredItem<Item> REACTOR_PLATING = ITEMS.registerSimpleItem("reactor_plating");
     public static final DeferredItem<Item> FUSION_FUEL_PELLET = ITEMS.registerSimpleItem("fusion_fuel_pellet");
     /** Doubles an Atmospheric Water Generator's output; wears down by 1 per 100 mB of water it makes. */
@@ -127,6 +129,11 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> ANTIMATTER_PURIFIER = ITEMS.registerSimpleBlockItem("antimatter_purifier", ModBlocks.ANTIMATTER_PURIFIER);
     public static final DeferredItem<BlockItem> ANNIHILATION_GENERATOR = ITEMS.registerSimpleBlockItem("annihilation_generator", ModBlocks.ANNIHILATION_GENERATOR);
     public static final DeferredItem<BlockItem> ANTIMATTER_CABLE = ITEMS.registerSimpleBlockItem("antimatter_cable", ModBlocks.ANTIMATTER_CABLE);
+    public static final DeferredItem<BlockItem> SINGULARITY_PROCESSOR = ITEMS.registerSimpleBlockItem("singularity_processor", ModBlocks.SINGULARITY_PROCESSOR);
+    public static final DeferredItem<BlockItem> SINGULARITY_CABLE = ITEMS.registerSimpleBlockItem("singularity_cable", ModBlocks.SINGULARITY_CABLE);
+    public static final DeferredItem<EnergyBatteryItem> SINGULARITY_ENERGY_BATTERY = ITEMS.registerItem("singularity_energy_battery",
+            properties -> new EnergyBatteryItem(ModBlocks.SINGULARITY_ENERGY_BATTERY.get(), properties, EnergyBatteryBlockEntity.SINGULARITY_CAPACITY, 0xFFBA38),
+            properties -> properties.useBlockDescriptionPrefix());
     public static final DeferredItem<EnergyBatteryItem> ANTIMATTER_ENERGY_BATTERY = ITEMS.registerItem("antimatter_energy_battery",
             properties -> new EnergyBatteryItem(ModBlocks.ANTIMATTER_ENERGY_BATTERY.get(), properties, EnergyBatteryBlockEntity.ANTIMATTER_CAPACITY, 0xD6E4FF),
             properties -> properties.useBlockDescriptionPrefix());

@@ -26,6 +26,10 @@ public class EnergyBatteryScreen extends MachineScreen<EnergyBatteryMenu> {
         return new EnergyBatteryScreen(menu, inventory, title, Tier.PLASMA);
     }
 
+    public static EnergyBatteryScreen singularity(EnergyBatteryMenu menu, Inventory inventory, Component title) {
+        return new EnergyBatteryScreen(menu, inventory, title, Tier.SINGULARITY);
+    }
+
     public static EnergyBatteryScreen antimatter(EnergyBatteryMenu menu, Inventory inventory, Component title) {
         return new EnergyBatteryScreen(menu, inventory, title, Tier.ANTIMATTER);
     }

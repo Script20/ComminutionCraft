@@ -77,6 +77,10 @@ public class ComminutionCraftClient {
                 (menu, inventory, title) -> new OrePurifierScreen((OrePurifierMenu) menu, inventory, title));
         event.register(ModMenus.FUSION_ENERGY_BATTERY.get(), EnergyBatteryScreen::fusion);
         event.register(ModMenus.ANTIMATTER_ENERGY_BATTERY.get(), EnergyBatteryScreen::antimatter);
+        event.register(ModMenus.SINGULARITY_ENERGY_BATTERY.get(), EnergyBatteryScreen::singularity);
+        event.<ElectricMachineMenu, com.script.comminutioncraft.client.gui.SingularityProcessorScreen>register(ModMenus.SINGULARITY_PROCESSOR.get(),
+                (menu, inventory, title) -> new com.script.comminutioncraft.client.gui.SingularityProcessorScreen(
+                        (com.script.comminutioncraft.common.machine.SingularityProcessorMenu) menu, inventory, title));
         event.register(ModMenus.ANNIHILATION_GENERATOR.get(), FluidMachineScreen::annihilationGenerator);
         event.<ElectricMachineMenu, PelletPressScreen>register(ModMenus.PELLET_PRESS.get(),
                 (menu, inventory, title) -> new PelletPressScreen((PelletPressMenu) menu, inventory, title));

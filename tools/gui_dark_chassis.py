@@ -594,18 +594,19 @@ def antimatter_arrow(x, y):
     return shade(base, 0.72) if (x + abs(y - 8)) % 6 == 0 else base
 
 
-def antimatter_sheet(arrow_colour, gauges=(), byproduct=False):
+def antimatter_sheet(arrow_colour, gauges=(), byproduct=False, rim=None):
     """Tier-5 machines: the tier-3 layout with icy slot rims, fluid tubes at each x in gauges, and (purifier) an
     output + by-product slot pair at (116, 24) / (116, 46) like the Ore Purifier."""
     s = Sheet()
     body(s)
     energy_well(s)
     slot(s, 55, 34)
+    rim = rim or ANTIMATTER['off']
     if byproduct:
-        slot(s, 115, 23, rim=ANTIMATTER['off'])
-        slot(s, 115, 45, rim=ANTIMATTER['off'])
+        slot(s, 115, 23, rim=rim)
+        slot(s, 115, 45, rim=rim)
     else:
-        slot(s, 111, 30, 26, rim=ANTIMATTER['off'])
+        slot(s, 111, 30, 26, rim=rim)
     arrow_silhouette(s, 79, 34)
     for x in gauges:
         gauge_well(s, x)
@@ -719,4 +720,7 @@ ore_washer_sheet().save(os.path.join(OUT, 'ore_washer.png'))
 jei_energy_icon().save(os.path.join(OUT, '..', 'jei_energy.png'))
 # tier 6, phase 6A
 horizon_sheet().save(os.path.join(OUT, 'horizon_controller.png'))
+# tier 6, phase 6B: the Singularity Processor (output + by-products, gold rims)
+antimatter_sheet(fade_arrow(SINGULARITY['off'], SINGULARITY['hi']), byproduct=True, rim=SINGULARITY['off']).save(
+    os.path.join(OUT, 'singularity_processor.png'))
 print('ok')

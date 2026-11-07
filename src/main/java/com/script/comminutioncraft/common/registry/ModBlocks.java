@@ -178,6 +178,21 @@ public final class ModBlocks {
     public static final DeferredBlock<com.script.comminutioncraft.common.machine.AnnihilationGeneratorBlock> ANNIHILATION_GENERATOR = BLOCKS.registerBlock(
             "annihilation_generator", com.script.comminutioncraft.common.machine.AnnihilationGeneratorBlock::new, ModBlocks::tier2MachineProperties);
 
+    // Tier 6 phase 6B: the 5x step and tier-6 power gear
+    public static final DeferredBlock<com.script.comminutioncraft.common.machine.SingularityProcessorBlock> SINGULARITY_PROCESSOR = BLOCKS.registerBlock(
+            "singularity_processor", com.script.comminutioncraft.common.machine.SingularityProcessorBlock::new, ModBlocks::tier2MachineProperties);
+
+    public static final DeferredBlock<EnergyCableBlock> SINGULARITY_CABLE = BLOCKS.registerBlock(
+            "singularity_cable", properties -> new EnergyCableBlock(properties, EnergyCableBlock.SINGULARITY_CABLE_RATE), properties -> properties
+                    .mapColor(MapColor.GOLD)
+                    .strength(0.5F)
+                    .sound(SoundType.COPPER)
+                    .noOcclusion());
+
+    public static final DeferredBlock<EnergyBatteryBlock> SINGULARITY_ENERGY_BATTERY = BLOCKS.registerBlock(
+            "singularity_energy_battery", properties -> new EnergyBatteryBlock(properties, () -> ModBlockEntities.SINGULARITY_ENERGY_BATTERY.get()),
+            ModBlocks::tier2MachineProperties);
+
     public static final DeferredBlock<EnergyCableBlock> ANTIMATTER_CABLE = BLOCKS.registerBlock(
             "antimatter_cable", properties -> new EnergyCableBlock(properties, EnergyCableBlock.ANTIMATTER_CABLE_RATE), properties -> properties
                     .mapColor(MapColor.SNOW)

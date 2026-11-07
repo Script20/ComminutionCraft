@@ -79,6 +79,16 @@ public class ModLanguageProvider extends LanguageProvider {
         add("jei.comminutioncraft.time.antimatter_purifier", "Antimatter Purifier: %s");
         add(ModBlocks.ANNIHILATION_GENERATOR.get(), "Annihilation Generator");
         add(ModBlocks.CONTAINMENT_FRAME.get(), "Containment Frame");
+        add(ModBlocks.SINGULARITY_PROCESSOR.get(), "Singularity Processor");
+        add(ModBlocks.SINGULARITY_CABLE.get(), "Singularity Cable");
+        add(ModBlocks.SINGULARITY_ENERGY_BATTERY.get(), "Singularity Energy Battery");
+        add(ModItems.SINGULARITY_CIRCUIT.get(), "Singularity Circuit");
+        add(ModItems.SINGULARITY_SHARD.get(), "Singularity Shard");
+        add("gui.comminutioncraft.processor.no_hole", "Needs a black hole near");
+        add("jei.comminutioncraft.singularity", "Singularity Processing");
+        add("jei.comminutioncraft.time.singularity_processor", "Singularity Processor: %s");
+        add("jei.comminutioncraft.singularity.needs_hole", "Needs a running Event Horizon Reactor within %s blocks");
+        add("jei.comminutioncraft.singularity.byproduct", "Sometimes: %s (%s)");
         add(com.script.comminutioncraft.common.registry.ModEntities.BLACK_HOLE.get(), "Black Hole");
         add(ModBlocks.HORIZON_CONTROLLER.get(), "Event Horizon Controller");
         add(ModBlocks.HORIZON_PORT.get(), "Horizon Port");

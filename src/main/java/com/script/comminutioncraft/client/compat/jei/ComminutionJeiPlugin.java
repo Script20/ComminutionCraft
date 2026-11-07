@@ -68,6 +68,8 @@ public class ComminutionJeiPlugin implements IModPlugin {
             IRecipeHolderType.createDeferred(ModRecipes.WASHING_TYPE::get);
     public static final Supplier<IRecipeHolderType<com.script.comminutioncraft.common.recipe.FlotationRecipe>> FLOTATION =
             IRecipeHolderType.createDeferred(ModRecipes.FLOTATION_TYPE::get);
+    public static final Supplier<IRecipeHolderType<com.script.comminutioncraft.common.recipe.SingularityRecipe>> SINGULARITY =
+            IRecipeHolderType.createDeferred(ModRecipes.SINGULARITY_TYPE::get);
     public static final Supplier<IRecipeHolderType<PressingRecipe>> PRESSING =
             IRecipeHolderType.createDeferred(ModRecipes.PRESSING_TYPE::get);
     public static final Supplier<IRecipeHolderType<PurifyingRecipe>> PURIFYING =
@@ -133,6 +135,15 @@ public class ComminutionJeiPlugin implements IModPlugin {
                         List.of()).withFluids(
                         new ProcessingCategory.FluidCost(Fluids.WATER, com.script.comminutioncraft.common.machine.FrothFlotationCellBlockEntity.WATER_PER_OPERATION.get()),
                         new ProcessingCategory.FluidCost(ModFluids.OXYGEN.get(), com.script.comminutioncraft.common.machine.FrothFlotationCellBlockEntity.OXYGEN_PER_OPERATION.get())),
+                new ProcessingCategory<>(gui, SINGULARITY.get(), Component.translatable("jei.comminutioncraft.singularity"),
+                        ModItems.SINGULARITY_PROCESSOR.get(), List.of(
+                        new ProcessingCategory.Station("jei.comminutioncraft.time.singularity_processor",
+                                com.script.comminutioncraft.common.machine.SingularityProcessorBlockEntity.PROCESS_TIME.get())),
+                        List.of(Component.translatable("jei.comminutioncraft.singularity.needs_hole",
+                                com.script.comminutioncraft.common.machine.SingularityProcessorBlockEntity.REACTOR_RANGE.get())),
+                        recipe -> recipe.getByproducts().stream().map(b -> (Component) Component.translatable(
+                                "jei.comminutioncraft.singularity.byproduct", b.item().create().getHoverName(),
+                                (b.chance() * 100 >= 1 ? String.valueOf(Math.round(b.chance() * 100)) : String.valueOf(b.chance() * 100)) + "%")).toList()),
                 new FusionReactorCategory(gui),
                 new ParticleAcceleratorCategory(gui),
                 new EventHorizonCategory(gui));
@@ -148,6 +159,7 @@ public class ComminutionJeiPlugin implements IModPlugin {
         registration.addRecipes(WASHING.get(), ClientRecipes.washing());
         registration.addRecipes(PRESSING.get(), ClientRecipes.pressing());
         registration.addRecipes(FLOTATION.get(), ClientRecipes.flotation());
+        registration.addRecipes(SINGULARITY.get(), ClientRecipes.singularity());
         registration.addRecipes(PURIFYING.get(), ClientRecipes.purifying());
         registration.addRecipes(FusionReactorCategory.TYPE, List.of(FusionReactorCategory.Structure.INSTANCE));
         registration.addRecipes(ParticleAcceleratorCategory.TYPE, List.of(ParticleAcceleratorCategory.Structure.INSTANCE));
@@ -168,6 +180,7 @@ public class ComminutionJeiPlugin implements IModPlugin {
         registration.addCraftingStation(ASSEMBLING.get(), ModItems.CIRCUIT_ASSEMBLER.get());
         registration.addCraftingStation(WASHING.get(), ModItems.ORE_WASHER.get(), ModItems.ANTIMATTER_WASHER.get());
         registration.addCraftingStation(FLOTATION.get(), ModItems.FROTH_FLOTATION_CELL.get());
+        registration.addCraftingStation(SINGULARITY.get(), ModItems.SINGULARITY_PROCESSOR.get());
         registration.addCraftingStation(PRESSING.get(), ModItems.PELLET_PRESS.get());
         registration.addCraftingStation(PURIFYING.get(), ModItems.ORE_PURIFIER.get(), ModItems.ANTIMATTER_PURIFIER.get());
         registration.addCraftingStation(FusionReactorCategory.TYPE, ModItems.REACTOR_CONTROLLER.get());
@@ -285,6 +298,8 @@ public class ComminutionJeiPlugin implements IModPlugin {
                 if (menuType == ModMenus.ELECTRIC_GRANULATOR.get() || menuType == ModMenus.PLASMA_GRANULATOR.get()
                         || menuType == ModMenus.ANTIMATTER_GRANULATOR.get()) {
                     type = GRANULATING.get();
+                } else if (menuType == ModMenus.SINGULARITY_PROCESSOR.get()) {
+                    type = SINGULARITY.get();
                 } else if (menuType == ModMenus.FROTH_FLOTATION_CELL.get()) {
                     type = FLOTATION.get();
                 } else if (menuType == ModMenus.ORE_WASHER.get() || menuType == ModMenus.ANTIMATTER_WASHER.get()) {

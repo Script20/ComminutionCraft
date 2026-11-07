@@ -29,6 +29,7 @@ public class ModItemTagsProvider extends ItemTagsProvider {
         tag(ProcessedMetal.commonItemTag("circuits/advanced")).add(ModItems.PLASMA_CIRCUIT.get());
         tag(ProcessedMetal.commonItemTag("circuits/elite")).add(ModItems.FUSION_CIRCUIT.get());
         tag(ProcessedMetal.commonItemTag("circuits/ultimate")).add(ModItems.ANTIMATTER_CIRCUIT.get());
+        tag(ProcessedMetal.commonItemTag("circuits/singularity")).add(ModItems.SINGULARITY_CIRCUIT.get());
 
         for (StoneSet set : ModBlocks.STONE_SETS) {
             set.allStairs().forEach(block -> tag(ItemTags.STAIRS).add(block.get().asItem()));

@@ -123,6 +123,12 @@ public final class ModMenus {
     public static final DeferredHolder<MenuType<?>, MenuType<com.script.comminutioncraft.common.machine.EventHorizonMenu>> EVENT_HORIZON =
             MENUS.register("horizon_controller", () -> new MenuType<>(com.script.comminutioncraft.common.machine.EventHorizonMenu::client, FeatureFlags.VANILLA_SET));
 
+    public static final DeferredHolder<MenuType<?>, MenuType<com.script.comminutioncraft.common.machine.SingularityProcessorMenu>> SINGULARITY_PROCESSOR =
+            MENUS.register("singularity_processor", () -> new MenuType<>(com.script.comminutioncraft.common.machine.SingularityProcessorMenu::client, FeatureFlags.VANILLA_SET));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<EnergyBatteryMenu>> SINGULARITY_ENERGY_BATTERY =
+            MENUS.register("singularity_energy_battery", () -> new MenuType<>(EnergyBatteryMenu::clientSingularity, FeatureFlags.VANILLA_SET));
+
     public static final DeferredHolder<MenuType<?>, MenuType<CreativeFluidTankMenu>> CREATIVE_FLUID_TANK =
             MENUS.register("creative_fluid_tank", () -> new MenuType<>(CreativeFluidTankMenu::client, FeatureFlags.VANILLA_SET));
 

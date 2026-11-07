@@ -1,0 +1,56 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:raw_materials/zinc"
+      }
+    },
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ingots/zinc"
+      }
+    }
+  ],
+  "type": "comminutioncraft:singularity_processing",
+  "byproducts": [
+    {
+      "chance": 0.03,
+      "item": {
+        "id": "minecraft:diamond"
+      }
+    },
+    {
+      "chance": 0.02,
+      "item": {
+        "id": "minecraft:emerald"
+      }
+    },
+    {
+      "chance": 0.02,
+      "item": {
+        "id": "comminutioncraft:singularity_shard"
+      }
+    },
+    {
+      "chance": 0.005,
+      "item": {
+        "id": "minecraft:netherite_scrap"
+      }
+    },
+    {
+      "chance": 5.0E-4,
+      "item": {
+        "id": "minecraft:nether_star"
+      }
+    }
+  ],
+  "ingredient": "#c:raw_materials/zinc",
+  "result": {
+    "count": 5,
+    "tag": "c:ingots/zinc"
+  }
+}

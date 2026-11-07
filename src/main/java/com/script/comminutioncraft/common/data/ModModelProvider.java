@@ -141,6 +141,11 @@ public class ModModelProvider extends ModelProvider {
         acceleratorPort(blockModels, ModBlocks.ACCELERATOR_PORT.get());
         // Event Horizon Reactor: frame lights up while the black hole lives; ports like the accelerator's
         litCube(blockModels, ModBlocks.CONTAINMENT_FRAME.get());
+        blockModels.createFurnace(ModBlocks.SINGULARITY_PROCESSOR.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
+        conduit(blockModels, itemModels, ModBlocks.SINGULARITY_CABLE.get(), ModItems.SINGULARITY_CABLE.get());
+        energyBattery(blockModels, ModBlocks.SINGULARITY_ENERGY_BATTERY.get());
+        itemModels.generateFlatItem(ModItems.SINGULARITY_CIRCUIT.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.SINGULARITY_SHARD.get(), ModelTemplates.FLAT_ITEM);
         acceleratorPort(blockModels, ModBlocks.HORIZON_PORT.get());
         blockModels.createFurnace(ModBlocks.HORIZON_CONTROLLER.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         blockModels.createFurnace(ModBlocks.ACCELERATOR_CONTROLLER.get(), TexturedModel.ORIENTABLE_ONLY_TOP);

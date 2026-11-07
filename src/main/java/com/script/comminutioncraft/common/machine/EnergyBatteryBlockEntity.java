@@ -47,6 +47,8 @@ public class EnergyBatteryBlockEntity extends BlockEntity implements TickingMach
     public static final com.script.comminutioncraft.common.config.ConfigInt FUSION_TRANSFER_RATE = com.script.comminutioncraft.common.config.MachineConfig.FUSION_ENERGY_BATTERY_TRANSFER_RATE;
     public static final com.script.comminutioncraft.common.config.ConfigInt ANTIMATTER_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.ANTIMATTER_ENERGY_BATTERY_CAPACITY;
     public static final com.script.comminutioncraft.common.config.ConfigInt ANTIMATTER_TRANSFER_RATE = com.script.comminutioncraft.common.config.MachineConfig.ANTIMATTER_ENERGY_BATTERY_TRANSFER_RATE;
+    public static final com.script.comminutioncraft.common.config.ConfigInt SINGULARITY_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.SINGULARITY_ENERGY_BATTERY_CAPACITY;
+    public static final com.script.comminutioncraft.common.config.ConfigInt SINGULARITY_TRANSFER_RATE = com.script.comminutioncraft.common.config.MachineConfig.SINGULARITY_ENERGY_BATTERY_TRANSFER_RATE;
     /** Charge cells on the front texture (blockstate {@code charge} 0..CELLS). */
     public static final int CELLS = 6;
 
@@ -118,6 +120,12 @@ public class EnergyBatteryBlockEntity extends BlockEntity implements TickingMach
     public static EnergyBatteryBlockEntity fusion(BlockPos pos, BlockState state) {
         return new EnergyBatteryBlockEntity(ModBlockEntities.FUSION_ENERGY_BATTERY.get(), ModMenus.FUSION_ENERGY_BATTERY.get(),
                 pos, state, FUSION_CAPACITY.get(), FUSION_TRANSFER_RATE.get());
+    }
+
+    /** Tier 6 Singularity Energy Battery. */
+    public static EnergyBatteryBlockEntity singularity(BlockPos pos, BlockState state) {
+        return new EnergyBatteryBlockEntity(ModBlockEntities.SINGULARITY_ENERGY_BATTERY.get(), ModMenus.SINGULARITY_ENERGY_BATTERY.get(),
+                pos, state, SINGULARITY_CAPACITY.get(), SINGULARITY_TRANSFER_RATE.get());
     }
 
     /** Tier 5 Antimatter Energy Battery. */
