@@ -139,8 +139,8 @@ public class BlackHoleRenderer implements BlockEntityRenderer<EventHorizonReacto
         poseStack.translate(toCamera.x * depth, toCamera.y * depth, toCamera.z * depth);
         poseStack.mulPose(facing);
         collector.submitCustomGeometry(poseStack, type, (pose, buffer) -> {
-            quad(buffer, pose, color, -size, -size, 0, size, -size, 0, size, size, 0, -size, size, 0, 0, 1, 1, 0);
-            quad(buffer, pose, color, -size, size, 0, size, size, 0, size, -size, 0, -size, -size, 0, 0, 0, 1, 1);
+            // bottom-left first; the texture's top row goes at the top
+            quad(buffer, pose, color, -size, -size, 0, size, -size, 0, size, size, 0, -size, size, 0, 0, 0, 1, 1);
         });
         poseStack.popPose();
     }
@@ -208,10 +208,13 @@ public class BlackHoleRenderer implements BlockEntityRenderer<EventHorizonReacto
         };
         for (float[] f : faces) {
             quad(b, pose, color, f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9], f[10], f[11], 0, 0, 2, 2);
-            quad(b, pose, color, f[9], f[10], f[11], f[6], f[7], f[8], f[3], f[4], f[5], f[0], f[1], f[2], 0, 0, 2, 2);
         }
     }
 
+    /**
+     * A quad seen from both sides: a-b-c-d (a = bottom-left of the texture, then round anticlockwise), then the same
+     * corners in reverse for the back - each corner keeps its texture coordinate, so the two sides line up exactly.
+     */
     private static void quad(VertexConsumer b, PoseStack.Pose pose, int color,
                              float ax, float ay, float az, float bx, float by, float bz,
                              float cx, float cy, float cz, float dx, float dy, float dz,
@@ -220,6 +223,10 @@ public class BlackHoleRenderer implements BlockEntityRenderer<EventHorizonReacto
         vertex(b, pose, color, bx, by, bz, u1, v1, 0, 0, 1);
         vertex(b, pose, color, cx, cy, cz, u1, v0, 0, 0, 1);
         vertex(b, pose, color, dx, dy, dz, u0, v0, 0, 0, 1);
+        vertex(b, pose, color, dx, dy, dz, u0, v0, 0, 0, -1);
+        vertex(b, pose, color, cx, cy, cz, u1, v0, 0, 0, -1);
+        vertex(b, pose, color, bx, by, bz, u1, v1, 0, 0, -1);
+        vertex(b, pose, color, ax, ay, az, u0, v1, 0, 0, -1);
     }
 
     private static void vertex(VertexConsumer b, PoseStack.Pose pose, int color, float x, float y, float z,
