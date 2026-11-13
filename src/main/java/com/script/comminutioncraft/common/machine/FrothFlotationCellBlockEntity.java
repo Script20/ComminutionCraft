@@ -81,13 +81,14 @@ public class FrothFlotationCellBlockEntity extends ElectricMachineBlockEntity {
 
     @Override
     protected boolean hasOperationResources() {
-        return water.getAmount() >= WATER_PER_OPERATION.get() && oxygen.getAmount() >= OXYGEN_PER_OPERATION.get();
+        return water.getAmount() >= fluidCost(net.minecraft.world.level.material.Fluids.WATER, WATER_PER_OPERATION.get())
+                && oxygen.getAmount() >= fluidCost(com.script.comminutioncraft.common.registry.ModFluids.OXYGEN.get(), OXYGEN_PER_OPERATION.get());
     }
 
     @Override
     protected void onOperationDone() {
-        water.drain(WATER_PER_OPERATION.get());
-        oxygen.drain(OXYGEN_PER_OPERATION.get());
+        water.drain(fluidCost(net.minecraft.world.level.material.Fluids.WATER, WATER_PER_OPERATION.get()));
+        oxygen.drain(fluidCost(com.script.comminutioncraft.common.registry.ModFluids.OXYGEN.get(), OXYGEN_PER_OPERATION.get()));
     }
 
     @Override

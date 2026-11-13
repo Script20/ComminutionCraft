@@ -96,12 +96,12 @@ public class OrePurifierBlockEntity extends ElectricMachineBlockEntity {
 
     @Override
     protected boolean hasOperationResources() {
-        return oxygen.getAmount() >= oxygenPerOperation();
+        return oxygen.getAmount() >= fluidCost(com.script.comminutioncraft.common.registry.ModFluids.OXYGEN.get(), oxygenPerOperation());
     }
 
     @Override
     protected void onOperationDone(RecipeHolder<? extends Recipe<SingleRecipeInput>> recipe) {
-        oxygen.drain(oxygenPerOperation());
+        oxygen.drain(fluidCost(com.script.comminutioncraft.common.registry.ModFluids.OXYGEN.get(), oxygenPerOperation()));
         if (recipe.value() instanceof PurifyingRecipe purifying && level != null && level.getRandom().nextFloat() < purifying.getChance()) {
             ItemStack byproduct = purifying.getByproduct().create();
             if (MachineSlots.canFit(items, SLOT_BYPRODUCT, byproduct, getMaxStackSize())) {

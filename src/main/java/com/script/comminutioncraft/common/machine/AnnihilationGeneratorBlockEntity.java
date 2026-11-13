@@ -85,4 +85,9 @@ public class AnnihilationGeneratorBlockEntity extends FluidMachineBlockEntity {
         super.saveAdditional(output);
         output.putInt("burn_ticks", burnTicks);
     }
+
+    @Override
+    public boolean supportsUpgrades() {
+        return false; // generators take no upgrades
+    }
 }

@@ -53,12 +53,12 @@ public abstract class PlasmaMachineBlockEntity extends ElectricMachineBlockEntit
 
     @Override
     protected boolean hasOperationResources() {
-        return tank.getAmount() >= getPlasmaPerOperation();
+        return tank.getAmount() >= fluidCost(com.script.comminutioncraft.common.registry.ModFluids.PLASMA.get(), getPlasmaPerOperation());
     }
 
     @Override
     protected void onOperationDone() {
-        tank.drain(getPlasmaPerOperation());
+        tank.drain(fluidCost(com.script.comminutioncraft.common.registry.ModFluids.PLASMA.get(), getPlasmaPerOperation()));
     }
 
     @Override

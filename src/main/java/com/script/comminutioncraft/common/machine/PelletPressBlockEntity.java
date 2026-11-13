@@ -75,13 +75,14 @@ public class PelletPressBlockEntity extends ElectricMachineBlockEntity {
 
     @Override
     protected boolean hasOperationResources() {
-        return deuterium.getAmount() >= DEUTERIUM_PER_PELLET.get() && tritium.getAmount() >= TRITIUM_PER_PELLET.get();
+        return deuterium.getAmount() >= fluidCost(com.script.comminutioncraft.common.registry.ModFluids.DEUTERIUM.get(), DEUTERIUM_PER_PELLET.get())
+                && tritium.getAmount() >= fluidCost(com.script.comminutioncraft.common.registry.ModFluids.TRITIUM.get(), TRITIUM_PER_PELLET.get());
     }
 
     @Override
     protected void onOperationDone() {
-        deuterium.drain(DEUTERIUM_PER_PELLET.get());
-        tritium.drain(TRITIUM_PER_PELLET.get());
+        deuterium.drain(fluidCost(com.script.comminutioncraft.common.registry.ModFluids.DEUTERIUM.get(), DEUTERIUM_PER_PELLET.get()));
+        tritium.drain(fluidCost(com.script.comminutioncraft.common.registry.ModFluids.TRITIUM.get(), TRITIUM_PER_PELLET.get()));
     }
 
     @Override

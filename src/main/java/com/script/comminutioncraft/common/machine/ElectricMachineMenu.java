@@ -27,6 +27,7 @@ public class ElectricMachineMenu extends AbstractContainerMenu implements Contro
 
     private final Container container;
     private final ContainerData data;
+    private final int upgradeStart;
 
     // Client-side constructors (called when the server tells the client to open the GUI)
     public static ElectricMachineMenu clientGranulator(int containerId, Inventory inventory) {
@@ -75,7 +76,19 @@ public class ElectricMachineMenu extends AbstractContainerMenu implements Contro
         addSlot(new Slot(container, ElectricMachineBlockEntity.SLOT_INPUT, 56, 35));
         addSlot(new MachineOutputSlot(inventory.player, container, ElectricMachineBlockEntity.SLOT_OUTPUT, 116, outputY));
         addStandardInventorySlots(inventory, 8, 84);
+        // Speed / Energy / Gas / Liquid, shown in the Upgrades panel (after the inventory, so other indices stay put)
+        upgradeStart = slots.size();
+        Container upgrades = container instanceof com.script.comminutioncraft.common.machine.upgrade.UpgradeHolder holder
+                ? holder.getUpgrades() : new com.script.comminutioncraft.common.machine.upgrade.MachineUpgrades(() -> {});
+        for (com.script.comminutioncraft.common.machine.upgrade.UpgradeType upgrade : com.script.comminutioncraft.common.machine.upgrade.UpgradeType.values()) {
+            addSlot(new com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot(upgrades, upgrade, inventory.player.level().isClientSide()));
+        }
         addDataSlots(data);
+    }
+
+    @Override
+    public int upgradeSlotStart() {
+        return upgradeStart;
     }
 
     // ---- Redstone / side settings (synced through data slots, changed with button clicks) ----
@@ -110,7 +123,15 @@ public class ElectricMachineMenu extends AbstractContainerMenu implements Contro
         ItemStack stack = slot.getItem();
         ItemStack original = stack.copy();
 
-        if (index == ElectricMachineBlockEntity.SLOT_OUTPUT) {
+        int upgradeEnd = upgradeStart + com.script.comminutioncraft.common.machine.upgrade.UpgradeType.values().length;
+        if (index >= upgradeStart && index < upgradeEnd) {
+            if (!moveItemStackTo(stack, INV_START, HOTBAR_END, false)) {
+                return ItemStack.EMPTY;
+            }
+        } else if (index >= INV_START && index < HOTBAR_END && com.script.comminutioncraft.common.machine.upgrade.UpgradeType.of(stack) != null
+                && moveItemStackTo(stack, upgradeStart, upgradeEnd, false)) {
+            // an upgrade: into its slot
+        } else if (index == ElectricMachineBlockEntity.SLOT_OUTPUT) {
             if (!moveItemStackTo(stack, INV_START, HOTBAR_END, true)) {
                 return ItemStack.EMPTY;
             }

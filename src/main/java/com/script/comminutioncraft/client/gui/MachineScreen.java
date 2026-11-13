@@ -30,8 +30,9 @@ import net.minecraft.world.item.Items;
  * The tier-coloured seams beside the title and the groove after "Inventory" are drawn here
  * so they fit the label widths in any language. The seams glow while the machine is working.
  * <p>
- * Two tabs on the right edge: redstone mode (cycles Ignore / High / Low) and side configuration
- * (opens {@link SideConfigScreen}).
+ * Tabs on the right edge: redstone mode (cycles Ignore / High / Low), side configuration (opens
+ * {@link SideConfigScreen}) and, on machines that take them, Upgrades: a panel beside the GUI with the four upgrade
+ * slots (Speed, Energy, Gas, Liquid), how many of each and what they do (design/previews/upgrades.png).
  */
 public abstract class MachineScreen<M extends AbstractContainerMenu & ControllableMenu> extends AbstractContainerScreen<M> {
     protected static final int TEX_SIZE = 256;
@@ -79,6 +80,18 @@ public abstract class MachineScreen<M extends AbstractContainerMenu & Controllab
     protected static final int ANTIMATTER_U = 246;
 
     private static final int TAB_GAP = 2;
+    // The Upgrades panel, right of the tabs (its slots are UpgradeSlot.X / Y)
+    private static final int PANEL_X = 176 - 2 + MachineTab.SIZE + 2;
+    private static final int PANEL_Y = 6;
+    private static final int PANEL_W = 118;
+    private static final int PANEL_H = 16 + com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.STEP * 4 + 4;
+    private static final int PANEL_OUTLINE = 0xFF101114;
+    private static final int PANEL_TOP = 0xFF3C4049;
+    private static final int PANEL_BOTTOM = 0xFF2A2D34;
+    private static final int PANEL_HIGHLIGHT = 0xFF545964;
+    private static final int SLOT_DARK = 0xFF101114;
+    private static final int SLOT_FILL = 0xFF1C1E23;
+    private static final int SLOT_LIGHT = 0xFF545964;
 
     protected final Identifier texture;
     private final Tier tier;
@@ -111,6 +124,62 @@ public abstract class MachineScreen<M extends AbstractContainerMenu & Controllab
                 () -> Component.translatable("gui.comminutioncraft.side_config"),
                 tier.seamOn,
                 this::openSideConfig));
+        if (hasUpgrades()) {
+            addRenderableWidget(new MachineTab(tabX, topPos + 6 + (MachineTab.SIZE + TAB_GAP) * 2,
+                    () -> new ItemStack(com.script.comminutioncraft.common.registry.ModItems.SPEED_UPGRADE.get()),
+                    () -> Component.translatable("gui.comminutioncraft.upgrades"),
+                    tier.seamOn,
+                    () -> com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.panelOpen = !com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.panelOpen));
+        }
+    }
+
+    private boolean hasUpgrades() {
+        return menu.upgradeSlotStart() >= 0;
+    }
+
+    private boolean panelShown() {
+        return hasUpgrades() && com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.panelOpen;
+    }
+
+    private int upgradeCount(com.script.comminutioncraft.common.machine.upgrade.UpgradeType type) {
+        ItemStack stack = menu.getSlot(menu.upgradeSlotStart() + type.ordinal()).getItem();
+        return stack.is(type.item()) ? stack.getCount() : 0;
+    }
+
+    /** What n of this upgrade does, for the panel ("2.5x speed", "-75% FE/op"...). */
+    private static Component upgradeEffect(com.script.comminutioncraft.common.machine.upgrade.UpgradeType type, int n) {
+        if (n <= 0) {
+            return Component.translatable("gui.comminutioncraft.upgrade." + type.id() + ".none");
+        }
+        if (type == com.script.comminutioncraft.common.machine.upgrade.UpgradeType.SPEED) {
+            return Component.translatable("gui.comminutioncraft.upgrade.speed", String.format(Locale.ROOT, "%.1f", 1 + 0.5 * n));
+        }
+        return Component.translatable("gui.comminutioncraft.upgrade." + type.id(), Math.round((1 - Math.pow(0.84, n)) * 100));
+    }
+
+    /** Clicks on the open panel belong to the GUI (otherwise a carried item would be thrown out). */
+    @Override
+    protected boolean hasClickedOutside(double mx, double my, int xo, int yo) {
+        if (panelShown() && mx >= xo + PANEL_X && mx < xo + PANEL_X + PANEL_W && my >= yo + PANEL_Y && my < yo + PANEL_Y + PANEL_H) {
+            return false;
+        }
+        return super.hasClickedOutside(mx, my, xo, yo);
+    }
+
+    /** An empty upgrade slot names the upgrade it takes. */
+    @Override
+    protected void extractTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        super.extractTooltip(graphics, mouseX, mouseY);
+        if (!panelShown()) {
+            return;
+        }
+        for (com.script.comminutioncraft.common.machine.upgrade.UpgradeType type : com.script.comminutioncraft.common.machine.upgrade.UpgradeType.values()) {
+            int sy = com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.Y + com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.STEP * type.ordinal();
+            if (upgradeCount(type) == 0 && isHovering(com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.X, sy, 16, 16, mouseX, mouseY)) {
+                graphics.setTooltipForNextFrame(Component.translatable("gui.comminutioncraft.upgrade.slot",
+                        type.item().getName(new ItemStack(type.item())), com.script.comminutioncraft.common.machine.upgrade.UpgradeType.MAX), mouseX, mouseY);
+            }
+        }
     }
 
     private static Item redstoneIcon(RedstoneMode mode) {
@@ -145,13 +214,54 @@ public abstract class MachineScreen<M extends AbstractContainerMenu & Controllab
 
     /** Screen areas outside the GUI that belong to it (the tabs), so JEI doesn't draw over them. */
     public List<Rect2i> getExtraAreas() {
-        return List.of(new Rect2i(leftPos + imageWidth - 2, topPos + 6, MachineTab.SIZE, MachineTab.SIZE * 2 + TAB_GAP));
+        int tabs = hasUpgrades() ? 3 : 2;
+        Rect2i tabArea = new Rect2i(leftPos + imageWidth - 2, topPos + 6, MachineTab.SIZE, MachineTab.SIZE * tabs + TAB_GAP * (tabs - 1));
+        return panelShown() ? List.of(tabArea, new Rect2i(leftPos + PANEL_X, topPos + PANEL_Y, PANEL_W, PANEL_H)) : List.of(tabArea);
     }
 
     @Override
     public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         super.extractBackground(graphics, mouseX, mouseY, partialTick);
         graphics.blit(RenderPipelines.GUI_TEXTURED, texture, leftPos, topPos, 0, 0, imageWidth, imageHeight, TEX_SIZE, TEX_SIZE);
+        if (panelShown()) {
+            drawUpgradePanel(graphics);
+        }
+    }
+
+    /** The Upgrades panel's body, the four slot frames, and a faded icon in each empty slot. */
+    private void drawUpgradePanel(GuiGraphicsExtractor graphics) {
+        int x0 = leftPos + PANEL_X;
+        int y0 = topPos + PANEL_Y;
+        int x1 = x0 + PANEL_W;
+        int y1 = y0 + PANEL_H;
+        graphics.fill(x0, y0 + 1, x1, y1 - 1, PANEL_OUTLINE);
+        graphics.fill(x0 + 1, y0, x1 - 1, y1, PANEL_OUTLINE);
+        graphics.fillGradient(x0 + 1, y0 + 1, x1 - 1, y1 - 1, PANEL_TOP, PANEL_BOTTOM);
+        graphics.fill(x0 + 2, y0 + 1, x1 - 2, y0 + 2, PANEL_HIGHLIGHT);
+        for (com.script.comminutioncraft.common.machine.upgrade.UpgradeType type : com.script.comminutioncraft.common.machine.upgrade.UpgradeType.values()) {
+            int sx = leftPos + com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.X - 1;
+            int sy = topPos + com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.Y + com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.STEP * type.ordinal() - 1;
+            graphics.fill(sx, sy, sx + 18, sy + 18, SLOT_LIGHT);
+            graphics.fill(sx, sy, sx + 17, sy + 17, SLOT_DARK);
+            graphics.fill(sx + 1, sy + 1, sx + 17, sy + 17, SLOT_FILL);
+        }
+        boolean faded = false;
+        for (com.script.comminutioncraft.common.machine.upgrade.UpgradeType type : com.script.comminutioncraft.common.machine.upgrade.UpgradeType.values()) {
+            if (upgradeCount(type) == 0) {
+                graphics.item(new ItemStack(type.item()), leftPos + com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.X, topPos + com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.Y + com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.STEP * type.ordinal());
+                faded = true;
+            }
+        }
+        if (faded) { // dim the ghost icons
+            graphics.nextStratum();
+            for (com.script.comminutioncraft.common.machine.upgrade.UpgradeType type : com.script.comminutioncraft.common.machine.upgrade.UpgradeType.values()) {
+                if (upgradeCount(type) == 0) {
+                    int sx = leftPos + com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.X;
+                    int sy = topPos + com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.Y + com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.STEP * type.ordinal();
+                    graphics.fill(sx, sy, sx + 16, sy + 16, 0xC01C1E23);
+                }
+            }
+        }
     }
 
     /** Fuel flame at (x, y) on the GUI, burning down from the top. */
@@ -242,6 +352,19 @@ public abstract class MachineScreen<M extends AbstractContainerMenu & Controllab
         graphics.fill(grooveX, grooveY, imageWidth - 8, grooveY + 1, GROOVE_DARK);
         graphics.fill(grooveX, grooveY + 1, imageWidth - 8, grooveY + 2, GROOVE_LIGHT);
         graphics.text(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, LABEL_COLOR, false);
+
+        if (panelShown()) {
+            graphics.text(font, Component.translatable("gui.comminutioncraft.upgrades"), PANEL_X + 6, PANEL_Y + 4, TITLE_COLOR, false);
+            for (com.script.comminutioncraft.common.machine.upgrade.UpgradeType type : com.script.comminutioncraft.common.machine.upgrade.UpgradeType.values()) {
+                int n = upgradeCount(type);
+                int tx = com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.X + 19;
+                int ty = com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.Y + com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.STEP * type.ordinal();
+                graphics.text(font, Component.translatable("gui.comminutioncraft.upgrade.count",
+                        Component.translatable("gui.comminutioncraft.upgrade." + type.id() + ".name"), n, com.script.comminutioncraft.common.machine.upgrade.UpgradeType.MAX),
+                        tx, ty, n > 0 ? type.colour() : 0xFF8C8E96, false);
+                graphics.text(font, upgradeEffect(type, n), tx, ty + 9, n > 0 ? 0xFFBEBEC4 : 0xFF6E7078, false);
+            }
+        }
     }
 
     private void seam(GuiGraphicsExtractor graphics, int x0, int x1, int y) {

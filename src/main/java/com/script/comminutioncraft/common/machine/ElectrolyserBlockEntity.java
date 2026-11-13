@@ -44,13 +44,14 @@ public class ElectrolyserBlockEntity extends FluidMachineBlockEntity {
 
     @Override
     protected int work(ServerLevel level) {
-        int make = Math.min(Math.min(MAX_HYDROGEN_PER_TICK.get(), water.getAmount() / WATER_PER_HYDROGEN.get()),
-                Math.min(hydrogen.getSpace(), energy.getEnergy() / ENERGY_PER_HYDROGEN.get()));
+        int perMb = upgradedEnergy(ENERGY_PER_HYDROGEN.get());
+        int make = Math.min(Math.min(upgradedRate(MAX_HYDROGEN_PER_TICK.get()), affordable(net.minecraft.world.level.material.Fluids.WATER, water.getAmount(), WATER_PER_HYDROGEN.get())),
+                Math.min(hydrogen.getSpace(), energy.getEnergy() / perMb));
         if (make <= 0) {
             return 0;
         }
-        energy.consume(make * ENERGY_PER_HYDROGEN.get());
-        water.drain(make * WATER_PER_HYDROGEN.get());
+        energy.consume(make * perMb);
+        water.drain(drainFor(net.minecraft.world.level.material.Fluids.WATER, make, WATER_PER_HYDROGEN.get()));
         hydrogen.fill(FluidResource.of(ModFluids.HYDROGEN.get()), make);
         oxygenHalves += make;
         int madeOxygen = oxygenHalves / 2;

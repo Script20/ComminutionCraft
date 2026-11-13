@@ -12,9 +12,23 @@ import net.neoforged.neoforge.transfer.energy.SimpleEnergyHandler;
 public class MachineEnergyStorage extends SimpleEnergyHandler {
     private final Runnable onChanged;
 
+    private final int baseCapacity;
+    private final int baseMaxInsert;
+
     public MachineEnergyStorage(int capacity, int maxInsert, int maxExtract, Runnable onChanged) {
         super(capacity, maxInsert, maxExtract);
         this.onChanged = onChanged;
+        this.baseCapacity = capacity;
+        this.baseMaxInsert = maxInsert;
+    }
+
+    /** Scales the buffer and the per-insert limit from the values it was made with (machine upgrades). */
+    public void scale(double capacityFactor, double insertFactor) {
+        capacity = (int) Math.min(Integer.MAX_VALUE, Math.round(baseCapacity * capacityFactor));
+        maxInsert = (int) Math.min(Integer.MAX_VALUE, Math.round(baseMaxInsert * insertFactor));
+        if (energy > capacity) {
+            set(capacity);
+        }
     }
 
     @Override

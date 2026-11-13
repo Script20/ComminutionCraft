@@ -74,6 +74,11 @@ public final class ModItems {
     public static final DeferredItem<Item> ANTIMATTER_CIRCUIT = ITEMS.registerSimpleItem("antimatter_circuit");
     public static final DeferredItem<Item> SINGULARITY_CIRCUIT = ITEMS.registerSimpleItem("singularity_circuit");
     public static final DeferredItem<Item> SINGULARITY_SHARD = ITEMS.registerSimpleItem("singularity_shard");
+    // Machine upgrades (the Upgrades tab of every FE machine; see common/machine/upgrade)
+    public static final DeferredItem<Item> SPEED_UPGRADE = ITEMS.registerSimpleItem("speed_upgrade");
+    public static final DeferredItem<Item> ENERGY_UPGRADE = ITEMS.registerSimpleItem("energy_upgrade");
+    public static final DeferredItem<Item> GAS_UPGRADE = ITEMS.registerSimpleItem("gas_upgrade");
+    public static final DeferredItem<Item> LIQUID_UPGRADE = ITEMS.registerSimpleItem("liquid_upgrade");
     public static final DeferredItem<Item> REACTOR_PLATING = ITEMS.registerSimpleItem("reactor_plating");
     public static final DeferredItem<Item> FUSION_FUEL_PELLET = ITEMS.registerSimpleItem("fusion_fuel_pellet");
     /** Doubles an Atmospheric Water Generator's output; wears down by 1 per 100 mB of water it makes. */

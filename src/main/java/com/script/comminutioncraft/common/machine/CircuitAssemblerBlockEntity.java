@@ -84,13 +84,13 @@ public class CircuitAssemblerBlockEntity extends PlasmaMachineBlockEntity {
 
     @Override
     protected boolean hasOperationResources(RecipeHolder<? extends Recipe<SingleRecipeInput>> recipe) {
-        return hasOperationResources() && antimatter.getAmount() >= antimatterFor(recipe);
+        return hasOperationResources() && antimatter.getAmount() >= fluidCost(com.script.comminutioncraft.common.registry.ModFluids.ANTIMATTER.get(), antimatterFor(recipe));
     }
 
     @Override
     protected void onOperationDone(RecipeHolder<? extends Recipe<SingleRecipeInput>> recipe) {
         super.onOperationDone(recipe);
-        int used = antimatterFor(recipe);
+        int used = fluidCost(com.script.comminutioncraft.common.registry.ModFluids.ANTIMATTER.get(), antimatterFor(recipe));
         if (used > 0) {
             antimatter.drain(used);
         }

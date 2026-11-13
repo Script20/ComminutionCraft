@@ -34,13 +34,14 @@ public class PlasmaGeneratorBlockEntity extends FluidMachineBlockEntity {
 
     @Override
     protected int work(ServerLevel level) {
-        int make = Math.min(Math.min(MAX_PLASMA_PER_TICK.get(), hydrogen.getAmount()),
-                Math.min(plasma.getSpace(), energy.getEnergy() / ENERGY_PER_MB.get()));
+        int perMb = upgradedEnergy(ENERGY_PER_MB.get());
+        int make = Math.min(Math.min(upgradedRate(MAX_PLASMA_PER_TICK.get()), affordable(com.script.comminutioncraft.common.registry.ModFluids.HYDROGEN.get(), hydrogen.getAmount(), 1)),
+                Math.min(plasma.getSpace(), energy.getEnergy() / perMb));
         if (make <= 0) {
             return 0;
         }
-        energy.consume(make * ENERGY_PER_MB.get());
-        hydrogen.drain(make);
+        energy.consume(make * perMb);
+        hydrogen.drain(drainFor(com.script.comminutioncraft.common.registry.ModFluids.HYDROGEN.get(), make, 1));
         plasma.fill(FluidResource.of(ModFluids.PLASMA.get()), make);
         return make;
     }

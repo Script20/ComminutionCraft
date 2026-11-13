@@ -51,4 +51,9 @@ public class MhdGeneratorBlockEntity extends FluidMachineBlockEntity {
     protected MenuType<FluidMachineMenu> getMenuType() {
         return ModMenus.MHD_GENERATOR.get();
     }
+
+    @Override
+    public boolean supportsUpgrades() {
+        return false; // generators take no upgrades
+    }
 }

@@ -1,0 +1,14 @@
+{
+  "values": [
+    "comminutioncraft:hydrogen",
+    "comminutioncraft:flowing_hydrogen",
+    "comminutioncraft:oxygen",
+    "comminutioncraft:flowing_oxygen",
+    "comminutioncraft:plasma",
+    "comminutioncraft:flowing_plasma",
+    "comminutioncraft:deuterium",
+    "comminutioncraft:flowing_deuterium",
+    "comminutioncraft:tritium",
+    "comminutioncraft:flowing_tritium"
+  ]
+}

@@ -157,6 +157,8 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("horizon_processor_needs_black_hole", () -> ModGameTests::horizonProcessorNeedsBlackHole);
         TEST_FUNCTIONS.register("horizon_redstone_off_is_safe", () -> ModGameTests::horizonRedstoneOffIsSafe);
         TEST_FUNCTIONS.register("horizon_advancements", () -> ModGameTests::horizonAdvancements);
+        TEST_FUNCTIONS.register("upgrades_speed_and_energy", () -> ModGameTests::upgradesSpeedAndEnergy);
+        TEST_FUNCTIONS.register("upgrades_liquid_and_pickup", () -> ModGameTests::upgradesLiquidAndPickup);
         TEST_FUNCTIONS.register("antimatter_suite_runs_the_chain", () -> ModGameTests::antimatterSuiteRunsTheChain);
     }
 
@@ -892,6 +894,69 @@ public final class ModGameTests {
                 helper.assertTrue(output.is(ModItems.WASHED_IRON.get()) && output.getCount() == 3,
                         "Expected 3 Washed Iron, got " + output);
             });
+        });
+    }
+
+    /**
+     * Upgrades: an Electric Granulator with 8 Speed upgrades finishes a raw iron in a fifth of the time (75 -> 15 ticks)
+     * while a plain one is still working; one with 8 Energy upgrades uses about a quarter of the FE for the same ore.
+     */
+    private static void upgradesSpeedAndEnergy(GameTestHelper helper) {
+        BlockPos plainPos = new BlockPos(1, 1, 2);
+        BlockPos fastPos = new BlockPos(2, 1, 2);
+        BlockPos thriftyPos = new BlockPos(3, 1, 2);
+        for (BlockPos pos : List.of(plainPos, fastPos, thriftyPos)) {
+            helper.setBlock(pos, ModBlocks.ELECTRIC_GRANULATOR.get());
+        }
+        ElectricMachineBlockEntity plain = helper.getBlockEntity(plainPos, ElectricMachineBlockEntity.class);
+        ElectricMachineBlockEntity fast = helper.getBlockEntity(fastPos, ElectricMachineBlockEntity.class);
+        ElectricMachineBlockEntity thrifty = helper.getBlockEntity(thriftyPos, ElectricMachineBlockEntity.class);
+        fast.getUpgrades().setItem(0, new ItemStack(ModItems.SPEED_UPGRADE.get(), 8));
+        thrifty.getUpgrades().setItem(1, new ItemStack(ModItems.ENERGY_UPGRADE.get(), 8));
+        int fe = 10_000;
+        for (ElectricMachineBlockEntity machine : List.of(plain, fast, thrifty)) {
+            ((MachineEnergyStorage) machine.getEnergyHandler()).set(fe);
+            machine.setItem(ElectricMachineBlockEntity.SLOT_INPUT, new ItemStack(Items.RAW_IRON));
+        }
+        helper.assertTrue(thrifty.getEnergyHandler().getCapacityAsLong() == 5L * ElectricMachineBlockEntity.ENERGY_CAPACITY.get(),
+                "8 Energy upgrades should make the buffer 5x, it's " + thrifty.getEnergyHandler().getCapacityAsLong());
+        helper.runAfterDelay(25, () -> {
+            helper.assertTrue(!fast.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT).isEmpty(), "8 Speed upgrades didn't finish in 25 ticks");
+            helper.assertTrue(plain.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT).isEmpty(), "The plain granulator finished too soon");
+            helper.succeedWhen(() -> {
+                helper.assertTrue(!plain.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT).isEmpty()
+                        && !thrifty.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT).isEmpty(), "Still granulating");
+                long plainUsed = fe - plain.getEnergyHandler().getAmountAsLong();
+                long thriftyUsed = fe - thrifty.getEnergyHandler().getAmountAsLong();
+                helper.assertTrue(thriftyUsed * 3 < plainUsed, "8 Energy upgrades used " + thriftyUsed + " FE vs " + plainUsed + " without");
+            });
+        });
+    }
+
+    /**
+     * An Ore Washer with 8 Liquid upgrades uses 62 mB of water a wash instead of 250. Picked up with the wrench, the item
+     * carries the upgrades (and the machine drops none); broken normally, it drops them.
+     */
+    private static void upgradesLiquidAndPickup(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, ModBlocks.ORE_WASHER.get());
+        OreWasherBlockEntity washer = helper.getBlockEntity(pos, OreWasherBlockEntity.class);
+        washer.getUpgrades().setItem(3, new ItemStack(ModItems.LIQUID_UPGRADE.get(), 8));
+        ((MachineEnergyStorage) washer.getEnergyHandler()).set(ElectricMachineBlockEntity.TIER3_ENERGY_CAPACITY.get());
+        washer.getWater().fill(net.neoforged.neoforge.transfer.fluid.FluidResource.of(Fluids.WATER), 300);
+        washer.setItem(ElectricMachineBlockEntity.SLOT_INPUT, new ItemStack(Items.RAW_IRON));
+        helper.succeedWhen(() -> {
+            helper.assertTrue(!washer.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT).isEmpty(), "Still washing");
+            helper.assertTrue(washer.getWater().getAmount() == 300 - 62, "Expected 62 mB used, " + (300 - washer.getWater().getAmount()) + " were");
+            // what the wrench puts on the picked-up item
+            List<Integer> carried = washer.collectComponents().get(com.script.comminutioncraft.common.registry.ModDataComponents.UPGRADES.get());
+            helper.assertTrue(carried != null && carried.equals(List.of(0, 0, 0, 8)), "The picked-up item should carry 8 Liquid upgrades, has " + carried);
+            // broken normally: the upgrades drop
+            helper.getLevel().destroyBlock(helper.absolutePos(pos), true);
+            int dropped = helper.getLevel().getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class,
+                            new net.minecraft.world.phys.AABB(helper.absolutePos(pos)).inflate(2))
+                    .stream().filter(e -> e.getItem().is(ModItems.LIQUID_UPGRADE.get())).mapToInt(e -> e.getItem().getCount()).sum();
+            helper.assertTrue(dropped == 8, "Breaking it should drop the 8 Liquid upgrades, dropped " + dropped);
         });
     }
 

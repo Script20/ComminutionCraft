@@ -151,6 +151,9 @@ public class WrenchItem extends Item {
             ItemStack item = new ItemStack(state.getBlock());
             // The contents drop on removal below, so they mustn't be copied onto the item too.
             item.applyComponents(machine.collectComponents().filter(type -> type != DataComponents.CONTAINER));
+            if (machine instanceof com.script.comminutioncraft.common.machine.upgrade.UpgradeHolder holder) {
+                holder.getUpgrades().clearContent(); // they're on the item now; don't drop them too
+            }
             level.removeBlock(pos, false);
             if (!player.getInventory().add(item)) {
                 player.drop(item, false);

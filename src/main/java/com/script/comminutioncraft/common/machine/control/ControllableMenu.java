@@ -10,4 +10,9 @@ public interface ControllableMenu {
     default boolean hasByproductOutput() {
         return false;
     }
+
+    /** Index of the first of the four upgrade slots (Speed, Energy, Gas, Liquid), or -1 if it takes no upgrades. */
+    default int upgradeSlotStart() {
+        return -1;
+    }
 }

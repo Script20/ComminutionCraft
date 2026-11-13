@@ -99,12 +99,12 @@ public class OreWasherBlockEntity extends ElectricMachineBlockEntity {
 
     @Override
     protected boolean hasOperationResources() {
-        return water.getAmount() >= waterPerOperation();
+        return water.getAmount() >= fluidCost(net.minecraft.world.level.material.Fluids.WATER, waterPerOperation());
     }
 
     @Override
     protected void onOperationDone() {
-        water.drain(waterPerOperation());
+        water.drain(fluidCost(net.minecraft.world.level.material.Fluids.WATER, waterPerOperation()));
     }
 
     @Override

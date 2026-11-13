@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": "comminutioncraft:electronic_circuit",
+    "R": "minecraft:redstone",
+    "X": "minecraft:lapis_lazuli"
+  },
+  "pattern": [
+    "RXR",
+    "XCX",
+    "RXR"
+  ],
+  "result": {
+    "id": "comminutioncraft:liquid_upgrade"
+  }
+}

@@ -14,7 +14,7 @@ import net.minecraft.world.item.ItemStack;
 /** Ore Purifier menu: input, output (moved up) and a by-product slot under it, plus the oxygen gauge. */
 public class OrePurifierMenu extends ElectricMachineMenu {
     /** The by-product slot comes after the player inventory (the parent's slot layout stays as it is). */
-    private static final int BYPRODUCT_INDEX = ElectricMachineBlockEntity.SLOT_COUNT + 36;
+    private static final int BYPRODUCT_INDEX = ElectricMachineBlockEntity.SLOT_COUNT + 36 + com.script.comminutioncraft.common.machine.upgrade.UpgradeType.values().length;
 
     private final ContainerData data;
 
@@ -51,7 +51,7 @@ public class OrePurifierMenu extends ElectricMachineMenu {
         }
         ItemStack stack = slot.getItem();
         ItemStack original = stack.copy();
-        if (!moveItemStackTo(stack, ElectricMachineBlockEntity.SLOT_COUNT, BYPRODUCT_INDEX, true)) {
+        if (!moveItemStackTo(stack, ElectricMachineBlockEntity.SLOT_COUNT, ElectricMachineBlockEntity.SLOT_COUNT + 36, true)) {
             return ItemStack.EMPTY;
         }
         if (stack.isEmpty()) {

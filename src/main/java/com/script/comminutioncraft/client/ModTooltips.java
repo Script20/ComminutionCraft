@@ -57,6 +57,12 @@ public final class ModTooltips {
                     .withStyle(ChatFormatting.DARK_GRAY));
             return lines;
         }
+        com.script.comminutioncraft.common.machine.upgrade.UpgradeType upgrade = com.script.comminutioncraft.common.machine.upgrade.UpgradeType.of(stack);
+        if (upgrade != null) {
+            lines.add(gray("tooltip.comminutioncraft.upgrade", com.script.comminutioncraft.common.machine.upgrade.UpgradeType.MAX));
+            lines.add(Component.translatable("tooltip.comminutioncraft.upgrade." + upgrade.id()).withColor(upgrade.colour()));
+            return lines;
+        }
         Block block = stack.getItem() instanceof BlockItem item ? item.getBlock() : null;
         SimpleFluidContent fluid = stack.get(ModDataComponents.STORED_FLUID.get());
         FluidStack contents = fluid == null ? FluidStack.EMPTY : fluid.copy();
@@ -108,6 +114,17 @@ public final class ModTooltips {
         }
         if (!contents.isEmpty()) {
             lines.add(gray("tooltip.comminutioncraft.stored_fluid", contents.getHoverName(), number(contents.getAmount())));
+        }
+        List<Integer> upgrades = stack.get(ModDataComponents.UPGRADES.get());
+        if (upgrades != null) { // a machine picked up with the wrench: "Upgrades: 3 Speed, 8 Energy"
+            List<String> parts = new ArrayList<>();
+            for (com.script.comminutioncraft.common.machine.upgrade.UpgradeType type : com.script.comminutioncraft.common.machine.upgrade.UpgradeType.values()) {
+                int n = type.ordinal() < upgrades.size() ? upgrades.get(type.ordinal()) : 0;
+                if (n > 0) {
+                    parts.add(n + " " + Component.translatable("gui.comminutioncraft.upgrade." + type.id() + ".name").getString());
+                }
+            }
+            lines.add(gray("tooltip.comminutioncraft.machine_upgrades", String.join(", ", parts)));
         }
         if (stack.has(ModDataComponents.MACHINE_SETTINGS.get())) {
             lines.add(gray("tooltip.comminutioncraft.machine_settings"));

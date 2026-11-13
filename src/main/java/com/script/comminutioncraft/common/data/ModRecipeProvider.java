@@ -665,6 +665,12 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_accelerator_segment", has(ModItems.ACCELERATOR_SEGMENT.get()))
                 .save(output, key("accelerator_controller"));
 
+        // Machine upgrades: an Electronic Circuit in redstone, with the upgrade's own ingredient
+        upgrade(output, ModItems.SPEED_UPGRADE.get(), Items.SUGAR, "speed_upgrade");
+        upgrade(output, ModItems.ENERGY_UPGRADE.get(), Items.GOLD_INGOT, "energy_upgrade");
+        upgrade(output, ModItems.GAS_UPGRADE.get(), Items.GLASS_BOTTLE, "gas_upgrade");
+        upgrade(output, ModItems.LIQUID_UPGRADE.get(), Items.LAPIS_LAZULI, "liquid_upgrade");
+
         shaped(RecipeCategory.MISC, ModItems.AIR_FILTER.get())
                 .pattern(" P ")
                 .pattern("PCP")
@@ -776,6 +782,19 @@ public class ModRecipeProvider extends RecipeProvider {
 
     private static AbstractCookingRecipe.CookingBookInfo cookingInfo() {
         return new AbstractCookingRecipe.CookingBookInfo(CookingBookCategory.MISC, "");
+    }
+
+    /** A machine upgrade: RXR / XCX / RXR (redstone, the upgrade's ingredient, an Electronic Circuit). */
+    private void upgrade(RecipeOutput out, net.minecraft.world.item.Item upgrade, net.minecraft.world.level.ItemLike ingredient, String name) {
+        shaped(RecipeCategory.MISC, upgrade)
+                .pattern("RXR")
+                .pattern("XCX")
+                .pattern("RXR")
+                .define('R', Items.REDSTONE)
+                .define('X', ingredient)
+                .define('C', ModItems.ELECTRONIC_CIRCUIT.get())
+                .unlockedBy("has_electronic_circuit", has(ModItems.ELECTRONIC_CIRCUIT.get()))
+                .save(out, key(name));
     }
 
     private static ResourceKey<Recipe<?>> key(String path) {

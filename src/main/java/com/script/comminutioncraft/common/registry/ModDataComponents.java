@@ -27,6 +27,12 @@ public final class ModDataComponents {
                     .persistent(MachineSettings.CODEC)
                     .networkSynchronized(MachineSettings.STREAM_CODEC));
 
+    /** A machine's upgrade counts (Speed, Energy, Gas, Liquid) when picked up with the wrench. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<java.util.List<Integer>>> UPGRADES =
+            DATA_COMPONENTS.registerComponentType("upgrades", builder -> builder
+                    .persistent(ExtraCodecs.NON_NEGATIVE_INT.listOf())
+                    .networkSynchronized(ByteBufCodecs.VAR_INT.apply(ByteBufCodecs.list())));
+
     /** FE in a machine picked up with the wrench; placing the item puts it back. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> STORED_ENERGY =
             DATA_COMPONENTS.registerComponentType("stored_energy", builder -> builder

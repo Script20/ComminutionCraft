@@ -26,6 +26,7 @@ public class FluidMachineMenu extends AbstractContainerMenu implements Controlla
     /** The machine itself on the server; null on the client, which only sees the synced data. */
     private final @Nullable FluidMachineBlockEntity machine;
     private final ContainerData data;
+    private final int upgradeStart;
 
     /** Client-side constructor (called when the server tells the client to open the GUI). */
     public static FluidMachineMenu client(MenuType<?> type, int containerId, Inventory inventory, int tankCount) {
@@ -39,7 +40,27 @@ public class FluidMachineMenu extends AbstractContainerMenu implements Controlla
         this.machine = machine;
         this.data = data;
         addStandardInventorySlots(inventory, 8, 84);
+        if (machine != null ? machine.supportsUpgrades() : takesUpgrades(type)) {
+        // Speed / Energy / Gas / Liquid, shown in the Upgrades panel (after the inventory, so other indices stay put)
+        upgradeStart = slots.size();
+        Container upgrades = machine != null ? machine.getUpgrades() : new com.script.comminutioncraft.common.machine.upgrade.MachineUpgrades(() -> {});
+        for (com.script.comminutioncraft.common.machine.upgrade.UpgradeType upgrade : com.script.comminutioncraft.common.machine.upgrade.UpgradeType.values()) {
+            addSlot(new com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot(upgrades, upgrade, inventory.player.level().isClientSide()));
+        }
+        } else {
+            upgradeStart = -1;
+        }
         addDataSlots(data);
+    }
+
+    /** The generators take no upgrades; the converters do (the client only knows the menu type). */
+    private static boolean takesUpgrades(MenuType<?> type) {
+        return type != ModMenus.MHD_GENERATOR.get() && type != ModMenus.ANNIHILATION_GENERATOR.get();
+    }
+
+    @Override
+    public int upgradeSlotStart() {
+        return upgradeStart;
     }
 
     // ---- Redstone / side settings (synced through data slots, changed with button clicks) ----
@@ -78,9 +99,17 @@ public class FluidMachineMenu extends AbstractContainerMenu implements Controlla
         }
         ItemStack stack = slot.getItem();
         ItemStack original = stack.copy();
-        boolean moved = index < INV_END
-                ? moveItemStackTo(stack, INV_END, HOTBAR_END, false)
-                : moveItemStackTo(stack, 0, INV_END, false);
+        boolean moved;
+        if (index >= HOTBAR_END) { // an upgrade slot: back to the inventory
+            moved = moveItemStackTo(stack, 0, HOTBAR_END, false);
+        } else if (upgradeStart >= 0 && com.script.comminutioncraft.common.machine.upgrade.UpgradeType.of(stack) != null
+                && moveItemStackTo(stack, upgradeStart, upgradeStart + com.script.comminutioncraft.common.machine.upgrade.UpgradeType.values().length, false)) {
+            moved = true;
+        } else {
+            moved = index < INV_END
+                    ? moveItemStackTo(stack, INV_END, HOTBAR_END, false)
+                    : moveItemStackTo(stack, 0, INV_END, false);
+        }
         if (!moved) {
             return ItemStack.EMPTY;
         }

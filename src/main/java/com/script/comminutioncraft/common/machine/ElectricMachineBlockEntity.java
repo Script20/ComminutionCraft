@@ -38,7 +38,8 @@ import org.jspecify.annotations.Nullable;
  * pushed out of Output faces into the block there (e.g. the next machine's Input face).
  */
 public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntity
-        implements WorldlyContainer, TickingMachine, MachineExperience.Holder, ControllableMachine {
+        implements WorldlyContainer, TickingMachine, MachineExperience.Holder, ControllableMachine,
+        com.script.comminutioncraft.common.machine.upgrade.UpgradeHolder {
     public static final int SLOT_INPUT = 0;
     public static final int SLOT_OUTPUT = 1;
     public static final int SLOT_COUNT = 2;
@@ -73,6 +74,8 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
     private @Nullable Item lastInputItem;
     private final MachineExperience experience = new MachineExperience();
     private final MachineControls controls = new MachineControls(MachineControls.outputBelow(), this::onControlsChanged);
+    private final com.script.comminutioncraft.common.machine.upgrade.MachineUpgrades upgrades =
+            new com.script.comminutioncraft.common.machine.upgrade.MachineUpgrades(this::onUpgradesChanged);
 
     protected final ContainerData dataAccess = new ContainerData() {
         @Override
@@ -107,7 +110,7 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
     protected int getData(int index) {
         return switch (index) {
             case DATA_PROGRESS -> progress;
-            case DATA_PROGRESS_TOTAL -> getProcessTime();
+            case DATA_PROGRESS_TOTAL -> effectiveProcessTime();
             case DATA_ENERGY_LOW -> EnergySync.low(energy.getEnergy());
             case DATA_ENERGY_HIGH -> EnergySync.high(energy.getEnergy());
             case DATA_CAPACITY_LOW -> EnergySync.low(energy.getCapacity());
@@ -155,6 +158,35 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
         return energy;
     }
 
+    // ---- Upgrades (Speed, Energy, Gas, Liquid) ----
+
+    @Override
+    public com.script.comminutioncraft.common.machine.upgrade.MachineUpgrades getUpgrades() {
+        return upgrades;
+    }
+
+    private void onUpgradesChanged() {
+        if (energy != null) {
+            energy.scale(upgrades.bufferSize(), upgrades.energyPerTick());
+        }
+        setChanged();
+    }
+
+    /** Ticks per operation after Speed upgrades. */
+    protected int effectiveProcessTime() {
+        return upgrades.processTime(getProcessTime());
+    }
+
+    /** FE per tick of work after Speed and Energy upgrades. */
+    protected int effectiveEnergyPerTick() {
+        return upgrades.energyPerTick(getEnergyPerTick());
+    }
+
+    /** A per-operation fluid cost after Gas / Liquid upgrades. */
+    protected int fluidCost(net.minecraft.world.level.material.Fluid fluid, int amount) {
+        return upgrades.fluidCost(fluid, amount);
+    }
+
     /** Ticks of work done on the current item (for tooltips like Jade). */
     public int getProgress() {
         return progress;
@@ -162,7 +194,7 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
 
     /** Ticks one item takes (for tooltips like Jade). */
     public int getTotalProcessTime() {
-        return getProcessTime();
+        return effectiveProcessTime();
     }
 
     // ---- Ticking ----
@@ -203,10 +235,10 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
 
         if (!canProcess) {
             progress = 0;
-        } else if (hasOperationResources(recipe) && energy.consume(getEnergyPerTick())) {
+        } else if (hasOperationResources(recipe) && energy.consume(effectiveEnergyPerTick())) {
             litCooldown = LIT_COOLDOWN;
             progress++;
-            if (progress >= getProcessTime()) {
+            if (progress >= effectiveProcessTime()) {
                 progress = 0;
                 MachineSlots.addTo(items, SLOT_OUTPUT, result);
                 input.shrink(1);
@@ -246,6 +278,7 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
         super.preRemoveSideEffects(pos, state);
         if (level instanceof ServerLevel serverLevel) {
             experience.pop(serverLevel, Vec3.atCenterOf(pos));
+            net.minecraft.world.Containers.dropContents(serverLevel, pos, upgrades); // (the wrench empties them first)
         }
     }
 
@@ -256,11 +289,13 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
         super.collectImplicitComponents(components);
         energy.saveTo(components);
         controls.saveTo(components);
+        upgrades.saveTo(components);
     }
 
     @Override
     protected void applyImplicitComponents(DataComponentGetter components) {
         super.applyImplicitComponents(components);
+        upgrades.loadFrom(components);
         energy.loadFrom(components);
         controls.loadFrom(components);
     }
@@ -272,6 +307,7 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
         super.loadAdditional(input);
         items = NonNullList.withSize(getContainerSize(), ItemStack.EMPTY);
         ContainerHelper.loadAllItems(input, items);
+        upgrades.load(input); // first: it sets the buffer size the FE is loaded into
         energy.deserialize(input);
         progress = input.getIntOr("progress", 0);
         lastInputItem = items.get(SLOT_INPUT).isEmpty() ? null : items.get(SLOT_INPUT).getItem();
@@ -284,6 +320,7 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
         super.saveAdditional(output);
         ContainerHelper.saveAllItems(output, items);
         energy.serialize(output);
+        upgrades.save(output);
         output.putInt("progress", progress);
         experience.save(output);
         controls.save(output);

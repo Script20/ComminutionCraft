@@ -36,13 +36,14 @@ public class IsotopeSeparatorBlockEntity extends FluidMachineBlockEntity {
 
     @Override
     protected int work(ServerLevel level) {
-        int make = Math.min(Math.min(MAX_DEUTERIUM_PER_TICK.get(), water.getAmount() / WATER_PER_MB.get()),
-                Math.min(deuterium.getSpace(), energy.getEnergy() / ENERGY_PER_MB.get()));
+        int perMb = upgradedEnergy(ENERGY_PER_MB.get());
+        int make = Math.min(Math.min(upgradedRate(MAX_DEUTERIUM_PER_TICK.get()), affordable(net.minecraft.world.level.material.Fluids.WATER, water.getAmount(), WATER_PER_MB.get())),
+                Math.min(deuterium.getSpace(), energy.getEnergy() / perMb));
         if (make <= 0) {
             return 0;
         }
-        energy.consume(make * ENERGY_PER_MB.get());
-        water.drain(make * WATER_PER_MB.get());
+        energy.consume(make * perMb);
+        water.drain(drainFor(net.minecraft.world.level.material.Fluids.WATER, make, WATER_PER_MB.get()));
         deuterium.fill(FluidResource.of(ModFluids.DEUTERIUM.get()), make);
         return make;
     }

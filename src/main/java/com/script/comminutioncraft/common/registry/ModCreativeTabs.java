@@ -90,6 +90,10 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.AIR_FILTER.get());
                         output.accept(ModItems.REACTOR_PLATING.get());
                         output.accept(ModItems.FUSION_FUEL_PELLET.get());
+                        output.accept(ModItems.SPEED_UPGRADE.get());
+                        output.accept(ModItems.ENERGY_UPGRADE.get());
+                        output.accept(ModItems.GAS_UPGRADE.get());
+                        output.accept(ModItems.LIQUID_UPGRADE.get());
                         // Ores: washed, purified, granulated per metal. Other mods' metals only appear when some installed mod adds them.
                         ProcessedMetal.ALL.stream()
                                 .filter(ProcessedMetal::isAvailable)

@@ -34,13 +34,14 @@ public class TritiumBreederBlockEntity extends FluidMachineBlockEntity {
 
     @Override
     protected int work(ServerLevel level) {
-        int make = Math.min(Math.min(MAX_TRITIUM_PER_TICK.get(), deuterium.getAmount()),
-                Math.min(tritium.getSpace(), energy.getEnergy() / ENERGY_PER_MB.get()));
+        int perMb = upgradedEnergy(ENERGY_PER_MB.get());
+        int make = Math.min(Math.min(upgradedRate(MAX_TRITIUM_PER_TICK.get()), affordable(com.script.comminutioncraft.common.registry.ModFluids.DEUTERIUM.get(), deuterium.getAmount(), 1)),
+                Math.min(tritium.getSpace(), energy.getEnergy() / perMb));
         if (make <= 0) {
             return 0;
         }
-        energy.consume(make * ENERGY_PER_MB.get());
-        deuterium.drain(make);
+        energy.consume(make * perMb);
+        deuterium.drain(drainFor(com.script.comminutioncraft.common.registry.ModFluids.DEUTERIUM.get(), make, 1));
         tritium.fill(FluidResource.of(ModFluids.TRITIUM.get()), make);
         return make;
     }
