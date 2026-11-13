@@ -1,0 +1,32 @@
+{
+  "parent": "comminutioncraft:main/containment_cell",
+  "criteria": {
+    "has": {
+      "conditions": {
+        "items": [
+          {
+            "items": "comminutioncraft:annihilation_generator"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.comminutioncraft.annihilation_generator.description"
+    },
+    "icon": {
+      "id": "comminutioncraft:annihilation_generator"
+    },
+    "title": {
+      "translate": "advancements.comminutioncraft.annihilation_generator.title"
+    }
+  },
+  "requirements": [
+    [
+      "has"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

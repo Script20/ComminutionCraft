@@ -1,0 +1,32 @@
+{
+  "parent": "comminutioncraft:main/plasma_circuit",
+  "criteria": {
+    "has": {
+      "conditions": {
+        "items": [
+          {
+            "items": "comminutioncraft:fusion_circuit"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.comminutioncraft.fusion_circuit.description"
+    },
+    "icon": {
+      "id": "comminutioncraft:fusion_circuit"
+    },
+    "title": {
+      "translate": "advancements.comminutioncraft.fusion_circuit.title"
+    }
+  },
+  "requirements": [
+    [
+      "has"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

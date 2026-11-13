@@ -16,6 +16,8 @@ public final class ModDataGenerators {
         event.createProvider(ModModelProvider::new);
         event.createProvider(ModLanguageProvider::new);
         event.createProvider(ModSoundsProvider::new);
+        event.createProvider((output, registries) -> new net.minecraft.data.advancements.AdvancementProvider(
+                output, registries, java.util.List.of(new ModAdvancements())));
     }
 
     private ModDataGenerators() {}

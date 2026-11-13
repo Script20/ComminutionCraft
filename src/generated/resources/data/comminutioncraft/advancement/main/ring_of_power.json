@@ -1,0 +1,29 @@
+{
+  "parent": "comminutioncraft:main/root",
+  "criteria": {
+    "antimatter_made": {
+      "conditions": {
+        "event": "antimatter_made"
+      },
+      "trigger": "comminutioncraft:machine_event"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.comminutioncraft.ring_of_power.description"
+    },
+    "frame": "goal",
+    "icon": {
+      "id": "comminutioncraft:accelerator_controller"
+    },
+    "title": {
+      "translate": "advancements.comminutioncraft.ring_of_power.title"
+    }
+  },
+  "requirements": [
+    [
+      "antimatter_made"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

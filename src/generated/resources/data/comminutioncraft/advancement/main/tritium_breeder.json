@@ -1,0 +1,32 @@
+{
+  "parent": "comminutioncraft:main/isotope_separator",
+  "criteria": {
+    "has": {
+      "conditions": {
+        "items": [
+          {
+            "items": "comminutioncraft:tritium_breeder"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.comminutioncraft.tritium_breeder.description"
+    },
+    "icon": {
+      "id": "comminutioncraft:tritium_breeder"
+    },
+    "title": {
+      "translate": "advancements.comminutioncraft.tritium_breeder.title"
+    }
+  },
+  "requirements": [
+    [
+      "has"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

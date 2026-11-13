@@ -1,0 +1,30 @@
+{
+  "parent": "comminutioncraft:main/event_horizon",
+  "criteria": {
+    "spaghettified": {
+      "conditions": {
+        "event": "spaghettified"
+      },
+      "trigger": "comminutioncraft:machine_event"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.comminutioncraft.spaghettified.description"
+    },
+    "frame": "challenge",
+    "hidden": true,
+    "icon": {
+      "id": "comminutioncraft:containment_frame"
+    },
+    "title": {
+      "translate": "advancements.comminutioncraft.spaghettified.title"
+    }
+  },
+  "requirements": [
+    [
+      "spaghettified"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

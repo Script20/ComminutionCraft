@@ -1,0 +1,28 @@
+{
+  "parent": "comminutioncraft:main/ore_purifier",
+  "criteria": {
+    "purifier_byproduct": {
+      "conditions": {
+        "event": "purifier_byproduct"
+      },
+      "trigger": "comminutioncraft:machine_event"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.comminutioncraft.bonus_round.description"
+    },
+    "icon": {
+      "id": "comminutioncraft:purified_iron"
+    },
+    "title": {
+      "translate": "advancements.comminutioncraft.bonus_round.title"
+    }
+  },
+  "requirements": [
+    [
+      "purifier_byproduct"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

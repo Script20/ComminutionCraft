@@ -1,0 +1,32 @@
+{
+  "parent": "comminutioncraft:main/electronic_circuit",
+  "criteria": {
+    "has": {
+      "conditions": {
+        "items": [
+          {
+            "items": "comminutioncraft:plasma_circuit"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.comminutioncraft.plasma_circuit.description"
+    },
+    "icon": {
+      "id": "comminutioncraft:plasma_circuit"
+    },
+    "title": {
+      "translate": "advancements.comminutioncraft.plasma_circuit.title"
+    }
+  },
+  "requirements": [
+    [
+      "has"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -1,0 +1,32 @@
+{
+  "parent": "comminutioncraft:main/reactor_plating",
+  "criteria": {
+    "has": {
+      "conditions": {
+        "items": [
+          {
+            "items": "comminutioncraft:fusion_fuel_pellet"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.comminutioncraft.fusion_fuel_pellet.description"
+    },
+    "icon": {
+      "id": "comminutioncraft:fusion_fuel_pellet"
+    },
+    "title": {
+      "translate": "advancements.comminutioncraft.fusion_fuel_pellet.title"
+    }
+  },
+  "requirements": [
+    [
+      "has"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

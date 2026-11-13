@@ -220,6 +220,7 @@ public class ParticleAcceleratorBlockEntity extends BlockEntity implements Ticki
             progress -= perMb;
             hydrogen.drain(HYDROGEN_PER_MB.get());
             antimatter.fill(FluidResource.of(ModFluids.ANTIMATTER.get()), 1);
+            com.script.comminutioncraft.common.advancement.MachineEventTrigger.fireNear(level, pos, com.script.comminutioncraft.common.advancement.MachineEventTrigger.ANTIMATTER_MADE, 24);
         }
         progress = Math.min(progress, perMb);
         setChanged();

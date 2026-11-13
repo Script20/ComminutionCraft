@@ -1,0 +1,71 @@
+{
+  "parent": "comminutioncraft:main/fourfold",
+  "criteria": {
+    "granulator": {
+      "conditions": {
+        "items": [
+          {
+            "items": "comminutioncraft:antimatter_granulator"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "purifier": {
+      "conditions": {
+        "items": [
+          {
+            "items": "comminutioncraft:antimatter_purifier"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "smelter": {
+      "conditions": {
+        "items": [
+          {
+            "items": "comminutioncraft:antimatter_smelter"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "washer": {
+      "conditions": {
+        "items": [
+          {
+            "items": "comminutioncraft:antimatter_washer"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.comminutioncraft.full_suite.description"
+    },
+    "icon": {
+      "id": "comminutioncraft:antimatter_granulator"
+    },
+    "title": {
+      "translate": "advancements.comminutioncraft.full_suite.title"
+    }
+  },
+  "requirements": [
+    [
+      "granulator"
+    ],
+    [
+      "smelter"
+    ],
+    [
+      "washer"
+    ],
+    [
+      "purifier"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

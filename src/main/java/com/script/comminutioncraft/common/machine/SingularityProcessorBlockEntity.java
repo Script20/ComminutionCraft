@@ -99,6 +99,9 @@ public class SingularityProcessorBlockEntity extends ElectricMachineBlockEntity 
         if (!(recipe.value() instanceof SingularityRecipe singularity) || level == null) {
             return;
         }
+        if (level instanceof ServerLevel server) {
+            com.script.comminutioncraft.common.advancement.MachineEventTrigger.fireNear(server, worldPosition, com.script.comminutioncraft.common.advancement.MachineEventTrigger.SINGULARITY_PROCESSED, 16);
+        }
         for (SingularityRecipe.Byproduct byproduct : singularity.getByproducts()) {
             if (level.getRandom().nextFloat() < byproduct.chance()) {
                 ItemStack stack = byproduct.item().create();

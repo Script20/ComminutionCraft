@@ -1,0 +1,33 @@
+{
+  "parent": "comminutioncraft:main/antimatter_circuit",
+  "criteria": {
+    "has": {
+      "conditions": {
+        "items": [
+          {
+            "items": "comminutioncraft:singularity_circuit"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.comminutioncraft.singularity_circuit.description"
+    },
+    "frame": "goal",
+    "icon": {
+      "id": "comminutioncraft:singularity_circuit"
+    },
+    "title": {
+      "translate": "advancements.comminutioncraft.singularity_circuit.title"
+    }
+  },
+  "requirements": [
+    [
+      "has"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

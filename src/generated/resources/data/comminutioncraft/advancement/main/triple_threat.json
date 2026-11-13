@@ -1,0 +1,45 @@
+{
+  "parent": "comminutioncraft:main/ore_washer",
+  "criteria": {
+    "has": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "comminutioncraft:washed_iron",
+              "comminutioncraft:washed_copper",
+              "comminutioncraft:washed_gold",
+              "comminutioncraft:washed_tin",
+              "comminutioncraft:washed_lead",
+              "comminutioncraft:washed_silver",
+              "comminutioncraft:washed_nickel",
+              "comminutioncraft:washed_zinc",
+              "comminutioncraft:washed_aluminum",
+              "comminutioncraft:washed_osmium",
+              "comminutioncraft:washed_uranium"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.comminutioncraft.triple_threat.description"
+    },
+    "frame": "goal",
+    "icon": {
+      "id": "comminutioncraft:washed_iron"
+    },
+    "title": {
+      "translate": "advancements.comminutioncraft.triple_threat.title"
+    }
+  },
+  "requirements": [
+    [
+      "has"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

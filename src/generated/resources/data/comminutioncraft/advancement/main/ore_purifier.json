@@ -1,0 +1,32 @@
+{
+  "parent": "comminutioncraft:main/isotope_separator",
+  "criteria": {
+    "has": {
+      "conditions": {
+        "items": [
+          {
+            "items": "comminutioncraft:ore_purifier"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.comminutioncraft.ore_purifier.description"
+    },
+    "icon": {
+      "id": "comminutioncraft:ore_purifier"
+    },
+    "title": {
+      "translate": "advancements.comminutioncraft.ore_purifier.title"
+    }
+  },
+  "requirements": [
+    [
+      "has"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -1,0 +1,32 @@
+{
+  "parent": "comminutioncraft:main/plasma_granulator",
+  "criteria": {
+    "has": {
+      "conditions": {
+        "items": [
+          {
+            "items": "comminutioncraft:plasma_smelter"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.comminutioncraft.plasma_smelter.description"
+    },
+    "icon": {
+      "id": "comminutioncraft:plasma_smelter"
+    },
+    "title": {
+      "translate": "advancements.comminutioncraft.plasma_smelter.title"
+    }
+  },
+  "requirements": [
+    [
+      "has"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

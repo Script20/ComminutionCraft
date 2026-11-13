@@ -1,0 +1,32 @@
+{
+  "parent": "comminutioncraft:main/electrolyser",
+  "criteria": {
+    "has": {
+      "conditions": {
+        "items": [
+          {
+            "items": "comminutioncraft:plasma_generator"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.comminutioncraft.plasma_generator.description"
+    },
+    "icon": {
+      "id": "comminutioncraft:plasma_generator"
+    },
+    "title": {
+      "translate": "advancements.comminutioncraft.plasma_generator.title"
+    }
+  },
+  "requirements": [
+    [
+      "has"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

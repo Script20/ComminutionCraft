@@ -1,0 +1,32 @@
+{
+  "parent": "comminutioncraft:main/plasma_generator",
+  "criteria": {
+    "has": {
+      "conditions": {
+        "items": [
+          {
+            "items": "comminutioncraft:ore_washer"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.comminutioncraft.ore_washer.description"
+    },
+    "icon": {
+      "id": "comminutioncraft:ore_washer"
+    },
+    "title": {
+      "translate": "advancements.comminutioncraft.ore_washer.title"
+    }
+  },
+  "requirements": [
+    [
+      "has"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -1,0 +1,32 @@
+{
+  "parent": "comminutioncraft:main/root",
+  "criteria": {
+    "has": {
+      "conditions": {
+        "items": [
+          {
+            "items": "comminutioncraft:electronic_circuit"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.comminutioncraft.electronic_circuit.description"
+    },
+    "icon": {
+      "id": "comminutioncraft:electronic_circuit"
+    },
+    "title": {
+      "translate": "advancements.comminutioncraft.electronic_circuit.title"
+    }
+  },
+  "requirements": [
+    [
+      "has"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

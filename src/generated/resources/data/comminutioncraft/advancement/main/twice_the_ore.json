@@ -1,0 +1,44 @@
+{
+  "parent": "comminutioncraft:main/coal_granulator",
+  "criteria": {
+    "has": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "comminutioncraft:granulated_iron",
+              "comminutioncraft:granulated_copper",
+              "comminutioncraft:granulated_gold",
+              "comminutioncraft:granulated_tin",
+              "comminutioncraft:granulated_lead",
+              "comminutioncraft:granulated_silver",
+              "comminutioncraft:granulated_nickel",
+              "comminutioncraft:granulated_zinc",
+              "comminutioncraft:granulated_aluminum",
+              "comminutioncraft:granulated_osmium",
+              "comminutioncraft:granulated_uranium"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.comminutioncraft.twice_the_ore.description"
+    },
+    "icon": {
+      "id": "comminutioncraft:granulated_iron"
+    },
+    "title": {
+      "translate": "advancements.comminutioncraft.twice_the_ore.title"
+    }
+  },
+  "requirements": [
+    [
+      "has"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

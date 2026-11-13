@@ -215,6 +215,7 @@ public class FusionReactorBlockEntity extends BaseContainerBlockEntity implement
                     pellets.shrink(1);
                     burnTicks = PELLET_BURN_TICKS.get();
                     setChanged();
+                    com.script.comminutioncraft.common.advancement.MachineEventTrigger.fireNear(level, pos, com.script.comminutioncraft.common.advancement.MachineEventTrigger.FUSION_REACTOR_LIT, 16);
                 } else {
                     heat--; // out of fuel: it cools off and will need plasma again
                 }

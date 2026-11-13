@@ -1,0 +1,29 @@
+{
+  "parent": "comminutioncraft:main/pellet_press",
+  "criteria": {
+    "fusion_reactor_lit": {
+      "conditions": {
+        "event": "fusion_reactor_lit"
+      },
+      "trigger": "comminutioncraft:machine_event"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.comminutioncraft.star_in_a_box.description"
+    },
+    "frame": "goal",
+    "icon": {
+      "id": "comminutioncraft:reactor_controller"
+    },
+    "title": {
+      "translate": "advancements.comminutioncraft.star_in_a_box.title"
+    }
+  },
+  "requirements": [
+    [
+      "fusion_reactor_lit"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

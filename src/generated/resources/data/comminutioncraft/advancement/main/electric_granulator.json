@@ -1,0 +1,32 @@
+{
+  "parent": "comminutioncraft:main/electric_generator",
+  "criteria": {
+    "has": {
+      "conditions": {
+        "items": [
+          {
+            "items": "comminutioncraft:electric_granulator"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.comminutioncraft.electric_granulator.description"
+    },
+    "icon": {
+      "id": "comminutioncraft:electric_granulator"
+    },
+    "title": {
+      "translate": "advancements.comminutioncraft.electric_granulator.title"
+    }
+  },
+  "requirements": [
+    [
+      "has"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -209,6 +209,7 @@ public class ModLanguageProvider extends LanguageProvider {
             add(ModSoundsProvider.subtitle("machine." + name),
                     com.script.comminutioncraft.common.registry.ModSounds.displayName(name) + " runs");
         }
+        ModAdvancements.lang().forEach(this::add);
         add(ModSoundsProvider.subtitle("black_hole.form"), "Black hole forms");
         add(ModSoundsProvider.subtitle("black_hole.hum"), "Black hole hums");
         add(ModSoundsProvider.subtitle("black_hole.collapse"), "Black hole collapses");

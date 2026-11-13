@@ -1,0 +1,32 @@
+{
+  "parent": "comminutioncraft:main/twice_the_ore",
+  "criteria": {
+    "has": {
+      "conditions": {
+        "items": [
+          {
+            "items": "comminutioncraft:coal_smelter"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.comminutioncraft.coal_smelter.description"
+    },
+    "icon": {
+      "id": "comminutioncraft:coal_smelter"
+    },
+    "title": {
+      "translate": "advancements.comminutioncraft.coal_smelter.title"
+    }
+  },
+  "requirements": [
+    [
+      "has"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -1,0 +1,33 @@
+{
+  "parent": "comminutioncraft:main/singularity_circuit",
+  "criteria": {
+    "has": {
+      "conditions": {
+        "items": [
+          {
+            "items": "comminutioncraft:singularity_shard"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.comminutioncraft.singularity_shard.description"
+    },
+    "frame": "challenge",
+    "icon": {
+      "id": "comminutioncraft:singularity_shard"
+    },
+    "title": {
+      "translate": "advancements.comminutioncraft.singularity_shard.title"
+    }
+  },
+  "requirements": [
+    [
+      "has"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -1,0 +1,45 @@
+{
+  "parent": "comminutioncraft:main/ring_of_power",
+  "criteria": {
+    "has": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "comminutioncraft:concentrate_iron",
+              "comminutioncraft:concentrate_copper",
+              "comminutioncraft:concentrate_gold",
+              "comminutioncraft:concentrate_tin",
+              "comminutioncraft:concentrate_lead",
+              "comminutioncraft:concentrate_silver",
+              "comminutioncraft:concentrate_nickel",
+              "comminutioncraft:concentrate_zinc",
+              "comminutioncraft:concentrate_aluminum",
+              "comminutioncraft:concentrate_osmium",
+              "comminutioncraft:concentrate_uranium"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.comminutioncraft.fourfold.description"
+    },
+    "frame": "goal",
+    "icon": {
+      "id": "comminutioncraft:concentrate_iron"
+    },
+    "title": {
+      "translate": "advancements.comminutioncraft.fourfold.title"
+    }
+  },
+  "requirements": [
+    [
+      "has"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -1,0 +1,32 @@
+{
+  "parent": "comminutioncraft:main/atmospheric_water_generator",
+  "criteria": {
+    "has": {
+      "conditions": {
+        "items": [
+          {
+            "items": "comminutioncraft:electrolyser"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.comminutioncraft.electrolyser.description"
+    },
+    "icon": {
+      "id": "comminutioncraft:electrolyser"
+    },
+    "title": {
+      "translate": "advancements.comminutioncraft.electrolyser.title"
+    }
+  },
+  "requirements": [
+    [
+      "has"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

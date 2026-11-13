@@ -1,0 +1,32 @@
+{
+  "parent": "comminutioncraft:main/electric_granulator",
+  "criteria": {
+    "has": {
+      "conditions": {
+        "items": [
+          {
+            "items": "comminutioncraft:electric_smelter"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.comminutioncraft.electric_smelter.description"
+    },
+    "icon": {
+      "id": "comminutioncraft:electric_smelter"
+    },
+    "title": {
+      "translate": "advancements.comminutioncraft.electric_smelter.title"
+    }
+  },
+  "requirements": [
+    [
+      "has"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

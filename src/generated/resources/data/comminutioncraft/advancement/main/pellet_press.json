@@ -1,0 +1,32 @@
+{
+  "parent": "comminutioncraft:main/tritium_breeder",
+  "criteria": {
+    "has": {
+      "conditions": {
+        "items": [
+          {
+            "items": "comminutioncraft:pellet_press"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.comminutioncraft.pellet_press.description"
+    },
+    "icon": {
+      "id": "comminutioncraft:pellet_press"
+    },
+    "title": {
+      "translate": "advancements.comminutioncraft.pellet_press.title"
+    }
+  },
+  "requirements": [
+    [
+      "has"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

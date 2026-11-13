@@ -1,0 +1,32 @@
+{
+  "parent": "comminutioncraft:main/ring_of_power",
+  "criteria": {
+    "has": {
+      "conditions": {
+        "items": [
+          {
+            "items": "comminutioncraft:containment_cell"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.comminutioncraft.containment_cell.description"
+    },
+    "icon": {
+      "id": "comminutioncraft:containment_cell"
+    },
+    "title": {
+      "translate": "advancements.comminutioncraft.containment_cell.title"
+    }
+  },
+  "requirements": [
+    [
+      "has"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -1,0 +1,32 @@
+{
+  "parent": "comminutioncraft:main/plasma_generator",
+  "criteria": {
+    "has": {
+      "conditions": {
+        "items": [
+          {
+            "items": "comminutioncraft:mhd_generator"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.comminutioncraft.mhd_generator.description"
+    },
+    "icon": {
+      "id": "comminutioncraft:mhd_generator"
+    },
+    "title": {
+      "translate": "advancements.comminutioncraft.mhd_generator.title"
+    }
+  },
+  "requirements": [
+    [
+      "has"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

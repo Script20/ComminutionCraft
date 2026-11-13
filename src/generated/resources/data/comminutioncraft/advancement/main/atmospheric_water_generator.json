@@ -1,0 +1,32 @@
+{
+  "parent": "comminutioncraft:main/root",
+  "criteria": {
+    "has": {
+      "conditions": {
+        "items": [
+          {
+            "items": "comminutioncraft:atmospheric_water_generator"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.comminutioncraft.atmospheric_water_generator.description"
+    },
+    "icon": {
+      "id": "comminutioncraft:atmospheric_water_generator"
+    },
+    "title": {
+      "translate": "advancements.comminutioncraft.atmospheric_water_generator.title"
+    }
+  },
+  "requirements": [
+    [
+      "has"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

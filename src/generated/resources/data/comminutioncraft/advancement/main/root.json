@@ -1,0 +1,34 @@
+{
+  "criteria": {
+    "wrench": {
+      "conditions": {
+        "items": [
+          {
+            "items": "comminutioncraft:wrench"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "background": "comminutioncraft:gui/advancements/backgrounds/chassis",
+    "description": {
+      "translate": "advancements.comminutioncraft.root.description"
+    },
+    "icon": {
+      "id": "comminutioncraft:wrench"
+    },
+    "show_toast": false,
+    "title": {
+      "translate": "advancements.comminutioncraft.root.title"
+    }
+  },
+  "requirements": [
+    [
+      "wrench"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

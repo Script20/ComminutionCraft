@@ -1,0 +1,32 @@
+{
+  "parent": "comminutioncraft:main/root",
+  "criteria": {
+    "has": {
+      "conditions": {
+        "items": [
+          {
+            "items": "comminutioncraft:isotope_separator"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.comminutioncraft.isotope_separator.description"
+    },
+    "icon": {
+      "id": "comminutioncraft:isotope_separator"
+    },
+    "title": {
+      "translate": "advancements.comminutioncraft.isotope_separator.title"
+    }
+  },
+  "requirements": [
+    [
+      "has"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -1,0 +1,32 @@
+{
+  "parent": "comminutioncraft:main/root",
+  "criteria": {
+    "has": {
+      "conditions": {
+        "items": [
+          {
+            "items": "comminutioncraft:coal_granulator"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.comminutioncraft.coal_granulator.description"
+    },
+    "icon": {
+      "id": "comminutioncraft:coal_granulator"
+    },
+    "title": {
+      "translate": "advancements.comminutioncraft.coal_granulator.title"
+    }
+  },
+  "requirements": [
+    [
+      "has"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

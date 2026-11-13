@@ -156,6 +156,7 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("horizon_field_kills_even_creative", () -> ModGameTests::horizonFieldKillsEvenCreative);
         TEST_FUNCTIONS.register("horizon_processor_needs_black_hole", () -> ModGameTests::horizonProcessorNeedsBlackHole);
         TEST_FUNCTIONS.register("horizon_redstone_off_is_safe", () -> ModGameTests::horizonRedstoneOffIsSafe);
+        TEST_FUNCTIONS.register("horizon_advancements", () -> ModGameTests::horizonAdvancements);
         TEST_FUNCTIONS.register("antimatter_suite_runs_the_chain", () -> ModGameTests::antimatterSuiteRunsTheChain);
     }
 
@@ -1370,6 +1371,35 @@ public final class ModGameTests {
                 });
             });
         });
+    }
+
+    /**
+     * Advancements from machine moments: a player standing outside the cage gets "Event Horizon" when the black hole
+     * ignites; a creative player who walks into the field gets the hidden "Spaghettified" (and dies).
+     */
+    private static void horizonAdvancements(GameTestHelper helper) {
+        var reactor = buildHorizon(helper);
+        ServerPlayer watcher = helper.makeMockServerPlayerInLevel();
+        Vec3 outside = helper.absoluteVec(new Vec3(8.5, 1.0, 8.5));
+        watcher.teleportTo(outside.x, outside.y, outside.z);
+        reactor.getAntimatter().fill(FluidResource.of(ModFluids.ANTIMATTER.get()), com.script.comminutioncraft.common.machine.EventHorizonReactorBlockEntity.IGNITION_ANTIMATTER.get());
+        helper.runAfterDelay(com.script.comminutioncraft.common.machine.EventHorizonReactorBlockEntity.FORM_CHECK_INTERVAL + 2, () -> {
+            helper.assertTrue(reactor.isActive(), "It should have ignited (" + reactor.getStatus() + ")");
+            helper.assertTrue(advancementDone(helper, watcher, "event_horizon"), "The player nearby didn't get Event Horizon");
+            helper.assertTrue(!advancementDone(helper, watcher, "spaghettified"), "Spaghettified without going in");
+            ServerPlayer diver = helper.makeMockServerPlayerInLevel();
+            diver.setGameMode(GameType.CREATIVE);
+            Vec3 centre = helper.absoluteVec(new Vec3(3.5, 3.0, 3.5));
+            diver.teleportTo(centre.x, centre.y, centre.z);
+            helper.succeedWhen(() -> helper.assertTrue(advancementDone(helper, diver, "spaghettified"),
+                    "Walking into the field didn't give Spaghettified"));
+        });
+    }
+
+    private static boolean advancementDone(GameTestHelper helper, ServerPlayer player, String name) {
+        var holder = helper.getLevel().getServer().getAdvancements().get(com.script.comminutioncraft.ComminutionCraft.id("main/" + name));
+        helper.assertTrue(holder != null, "No advancement main/" + name);
+        return player.getAdvancements().getOrStartProgress(holder).isDone();
     }
 
     /**

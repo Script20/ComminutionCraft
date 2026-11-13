@@ -55,6 +55,7 @@ public class ComminutionCraft {
         ModBlockEntities.BLOCK_ENTITY_TYPES.register(modEventBus);
         com.script.comminutioncraft.common.registry.ModEntities.ENTITY_TYPES.register(modEventBus);
         com.script.comminutioncraft.common.registry.ModSounds.SOUND_EVENTS.register(modEventBus);
+        com.script.comminutioncraft.common.registry.ModTriggers.TRIGGERS.register(modEventBus);
         ModMenus.MENUS.register(modEventBus);
         ModRecipes.RECIPE_TYPES.register(modEventBus);
         ModRecipes.RECIPE_SERIALIZERS.register(modEventBus);

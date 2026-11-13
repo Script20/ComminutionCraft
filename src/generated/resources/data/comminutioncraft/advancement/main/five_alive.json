@@ -1,0 +1,29 @@
+{
+  "parent": "comminutioncraft:main/event_horizon",
+  "criteria": {
+    "singularity_processed": {
+      "conditions": {
+        "event": "singularity_processed"
+      },
+      "trigger": "comminutioncraft:machine_event"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.comminutioncraft.five_alive.description"
+    },
+    "frame": "goal",
+    "icon": {
+      "id": "comminutioncraft:singularity_processor"
+    },
+    "title": {
+      "translate": "advancements.comminutioncraft.five_alive.title"
+    }
+  },
+  "requirements": [
+    [
+      "singularity_processed"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

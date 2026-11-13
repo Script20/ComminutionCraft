@@ -1,0 +1,32 @@
+{
+  "parent": "comminutioncraft:main/fusion_circuit",
+  "criteria": {
+    "has": {
+      "conditions": {
+        "items": [
+          {
+            "items": "comminutioncraft:antimatter_circuit"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.comminutioncraft.antimatter_circuit.description"
+    },
+    "icon": {
+      "id": "comminutioncraft:antimatter_circuit"
+    },
+    "title": {
+      "translate": "advancements.comminutioncraft.antimatter_circuit.title"
+    }
+  },
+  "requirements": [
+    [
+      "has"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

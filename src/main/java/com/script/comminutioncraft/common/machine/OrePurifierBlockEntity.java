@@ -107,6 +107,9 @@ public class OrePurifierBlockEntity extends ElectricMachineBlockEntity {
             if (MachineSlots.canFit(items, SLOT_BYPRODUCT, byproduct, getMaxStackSize())) {
                 MachineSlots.addTo(items, SLOT_BYPRODUCT, byproduct);
             }
+            if (level instanceof net.minecraft.server.level.ServerLevel server) {
+                com.script.comminutioncraft.common.advancement.MachineEventTrigger.fireNear(server, worldPosition, com.script.comminutioncraft.common.advancement.MachineEventTrigger.PURIFIER_BYPRODUCT, 16);
+            }
         }
     }
 

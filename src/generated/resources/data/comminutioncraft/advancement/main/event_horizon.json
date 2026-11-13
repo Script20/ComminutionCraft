@@ -1,0 +1,29 @@
+{
+  "parent": "comminutioncraft:main/root",
+  "criteria": {
+    "black_hole_ignited": {
+      "conditions": {
+        "event": "black_hole_ignited"
+      },
+      "trigger": "comminutioncraft:machine_event"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.comminutioncraft.event_horizon.description"
+    },
+    "frame": "challenge",
+    "icon": {
+      "id": "comminutioncraft:horizon_controller"
+    },
+    "title": {
+      "translate": "advancements.comminutioncraft.event_horizon.title"
+    }
+  },
+  "requirements": [
+    [
+      "black_hole_ignited"
+    ]
+  ],
+  "sends_telemetry_event": true
+}
