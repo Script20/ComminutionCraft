@@ -80,6 +80,11 @@ public class FrothFlotationCellBlockEntity extends ElectricMachineBlockEntity {
     }
 
     @Override
+    protected java.util.Collection<net.minecraft.world.level.material.Fluid> consumedFluids() {
+        return java.util.List.of(net.minecraft.world.level.material.Fluids.WATER, com.script.comminutioncraft.common.registry.ModFluids.OXYGEN.get());
+    }
+
+    @Override
     protected boolean hasOperationResources() {
         return water.getAmount() >= fluidCost(net.minecraft.world.level.material.Fluids.WATER, WATER_PER_OPERATION.get())
                 && oxygen.getAmount() >= fluidCost(com.script.comminutioncraft.common.registry.ModFluids.OXYGEN.get(), OXYGEN_PER_OPERATION.get());

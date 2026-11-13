@@ -622,6 +622,7 @@
   "gui.comminutioncraft.upgrade.speed": "%sx speed",
   "gui.comminutioncraft.upgrade.speed.name": "Speed",
   "gui.comminutioncraft.upgrade.speed.none": "Normal speed",
+  "gui.comminutioncraft.upgrade.unused": "Not used here",
   "gui.comminutioncraft.upgrades": "Upgrades",
   "gui.comminutioncraft.water": "Water: %s / %s mB",
   "item.comminutioncraft.air_filter": "Air Filter",

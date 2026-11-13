@@ -95,6 +95,11 @@ public class OrePurifierBlockEntity extends ElectricMachineBlockEntity {
     }
 
     @Override
+    protected java.util.Collection<net.minecraft.world.level.material.Fluid> consumedFluids() {
+        return java.util.List.of(com.script.comminutioncraft.common.registry.ModFluids.OXYGEN.get());
+    }
+
+    @Override
     protected boolean hasOperationResources() {
         return oxygen.getAmount() >= fluidCost(com.script.comminutioncraft.common.registry.ModFluids.OXYGEN.get(), oxygenPerOperation());
     }

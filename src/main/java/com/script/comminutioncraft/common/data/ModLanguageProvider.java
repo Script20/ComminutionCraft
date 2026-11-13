@@ -92,6 +92,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.comminutioncraft.upgrades", "Upgrades");
         add("gui.comminutioncraft.upgrade.count", "%s %s/%s");
         add("gui.comminutioncraft.upgrade.slot", "%s (up to %s)");
+        add("gui.comminutioncraft.upgrade.unused", "Not used here");
         add("gui.comminutioncraft.upgrade.speed.name", "Speed");
         add("gui.comminutioncraft.upgrade.energy.name", "Energy");
         add("gui.comminutioncraft.upgrade.gas.name", "Gas");

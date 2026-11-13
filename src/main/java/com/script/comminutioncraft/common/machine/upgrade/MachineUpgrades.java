@@ -27,6 +27,10 @@ import net.minecraft.world.level.storage.ValueOutput;
  * </ul>
  * FE per tick = base x speed x FE-per-operation multiplier, and the machine's FE input limit grows the same way so it
  * can keep up.
+ * <p>
+ * Speed and Energy fit every machine; Gas only one that uses a gas, Liquid only one that uses a liquid (from the
+ * fluids the machine consumes, checked when needed since the gas tag is datapack data). The client's copy gets the
+ * answer as a synced bit mask ({@link #allowedMask()}).
  */
 public class MachineUpgrades extends SimpleContainer {
     public static final TagKey<Fluid> GASES = TagKey.create(Registries.FLUID, ComminutionCraft.id("gases"));
@@ -36,15 +40,46 @@ public class MachineUpgrades extends SimpleContainer {
     private static final double BUFFER_STEP = 0.5;
 
     private final Runnable onChanged;
+    private final java.util.function.IntSupplier allowedMask;
 
-    public MachineUpgrades(Runnable onChanged) {
+    /** A machine's upgrades; {@code consumed} = the fluids it uses up (decides Gas / Liquid). */
+    public MachineUpgrades(Runnable onChanged, java.util.function.Supplier<java.util.Collection<Fluid>> consumed) {
         super(UpgradeType.values().length);
         this.onChanged = onChanged;
+        this.allowedMask = () -> maskFor(consumed.get());
+    }
+
+    /** The client's stand-in in a machine menu: what fits comes from the synced mask. */
+    public static MachineUpgrades client(java.util.function.IntSupplier mask) {
+        return new MachineUpgrades(mask);
+    }
+
+    private MachineUpgrades(java.util.function.IntSupplier mask) {
+        super(UpgradeType.values().length);
+        this.onChanged = () -> {};
+        this.allowedMask = mask;
+    }
+
+    private static int maskFor(java.util.Collection<Fluid> consumed) {
+        int mask = (1 << UpgradeType.SPEED.ordinal()) | (1 << UpgradeType.ENERGY.ordinal());
+        for (Fluid fluid : consumed) {
+            mask |= 1 << (isGas(fluid) ? UpgradeType.GAS : UpgradeType.LIQUID).ordinal();
+        }
+        return mask;
+    }
+
+    /** Bit per {@link UpgradeType} ordinal: which upgrades this machine takes. */
+    public int allowedMask() {
+        return allowedMask.getAsInt();
+    }
+
+    public boolean allows(UpgradeType type) {
+        return (allowedMask() & (1 << type.ordinal())) != 0;
     }
 
     public int count(UpgradeType type) {
         ItemStack stack = getItem(type.ordinal());
-        return stack.is(type.item()) ? Math.min(stack.getCount(), UpgradeType.MAX) : 0;
+        return stack.is(type.item()) && allows(type) ? Math.min(stack.getCount(), UpgradeType.MAX) : 0;
     }
 
     public double speed() {
@@ -96,7 +131,8 @@ public class MachineUpgrades extends SimpleContainer {
 
     @Override
     public boolean canPlaceItem(int slot, ItemStack stack) {
-        return UpgradeType.of(stack) == UpgradeType.values()[slot];
+        UpgradeType type = UpgradeType.values()[slot];
+        return UpgradeType.of(stack) == type && allows(type);
     }
 
     @Override
@@ -134,8 +170,8 @@ public class MachineUpgrades extends SimpleContainer {
     }
 
     public boolean isAllEmpty() {
-        for (UpgradeType type : UpgradeType.values()) {
-            if (count(type) > 0) {
+        for (int i = 0; i < getContainerSize(); i++) {
+            if (!getItem(i).isEmpty()) {
                 return false;
             }
         }

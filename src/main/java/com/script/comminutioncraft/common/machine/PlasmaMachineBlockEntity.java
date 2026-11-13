@@ -52,6 +52,11 @@ public abstract class PlasmaMachineBlockEntity extends ElectricMachineBlockEntit
     }
 
     @Override
+    protected java.util.Collection<net.minecraft.world.level.material.Fluid> consumedFluids() {
+        return java.util.List.of(com.script.comminutioncraft.common.registry.ModFluids.PLASMA.get());
+    }
+
+    @Override
     protected boolean hasOperationResources() {
         return tank.getAmount() >= fluidCost(com.script.comminutioncraft.common.registry.ModFluids.PLASMA.get(), getPlasmaPerOperation());
     }

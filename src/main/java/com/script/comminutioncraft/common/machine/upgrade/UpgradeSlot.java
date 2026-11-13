@@ -30,7 +30,8 @@ public class UpgradeSlot extends Slot {
 
     @Override
     public boolean isActive() {
-        return !clientSide || panelOpen;
+        // (one left over from before still shows, so it can be taken out)
+        return !clientSide || panelOpen && (!(container instanceof MachineUpgrades upgrades) || upgrades.allows(type()) || hasItem());
     }
 
     @Override

@@ -83,6 +83,11 @@ public class CircuitAssemblerBlockEntity extends PlasmaMachineBlockEntity {
     }
 
     @Override
+    protected java.util.Collection<net.minecraft.world.level.material.Fluid> consumedFluids() {
+        return java.util.List.of(com.script.comminutioncraft.common.registry.ModFluids.PLASMA.get(), com.script.comminutioncraft.common.registry.ModFluids.ANTIMATTER.get());
+    }
+
+    @Override
     protected boolean hasOperationResources(RecipeHolder<? extends Recipe<SingleRecipeInput>> recipe) {
         return hasOperationResources() && antimatter.getAmount() >= fluidCost(com.script.comminutioncraft.common.registry.ModFluids.ANTIMATTER.get(), antimatterFor(recipe));
     }

@@ -98,6 +98,11 @@ public class OreWasherBlockEntity extends ElectricMachineBlockEntity {
     }
 
     @Override
+    protected java.util.Collection<net.minecraft.world.level.material.Fluid> consumedFluids() {
+        return java.util.List.of(net.minecraft.world.level.material.Fluids.WATER);
+    }
+
+    @Override
     protected boolean hasOperationResources() {
         return water.getAmount() >= fluidCost(net.minecraft.world.level.material.Fluids.WATER, waterPerOperation());
     }

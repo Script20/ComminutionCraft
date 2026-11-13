@@ -57,7 +57,9 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
     public static final int DATA_CAPACITY_HIGH = 5;
     public static final int DATA_REDSTONE = 6;
     public static final int DATA_SIDES = 7;
-    public static final int DATA_COUNT = 8;
+    /** Which upgrades the machine takes (bit per UpgradeType), for the Upgrades panel. */
+    public static final int DATA_UPGRADES = 8;
+    public static final int DATA_COUNT = 9;
 
     public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.ELECTRIC_MACHINES_ENERGY_CAPACITY;
     public static final com.script.comminutioncraft.common.config.ConfigInt MAX_ENERGY_INPUT = com.script.comminutioncraft.common.config.MachineConfig.ELECTRIC_MACHINES_MAX_ENERGY_INPUT;
@@ -75,7 +77,7 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
     private final MachineExperience experience = new MachineExperience();
     private final MachineControls controls = new MachineControls(MachineControls.outputBelow(), this::onControlsChanged);
     private final com.script.comminutioncraft.common.machine.upgrade.MachineUpgrades upgrades =
-            new com.script.comminutioncraft.common.machine.upgrade.MachineUpgrades(this::onUpgradesChanged);
+            new com.script.comminutioncraft.common.machine.upgrade.MachineUpgrades(this::onUpgradesChanged, this::consumedFluids);
 
     protected final ContainerData dataAccess = new ContainerData() {
         @Override
@@ -117,6 +119,7 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
             case DATA_CAPACITY_HIGH -> EnergySync.high(energy.getCapacity());
             case DATA_REDSTONE -> controls.redstone().ordinal();
             case DATA_SIDES -> controls.packSides();
+            case DATA_UPGRADES -> upgrades.allowedMask();
             default -> 0;
         };
     }
@@ -180,6 +183,11 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
     /** FE per tick of work after Speed and Energy upgrades. */
     protected int effectiveEnergyPerTick() {
         return upgrades.energyPerTick(getEnergyPerTick());
+    }
+
+    /** The fluids an operation uses up (decides whether Gas / Liquid upgrades fit); none by default. */
+    protected java.util.Collection<net.minecraft.world.level.material.Fluid> consumedFluids() {
+        return java.util.List.of();
     }
 
     /** A per-operation fluid cost after Gas / Liquid upgrades. */

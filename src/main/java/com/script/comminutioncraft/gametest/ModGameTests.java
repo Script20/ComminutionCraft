@@ -911,6 +911,9 @@ public final class ModGameTests {
         ElectricMachineBlockEntity plain = helper.getBlockEntity(plainPos, ElectricMachineBlockEntity.class);
         ElectricMachineBlockEntity fast = helper.getBlockEntity(fastPos, ElectricMachineBlockEntity.class);
         ElectricMachineBlockEntity thrifty = helper.getBlockEntity(thriftyPos, ElectricMachineBlockEntity.class);
+        helper.assertTrue(!plain.getUpgrades().canPlaceItem(2, new ItemStack(ModItems.GAS_UPGRADE.get()))
+                && !plain.getUpgrades().canPlaceItem(3, new ItemStack(ModItems.LIQUID_UPGRADE.get())),
+                "A granulator uses no fluid, so it shouldn't take Gas or Liquid upgrades");
         fast.getUpgrades().setItem(0, new ItemStack(ModItems.SPEED_UPGRADE.get(), 8));
         thrifty.getUpgrades().setItem(1, new ItemStack(ModItems.ENERGY_UPGRADE.get(), 8));
         int fe = 10_000;
@@ -941,6 +944,9 @@ public final class ModGameTests {
         BlockPos pos = new BlockPos(2, 1, 2);
         helper.setBlock(pos, ModBlocks.ORE_WASHER.get());
         OreWasherBlockEntity washer = helper.getBlockEntity(pos, OreWasherBlockEntity.class);
+        helper.assertTrue(washer.getUpgrades().canPlaceItem(3, new ItemStack(ModItems.LIQUID_UPGRADE.get()))
+                && !washer.getUpgrades().canPlaceItem(2, new ItemStack(ModItems.GAS_UPGRADE.get())),
+                "The Ore Washer uses water: it should take Liquid upgrades but not Gas");
         washer.getUpgrades().setItem(3, new ItemStack(ModItems.LIQUID_UPGRADE.get(), 8));
         ((MachineEnergyStorage) washer.getEnergyHandler()).set(ElectricMachineBlockEntity.TIER3_ENERGY_CAPACITY.get());
         washer.getWater().fill(net.neoforged.neoforge.transfer.fluid.FluidResource.of(Fluids.WATER), 300);

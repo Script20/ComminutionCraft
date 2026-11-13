@@ -33,6 +33,11 @@ public class PlasmaGeneratorBlockEntity extends FluidMachineBlockEntity {
     }
 
     @Override
+    protected java.util.Collection<net.minecraft.world.level.material.Fluid> consumedFluids() {
+        return java.util.List.of(com.script.comminutioncraft.common.registry.ModFluids.HYDROGEN.get());
+    }
+
+    @Override
     protected int work(ServerLevel level) {
         int perMb = upgradedEnergy(ENERGY_PER_MB.get());
         int make = Math.min(Math.min(upgradedRate(MAX_PLASMA_PER_TICK.get()), affordable(com.script.comminutioncraft.common.registry.ModFluids.HYDROGEN.get(), hydrogen.getAmount(), 1)),

@@ -62,7 +62,9 @@ public abstract class FluidMachineBlockEntity extends BlockEntity implements Tic
     public static final int DATA_SIDES = 5;
     public static final int DATA_RATE = 6;
     public static final int DATA_RATE_HIGH = 7;
-    public static final int DATA_TANKS = 8;
+    /** Which upgrades the machine takes (bit per UpgradeType), for the Upgrades panel. */
+    public static final int DATA_UPGRADES = 8;
+    public static final int DATA_TANKS = 9;
 
     /** What a tank is for, which decides the faces it fills or empties through. */
     public enum TankRole { INPUT, OUTPUT, BYPRODUCT }
@@ -78,7 +80,7 @@ public abstract class FluidMachineBlockEntity extends BlockEntity implements Tic
     private @Nullable ResourceHandler<FluidResource> byproductFaces;
     private int rate;
     private int litCooldown;
-    private final com.script.comminutioncraft.common.machine.upgrade.MachineUpgrades upgrades = new com.script.comminutioncraft.common.machine.upgrade.MachineUpgrades(this::onUpgradesChanged);
+    private final com.script.comminutioncraft.common.machine.upgrade.MachineUpgrades upgrades = new com.script.comminutioncraft.common.machine.upgrade.MachineUpgrades(this::onUpgradesChanged, this::consumedFluids);
     /** Fractions of a mB already paid for by earlier ticks (Gas / Liquid upgrades make per-unit costs fractional). */
     private final java.util.Map<net.minecraft.world.level.material.Fluid, Double> inputCredit = new java.util.HashMap<>();
 
@@ -157,6 +159,11 @@ public abstract class FluidMachineBlockEntity extends BlockEntity implements Tic
     }
 
     // ---- Upgrades: the converters (not the generators) take Speed, Energy, Gas and Liquid upgrades ----
+
+    /** The fluids it uses up (decides whether Gas / Liquid upgrades fit); none by default. */
+    protected java.util.Collection<net.minecraft.world.level.material.Fluid> consumedFluids() {
+        return java.util.List.of();
+    }
 
     /** Whether this machine has an Upgrades tab (generators don't). */
     public boolean supportsUpgrades() {

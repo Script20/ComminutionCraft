@@ -15,4 +15,9 @@ public interface ControllableMenu {
     default int upgradeSlotStart() {
         return -1;
     }
+
+    /** Whether this machine takes that upgrade (Gas / Liquid only where it uses one). */
+    default boolean takesUpgrade(com.script.comminutioncraft.common.machine.upgrade.UpgradeType type) {
+        return upgradeSlotStart() >= 0;
+    }
 }

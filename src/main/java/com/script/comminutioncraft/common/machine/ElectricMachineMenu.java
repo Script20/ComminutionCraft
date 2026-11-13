@@ -79,7 +79,7 @@ public class ElectricMachineMenu extends AbstractContainerMenu implements Contro
         // Speed / Energy / Gas / Liquid, shown in the Upgrades panel (after the inventory, so other indices stay put)
         upgradeStart = slots.size();
         Container upgrades = container instanceof com.script.comminutioncraft.common.machine.upgrade.UpgradeHolder holder
-                ? holder.getUpgrades() : new com.script.comminutioncraft.common.machine.upgrade.MachineUpgrades(() -> {});
+                ? holder.getUpgrades() : com.script.comminutioncraft.common.machine.upgrade.MachineUpgrades.client(() -> data.get(ElectricMachineBlockEntity.DATA_UPGRADES));
         for (com.script.comminutioncraft.common.machine.upgrade.UpgradeType upgrade : com.script.comminutioncraft.common.machine.upgrade.UpgradeType.values()) {
             addSlot(new com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot(upgrades, upgrade, inventory.player.level().isClientSide()));
         }
@@ -89,6 +89,11 @@ public class ElectricMachineMenu extends AbstractContainerMenu implements Contro
     @Override
     public int upgradeSlotStart() {
         return upgradeStart;
+    }
+
+    @Override
+    public boolean takesUpgrade(com.script.comminutioncraft.common.machine.upgrade.UpgradeType type) {
+        return (data.get(ElectricMachineBlockEntity.DATA_UPGRADES) & (1 << type.ordinal())) != 0;
     }
 
     // ---- Redstone / side settings (synced through data slots, changed with button clicks) ----

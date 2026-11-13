@@ -43,6 +43,11 @@ public class ElectrolyserBlockEntity extends FluidMachineBlockEntity {
     }
 
     @Override
+    protected java.util.Collection<net.minecraft.world.level.material.Fluid> consumedFluids() {
+        return java.util.List.of(net.minecraft.world.level.material.Fluids.WATER);
+    }
+
+    @Override
     protected int work(ServerLevel level) {
         int perMb = upgradedEnergy(ENERGY_PER_HYDROGEN.get());
         int make = Math.min(Math.min(upgradedRate(MAX_HYDROGEN_PER_TICK.get()), affordable(net.minecraft.world.level.material.Fluids.WATER, water.getAmount(), WATER_PER_HYDROGEN.get())),
