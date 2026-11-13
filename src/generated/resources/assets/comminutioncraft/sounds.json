@@ -1,0 +1,186 @@
+{
+  "black_hole.collapse": {
+    "sounds": [
+      {
+        "attenuation_distance": 32,
+        "name": "comminutioncraft:black_hole/collapse"
+      }
+    ],
+    "subtitle": "subtitles.comminutioncraft.black_hole.collapse"
+  },
+  "black_hole.form": {
+    "sounds": [
+      {
+        "attenuation_distance": 32,
+        "name": "comminutioncraft:black_hole/form",
+        "stream": true
+      }
+    ],
+    "subtitle": "subtitles.comminutioncraft.black_hole.form"
+  },
+  "black_hole.hum": {
+    "sounds": [
+      {
+        "attenuation_distance": 32,
+        "name": "comminutioncraft:black_hole/hum"
+      }
+    ],
+    "subtitle": "subtitles.comminutioncraft.black_hole.hum"
+  },
+  "machine.annihilation_generator": {
+    "sounds": [
+      "comminutioncraft:machine/annihilation_generator"
+    ],
+    "subtitle": "subtitles.comminutioncraft.machine.annihilation_generator"
+  },
+  "machine.antimatter_granulator": {
+    "sounds": [
+      "comminutioncraft:machine/antimatter_granulator"
+    ],
+    "subtitle": "subtitles.comminutioncraft.machine.antimatter_granulator"
+  },
+  "machine.antimatter_purifier": {
+    "sounds": [
+      "comminutioncraft:machine/antimatter_purifier"
+    ],
+    "subtitle": "subtitles.comminutioncraft.machine.antimatter_purifier"
+  },
+  "machine.antimatter_smelter": {
+    "sounds": [
+      "comminutioncraft:machine/antimatter_smelter"
+    ],
+    "subtitle": "subtitles.comminutioncraft.machine.antimatter_smelter"
+  },
+  "machine.antimatter_washer": {
+    "sounds": [
+      "comminutioncraft:machine/antimatter_washer"
+    ],
+    "subtitle": "subtitles.comminutioncraft.machine.antimatter_washer"
+  },
+  "machine.atmospheric_water_generator": {
+    "sounds": [
+      "comminutioncraft:machine/atmospheric_water_generator"
+    ],
+    "subtitle": "subtitles.comminutioncraft.machine.atmospheric_water_generator"
+  },
+  "machine.circuit_assembler": {
+    "sounds": [
+      "comminutioncraft:machine/circuit_assembler"
+    ],
+    "subtitle": "subtitles.comminutioncraft.machine.circuit_assembler"
+  },
+  "machine.coal_granulator": {
+    "sounds": [
+      "comminutioncraft:machine/coal_granulator"
+    ],
+    "subtitle": "subtitles.comminutioncraft.machine.coal_granulator"
+  },
+  "machine.coal_smelter": {
+    "sounds": [
+      "comminutioncraft:machine/coal_smelter"
+    ],
+    "subtitle": "subtitles.comminutioncraft.machine.coal_smelter"
+  },
+  "machine.electric_generator": {
+    "sounds": [
+      "comminutioncraft:machine/electric_generator"
+    ],
+    "subtitle": "subtitles.comminutioncraft.machine.electric_generator"
+  },
+  "machine.electric_granulator": {
+    "sounds": [
+      "comminutioncraft:machine/electric_granulator"
+    ],
+    "subtitle": "subtitles.comminutioncraft.machine.electric_granulator"
+  },
+  "machine.electric_smelter": {
+    "sounds": [
+      "comminutioncraft:machine/electric_smelter"
+    ],
+    "subtitle": "subtitles.comminutioncraft.machine.electric_smelter"
+  },
+  "machine.electrolyser": {
+    "sounds": [
+      "comminutioncraft:machine/electrolyser"
+    ],
+    "subtitle": "subtitles.comminutioncraft.machine.electrolyser"
+  },
+  "machine.froth_flotation_cell": {
+    "sounds": [
+      "comminutioncraft:machine/froth_flotation_cell"
+    ],
+    "subtitle": "subtitles.comminutioncraft.machine.froth_flotation_cell"
+  },
+  "machine.fusion_reactor": {
+    "sounds": [
+      "comminutioncraft:machine/fusion_reactor"
+    ],
+    "subtitle": "subtitles.comminutioncraft.machine.fusion_reactor"
+  },
+  "machine.isotope_separator": {
+    "sounds": [
+      "comminutioncraft:machine/isotope_separator"
+    ],
+    "subtitle": "subtitles.comminutioncraft.machine.isotope_separator"
+  },
+  "machine.mhd_generator": {
+    "sounds": [
+      "comminutioncraft:machine/mhd_generator"
+    ],
+    "subtitle": "subtitles.comminutioncraft.machine.mhd_generator"
+  },
+  "machine.ore_purifier": {
+    "sounds": [
+      "comminutioncraft:machine/ore_purifier"
+    ],
+    "subtitle": "subtitles.comminutioncraft.machine.ore_purifier"
+  },
+  "machine.ore_washer": {
+    "sounds": [
+      "comminutioncraft:machine/ore_washer"
+    ],
+    "subtitle": "subtitles.comminutioncraft.machine.ore_washer"
+  },
+  "machine.particle_accelerator": {
+    "sounds": [
+      "comminutioncraft:machine/particle_accelerator"
+    ],
+    "subtitle": "subtitles.comminutioncraft.machine.particle_accelerator"
+  },
+  "machine.pellet_press": {
+    "sounds": [
+      "comminutioncraft:machine/pellet_press"
+    ],
+    "subtitle": "subtitles.comminutioncraft.machine.pellet_press"
+  },
+  "machine.plasma_generator": {
+    "sounds": [
+      "comminutioncraft:machine/plasma_generator"
+    ],
+    "subtitle": "subtitles.comminutioncraft.machine.plasma_generator"
+  },
+  "machine.plasma_granulator": {
+    "sounds": [
+      "comminutioncraft:machine/plasma_granulator"
+    ],
+    "subtitle": "subtitles.comminutioncraft.machine.plasma_granulator"
+  },
+  "machine.plasma_smelter": {
+    "sounds": [
+      "comminutioncraft:machine/plasma_smelter"
+    ],
+    "subtitle": "subtitles.comminutioncraft.machine.plasma_smelter"
+  },
+  "machine.singularity_processor": {
+    "sounds": [
+      "comminutioncraft:machine/singularity_processor"
+    ],
+    "subtitle": "subtitles.comminutioncraft.machine.singularity_processor"
+  },
+  "machine.tritium_breeder": {
+    "sounds": [
+      "comminutioncraft:machine/tritium_breeder"
+    ],
+    "subtitle": "subtitles.comminutioncraft.machine.tritium_breeder"
+  }
+}

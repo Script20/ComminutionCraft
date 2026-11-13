@@ -15,6 +15,7 @@ public final class ModDataGenerators {
         event.createProvider(ModLootTableProvider::new);
         event.createProvider(ModModelProvider::new);
         event.createProvider(ModLanguageProvider::new);
+        event.createProvider(ModSoundsProvider::new);
     }
 
     private ModDataGenerators() {}

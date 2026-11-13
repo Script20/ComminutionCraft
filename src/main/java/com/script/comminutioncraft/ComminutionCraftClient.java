@@ -54,6 +54,9 @@ public class ComminutionCraftClient {
         modEventBus.addListener(ComminutionCraftClient::registerFluidModels);
         NeoForge.EVENT_BUS.addListener(ModKeyMappings::onClientTick);
         NeoForge.EVENT_BUS.addListener(ModTooltips::onTooltip);
+        // per-player settings (machine sound volume) and the machines' working sounds
+        modContainer.registerConfig(net.neoforged.fml.config.ModConfig.Type.CLIENT, com.script.comminutioncraft.client.ClientConfig.SPEC);
+        NeoForge.EVENT_BUS.addListener(com.script.comminutioncraft.client.sound.MachineSounds::onClientTick);
     }
 
     private static void registerScreens(RegisterMenuScreensEvent event) {

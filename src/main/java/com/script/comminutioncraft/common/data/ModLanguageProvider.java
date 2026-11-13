@@ -199,6 +199,19 @@ public class ModLanguageProvider extends LanguageProvider {
         for (String[] entry : com.script.comminutioncraft.common.config.MachineConfig.LANG) {
             add(entry[0], entry[1]);
         }
+        add("comminutioncraft.configuration.section.comminutioncraft.client.toml", "Client Settings");
+        add("comminutioncraft.configuration.section.comminutioncraft.client.toml.title", "Client Settings");
+        add("comminutioncraft.configuration.sounds", "Sounds");
+        add("comminutioncraft.configuration.machineSoundVolume", "Machine Sound Volume");
+        add("comminutioncraft.configuration.machineSoundVolume.tooltip",
+                "Volume of the machines' working sounds and the black hole, in percent (on top of Minecraft's Blocks volume).");
+        for (String name : com.script.comminutioncraft.common.registry.ModSounds.MACHINES) {
+            add(ModSoundsProvider.subtitle("machine." + name),
+                    com.script.comminutioncraft.common.registry.ModSounds.displayName(name) + " runs");
+        }
+        add(ModSoundsProvider.subtitle("black_hole.form"), "Black hole forms");
+        add(ModSoundsProvider.subtitle("black_hole.hum"), "Black hole hums");
+        add(ModSoundsProvider.subtitle("black_hole.collapse"), "Black hole collapses");
         add("comminutioncraft.configuration.includeHotbar", "Include Hotbar");
         add("comminutioncraft.configuration.includeHotbar.tooltip",
                 "If on, placing a Soaryn Chest also takes your hotbar, not just the main inventory.");
