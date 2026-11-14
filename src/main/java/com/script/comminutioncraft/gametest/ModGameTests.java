@@ -165,6 +165,7 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("purpleheart_axe_strips_log", () -> ModGameTests::purpleheartAxeStripsLog);
         TEST_FUNCTIONS.register("purpleheart_wood_basics", () -> ModGameTests::purpleheartWoodBasics);
         TEST_FUNCTIONS.register("tiny_coal_recipe_and_fuel", () -> ModGameTests::tinyCoalRecipeAndFuel);
+        TEST_FUNCTIONS.register("water_bucket_fills_ore_washer", () -> ModGameTests::waterBucketFillsOreWasher);
     }
 
     public static void registerTests(RegisterGameTestsEvent event) {
@@ -1058,6 +1059,32 @@ public final class ModGameTests {
         helper.assertTrue(result.is(ModItems.TINY_COAL.get()) && result.getCount() == 8, "1 coal should make 8 Tiny Coal, got " + result);
         int burn = helper.getLevel().fuelValues().burnDuration(new ItemStack(ModItems.TINY_COAL.get()));
         helper.assertTrue(burn == 200, "Tiny Coal should burn 200 ticks (one furnace item), but burns " + burn);
+        helper.succeed();
+    }
+
+    /**
+     * A survival player right-clicking an Ore Washer (and the Antimatter Washer) with a water bucket pours 1,000 mB in and
+     * keeps the empty bucket, without opening the GUI; an empty bucket can't take the water back out.
+     */
+    private static void waterBucketFillsOreWasher(GameTestHelper helper) {
+        for (var block : List.of(ModBlocks.ORE_WASHER.get(), ModBlocks.ANTIMATTER_WASHER.get())) {
+            BlockPos pos = block == ModBlocks.ORE_WASHER.get() ? new BlockPos(1, 1, 2) : new BlockPos(3, 1, 2);
+            helper.setBlock(pos, block);
+            ServerPlayer player = helper.makeMockServerPlayerInLevel();
+            player.setGameMode(GameType.SURVIVAL);
+            BlockPos absolute = helper.absolutePos(pos);
+            var hit = new BlockHitResult(Vec3.atCenterOf(absolute).add(0, 0.5, 0), Direction.UP, absolute, false);
+            var washer = helper.getBlockEntity(pos, com.script.comminutioncraft.common.machine.OreWasherBlockEntity.class);
+
+            player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.WATER_BUCKET));
+            player.gameMode.useItemOn(player, helper.getLevel(), player.getMainHandItem(), InteractionHand.MAIN_HAND, hit);
+            helper.assertTrue(washer.getWater().getAmount() == 1000, block + " should hold 1,000 mB after a bucket, but holds " + washer.getWater().getAmount());
+            helper.assertTrue(player.getMainHandItem().is(Items.BUCKET), "The player should keep an empty bucket, but holds " + player.getMainHandItem());
+            helper.assertTrue(player.containerMenu == player.inventoryMenu, "Pouring the bucket shouldn't open the GUI");
+
+            player.gameMode.useItemOn(player, helper.getLevel(), player.getMainHandItem(), InteractionHand.MAIN_HAND, hit);
+            helper.assertTrue(washer.getWater().getAmount() == 1000, "An empty bucket mustn't take water out of " + block);
+        }
         helper.succeed();
     }
 
