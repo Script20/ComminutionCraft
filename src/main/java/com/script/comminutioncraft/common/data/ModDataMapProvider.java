@@ -36,6 +36,11 @@ public class ModDataMapProvider extends DataMapProvider {
         mass(mass, Items.NETHER_STAR, 200);
         mass(mass, Items.DRAGON_EGG, 1000);
 
+        // Tiny Coal: an eighth of coal's 1,600 ticks, i.e. one item in a furnace
+        builder(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.FURNACE_FUELS)
+                .add(com.script.comminutioncraft.common.registry.ModItems.TINY_COAL.getId(),
+                        new net.neoforged.neoforge.registries.datamaps.builtin.FurnaceFuel(200), false);
+
         // An axe strips Purpleheart logs and wood
         var strip = builder(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.STRIPPABLES);
         var wood = com.script.comminutioncraft.common.registry.ModBlocks.PURPLEHEART;

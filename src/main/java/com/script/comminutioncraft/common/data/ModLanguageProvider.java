@@ -247,6 +247,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("comminutioncraft.configuration.includeHotbar.tooltip",
                 "If on, placing a Soaryn Chest also takes your hotbar, not just the main inventory.");
         add(ModItems.AIR_FILTER.get(), "Air Filter");
+        add(ModItems.TINY_COAL.get(), "Tiny Coal");
         add(ModBlocks.PLASMA_GRANULATOR.get(), "Plasma Granulator");
         add(ModBlocks.PLASMA_SMELTER.get(), "Plasma Smelter");
         add(ModBlocks.PLASMA_ENERGY_BATTERY.get(), "Plasma Energy Battery");

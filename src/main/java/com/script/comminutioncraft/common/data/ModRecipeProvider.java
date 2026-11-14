@@ -708,6 +708,11 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_iron", has(Items.IRON_INGOT))
                 .save(output, key("wrench"));
 
+        shapeless(RecipeCategory.MISC, ModItems.TINY_COAL.get(), 8)
+                .requires(Items.COAL)
+                .unlockedBy("has_coal", has(Items.COAL))
+                .save(output, key("tiny_coal"));
+
         shapeless(RecipeCategory.MISC, ModItems.SOARYN_CHEST.get())
                 .requires(Items.CHEST)
                 .requires(Items.HOPPER)

@@ -157,6 +157,7 @@ public class ModModelProvider extends ModelProvider {
         blockModels.createChest(ModBlocks.SOARYN_CHEST.get(), net.minecraft.world.level.block.Blocks.OAK_PLANKS,
                 net.minecraft.client.renderer.special.ChestSpecialRenderer.REGULAR, true);
         itemModels.generateFlatItem(ModItems.AIR_FILTER.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.TINY_COAL.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.ELECTRONIC_CIRCUIT.get(), ModelTemplates.FLAT_ITEM);
         blockModels.createFurnace(ModBlocks.PLASMA_GRANULATOR.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         blockModels.createFurnace(ModBlocks.PLASMA_SMELTER.get(), TexturedModel.ORIENTABLE_ONLY_TOP);

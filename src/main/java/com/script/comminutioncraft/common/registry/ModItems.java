@@ -81,6 +81,9 @@ public final class ModItems {
     public static final DeferredItem<Item> LIQUID_UPGRADE = ITEMS.registerSimpleItem("liquid_upgrade");
     public static final DeferredItem<Item> REACTOR_PLATING = ITEMS.registerSimpleItem("reactor_plating");
     public static final DeferredItem<Item> FUSION_FUEL_PELLET = ITEMS.registerSimpleItem("fusion_fuel_pellet");
+    /** Tiny Coal: 1 coal crafts 8, each burns 200 ticks = one item in a furnace (fuel value: ModDataMapProvider). */
+    public static final DeferredItem<Item> TINY_COAL = ITEMS.registerSimpleItem("tiny_coal");
+
     /** Doubles an Atmospheric Water Generator's output; wears down by 1 per 100 mB of water it makes. */
     public static final DeferredItem<Item> AIR_FILTER = ITEMS.registerSimpleItem("air_filter",
             properties -> properties.durability(AtmosphericWaterGeneratorBlockEntity.FILTER_DURABILITY));

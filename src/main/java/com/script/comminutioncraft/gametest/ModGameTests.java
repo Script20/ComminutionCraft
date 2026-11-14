@@ -164,6 +164,7 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("tall_purpleheart_sapling_grows", () -> ModGameTests::purpleheartSaplingGrows);
         TEST_FUNCTIONS.register("purpleheart_axe_strips_log", () -> ModGameTests::purpleheartAxeStripsLog);
         TEST_FUNCTIONS.register("purpleheart_wood_basics", () -> ModGameTests::purpleheartWoodBasics);
+        TEST_FUNCTIONS.register("tiny_coal_recipe_and_fuel", () -> ModGameTests::tinyCoalRecipeAndFuel);
     }
 
     public static void registerTests(RegisterGameTestsEvent event) {
@@ -1044,6 +1045,19 @@ public final class ModGameTests {
         var pots = ((net.minecraft.world.level.block.FlowerPotBlock) Blocks.FLOWER_POT).getFullPotsView();
         helper.assertTrue(pots.containsKey(wood.sapling.getId()) && pots.get(wood.sapling.getId()).get() == wood.pottedSapling.get(),
                 "A flower pot should take the purpleheart sapling");
+        helper.succeed();
+    }
+
+    /** One coal crafts 8 Tiny Coal; each burns 200 ticks (one furnace item) and the Coal Smelter takes it as fuel. */
+    private static void tinyCoalRecipeAndFuel(GameTestHelper helper) {
+        var recipes = helper.getLevel().getServer().getRecipeManager();
+        var holder = recipes.byKey(ResourceKey.create(Registries.RECIPE, ComminutionCraft.id("tiny_coal")));
+        helper.assertTrue(holder.isPresent(), "The tiny coal recipe didn't load");
+        var input = net.minecraft.world.item.crafting.CraftingInput.of(1, 1, List.of(new ItemStack(Items.COAL)));
+        ItemStack result = ((net.minecraft.world.item.crafting.CraftingRecipe) holder.get().value()).assemble(input);
+        helper.assertTrue(result.is(ModItems.TINY_COAL.get()) && result.getCount() == 8, "1 coal should make 8 Tiny Coal, got " + result);
+        int burn = helper.getLevel().fuelValues().burnDuration(new ItemStack(ModItems.TINY_COAL.get()));
+        helper.assertTrue(burn == 200, "Tiny Coal should burn 200 ticks (one furnace item), but burns " + burn);
         helper.succeed();
     }
 

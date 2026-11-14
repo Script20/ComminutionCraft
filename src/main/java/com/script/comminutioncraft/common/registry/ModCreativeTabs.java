@@ -22,6 +22,7 @@ public final class ModCreativeTabs {
                     .displayItems((parameters, output) -> {
                         // Tools
                         output.accept(ModItems.WRENCH.get());
+                        output.accept(ModItems.TINY_COAL.get());
                         // Processing, by tier
                         output.accept(ModItems.COAL_GRANULATOR.get());
                         output.accept(ModItems.COAL_SMELTER.get());
