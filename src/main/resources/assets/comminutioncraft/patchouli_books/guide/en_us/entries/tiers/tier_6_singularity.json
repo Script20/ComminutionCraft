@@ -1,0 +1,17 @@
+{
+  "name": "Tier 6: Singularity",
+  "icon": "comminutioncraft:horizon_controller",
+  "category": "comminutioncraft:tiers",
+  "sortnum": 5,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Ignite a black hole in an $(l:multiblocks/event_horizon)Event Horizon Reactor$() and feed it anything for power. Near it, the $(item)Singularity Processor$() turns one raw ore into five ingots, with rare drops.$(br2)$(#FF5050)Do not walk into the field.$()"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "comminutioncraft:horizon_controller",
+      "text": "The Event Horizon Reactor holds a black hole that eats items for power."
+    }
+  ]
+}

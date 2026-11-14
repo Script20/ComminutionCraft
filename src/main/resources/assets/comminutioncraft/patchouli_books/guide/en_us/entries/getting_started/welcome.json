@@ -1,0 +1,16 @@
+{
+  "name": "Welcome",
+  "icon": "comminutioncraft:wrench",
+  "category": "comminutioncraft:getting_started",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Comminution means crushing ore into smaller pieces. That is the whole idea here: break ore down further than a furnace can, and get more ingots out of every block you mine.$(br2)You start with $(item)coal$() and a granulator that doubles your ore, and finish with a black hole that turns one raw ore into five ingots."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Each $(l:tiers/tier_1_coal)tier$() unlocks the next: its machines make the parts and the power the next tier needs.$(br2)Machines are colour-coded: the glowing seams on every machine show its tier, from coal $(#FF9628)orange$() to singularity $(#FFBA38)gold$().$(br2)Craft a $(item)Wrench$() first. It is the key to almost everything."
+    }
+  ]
+}

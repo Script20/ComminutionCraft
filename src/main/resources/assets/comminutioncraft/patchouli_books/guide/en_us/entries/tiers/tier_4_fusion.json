@@ -1,0 +1,17 @@
+{
+  "name": "Tier 4: Fusion",
+  "icon": "comminutioncraft:reactor_controller",
+  "category": "comminutioncraft:tiers",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Separate deuterium from water, breed tritium, and press both into $(item)Fusion Fuel Pellets$() for the $(l:multiblocks/fusion_reactor)Fusion Reactor$(). The $(item)Ore Purifier$() cleans washed ore with oxygen and sometimes gives a by-product."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "comminutioncraft:reactor_controller",
+      "text": "The Fusion Reactor burns fuel pellets for a lot of power and breeds some of its tritium back."
+    }
+  ]
+}

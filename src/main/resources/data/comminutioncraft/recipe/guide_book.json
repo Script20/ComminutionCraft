@@ -1,0 +1,20 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "patchouli"
+    }
+  ],
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:book",
+    "comminutioncraft:wrench"
+  ],
+  "result": {
+    "id": "patchouli:guide_book",
+    "components": {
+      "patchouli:book": "comminutioncraft:guide"
+    }
+  }
+}

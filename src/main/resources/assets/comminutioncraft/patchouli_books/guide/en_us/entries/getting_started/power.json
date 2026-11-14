@@ -1,0 +1,17 @@
+{
+  "name": "Power",
+  "icon": "comminutioncraft:electric_generator",
+  "category": "comminutioncraft:getting_started",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "From tier 2 on, machines run on $(bold)FE$(), so generators from other mods work too.$(br2)Cables carry power from generators to machines and share it out evenly. Each tier has a faster cable and a bigger battery. Cables of different tiers never join."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "comminutioncraft:energy_battery",
+      "text": "Batteries store power between generators and machines. Their faces follow the side configuration: power goes in through Input faces and out of Output faces."
+    }
+  ]
+}

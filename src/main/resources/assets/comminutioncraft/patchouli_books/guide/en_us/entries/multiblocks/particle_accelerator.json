@@ -1,0 +1,41 @@
+{
+  "name": "Particle Accelerator",
+  "icon": "comminutioncraft:accelerator_controller",
+  "category": "comminutioncraft:multiblocks",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "A hollow square ring of $(item)Accelerator Segments$(), one block high, between 5x5 and 15x15, with one $(item)Particle Accelerator Controller$() in the ring.$(br2)Bigger rings are faster but use more power."
+    },
+    {
+      "type": "patchouli:multiblock",
+      "name": "Particle Accelerator (7x7)",
+      "multiblock": {
+        "pattern": [
+          [
+            "SSSOSSS",
+            "S_____S",
+            "S_____S",
+            "S__0__A",
+            "S_____S",
+            "S_____S",
+            "SSSISSS"
+          ]
+        ],
+        "mapping": {
+          "S": "comminutioncraft:accelerator_segment",
+          "A": "comminutioncraft:accelerator_controller[facing=south]",
+          "I": "comminutioncraft:accelerator_port[output=false]",
+          "O": "comminutioncraft:accelerator_port[output=true]"
+        }
+      },
+      "enable_visualize": true,
+      "text": "A 7x7 ring: an Input port on the east side, an Output port on the west."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(item)Accelerator Ports$() are Input or Output as a whole block; switch one with the Wrench in Configure mode. Input ports take power and hydrogen; Output ports push antimatter out.$(br2)Antimatter only goes into $(item)Containment Cells$() and $(item)Magnetic Conduits$()."
+    }
+  ]
+}

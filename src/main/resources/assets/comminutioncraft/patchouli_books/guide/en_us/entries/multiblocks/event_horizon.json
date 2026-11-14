@@ -1,0 +1,95 @@
+{
+  "name": "Event Horizon Reactor",
+  "icon": "comminutioncraft:horizon_controller",
+  "category": "comminutioncraft:multiblocks",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "A 7x7x7 cage: $(item)Containment Frame$() on all twelve edges and the $(item)Event Horizon Controller$() in the middle of a bottom edge, facing out. $(item)Horizon Ports$() go anywhere in the frame.$(br2)The inner 5x5x5 must be empty. The faces between the edges can be left open or filled with anything, like glass."
+    },
+    {
+      "type": "patchouli:multiblock",
+      "name": "Event Horizon Reactor",
+      "multiblock": {
+        "pattern": [
+          [
+            "FFFFFFF",
+            "F_____F",
+            "F_____F",
+            "F_____F",
+            "F_____F",
+            "F_____F",
+            "FFFFFFF"
+          ],
+          [
+            "F_____F",
+            "_     _",
+            "_     _",
+            "_     _",
+            "_     _",
+            "_     _",
+            "F_____F"
+          ],
+          [
+            "F_____F",
+            "_     _",
+            "_     _",
+            "_     _",
+            "_     _",
+            "_     _",
+            "F_____F"
+          ],
+          [
+            "F_____F",
+            "_     _",
+            "_     _",
+            "_  0  _",
+            "_     _",
+            "_     _",
+            "F_____F"
+          ],
+          [
+            "F_____F",
+            "_     _",
+            "_     _",
+            "_     _",
+            "_     _",
+            "_     _",
+            "F_____F"
+          ],
+          [
+            "F_____F",
+            "_     _",
+            "_     _",
+            "_     _",
+            "_     _",
+            "_     _",
+            "F_____F"
+          ],
+          [
+            "FFFOFFF",
+            "F_____F",
+            "F_____F",
+            "F_____K",
+            "F_____F",
+            "F_____F",
+            "FFFIFFF"
+          ]
+        ],
+        "mapping": {
+          "F": "comminutioncraft:containment_frame",
+          "K": "comminutioncraft:horizon_controller[facing=south]",
+          "I": "comminutioncraft:horizon_port[output=false]",
+          "O": "comminutioncraft:horizon_port[output=true]"
+        }
+      },
+      "enable_visualize": true,
+      "text": "Controller in the front bottom edge, an Input port east, an Output port west."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "1,000 mB of antimatter ignites a black hole in the middle. Feed it items through Input ports, the controller, or by throwing them in; it turns their mass into power. Starved for a minute, it collapses.$(br2)$(#FF5050)$(bold)Anything that walks into the field dies, even in creative.$() Switch the reactor off with redstone before going in."
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "name": "The Wrench",
+  "icon": "comminutioncraft:wrench",
+  "category": "comminutioncraft:getting_started",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Press $(k:key.comminutioncraft.wrench_mode) while holding the Wrench to switch modes:$(br2)$(li)$(bold)Rotate$(): turn a block.$(li)$(bold)Cables$(): cut or restore one arm of a cable or pipe.$(li)$(bold)Configure$(): click a machine face to change it, or a multiblock port to switch it between Input and Output. $(bold)Sneak$()-click picks a machine up."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Mining a machine with a pickaxe drops it plain. Picking it up with the Wrench keeps its stored power, its settings and its upgrades."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "comminutioncraft:wrench"
+    }
+  ]
+}

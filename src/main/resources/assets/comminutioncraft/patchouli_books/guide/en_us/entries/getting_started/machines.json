@@ -1,0 +1,20 @@
+{
+  "name": "Using Machines",
+  "icon": "comminutioncraft:electric_granulator",
+  "category": "comminutioncraft:getting_started",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Every machine GUI has tabs on its right edge:$(br2)$(li)$(bold)Redstone$(): always run, run with a signal, or run without one.$(li)$(bold)Side Config$(): set each face to Input, Output, By-product or None.$(li)$(bold)Upgrades$(): Speed, Energy, Gas and Liquid upgrades, up to 8 of each."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(bold)Speed$() makes a machine faster but hungrier. $(bold)Energy$() cuts the power each job takes and grows the buffer. $(bold)Gas$() and $(bold)Liquid$() cut the fluids a machine uses; a machine only takes the ones it can use."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "comminutioncraft:speed_upgrade"
+    }
+  ]
+}

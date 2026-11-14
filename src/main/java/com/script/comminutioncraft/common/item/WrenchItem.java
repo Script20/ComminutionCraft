@@ -48,6 +48,12 @@ public class WrenchItem extends Item {
         super(properties);
     }
 
+    /** Crafting with the wrench (the guide book: a book + a wrench) gives it back. */
+    @Override
+    public net.minecraft.world.item.ItemStackTemplate getCraftingRemainder(net.minecraft.world.item.ItemInstance instance) {
+        return new net.minecraft.world.item.ItemStackTemplate(this);
+    }
+
     public static WrenchMode getMode(ItemStack stack) {
         return stack.getOrDefault(ModDataComponents.WRENCH_MODE.get(), WrenchMode.ROTATE);
     }

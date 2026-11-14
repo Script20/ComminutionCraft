@@ -56,6 +56,9 @@ public class ComminutionCraft {
         com.script.comminutioncraft.common.registry.ModEntities.ENTITY_TYPES.register(modEventBus);
         com.script.comminutioncraft.common.registry.ModSounds.SOUND_EVENTS.register(modEventBus);
         com.script.comminutioncraft.common.registry.ModTriggers.TRIGGERS.register(modEventBus);
+        // the guide book (Patchouli, optional): who has been given one, and the first-join gift
+        com.script.comminutioncraft.common.compat.patchouli.GuideBook.ATTACHMENTS.register(modEventBus);
+        NeoForge.EVENT_BUS.addListener(com.script.comminutioncraft.common.compat.patchouli.GuideBook::onPlayerLoggedIn);
         ModMenus.MENUS.register(modEventBus);
         ModRecipes.RECIPE_TYPES.register(modEventBus);
         ModRecipes.RECIPE_SERIALIZERS.register(modEventBus);

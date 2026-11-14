@@ -1,0 +1,17 @@
+{
+  "name": "Tier 3: Plasma",
+  "icon": "comminutioncraft:ore_washer",
+  "category": "comminutioncraft:tiers",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Tier 3 makes its own power: water from the air, split into hydrogen, heated into plasma, burned in an $(item)MHD Generator$(). The $(item)Ore Washer$() turns raw ore into three washed ore, and the $(item)Circuit Assembler$() makes Plasma Circuits."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "comminutioncraft:ore_washer",
+      "text": "The Ore Washer: raw ore and water in, three washed ore out. Granulate them, then smelt: 3x."
+    }
+  ]
+}

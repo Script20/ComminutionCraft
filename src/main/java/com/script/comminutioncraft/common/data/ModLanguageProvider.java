@@ -240,6 +240,10 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModSoundsProvider.subtitle("black_hole.hum"), "Black hole hums");
         add(ModSoundsProvider.subtitle("black_hole.collapse"), "Black hole collapses");
         add("comminutioncraft.configuration.includeHotbar", "Include Hotbar");
+        add("comminutioncraft.configuration.guide_book", "Guide Book");
+        add("comminutioncraft.configuration.giveOnFirstJoin", "Give on First Join");
+        add("comminutioncraft.configuration.giveOnFirstJoin.tooltip",
+                "If on (and Patchouli is installed), every player gets the guide book the first time they join.");
         add("comminutioncraft.configuration.includeHotbar.tooltip",
                 "If on, placing a Soaryn Chest also takes your hotbar, not just the main inventory.");
         add(ModItems.AIR_FILTER.get(), "Air Filter");

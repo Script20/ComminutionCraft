@@ -159,6 +159,7 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("horizon_advancements", () -> ModGameTests::horizonAdvancements);
         TEST_FUNCTIONS.register("upgrades_speed_and_energy", () -> ModGameTests::upgradesSpeedAndEnergy);
         TEST_FUNCTIONS.register("upgrades_liquid_and_pickup", () -> ModGameTests::upgradesLiquidAndPickup);
+        TEST_FUNCTIONS.register("guide_book_recipe", () -> ModGameTests::guideBookRecipe);
         TEST_FUNCTIONS.register("antimatter_suite_runs_the_chain", () -> ModGameTests::antimatterSuiteRunsTheChain);
     }
 
@@ -964,6 +965,28 @@ public final class ModGameTests {
                     .stream().filter(e -> e.getItem().is(ModItems.LIQUID_UPGRADE.get())).mapToInt(e -> e.getItem().getCount()).sum();
             helper.assertTrue(dropped == 8, "Breaking it should drop the 8 Liquid upgrades, dropped " + dropped);
         });
+    }
+
+    /**
+     * The guide book: with Patchouli installed (it is in the dev setup), a book + a Wrench crafts the Comminution Craft
+     * guide, and the Wrench comes back.
+     */
+    private static void guideBookRecipe(GameTestHelper helper) {
+        var recipes = helper.getLevel().getServer().getRecipeManager();
+        var key = net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.RECIPE,
+                com.script.comminutioncraft.ComminutionCraft.id("guide_book"));
+        var holder = recipes.byKey(key);
+        helper.assertTrue(holder.isPresent(), "The guide book recipe didn't load (is Patchouli missing?)");
+        var input = net.minecraft.world.item.crafting.CraftingInput.of(2, 1,
+                List.of(new ItemStack(Items.BOOK), new ItemStack(ModItems.WRENCH.get())));
+        ItemStack result = ((net.minecraft.world.item.crafting.CraftingRecipe) holder.get().value()).assemble(input);
+        var bookId = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(result.getItem());
+        helper.assertTrue(bookId.toString().equals("patchouli:guide_book"), "Expected Patchouli's guide book, got " + result);
+        helper.assertTrue(result.getComponentsPatch().toString().contains("comminutioncraft:guide"),
+                "The book should be the Comminution Craft guide: " + result.getComponentsPatch());
+        var remainder = ModItems.WRENCH.get().getCraftingRemainder(new ItemStack(ModItems.WRENCH.get()));
+        helper.assertTrue(remainder != null && remainder.item().value() == ModItems.WRENCH.get(), "The Wrench should come back after crafting");
+        helper.succeed();
     }
 
     /** A powered Electric Granulator turns 2 Washed Iron into 2 granulated iron (1 each). */

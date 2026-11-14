@@ -1,0 +1,17 @@
+{
+  "name": "Tier 1: Coal",
+  "icon": "comminutioncraft:coal_granulator",
+  "category": "comminutioncraft:tiers",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Coal machines burn any furnace fuel. The $(item)Coal Granulator$() turns raw ore into two granulated ore; the $(item)Coal Smelter$() smelts twice as fast as a furnace."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "comminutioncraft:coal_granulator",
+      "text": "The Coal Granulator: raw ore in, two granulated ore out. Smelt them for twice the ingots."
+    }
+  ]
+}

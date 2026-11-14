@@ -1,0 +1,16 @@
+{
+  "name": "Getting More Ore",
+  "icon": "comminutioncraft:granulated_iron",
+  "category": "comminutioncraft:getting_started",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Every tier adds a step in front of the furnace. Raw ore goes in, and each step multiplies it:$(br2)$(li)$(#FF9628)Tier 1-2$(): granulate, $(bold)2x$()$(li)$(#FF50D2)Tier 3$(): wash, then granulate, $(bold)3x$()$(li)$(#60FF80)Tier 4$(): purify for by-products$(li)$(#D6E4FF)Tier 5$(): froth flotation, $(bold)4x$()$(li)$(#FFBA38)Tier 6$(): one machine, $(bold)5x$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Granulated ore smelts in any furnace or smelter. Ores from other mods (tin, lead, silver, nickel, zinc, aluminum, osmium, uranium) work too, as long as a mod adds them.$(br2)Machines push their results out of their $(bold)Output$() faces into the next block, so you can chain them into a line without hoppers."
+    }
+  ]
+}

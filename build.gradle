@@ -148,6 +148,10 @@ dependencies {
     compileOnly("maven.modrinth:jade:${jade_version}")
     localRuntime("maven.modrinth:jade:${jade_version}")
 
+    // Patchouli (the guide book, optional): compile against it and run it in dev only
+    compileOnly("maven.modrinth:patchouli:${patchouli_version}")
+    localRuntime("maven.modrinth:patchouli:${patchouli_version}")
+
     // Example mod dependency using a mod jar from ./libs with a flat dir repository
     // This maps to ./libs/coolmod-${mc_version}-${coolmod_version}.jar
     // The group id is ignored when searching -- in this case, it is "blank"

@@ -1,0 +1,17 @@
+{
+  "name": "Tier 2: Electric",
+  "icon": "comminutioncraft:electric_generator",
+  "category": "comminutioncraft:tiers",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Burn fuel in an $(item)Electric Generator$() for FE, and run the faster electric granulator and smelter from it. The $(item)Electronic Circuit$() (redstone and copper) goes into most tier-2 recipes."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "comminutioncraft:electric_generator",
+      "text": "The Electric Generator turns furnace fuel into power for every machine around it."
+    }
+  ]
+}

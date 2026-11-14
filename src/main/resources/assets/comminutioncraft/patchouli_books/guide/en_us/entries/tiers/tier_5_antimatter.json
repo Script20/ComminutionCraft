@@ -1,0 +1,17 @@
+{
+  "name": "Tier 5: Antimatter",
+  "icon": "comminutioncraft:accelerator_controller",
+  "category": "comminutioncraft:tiers",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "A $(l:multiblocks/particle_accelerator)Particle Accelerator$() turns hydrogen into antimatter. Only Containment Cells and Magnetic Conduits can hold it. The $(item)Froth Flotation Cell$() turns raw ore into four concentrate: 4x."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "comminutioncraft:accelerator_controller",
+      "text": "The Particle Accelerator: a ring of segments that makes antimatter for power and circuits."
+    }
+  ]
+}

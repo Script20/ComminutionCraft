@@ -1,0 +1,47 @@
+{
+  "name": "Fusion Reactor",
+  "icon": "comminutioncraft:reactor_controller",
+  "category": "comminutioncraft:multiblocks",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "A 3x3x3 of $(item)Reactor Casing$() around an empty middle, with the $(item)Fusion Reactor Controller$() in the middle of one face, facing out.$(br2)The other face centres can be casing, $(item)Reactor Glass$() (to see the core) or $(item)Reactor Ports$(). Ports can also go on the edges."
+    },
+    {
+      "type": "patchouli:multiblock",
+      "name": "Fusion Reactor",
+      "multiblock": {
+        "pattern": [
+          [
+            "CCC",
+            "CGC",
+            "CCC"
+          ],
+          [
+            "CGC",
+            "P0K",
+            "CGC"
+          ],
+          [
+            "CCC",
+            "CCC",
+            "CCC"
+          ]
+        ],
+        "mapping": {
+          "C": "comminutioncraft:reactor_casing",
+          "G": "comminutioncraft:reactor_glass",
+          "P": "comminutioncraft:reactor_port",
+          "K": "comminutioncraft:reactor_controller[facing=south]"
+        }
+      },
+      "enable_visualize": true,
+      "text": "Click Visualize to see where each block goes in the world."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Ports take $(item)Fusion Fuel Pellets$() and plasma on their Input faces, and give power and tritium on their Output faces.$(br2)To start it, feed it about 1,000 mB of plasma with pellets inside. Once hot, it burns a pellet every ten seconds and breeds some tritium back."
+    }
+  ]
+}
