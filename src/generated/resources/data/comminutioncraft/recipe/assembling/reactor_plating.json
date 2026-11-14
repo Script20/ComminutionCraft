@@ -2,6 +2,7 @@
   "type": "comminutioncraft:assembling",
   "ingredient": "#c:storage_blocks/iron",
   "result": {
+    "count": 2,
     "id": "comminutioncraft:reactor_plating"
   }
 }

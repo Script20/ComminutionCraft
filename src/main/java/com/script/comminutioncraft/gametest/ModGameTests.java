@@ -1263,14 +1263,16 @@ public final class ModGameTests {
         });
     }
 
-    /** The Circuit Assembler forges an iron block into Reactor Plating and a Plasma Circuit into a Fusion Circuit. */
+    /** The Circuit Assembler forges an iron block into 2 Reactor Plating and a Plasma Circuit into a Fusion Circuit. */
     private static void assemblerForgesReactorParts(GameTestHelper helper) {
         BlockPos platingPos = new BlockPos(1, 1, 2);
         BlockPos circuitPos = new BlockPos(3, 1, 2);
         PlasmaMachineBlockEntity plating = placeAssembler(helper, platingPos, new ItemStack(Items.IRON_BLOCK));
         PlasmaMachineBlockEntity circuit = placeAssembler(helper, circuitPos, new ItemStack(ModItems.PLASMA_CIRCUIT.get()));
         helper.succeedWhen(() -> {
-            helper.assertTrue(plating.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT).is(ModItems.REACTOR_PLATING.get()), "No Reactor Plating yet");
+            ItemStack forged = plating.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT);
+            helper.assertTrue(forged.is(ModItems.REACTOR_PLATING.get()), "No Reactor Plating yet");
+            helper.assertTrue(forged.getCount() == 2, "One iron block should forge 2 Reactor Plating, got " + forged.getCount());
             helper.assertTrue(circuit.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT).is(ModItems.FUSION_CIRCUIT.get()), "No Fusion Circuit yet");
         });
     }

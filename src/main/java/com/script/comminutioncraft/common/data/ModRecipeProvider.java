@@ -310,7 +310,7 @@ public class ModRecipeProvider extends RecipeProvider {
 
         // The "plasma-forged parts": the Circuit Assembler forges plating and fusion circuits with plasma.
         output.accept(key("assembling/reactor_plating"),
-                new AssemblingRecipe(tag(ProcessedMetal.commonItemTag("storage_blocks/iron")), new ItemStackTemplate(ModItems.REACTOR_PLATING.get())),
+                new AssemblingRecipe(tag(ProcessedMetal.commonItemTag("storage_blocks/iron")), new ItemStackTemplate(ModItems.REACTOR_PLATING.get(), 2)),
                 null);
         output.accept(key("assembling/fusion_circuit"),
                 new AssemblingRecipe(Ingredient.of(ModItems.PLASMA_CIRCUIT.get()), new ItemStackTemplate(ModItems.FUSION_CIRCUIT.get())),
