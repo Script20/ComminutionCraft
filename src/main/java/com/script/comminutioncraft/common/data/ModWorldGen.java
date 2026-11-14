@@ -4,6 +4,15 @@ import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.registry.ModBlocks;
 import com.script.comminutioncraft.common.registry.ModFeatures;
 import com.script.comminutioncraft.common.worldgen.LavaCrustFeature;
+import com.script.comminutioncraft.common.worldgen.ModTrees;
+import net.minecraft.data.worldgen.placement.PlacementUtils;
+import net.minecraft.data.worldgen.placement.VegetationPlacements;
+import net.minecraft.util.valueproviders.ConstantInt;
+import net.minecraft.world.level.levelgen.feature.configurations.TreeConfiguration;
+import net.minecraft.world.level.levelgen.feature.featuresize.TwoLayersFeatureSize;
+import net.minecraft.world.level.levelgen.feature.foliageplacers.BlobFoliagePlacer;
+import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
+import net.minecraft.world.level.levelgen.feature.trunkplacers.StraightTrunkPlacer;
 import java.util.List;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderSet;
@@ -40,6 +49,7 @@ import net.neoforged.neoforge.registries.NeoForgeRegistries;
  *       between y 64 and 128, and twice per chunk between y 0 and 60.</li>
  *   <li>Volcanic basalt: a 1.5-3 block crust around underground lava (lava lakes and the deep lava aquifers),
  *       tried 16 times per chunk between the bottom of the world and y 48.</li>
+ *   <li>Purpleheart trees: about one per chunk in jungles (jungle, sparse jungle, bamboo jungle).</li>
  * </ul>
  */
 public final class ModWorldGen {
@@ -49,6 +59,7 @@ public final class ModWorldGen {
     public static final ResourceKey<PlacedFeature> ORE_MARBLE_UPPER = placed("ore_marble_upper");
     public static final ResourceKey<PlacedFeature> ORE_MARBLE_LOWER = placed("ore_marble_lower");
     public static final ResourceKey<PlacedFeature> VOLCANIC_BASALT_CRUST_PLACED = placed("volcanic_basalt_crust");
+    public static final ResourceKey<PlacedFeature> PURPLEHEART_PLACED = placed("purpleheart");
 
     public static final RegistrySetBuilder BUILDER = new RegistrySetBuilder()
             .add(Registries.CONFIGURED_FEATURE, ModWorldGen::configuredFeatures)
@@ -63,6 +74,16 @@ public final class ModWorldGen {
         context.register(VOLCANIC_BASALT_CRUST, new ConfiguredFeature<>(ModFeatures.LAVA_CRUST.get(), new LavaCrustFeature.Config(
                 ModBlocks.VOLCANIC_BASALT.stone.get().defaultBlockState(),
                 blocks.getOrThrow(BlockTags.BASE_STONE_OVERWORLD), 8, 1.5F, 3.0F)));
+        // Purpleheart: a tall straight trunk (9-14 blocks) under a rounded crown 7 wide and 4 high
+        var wood = ModBlocks.PURPLEHEART;
+        context.register(ModTrees.PURPLEHEART, new ConfiguredFeature<>(Feature.TREE, new TreeConfiguration.TreeConfigurationBuilder(
+                BlockStateProvider.simple(wood.log.get()),
+                new StraightTrunkPlacer(9, 3, 2),
+                BlockStateProvider.simple(wood.leaves.get()),
+                new BlobFoliagePlacer(ConstantInt.of(3), ConstantInt.of(0), 4),
+                new TwoLayersFeatureSize(1, 0, 1))
+                .ignoreVines()
+                .build()));
     }
 
     private static void placedFeatures(BootstrapContext<PlacedFeature> context) {
@@ -77,6 +98,9 @@ public final class ModWorldGen {
         context.register(VOLCANIC_BASALT_CRUST_PLACED, new PlacedFeature(features.getOrThrow(VOLCANIC_BASALT_CRUST), List.<PlacementModifier>of(
                 CountPlacement.of(16), InSquarePlacement.spread(),
                 HeightRangePlacement.uniform(VerticalAnchor.bottom(), VerticalAnchor.absolute(48)), BiomeFilter.biome())));
+        // About one purpleheart per jungle chunk (sometimes two), only where its sapling could grow
+        context.register(PURPLEHEART_PLACED, new PlacedFeature(features.getOrThrow(ModTrees.PURPLEHEART),
+                VegetationPlacements.treePlacement(PlacementUtils.countExtra(1, 0.1F, 1), ModBlocks.PURPLEHEART.sapling.get())));
     }
 
     private static void biomeModifiers(BootstrapContext<BiomeModifier> context) {
@@ -89,6 +113,8 @@ public final class ModWorldGen {
         context.register(biomeModifier("add_volcanic_basalt_crust"), new BiomeModifiers.AddFeaturesBiomeModifier(overworld,
                 HolderSet.direct(placed.getOrThrow(VOLCANIC_BASALT_CRUST_PLACED)),
                 GenerationStep.Decoration.UNDERGROUND_DECORATION));
+        context.register(biomeModifier("add_purpleheart"), new BiomeModifiers.AddFeaturesBiomeModifier(biomes.getOrThrow(BiomeTags.IS_JUNGLE),
+                HolderSet.direct(placed.getOrThrow(PURPLEHEART_PLACED)), GenerationStep.Decoration.VEGETAL_DECORATION));
     }
 
     private static ResourceKey<ConfiguredFeature<?, ?>> configured(String name) {

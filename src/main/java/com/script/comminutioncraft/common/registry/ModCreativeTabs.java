@@ -108,6 +108,12 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.CREATIVE_FLUID_TANK.get());
                         // Decorative stone
                         ModBlocks.STONE_SETS.forEach(set -> set.all().forEach(block -> output.accept(block.get())));
+                        // Purpleheart wood
+                        ModBlocks.PURPLEHEART.withItems().forEach(block -> output.accept(block.get()));
+                        output.accept(ModItems.PURPLEHEART_SIGN.get());
+                        output.accept(ModItems.PURPLEHEART_HANGING_SIGN.get());
+                        output.accept(ModItems.PURPLEHEART_BOAT.get());
+                        output.accept(ModItems.PURPLEHEART_CHEST_BOAT.get());
                     })
                     .build());
 

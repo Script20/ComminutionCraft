@@ -81,5 +81,32 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
             tag(Tags.Blocks.STONES).add(set.stone.get());
             tag(Tags.Blocks.COBBLESTONES).add(set.cobbled.get(), set.mossyCobbled.get());
         }
+
+        // Purpleheart: vanilla's wood tags give axe mining, burning, leaf decay, fences joining, sign behaviour
+        var wood = ModBlocks.PURPLEHEART;
+        var logs = WoodFamily.logsBlockTag(wood);
+        wood.logs().forEach(block -> tag(logs).add(block.get()));
+        tag(BlockTags.LOGS_THAT_BURN).addTag(logs);
+        tag(BlockTags.OVERWORLD_NATURAL_LOGS).add(wood.log.get());
+        tag(Tags.Blocks.STRIPPED_LOGS).add(wood.strippedLog.get());
+        tag(Tags.Blocks.STRIPPED_WOODS).add(wood.strippedWood.get());
+        tag(BlockTags.PLANKS).add(wood.planks.get());
+        tag(BlockTags.WOODEN_STAIRS).add(wood.stairs.get());
+        tag(BlockTags.WOODEN_SLABS).add(wood.slab.get());
+        tag(BlockTags.WOODEN_FENCES).add(wood.fence.get());
+        tag(Tags.Blocks.FENCES_WOODEN).add(wood.fence.get());
+        tag(BlockTags.FENCE_GATES).add(wood.fenceGate.get());
+        tag(Tags.Blocks.FENCE_GATES_WOODEN).add(wood.fenceGate.get());
+        tag(BlockTags.WOODEN_DOORS).add(wood.door.get());
+        tag(BlockTags.WOODEN_TRAPDOORS).add(wood.trapdoor.get());
+        tag(BlockTags.WOODEN_PRESSURE_PLATES).add(wood.pressurePlate.get());
+        tag(BlockTags.WOODEN_BUTTONS).add(wood.button.get());
+        tag(BlockTags.STANDING_SIGNS).add(wood.sign.get());
+        tag(BlockTags.WALL_SIGNS).add(wood.wallSign.get());
+        tag(BlockTags.CEILING_HANGING_SIGNS).add(wood.hangingSign.get());
+        tag(BlockTags.WALL_HANGING_SIGNS).add(wood.wallHangingSign.get());
+        tag(BlockTags.LEAVES).add(wood.leaves.get());
+        tag(BlockTags.SAPLINGS).add(wood.sapling.get());
+        tag(BlockTags.FLOWER_POTS).add(wood.pottedSapling.get());
     }
 }

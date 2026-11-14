@@ -77,6 +77,8 @@ public class ModLootTableProvider extends LootTableProvider {
             dropSelf(ModBlocks.PLASMA_ENERGY_BATTERY.get());
             dropSelf(ModBlocks.PLASMA_CABLE.get());
 
+            woodLoot();
+
             // Natural stone drops its cobbled form (silk touch keeps it); slabs drop 2 when doubled.
             for (StoneSet set : ModBlocks.STONE_SETS) {
                 var slabs = set.allSlabs();
@@ -92,10 +94,26 @@ public class ModLootTableProvider extends LootTableProvider {
             }
         }
 
+        /** Purpleheart: like oak (leaves drop saplings and sticks, no apples); wall signs use the sign tables. */
+        private void woodLoot() {
+            var wood = ModBlocks.PURPLEHEART;
+            for (var block : List.of(wood.log, wood.wood, wood.strippedLog, wood.strippedWood, wood.planks, wood.stairs, wood.fence,
+                    wood.fenceGate, wood.trapdoor, wood.pressurePlate, wood.button, wood.sign, wood.hangingSign, wood.sapling)) {
+                dropSelf(block.get());
+            }
+            add(wood.slab.get(), createSlabItemTable(wood.slab.get()));
+            add(wood.door.get(), createDoorTable(wood.door.get()));
+            add(wood.leaves.get(), createLeavesDrops(wood.leaves.get(), wood.sapling.get(), NORMAL_LEAVES_SAPLING_CHANCES));
+            dropPottedContents(wood.pottedSapling.get());
+        }
+
         /** Every block we register must have a loot table, or datagen fails (catches forgotten ones). */
         @Override
         protected Iterable<Block> getKnownBlocks() {
-            return ModBlocks.BLOCKS.getEntries().stream().<Block>map(holder -> holder.value()).toList();
+            // wall signs share their sign's loot table, so they have none of their own
+            return ModBlocks.BLOCKS.getEntries().stream().<Block>map(holder -> holder.value())
+                    .filter(block -> block != ModBlocks.PURPLEHEART.wallSign.get() && block != ModBlocks.PURPLEHEART.wallHangingSign.get())
+                    .toList();
         }
     }
 }

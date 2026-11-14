@@ -171,6 +171,17 @@ public class ModModelProvider extends ModelProvider {
             blockModels.createRotatedPillarWithHorizontalVariant(set.pillar.get(), TexturedModel.COLUMN_ALT, TexturedModel.COLUMN_HORIZONTAL_ALT);
         }
 
+        // Purpleheart, like vanilla's oak models (leaves keep their own colours: no tint)
+        var wood = ModBlocks.PURPLEHEART;
+        blockModels.family(wood.planks.get()).generateFor(WoodFamily.of(wood));
+        blockModels.woodProvider(wood.log.get()).logWithHorizontal(wood.log.get()).wood(wood.wood.get());
+        blockModels.woodProvider(wood.strippedLog.get()).logWithHorizontal(wood.strippedLog.get()).wood(wood.strippedWood.get());
+        blockModels.createHangingSign(wood.strippedLog.get(), wood.hangingSign.get(), wood.wallHangingSign.get());
+        blockModels.createPlantWithDefaultItem(wood.sapling.get(), wood.pottedSapling.get(), BlockModelGenerators.PlantType.NOT_TINTED);
+        blockModels.createTrivialBlock(wood.leaves.get(), TexturedModel.LEAVES);
+        itemModels.generateFlatItem(ModItems.PURPLEHEART_BOAT.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.PURPLEHEART_CHEST_BOAT.get(), ModelTemplates.FLAT_ITEM);
+
         for (ProcessedMetal metal : ProcessedMetal.ALL) {
             itemModels.generateFlatItem(metal.granulated().get(), ModelTemplates.FLAT_ITEM);
             itemModels.generateFlatItem(metal.washed().get(), ModelTemplates.FLAT_ITEM);

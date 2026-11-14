@@ -42,5 +42,30 @@ public class ModItemTagsProvider extends ItemTagsProvider {
             tag(ItemTags.STONE_CRAFTING_MATERIALS).add(set.cobbled.get().asItem());
             tag(ItemTags.STONE_TOOL_MATERIALS).add(set.cobbled.get().asItem());
         }
+
+        // Purpleheart (as the block tags; furnace fuel comes from these vanilla tags too)
+        var wood = ModBlocks.PURPLEHEART;
+        var logs = WoodFamily.logsItemTag(wood);
+        wood.logs().forEach(block -> tag(logs).add(block.get().asItem()));
+        tag(ItemTags.LOGS_THAT_BURN).addTag(logs);
+        tag(Tags.Items.STRIPPED_LOGS).add(wood.strippedLog.get().asItem());
+        tag(Tags.Items.STRIPPED_WOODS).add(wood.strippedWood.get().asItem());
+        tag(ItemTags.PLANKS).add(wood.planks.get().asItem());
+        tag(ItemTags.WOODEN_STAIRS).add(wood.stairs.get().asItem());
+        tag(ItemTags.WOODEN_SLABS).add(wood.slab.get().asItem());
+        tag(ItemTags.WOODEN_FENCES).add(wood.fence.get().asItem());
+        tag(Tags.Items.FENCES_WOODEN).add(wood.fence.get().asItem());
+        tag(ItemTags.FENCE_GATES).add(wood.fenceGate.get().asItem());
+        tag(Tags.Items.FENCE_GATES_WOODEN).add(wood.fenceGate.get().asItem());
+        tag(ItemTags.WOODEN_DOORS).add(ModItems.PURPLEHEART_DOOR.get());
+        tag(ItemTags.WOODEN_TRAPDOORS).add(wood.trapdoor.get().asItem());
+        tag(ItemTags.WOODEN_PRESSURE_PLATES).add(wood.pressurePlate.get().asItem());
+        tag(ItemTags.WOODEN_BUTTONS).add(wood.button.get().asItem());
+        tag(ItemTags.SIGNS).add(ModItems.PURPLEHEART_SIGN.get());
+        tag(ItemTags.HANGING_SIGNS).add(ModItems.PURPLEHEART_HANGING_SIGN.get());
+        tag(ItemTags.LEAVES).add(wood.leaves.get().asItem());
+        tag(ItemTags.SAPLINGS).add(wood.sapling.get().asItem());
+        tag(ItemTags.BOATS).add(ModItems.PURPLEHEART_BOAT.get());
+        tag(ItemTags.CHEST_BOATS).add(ModItems.PURPLEHEART_CHEST_BOAT.get());
     }
 }

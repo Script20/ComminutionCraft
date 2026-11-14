@@ -96,7 +96,7 @@ public final class ModGameTests {
             DeferredRegister.create(Registries.TEST_FUNCTION, ComminutionCraft.MODID);
 
     private static final Identifier FLOOR = ComminutionCraft.id("gametest/floor_5x3x5");
-    /** Room for the 7x7x7 Event Horizon Reactor (tests named horizon_*). */
+    /** Room for the 7x7x7 Event Horizon Reactor (tests named horizon_*) and for tall trees (tall_*). */
     private static final Identifier BIG_FLOOR = ComminutionCraft.id("gametest/floor_9x10x9");
 
     static {
@@ -161,13 +161,21 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("upgrades_liquid_and_pickup", () -> ModGameTests::upgradesLiquidAndPickup);
         TEST_FUNCTIONS.register("guide_book_recipe", () -> ModGameTests::guideBookRecipe);
         TEST_FUNCTIONS.register("antimatter_suite_runs_the_chain", () -> ModGameTests::antimatterSuiteRunsTheChain);
+        TEST_FUNCTIONS.register("tall_purpleheart_sapling_grows", () -> ModGameTests::purpleheartSaplingGrows);
+        TEST_FUNCTIONS.register("purpleheart_axe_strips_log", () -> ModGameTests::purpleheartAxeStripsLog);
+        TEST_FUNCTIONS.register("purpleheart_wood_basics", () -> ModGameTests::purpleheartWoodBasics);
     }
 
     public static void registerTests(RegisterGameTestsEvent event) {
         Holder<TestEnvironmentDefinition<?>> environment = event.registerEnvironment(ComminutionCraft.id("default"));
-        TEST_FUNCTIONS.getEntries().forEach(function -> event.registerTest(function.getId(),
-                new FunctionGameTestInstance(ResourceKey.create(Registries.TEST_FUNCTION, function.getId()),
-                        new TestData<>(environment, function.getId().getPath().startsWith("horizon_") ? BIG_FLOOR : FLOOR, 400, 0, true))));
+        TEST_FUNCTIONS.getEntries().forEach(function -> {
+            String name = function.getId().getPath();
+            // tall_* tests (trees) need open sky: without it the test world puts a barrier ceiling on the structure
+            boolean tall = name.startsWith("tall_");
+            event.registerTest(function.getId(), new FunctionGameTestInstance(ResourceKey.create(Registries.TEST_FUNCTION, function.getId()),
+                    new TestData<>(environment, name.startsWith("horizon_") || tall ? BIG_FLOOR : FLOOR, 400, 0, true,
+                            net.minecraft.world.level.block.Rotation.NONE, false, 1, 1, tall, 0)));
+        });
     }
 
     // ---- Tests ----
@@ -971,6 +979,74 @@ public final class ModGameTests {
      * The guide book: with Patchouli installed (it is in the dev setup), a book + a Wrench crafts the Comminution Craft
      * guide, and the Wrench comes back.
      */
+    /** A purpleheart sapling on dirt grows into a tall, straight tree: a trunk of 9-14 logs with leaves on top. */
+    private static void purpleheartSaplingGrows(GameTestHelper helper) {
+        var wood = ModBlocks.PURPLEHEART;
+        BlockPos pos = new BlockPos(4, 1, 4);
+        helper.setBlock(pos.below(), Blocks.DIRT);
+        helper.setBlock(pos, wood.sapling.get());
+        BlockPos absolute = helper.absolutePos(pos);
+        var level = helper.getLevel();
+        for (int i = 0; i < 20 && !level.getBlockState(absolute).is(wood.log.get()); i++) {
+            var state = level.getBlockState(absolute);
+            if (state.getBlock() instanceof net.minecraft.world.level.block.SaplingBlock sapling) {
+                sapling.advanceTree(level, absolute, state, level.getRandom());
+            }
+        }
+        helper.assertBlockPresent(wood.log.get(), pos);
+        int trunk = 0;
+        while (level.getBlockState(absolute.above(trunk)).is(wood.log.get())) {
+            trunk++;
+        }
+        helper.assertTrue(trunk >= 9 && trunk <= 14, "The trunk should be 9-14 logs tall, but is " + trunk);
+        helper.assertTrue(level.getBlockState(absolute.above(trunk)).is(wood.leaves.get()), "The crown should sit on top of the trunk");
+        helper.succeed();
+    }
+
+    /** Right-clicking a purpleheart log with an axe strips it (the neoforge:strippables data map). */
+    private static void purpleheartAxeStripsLog(GameTestHelper helper) {
+        var wood = ModBlocks.PURPLEHEART;
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, wood.log.get());
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ItemStack axe = new ItemStack(Items.IRON_AXE);
+        player.setItemInHand(InteractionHand.MAIN_HAND, axe);
+        BlockPos absolute = helper.absolutePos(pos);
+        player.gameMode.useItemOn(player, helper.getLevel(), axe, InteractionHand.MAIN_HAND,
+                new BlockHitResult(Vec3.atCenterOf(absolute).add(0, 0.5, 0), Direction.UP, absolute, false));
+        helper.assertBlockPresent(wood.strippedLog.get(), pos);
+        helper.succeed();
+    }
+
+    /** Purpleheart burns and fuels furnaces like oak, its signs get sign block entities, and its sapling fits in a pot. */
+    private static void purpleheartWoodBasics(GameTestHelper helper) {
+        var wood = ModBlocks.PURPLEHEART;
+        var level = helper.getLevel();
+        BlockPos planks = new BlockPos(1, 1, 1);
+        BlockPos sign = new BlockPos(3, 1, 1);
+        BlockPos hangingSign = new BlockPos(3, 2, 3);
+        helper.setBlock(planks, wood.planks.get());
+        helper.setBlock(sign, wood.sign.get());
+        helper.setBlock(hangingSign.above(), Blocks.OAK_PLANKS);
+        helper.setBlock(hangingSign, wood.hangingSign.get());
+
+        var planksState = level.getBlockState(helper.absolutePos(planks));
+        helper.assertTrue(planksState.getFlammability(level, helper.absolutePos(planks), Direction.UP) == 20,
+                "Purpleheart planks should burn like oak planks");
+        helper.assertTrue(wood.leaves.get().defaultBlockState().getFlammability(level, helper.absolutePos(planks), Direction.UP) == 60,
+                "Purpleheart leaves should burn like oak leaves");
+        helper.assertTrue(level.fuelValues().burnDuration(new ItemStack(wood.planks.get())) == 300, "Purpleheart planks should be furnace fuel");
+        helper.assertTrue(level.fuelValues().burnDuration(new ItemStack(wood.log.get())) == 300, "Purpleheart logs should be furnace fuel");
+        helper.assertTrue(helper.getLevel().getBlockEntity(helper.absolutePos(sign)) instanceof net.minecraft.world.level.block.entity.SignBlockEntity,
+                "A purpleheart sign should have a sign block entity");
+        helper.assertTrue(helper.getLevel().getBlockEntity(helper.absolutePos(hangingSign)) instanceof net.minecraft.world.level.block.entity.HangingSignBlockEntity,
+                "A purpleheart hanging sign should have a hanging sign block entity");
+        var pots = ((net.minecraft.world.level.block.FlowerPotBlock) Blocks.FLOWER_POT).getFullPotsView();
+        helper.assertTrue(pots.containsKey(wood.sapling.getId()) && pots.get(wood.sapling.getId()).get() == wood.pottedSapling.get(),
+                "A flower pot should take the purpleheart sapling");
+        helper.succeed();
+    }
+
     private static void guideBookRecipe(GameTestHelper helper) {
         var recipes = helper.getLevel().getServer().getRecipeManager();
         var key = net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.RECIPE,

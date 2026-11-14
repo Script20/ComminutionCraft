@@ -52,6 +52,7 @@ public class ComminutionCraftClient {
         modEventBus.addListener(ModKeyMappings::register);
         modEventBus.addListener(ComminutionCraftClient::registerRenderers);
         modEventBus.addListener(ComminutionCraftClient::registerFluidModels);
+        com.script.comminutioncraft.client.render.WoodRenderers.register(modEventBus);
         NeoForge.EVENT_BUS.addListener(ModKeyMappings::onClientTick);
         NeoForge.EVENT_BUS.addListener(ModTooltips::onTooltip);
         // per-player settings (machine sound volume) and the machines' working sounds

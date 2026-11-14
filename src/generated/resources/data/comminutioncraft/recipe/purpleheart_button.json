@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "redstone",
+  "group": "wooden_button",
+  "ingredients": [
+    "comminutioncraft:purpleheart_planks"
+  ],
+  "result": {
+    "id": "comminutioncraft:purpleheart_button"
+  }
+}

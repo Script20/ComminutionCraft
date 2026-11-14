@@ -715,6 +715,21 @@ public class ModRecipeProvider extends RecipeProvider {
                 .save(output, key("soaryn_chest"));
 
         ModBlocks.STONE_SETS.forEach(this::stoneRecipes);
+        purpleheartRecipes();
+    }
+
+    // ---- Purpleheart (vanilla's oak recipes) ----
+
+    private void purpleheartRecipes() {
+        var wood = ModBlocks.PURPLEHEART;
+        planksFromLogs(wood.planks.get(), WoodFamily.logsItemTag(wood), 4);
+        woodFromLogs(wood.wood.get(), wood.log.get());
+        woodFromLogs(wood.strippedWood.get(), wood.strippedLog.get());
+        hangingSign(ModItems.PURPLEHEART_HANGING_SIGN.get(), wood.strippedLog.get());
+        woodenBoat(ModItems.PURPLEHEART_BOAT.get(), wood.planks.get());
+        chestBoat(ModItems.PURPLEHEART_CHEST_BOAT.get(), ModItems.PURPLEHEART_BOAT.get());
+        // stairs, slab, fence, fence gate, door, trapdoor, pressure plate, button, sign
+        generateRecipes(WoodFamily.of(wood), FeatureFlags.VANILLA_SET);
     }
 
     // ---- Decorative stone (same recipes as vanilla stone / granite / deepslate) ----

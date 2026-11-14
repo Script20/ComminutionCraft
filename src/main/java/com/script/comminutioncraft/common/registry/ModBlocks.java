@@ -276,6 +276,11 @@ public final class ModBlocks {
     public static final StoneSet VOLCANIC_BASALT = new StoneSet(BLOCKS, "volcanic_basalt", MapColor.COLOR_BLACK, 2.0F, 6.0F, SoundType.BASALT);
     public static final List<StoneSet> STONE_SETS = List.of(MARBLE, VOLCANIC_BASALT);
 
+    // Purpleheart wood (a tall, straight jungle tree; purple heartwood)
+    public static final com.script.comminutioncraft.common.block.WoodSet PURPLEHEART = new com.script.comminutioncraft.common.block.WoodSet(
+            BLOCKS, "purpleheart", MapColor.COLOR_PURPLE, MapColor.COLOR_GRAY, 0xFF3C7640,
+            com.script.comminutioncraft.common.worldgen.ModTrees.PURPLEHEART_GROWER);
+
     /** Same feel as a vanilla furnace: needs a pickaxe, glows while burning. */
     private static BlockBehaviour.Properties tier1MachineProperties(BlockBehaviour.Properties properties) {
         return properties

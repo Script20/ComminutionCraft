@@ -75,6 +75,7 @@ public class ComminutionCraft {
         modEventBus.addListener(com.script.comminutioncraft.common.registry.ModDataMaps::register);
         modEventBus.addListener(ModGameTests::registerTests);
         modEventBus.addListener(SwitchWrenchModePayload::register);
+        com.script.comminutioncraft.common.block.ModWoods.register(modEventBus);
 
         NeoForge.EVENT_BUS.addListener(RecipeSync::sendToClients);
     }

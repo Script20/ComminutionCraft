@@ -257,6 +257,14 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.comminutioncraft.water", "Water: %s / %s mB");
         add("fluid_type.comminutioncraft.plasma", "Plasma");
         ModBlocks.STONE_SETS.forEach(set -> set.all().forEach(block -> add(block.get(), titleCase(block.getId().getPath()))));
+        ModBlocks.PURPLEHEART.withItems().forEach(block -> add(block.get(), titleCase(block.getId().getPath())));
+        add(ModBlocks.PURPLEHEART.sign.get(), "Purpleheart Sign");
+        add(ModBlocks.PURPLEHEART.hangingSign.get(), "Purpleheart Hanging Sign");
+        add(ModBlocks.PURPLEHEART.pottedSapling.get(), "Potted Purpleheart Sapling");
+        add(ModItems.PURPLEHEART_BOAT.get(), "Purpleheart Boat");
+        add(ModItems.PURPLEHEART_CHEST_BOAT.get(), "Purpleheart Boat with Chest");
+        add(com.script.comminutioncraft.common.registry.ModEntities.PURPLEHEART_BOAT.get(), "Purpleheart Boat");
+        add(com.script.comminutioncraft.common.registry.ModEntities.PURPLEHEART_CHEST_BOAT.get(), "Purpleheart Boat with Chest");
 
         add(ModItems.WRENCH.get(), "Wrench");
         add("item.comminutioncraft.wrench.mode.rotate", "Mode: Rotate");

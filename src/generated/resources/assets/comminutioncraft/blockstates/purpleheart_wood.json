@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "comminutioncraft:block/purpleheart_wood",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "comminutioncraft:block/purpleheart_wood"
+    },
+    "axis=z": {
+      "model": "comminutioncraft:block/purpleheart_wood",
+      "x": 90
+    }
+  }
+}

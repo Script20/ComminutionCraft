@@ -1,0 +1,10 @@
+{
+  "values": {
+    "comminutioncraft:purpleheart_log": {
+      "stripped_block": "comminutioncraft:stripped_purpleheart_log"
+    },
+    "comminutioncraft:purpleheart_wood": {
+      "stripped_block": "comminutioncraft:stripped_purpleheart_wood"
+    }
+  }
+}

@@ -35,5 +35,11 @@ public class ModDataMapProvider extends DataMapProvider {
         mass(mass, Items.ANCIENT_DEBRIS, 4);
         mass(mass, Items.NETHER_STAR, 200);
         mass(mass, Items.DRAGON_EGG, 1000);
+
+        // An axe strips Purpleheart logs and wood
+        var strip = builder(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.STRIPPABLES);
+        var wood = com.script.comminutioncraft.common.registry.ModBlocks.PURPLEHEART;
+        strip.add(wood.log.getId(), new net.neoforged.neoforge.registries.datamaps.builtin.Strippable(wood.strippedLog.get()), false);
+        strip.add(wood.wood.getId(), new net.neoforged.neoforge.registries.datamaps.builtin.Strippable(wood.strippedWood.get()), false);
     }
 }
