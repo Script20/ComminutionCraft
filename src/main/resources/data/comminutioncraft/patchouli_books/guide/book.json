@@ -1,6 +1,6 @@
 {
   "name": "Comminution Craft Guide",
-  "subtitle": "Ore processing, six tiers deep",
+  "subtitle": "Six tiers deep",
   "landing_text": "Every ore you mine holds more than one ingot. This book walks you up the six power tiers, from a coal-fired granulator to a contained black hole, and shows how to build the three multiblocks.$(br2)Every machine, recipe and number is also in $(l)JEI$().",
   "use_resource_pack": true,
   "book_texture": "comminutioncraft:textures/gui/guide_book.png",
