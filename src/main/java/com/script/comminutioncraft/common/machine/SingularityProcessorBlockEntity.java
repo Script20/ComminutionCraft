@@ -64,7 +64,8 @@ public class SingularityProcessorBlockEntity extends ElectricMachineBlockEntity 
         }
         super.serverTick(level, pos, state);
         // The parent pushes when the main output has something; the by-products can be waiting on their own.
-        if (items.get(SLOT_OUTPUT).isEmpty() && !items.get(SLOT_BYPRODUCT).isEmpty() && getControls().canRun(level, pos)) {
+        // (even when switched off by redstone: finished items always go out)
+        if (items.get(SLOT_OUTPUT).isEmpty() && !items.get(SLOT_BYPRODUCT).isEmpty()) {
             pushItemsOut(level, pos);
         }
     }

@@ -219,11 +219,14 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
 
     @Override
     public void serverTick(ServerLevel level, BlockPos pos, BlockState state) {
-        // Switched off by redstone: pauses (progress kept); it still accepts power.
+        // Switched off by redstone: pauses (progress kept); it still accepts power and still pushes finished items out.
         if (!controls.canRun(level, pos)) {
             litCooldown = 0;
             if (state.getValue(MachineBlock.LIT)) {
                 level.setBlock(pos, state.setValue(MachineBlock.LIT, false), Block.UPDATE_ALL);
+            }
+            if (!items.get(SLOT_OUTPUT).isEmpty()) {
+                pushItemsOut(level, pos);
             }
             return;
         }

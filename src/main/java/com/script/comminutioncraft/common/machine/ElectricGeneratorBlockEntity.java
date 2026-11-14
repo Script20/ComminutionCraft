@@ -132,11 +132,12 @@ public class ElectricGeneratorBlockEntity extends BaseContainerBlockEntity
 
     @Override
     public void serverTick(ServerLevel level, BlockPos pos, BlockState state) {
-        // Switched off by redstone: no burning and no power out (the fuel and stored FE are kept).
+        // Switched off by redstone: no burning (the fuel is kept), but the FE it already holds still goes out.
         if (!controls.canRun(level, pos)) {
             if (state.getValue(MachineBlock.LIT)) {
                 level.setBlock(pos, state.setValue(MachineBlock.LIT, false), Block.UPDATE_ALL);
             }
+            pushEnergy(level, pos);
             return;
         }
         boolean changed = false;

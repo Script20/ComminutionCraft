@@ -143,10 +143,13 @@ public abstract class FuelMachineBlockEntity extends BaseContainerBlockEntity
 
     @Override
     public void serverTick(ServerLevel level, BlockPos pos, BlockState state) {
-        // Switched off by redstone: everything pauses (fuel doesn't burn down, progress is kept).
+        // Switched off by redstone: the work pauses (fuel doesn't burn down, progress is kept); finished items still go out.
         if (!controls.canRun(level, pos)) {
             if (state.getValue(MachineBlock.LIT)) {
                 level.setBlock(pos, state.setValue(MachineBlock.LIT, false), Block.UPDATE_ALL);
+            }
+            if (!items.get(SLOT_OUTPUT).isEmpty()) {
+                pushItemsOut(level, pos);
             }
             return;
         }

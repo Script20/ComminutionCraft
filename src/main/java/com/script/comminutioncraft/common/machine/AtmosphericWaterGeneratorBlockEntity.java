@@ -197,11 +197,13 @@ public class AtmosphericWaterGeneratorBlockEntity extends BaseContainerBlockEnti
         intake = countIntakes(level, pos);
         humidity = humidity(level, pos);
         rate = 0;
+        // Switched off by redstone: makes no water, but the water in its tank still goes out.
         if (!controls.canRun(level, pos)) {
             litCooldown = 0;
             if (state.getValue(MachineBlock.LIT)) {
                 level.setBlock(pos, state.setValue(MachineBlock.LIT, false), Block.UPDATE_ALL);
             }
+            pushWater(level, pos);
             return;
         }
 

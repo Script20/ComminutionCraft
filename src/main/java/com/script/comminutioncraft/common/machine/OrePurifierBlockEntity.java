@@ -89,7 +89,8 @@ public class OrePurifierBlockEntity extends ElectricMachineBlockEntity {
     public void serverTick(ServerLevel level, BlockPos pos, BlockState state) {
         super.serverTick(level, pos, state);
         // The parent pushes when the main output has something; the by-product can be waiting on its own.
-        if (items.get(SLOT_OUTPUT).isEmpty() && !items.get(SLOT_BYPRODUCT).isEmpty() && getControls().canRun(level, pos)) {
+        // (even when switched off by redstone: finished items always go out)
+        if (items.get(SLOT_OUTPUT).isEmpty() && !items.get(SLOT_BYPRODUCT).isEmpty()) {
             pushItemsOut(level, pos);
         }
     }

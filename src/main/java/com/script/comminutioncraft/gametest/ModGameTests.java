@@ -166,6 +166,7 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("purpleheart_wood_basics", () -> ModGameTests::purpleheartWoodBasics);
         TEST_FUNCTIONS.register("tiny_coal_recipe_and_fuel", () -> ModGameTests::tinyCoalRecipeAndFuel);
         TEST_FUNCTIONS.register("water_bucket_fills_ore_washer", () -> ModGameTests::waterBucketFillsOreWasher);
+        TEST_FUNCTIONS.register("switched_off_machines_still_output", () -> ModGameTests::switchedOffMachinesStillOutput);
     }
 
     public static void registerTests(RegisterGameTestsEvent event) {
@@ -1086,6 +1087,57 @@ public final class ModGameTests {
             helper.assertTrue(washer.getWater().getAmount() == 1000, "An empty bucket mustn't take water out of " + block);
         }
         helper.succeed();
+    }
+
+    /**
+     * Switched off by redstone (High, no signal), machines stop working but still push out what they hold (owner,
+     * 2026-11-14): an Electric Smelter's ingots go into the chest below without its raw iron being smelted, an Electric
+     * Generator's stored FE goes into the granulator next to it, a water generator's water goes into the tank below.
+     */
+    private static void switchedOffMachinesStillOutput(GameTestHelper helper) {
+        BlockPos smelterPos = new BlockPos(1, 1, 1);
+        BlockPos chestPos = new BlockPos(1, 0, 1);
+        helper.setBlock(chestPos, Blocks.CHEST);
+        helper.setBlock(smelterPos, ModBlocks.ELECTRIC_SMELTER.get());
+        ElectricMachineBlockEntity smelter = helper.getBlockEntity(smelterPos, ElectricMachineBlockEntity.class);
+        smelter.getControls().setRedstone(RedstoneMode.HIGH);
+        smelter.setItem(ElectricMachineBlockEntity.SLOT_INPUT, new ItemStack(Items.RAW_IRON));
+        smelter.setItem(ElectricMachineBlockEntity.SLOT_OUTPUT, new ItemStack(Items.IRON_INGOT, 5));
+        if (smelter.getEnergyHandler() instanceof com.script.comminutioncraft.common.energy.MachineEnergyStorage power) {
+            power.set(power.getCapacity());
+        }
+
+        BlockPos generatorPos = new BlockPos(3, 1, 1);
+        BlockPos granulatorPos = new BlockPos(3, 1, 2);
+        helper.setBlock(generatorPos, ModBlocks.ELECTRIC_GENERATOR.get());
+        helper.setBlock(granulatorPos, ModBlocks.ELECTRIC_GRANULATOR.get());
+        ElectricGeneratorBlockEntity generator = helper.getBlockEntity(generatorPos, ElectricGeneratorBlockEntity.class);
+        generator.getControls().setRedstone(RedstoneMode.HIGH);
+        if (generator.getEnergyHandler() instanceof com.script.comminutioncraft.common.energy.MachineEnergyStorage power) {
+            power.set(10_000);
+        }
+        ElectricMachineBlockEntity granulator = helper.getBlockEntity(granulatorPos, ElectricMachineBlockEntity.class);
+
+        BlockPos waterPos = new BlockPos(1, 1, 3);
+        BlockPos tankPos = new BlockPos(1, 0, 3);
+        helper.setBlock(tankPos, ModBlocks.FLUID_TANK.get());
+        helper.setBlock(waterPos, ModBlocks.ATMOSPHERIC_WATER_GENERATOR.get());
+        AtmosphericWaterGeneratorBlockEntity water = helper.getBlockEntity(waterPos, AtmosphericWaterGeneratorBlockEntity.class);
+        water.getControls().setRedstone(RedstoneMode.HIGH);
+        water.getTank().fill(FluidResource.of(Fluids.WATER), 1000);
+        FluidTankBlockEntity tank = helper.getBlockEntity(tankPos, FluidTankBlockEntity.class);
+
+        helper.runAfterDelay(40, () -> {
+            helper.assertTrue(smelter.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT).isEmpty(), "The switched-off smelter kept its ingots");
+            helper.assertContainerContains(chestPos, Items.IRON_INGOT);
+            helper.assertTrue(smelter.getItem(ElectricMachineBlockEntity.SLOT_INPUT).is(Items.RAW_IRON),
+                    "The switched-off smelter shouldn't smelt its raw iron");
+            int got = granulator.getEnergyHandler().getAmountAsInt();
+            helper.assertTrue(got > 0, "The switched-off generator should still push its stored FE (granulator has " + got + ")");
+            helper.assertTrue(tank.getTank().getAmount() > 0, "The switched-off water generator should still push its water");
+            helper.assertTrue(water.getTank().getAmount() < 1000, "The water generator shouldn't still hold all its water");
+            helper.succeed();
+        });
     }
 
     private static void guideBookRecipe(GameTestHelper helper) {

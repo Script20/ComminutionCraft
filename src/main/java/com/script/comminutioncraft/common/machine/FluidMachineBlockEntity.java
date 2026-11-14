@@ -278,11 +278,16 @@ public abstract class FluidMachineBlockEntity extends BlockEntity implements Tic
 
     @Override
     public void serverTick(ServerLevel level, BlockPos pos, BlockState state) {
+        // Switched off by redstone: no work, but what's already in the output tanks / FE buffer still goes out.
         if (!controls.canRun(level, pos)) {
             rate = 0;
             litCooldown = 0;
             if (state.getValue(MachineBlock.LIT)) {
                 level.setBlock(pos, state.setValue(MachineBlock.LIT, false), Block.UPDATE_ALL);
+            }
+            pushFluids(level, pos);
+            if (pushesEnergy()) {
+                pushEnergy(level, pos);
             }
             return;
         }
