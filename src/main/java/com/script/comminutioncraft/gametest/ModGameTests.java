@@ -167,6 +167,7 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("tiny_coal_recipe_and_fuel", () -> ModGameTests::tinyCoalRecipeAndFuel);
         TEST_FUNCTIONS.register("water_bucket_fills_ore_washer", () -> ModGameTests::waterBucketFillsOreWasher);
         TEST_FUNCTIONS.register("switched_off_machines_still_output", () -> ModGameTests::switchedOffMachinesStillOutput);
+        TEST_FUNCTIONS.register("matter_mass_values", () -> ModGameTests::matterMassValues);
     }
 
     public static void registerTests(RegisterGameTestsEvent event) {
@@ -1138,6 +1139,48 @@ public final class ModGameTests {
             helper.assertTrue(water.getTank().getAmount() < 1000, "The water generator shouldn't still hold all its water");
             helper.succeed();
         });
+    }
+
+    /**
+     * The black hole's matter masses (owner, 2026-11-14): plain materials 1, metals and gems by rarity in powers of 2,
+     * blocks 9 x, single items overriding their tags (copper ore drops several, nether gold ore drops nuggets).
+     */
+    private static void matterMassValues(GameTestHelper helper) {
+        var expected = new java.util.LinkedHashMap<net.minecraft.world.item.Item, Integer>();
+        expected.put(Items.COBBLESTONE, 1);
+        expected.put(Items.DIRT, 1);
+        expected.put(Items.OAK_LOG, 1);
+        expected.put(Items.COPPER_INGOT, 8);
+        expected.put(Items.IRON_INGOT, 16);
+        expected.put(Items.RAW_IRON, 16);
+        expected.put(Items.IRON_ORE, 16);
+        expected.put(Items.IRON_NUGGET, 1);
+        expected.put(Items.IRON_BLOCK, 144);
+        expected.put(Items.RAW_IRON_BLOCK, 144);
+        expected.put(Items.GOLD_INGOT, 32);
+        expected.put(Items.GOLD_NUGGET, 2);
+        expected.put(Items.NETHER_GOLD_ORE, 8);
+        expected.put(Items.COPPER_ORE, 32);
+        expected.put(Items.LAPIS_LAZULI, 32);
+        expected.put(Items.LAPIS_ORE, 256);
+        expected.put(Items.DIAMOND, 128);
+        expected.put(Items.DIAMOND_BLOCK, 1152);
+        expected.put(Items.NETHERITE_INGOT, 1024);
+        expected.put(Items.REDSTONE, 4);
+        expected.put(Items.COAL, 8);
+        expected.put(Items.NETHER_STAR, 2048);
+        expected.put(Items.DRAGON_EGG, 4096);
+        expected.put(Items.MUSIC_DISC_CAT, 64);
+        expected.put(Items.COAST_ARMOR_TRIM_SMITHING_TEMPLATE, 64);
+        expected.put(ModItems.TINY_COAL.get(), 1);
+        expected.put(ModItems.GRANULATED_IRON.get(), 16);
+        expected.put(ModItems.WASHED_GOLD.get(), 32);
+        expected.put(ModItems.SINGULARITY_SHARD.get(), 1024);
+        expected.forEach((item, mass) -> {
+            int got = com.script.comminutioncraft.common.registry.ModDataMaps.massOf(new ItemStack(item));
+            helper.assertTrue(got == mass, item + " should weigh " + mass + ", weighs " + got);
+        });
+        helper.succeed();
     }
 
     private static void guideBookRecipe(GameTestHelper helper) {

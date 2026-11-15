@@ -342,7 +342,7 @@ public final class MachineConfig {
         EVENT_HORIZON_IGNITION_ANTIMATTER = integer(builder, "event_horizon_reactor", "ignitionAntimatter", "Ignition antimatter", "mB of antimatter that forms the black hole", 1_000);
         EVENT_HORIZON_ENERGY_PER_MASS = integer(builder, "event_horizon_reactor", "energyPerMass", "Energy per mass", "FE made per unit of mass (an item's comminutioncraft:matter_mass, 1 by default)", 50_000);
         EVENT_HORIZON_MASS_PER_TICK = integer(builder, "event_horizon_reactor", "massPerTick", "Mass per tick", "Max mass burned per tick", 5);
-        EVENT_HORIZON_MASS_CAPACITY = integer(builder, "event_horizon_reactor", "massCapacity", "Mass capacity", "Most mass the black hole holds at once", 10_000);
+        EVENT_HORIZON_MASS_CAPACITY = integer(builder, "event_horizon_reactor", "massCapacity", "Mass capacity", "Most mass the black hole holds at once", 65_536);
         EVENT_HORIZON_STARVE_TICKS = integer(builder, "event_horizon_reactor", "starveTicks", "Starve ticks", "Ticks with no mass before the black hole evaporates", 1_200);
         EVENT_HORIZON_ENERGY_CAPACITY = integer(builder, "event_horizon_reactor", "energyCapacity", "Energy capacity", "FE buffer", 50_000_000);
         EVENT_HORIZON_MAX_ENERGY_OUTPUT = integer(builder, "event_horizon_reactor", "maxEnergyOutput", "Max energy output", "Max FE per tick pushed out of each Output port", 250_000);
