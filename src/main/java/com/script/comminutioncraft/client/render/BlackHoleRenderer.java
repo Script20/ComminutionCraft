@@ -52,6 +52,12 @@ public class BlackHoleRenderer implements BlockEntityRenderer<EventHorizonReacto
     private static final int DISC_SEGMENTS = 72;
     private static final double TAU = Math.PI * 2;
 
+    // Forming, timed to black_hole/form.ogg (owner, 2026-11-14): its build-up rises for 6.0 s, falls silent, and hits at
+    // 6.4 s. The field grows and brightens through the build-up; the black hole pops in on the hit.
+    private static final float FIELD_BUILD_TICKS = 120;
+    private static final float HOLE_APPEARS_TICKS = 128;
+    private static final float HOLE_POP_TICKS = 6;
+
     public static class State extends BlockEntityRenderState {
         boolean lit;
         /** The hole's middle, relative to the controller block's corner. */
@@ -64,6 +70,8 @@ public class BlackHoleRenderer implements BlockEntityRenderer<EventHorizonReacto
         float camZ;
         /** Seconds of game time, for the spin and shimmer (double: angles are wrapped from it, it never wraps itself). */
         double time;
+        /** Ticks into forming (with partial ticks), or -1 when fully formed. */
+        float forming;
     }
 
     @Override
@@ -85,6 +93,8 @@ public class BlackHoleRenderer implements BlockEntityRenderer<EventHorizonReacto
         state.camY = (float) (cameraPosition.y - (centre.getY() + 0.5));
         state.camZ = (float) (cameraPosition.z - (centre.getZ() + 0.5));
         state.time = reactor.getLevel() == null ? 0 : (reactor.getLevel().getGameTime() + (double) partialTicks) / 20.0;
+        int forming = com.script.comminutioncraft.client.sound.MachineSounds.formingTicks(pos);
+        state.forming = forming < 0 ? -1 : forming + partialTicks;
     }
 
     @Override
@@ -109,8 +119,32 @@ public class BlackHoleRenderer implements BlockEntityRenderer<EventHorizonReacto
         }
         poseStack.pushPose();
         poseStack.translate(state.cx, state.cy, state.cz);
-        drawHole(poseStack, collector, camera.orientation, new Vector3f(state.camX, state.camY, state.camZ), state.time);
-        drawField(poseStack, collector, state.time);
+        float t = state.forming;
+        if (t < 0) { // formed
+            drawHole(poseStack, collector, camera.orientation, new Vector3f(state.camX, state.camY, state.camZ), state.time);
+            drawField(poseStack, collector, state.time, 1);
+        } else {
+            // the field grows out from the middle and brightens with the build-up, then holds through the silence
+            float build = Math.min(1, t / FIELD_BUILD_TICKS);
+            float grow = 1 - (1 - build) * (1 - build); // eases out
+            // on the hit it flashes, fading back over a second
+            float sinceHit = t - HOLE_APPEARS_TICKS;
+            float flash = sinceHit < 0 ? 0 : 1.5F * Math.max(0, 1 - sinceHit / 20);
+            poseStack.pushPose();
+            float fieldScale = 0.1F + 0.9F * grow;
+            poseStack.scale(fieldScale, fieldScale, fieldScale);
+            drawField(poseStack, collector, state.time, grow + flash);
+            poseStack.popPose();
+            if (sinceHit >= 0) { // the hole pops in, overshooting a little before it settles
+                float s = Math.min(1, sinceHit / HOLE_POP_TICKS);
+                float c = 1.70158F;
+                float pop = 1 + (c + 1) * (float) Math.pow(s - 1, 3) + c * (float) Math.pow(s - 1, 2);
+                poseStack.pushPose();
+                poseStack.scale(pop, pop, pop);
+                drawHole(poseStack, collector, camera.orientation, new Vector3f(state.camX, state.camY, state.camZ), state.time);
+                poseStack.popPose();
+            }
+        }
         poseStack.popPose();
     }
 
@@ -132,10 +166,13 @@ public class BlackHoleRenderer implements BlockEntityRenderer<EventHorizonReacto
         collector.submitCustomGeometry(poseStack, RenderTypes.eyes(DISC), (pose, buffer) -> disc(buffer, pose, time, dir));
     }
 
-    /** The deadly 5x5x5 field: a faint gold shimmer drifting up its faces. */
-    public static void drawField(PoseStack poseStack, SubmitNodeCollector collector, double time) {
+    /** The deadly 5x5x5 field: a faint gold shimmer drifting up its faces ({@code strength} 1 = normal, more = brighter). */
+    public static void drawField(PoseStack poseStack, SubmitNodeCollector collector, double time, float strength) {
         float pulse = 0.8F + 0.2F * (float) Math.sin(time * 1.7 % TAU);
-        int alpha = Math.round(48 * pulse);
+        int alpha = Math.min(255, Math.round(48 * pulse * strength));
+        if (alpha <= 0) {
+            return;
+        }
         float scroll = (float) (time * 0.06 % 1);
         collector.submitCustomGeometry(poseStack, RenderTypes.eyes(FIELD), (pose, buffer) -> field(buffer, pose, alpha << 24 | 0xFFFFFF, scroll));
     }

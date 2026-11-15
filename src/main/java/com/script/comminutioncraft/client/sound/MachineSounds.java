@@ -139,6 +139,16 @@ public final class MachineSounds {
         mc.getSoundManager().play(loop);
     }
 
+    /**
+     * Ticks since this controller's black hole started forming (its {@code form} sound started), or -1 when it isn't
+     * forming: already formed, seen already running, out of range, or dark. The renderer times the field and the hole's
+     * appearance to the sound with it.
+     */
+    public static int formingTicks(BlockPos controller) {
+        Hole hole = HOLES.get(controller);
+        return hole != null && hole.lit && hole.form != null ? hole.formTicks : -1;
+    }
+
     private static void updateHole(Minecraft mc, ClientLevel level, BlockPos controller, BlockPos centre, boolean lit) {
         Hole hole = HOLES.get(controller);
         if (hole == null) {
