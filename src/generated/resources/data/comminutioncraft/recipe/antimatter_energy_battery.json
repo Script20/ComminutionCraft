@@ -3,9 +3,9 @@
   "category": "misc",
   "key": {
     "A": "comminutioncraft:antimatter_circuit",
-    "B": "comminutioncraft:fusion_energy_battery",
+    "B": "#c:storage_blocks/diamond",
     "C": "comminutioncraft:containment_cell",
-    "D": "#c:storage_blocks/diamond"
+    "D": "comminutioncraft:fusion_energy_battery"
   },
   "pattern": [
     "BAB",

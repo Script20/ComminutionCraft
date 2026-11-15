@@ -2,9 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "B": "comminutioncraft:plasma_energy_battery",
+    "B": "comminutioncraft:reactor_plating",
     "F": "comminutioncraft:fusion_circuit",
-    "R": "comminutioncraft:reactor_plating",
+    "R": "comminutioncraft:plasma_energy_battery",
     "X": "#c:storage_blocks/redstone"
   },
   "pattern": [

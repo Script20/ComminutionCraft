@@ -2,10 +2,10 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "B": "comminutioncraft:antimatter_energy_battery",
+    "B": "comminutioncraft:singularity_circuit",
     "F": "comminutioncraft:containment_frame",
     "H": "comminutioncraft:singularity_shard",
-    "S": "comminutioncraft:singularity_circuit"
+    "S": "comminutioncraft:antimatter_energy_battery"
   },
   "pattern": [
     "BHB",
