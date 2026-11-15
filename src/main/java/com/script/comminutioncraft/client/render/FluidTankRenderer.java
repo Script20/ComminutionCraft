@@ -32,11 +32,11 @@ import org.jspecify.annotations.Nullable;
  * off light are drawn full bright.
  */
 public class FluidTankRenderer implements BlockEntityRenderer<FluidTankBlockEntity, FluidTankRenderer.State> {
-    private static final float WALL = 0.002F;   // inner walls, just inside the block faces
-    private static final float FLUID = 0.01F;   // the fluid, just inside the walls
+    static final float WALL = 0.002F;   // inner walls, just inside the block faces
+    static final float FLUID = 0.01F;   // the fluid, just inside the walls
     // The window spans texture rows 1-14: an empty tank shows nothing, a full one fills the window.
-    private static final float WINDOW_BOTTOM = 1F / 16;
-    private static final float WINDOW_HEIGHT = 14F / 16;
+    static final float WINDOW_BOTTOM = 1F / 16;
+    static final float WINDOW_HEIGHT = 14F / 16;
 
     private final SpriteGetter sprites;
 
@@ -105,7 +105,7 @@ public class FluidTankRenderer implements BlockEntityRenderer<FluidTankBlockEnti
      * A box from (min, bottom, min) to (max, top, max): `ends` on the top and bottom, `sides` round it, faces pointing
      * out (or in, for the walls). The sides show the sprite from `vTop` down, so a part-full box isn't squashed.
      */
-    private static void box(Face ends, Face sides, float min, float bottom, float max, float top, float vTop,
+    static void box(Face ends, Face sides, float min, float bottom, float max, float top, float vTop,
                             boolean inward) {
         ends.quad(inward, 0, 1, 0, min, top, min, 0, 0, min, top, max, 0, 1, max, top, max, 1, 1, max, top, min, 1, 0);
         ends.quad(inward, 0, -1, 0, min, bottom, min, 0, 0, max, bottom, min, 1, 0, max, bottom, max, 1, 1, min, bottom, max, 0, 1);
@@ -117,7 +117,7 @@ public class FluidTankRenderer implements BlockEntityRenderer<FluidTankBlockEnti
     }
 
     /** Emits textured quads (four corners as x, y, z, u, v with u/v from 0 to 1 across the sprite). */
-    private record Face(VertexConsumer buffer, PoseStack.Pose pose, TextureAtlasSprite sprite, int color, int light) {
+    record Face(VertexConsumer buffer, PoseStack.Pose pose, TextureAtlasSprite sprite, int color, int light) {
         void quad(boolean inward, float nx, float ny, float nz,
                   float x0, float y0, float z0, float u0, float v0,
                   float x1, float y1, float z1, float u1, float v1,

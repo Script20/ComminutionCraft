@@ -1,6 +1,19 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "comminutioncraft:block/containment_cell"
+    "type": "minecraft:composite",
+    "models": [
+      {
+        "type": "minecraft:model",
+        "model": "comminutioncraft:block/containment_cell"
+      },
+      {
+        "type": "minecraft:special",
+        "base": "comminutioncraft:block/containment_cell",
+        "model": {
+          "type": "comminutioncraft:tank_contents",
+          "block": "comminutioncraft:containment_cell"
+        }
+      }
+    ]
   }
 }

@@ -53,6 +53,10 @@ public class ComminutionCraftClient {
         modEventBus.addListener(ComminutionCraftClient::registerRenderers);
         modEventBus.addListener(ComminutionCraftClient::registerFluidModels);
         com.script.comminutioncraft.client.render.WoodRenderers.register(modEventBus);
+        // tank items draw the fluid they hold (wrench pickup)
+        modEventBus.addListener((net.neoforged.neoforge.client.event.RegisterSpecialModelRendererEvent event) -> event.register(
+                com.script.comminutioncraft.client.render.TankItemRenderer.TYPE,
+                com.script.comminutioncraft.client.render.TankItemRenderer.Unbaked.MAP_CODEC));
         NeoForge.EVENT_BUS.addListener(ModKeyMappings::onClientTick);
         NeoForge.EVENT_BUS.addListener(ModTooltips::onTooltip);
         // per-player settings (machine sound volume) and the machines' working sounds

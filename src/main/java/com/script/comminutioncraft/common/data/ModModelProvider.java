@@ -92,6 +92,15 @@ public class ModModelProvider extends ModelProvider {
         super(output, ComminutionCraft.MODID);
     }
 
+    /** A tank item = its block model plus the inner walls and the fluid it holds (client/render/TankItemRenderer). */
+    private static void tankItem(ItemModelGenerators itemModels, net.minecraft.world.level.block.Block tank) {
+        net.minecraft.resources.Identifier model = net.minecraft.client.data.models.model.ModelLocationUtils.getModelLocation(tank);
+        itemModels.itemModelOutput.accept(tank.asItem(), ItemModelUtils.composite(
+                ItemModelUtils.plainModel(model),
+                ItemModelUtils.specialModel(model, new com.script.comminutioncraft.client.render.TankItemRenderer.Unbaked(
+                        net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(tank)))));
+    }
+
     @Override
     protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
         blockModels.createFurnace(ModBlocks.COAL_GRANULATOR.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
@@ -135,6 +144,8 @@ public class ModModelProvider extends ModelProvider {
         // fluid_tank_side has a transparent window, so the model renders cutout; the contents are a renderer
         blockModels.createTrivialBlock(ModBlocks.FLUID_TANK.get(), TexturedModel.COLUMN);
         blockModels.createTrivialBlock(ModBlocks.CONTAINMENT_CELL.get(), TexturedModel.COLUMN);
+        tankItem(itemModels, ModBlocks.FLUID_TANK.get());
+        tankItem(itemModels, ModBlocks.CONTAINMENT_CELL.get());
         conduit(blockModels, itemModels, ModBlocks.MAGNETIC_CONDUIT.get(), ModItems.MAGNETIC_CONDUIT.get());
         // Particle Accelerator: segments and ports light up while it runs (_on textures); the controller is a furnace
         litColumn(blockModels, ModBlocks.ACCELERATOR_SEGMENT.get());

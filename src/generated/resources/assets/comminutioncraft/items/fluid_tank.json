@@ -1,6 +1,19 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "comminutioncraft:block/fluid_tank"
+    "type": "minecraft:composite",
+    "models": [
+      {
+        "type": "minecraft:model",
+        "model": "comminutioncraft:block/fluid_tank"
+      },
+      {
+        "type": "minecraft:special",
+        "base": "comminutioncraft:block/fluid_tank",
+        "model": {
+          "type": "comminutioncraft:tank_contents",
+          "block": "comminutioncraft:fluid_tank"
+        }
+      }
+    ]
   }
 }
