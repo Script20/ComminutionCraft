@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "G": "#c:ingots/gold",
+    "I": "#c:ingots/iron",
+    "P": "comminutioncraft:plasma_circuit",
+    "X": "minecraft:iron_axe"
+  },
+  "pattern": [
+    " IP",
+    "IXI",
+    "GI "
+  ],
+  "result": {
+    "id": "comminutioncraft:plasma_chainsaw"
+  }
+}

@@ -2,6 +2,7 @@ package com.script.comminutioncraft.common.data;
 
 import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.block.StoneSet;
+import com.script.comminutioncraft.common.item.tool.ModToolMaterials;
 import com.script.comminutioncraft.common.registry.ModBlocks;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup;
@@ -108,5 +109,11 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
         tag(BlockTags.LEAVES).add(wood.leaves.get());
         tag(BlockTags.SAPLINGS).add(wood.sapling.get());
         tag(BlockTags.FLOWER_POTS).add(wood.pottedSapling.get());
+
+        // Tools: a drill mines like a pickaxe and a shovel, a chainsaw like an axe (and leaves), a paxel like all four
+        tag(ModToolMaterials.MINEABLE_DRILL).addTag(BlockTags.MINEABLE_WITH_PICKAXE).addTag(BlockTags.MINEABLE_WITH_SHOVEL);
+        tag(ModToolMaterials.MINEABLE_CHAINSAW).addTag(BlockTags.MINEABLE_WITH_AXE).addTag(BlockTags.LEAVES);
+        tag(ModToolMaterials.MINEABLE_PAXEL).addTag(BlockTags.MINEABLE_WITH_PICKAXE).addTag(BlockTags.MINEABLE_WITH_AXE)
+                .addTag(BlockTags.MINEABLE_WITH_SHOVEL).addTag(BlockTags.MINEABLE_WITH_HOE);
     }
 }

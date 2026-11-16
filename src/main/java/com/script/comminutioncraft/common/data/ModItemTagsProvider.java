@@ -2,8 +2,10 @@ package com.script.comminutioncraft.common.data;
 
 import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.block.StoneSet;
+import com.script.comminutioncraft.common.item.tool.ModToolMaterials;
 import com.script.comminutioncraft.common.registry.ModBlocks;
 import com.script.comminutioncraft.common.registry.ModItems;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
@@ -67,5 +69,22 @@ public class ModItemTagsProvider extends ItemTagsProvider {
         tag(ItemTags.SAPLINGS).add(wood.sapling.get().asItem());
         tag(ItemTags.BOATS).add(ModItems.PURPLEHEART_BOAT.get());
         tag(ItemTags.CHEST_BOATS).add(ModItems.PURPLEHEART_CHEST_BOAT.get());
+
+        // Tools
+        tag(ModToolMaterials.PLATING_REPAIR).add(ModItems.REACTOR_PLATING.get());
+        tag(ModToolMaterials.SINGULARITY_REPAIR).add(ModItems.SINGULARITY_SHARD.get());
+        tag(ItemTags.PICKAXES).add(ModItems.ORE_HAMMER.get());
+        for (ModItems.ToolSet set : List.of(ModItems.REACTOR_PLATING_TOOLS, ModItems.SINGULARITY_TOOLS)) {
+            tag(ItemTags.PICKAXES).add(set.pickaxe().get(), set.paxel().get());
+            tag(ItemTags.AXES).add(set.axe().get(), set.paxel().get());
+            tag(ItemTags.SHOVELS).add(set.shovel().get(), set.paxel().get());
+            tag(ItemTags.HOES).add(set.hoe().get(), set.paxel().get());
+            tag(ItemTags.SWORDS).add(set.sword().get());
+        }
+        ModItems.DRILLS.forEach(drill -> {
+            tag(ItemTags.PICKAXES).add(drill.get());
+            tag(ItemTags.SHOVELS).add(drill.get());
+        });
+        ModItems.CHAINSAWS.forEach(chainsaw -> tag(ItemTags.AXES).add(chainsaw.get()));
     }
 }

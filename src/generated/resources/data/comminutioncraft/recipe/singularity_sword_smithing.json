@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": "comminutioncraft:singularity_shard",
+  "base": "comminutioncraft:reactor_plating_sword",
+  "result": {
+    "id": "comminutioncraft:singularity_sword"
+  }
+}

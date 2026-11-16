@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "B": "comminutioncraft:drill_bit",
+    "I": "#c:ingots/iron",
+    "P": "minecraft:piston",
+    "S": "minecraft:stick"
+  },
+  "pattern": [
+    " IB",
+    "IPI",
+    "SI "
+  ],
+  "result": {
+    "id": "comminutioncraft:coal_drill"
+  }
+}

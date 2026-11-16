@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "comminutioncraft:item/reactor_plating_shovel"
+  }
+}

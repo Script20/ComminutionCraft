@@ -10,6 +10,9 @@ import com.script.comminutioncraft.common.cable.PipeFluidHandler;
 import com.script.comminutioncraft.common.compat.patchouli.GuideBook;
 import com.script.comminutioncraft.common.config.ComminutionConfig;
 import com.script.comminutioncraft.common.config.MachineConfig;
+import com.script.comminutioncraft.common.item.tool.OreHammer;
+import com.script.comminutioncraft.common.item.tool.PoweredTool;
+import com.script.comminutioncraft.common.item.tool.ToolTier;
 import com.script.comminutioncraft.common.machine.AcceleratorPortBlockEntity;
 import com.script.comminutioncraft.common.machine.AtmosphericWaterGeneratorBlockEntity;
 import com.script.comminutioncraft.common.machine.CreativeEnergyBatteryBlockEntity;
@@ -41,6 +44,7 @@ import com.script.comminutioncraft.common.registry.ModSounds;
 import com.script.comminutioncraft.common.registry.ModTriggers;
 import com.script.comminutioncraft.gametest.ModGameTests;
 import java.util.List;
+import java.util.stream.Stream;
 import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -49,6 +53,8 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.registries.DeferredItem;
+import net.neoforged.neoforge.transfer.energy.ItemAccessEnergyHandler;
 import net.neoforged.neoforge.transfer.item.WorldlyContainerWrapper;
 
 @Mod(ComminutionCraft.MODID)
@@ -88,6 +94,7 @@ public class ComminutionCraft {
         ModWoods.register(modEventBus);
 
         NeoForge.EVENT_BUS.addListener(RecipeSync::sendToClients);
+        NeoForge.EVENT_BUS.addListener(OreHammer::onBlockDrops);
     }
 
     /**
@@ -99,6 +106,15 @@ public class ComminutionCraft {
      * with the wrench.
      */
     private void registerCapabilities(RegisterCapabilitiesEvent event) {
+        // Drills and chainsaws (tiers 2-6) hold FE, so an Energy Battery's charge slot (or another mod's charger) fills them
+        for (DeferredItem<? extends PoweredTool> tool : Stream.concat(ModItems.DRILLS.stream(), ModItems.CHAINSAWS.stream()).toList()) {
+            ToolTier tier = tool.get().tier();
+            if (tier.powered()) {
+                event.registerItem(Capabilities.Energy.ITEM, (stack, access) -> new ItemAccessEnergyHandler(access,
+                        ModDataComponents.STORED_ENERGY.get(), tier.capacity(), tier.capacity()), tool.get());
+            }
+        }
+
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.COAL_GRANULATOR.get(), WorldlyContainerWrapper::new);
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.COAL_SMELTER.get(), WorldlyContainerWrapper::new);
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.ELECTRIC_GRANULATOR.get(), WorldlyContainerWrapper::new);

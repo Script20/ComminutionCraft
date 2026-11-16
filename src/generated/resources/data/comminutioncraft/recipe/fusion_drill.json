@@ -1,0 +1,17 @@
+{
+  "type": "comminutioncraft:tool_upgrade",
+  "category": "equipment",
+  "key": {
+    "D": "comminutioncraft:plasma_drill",
+    "F": "comminutioncraft:fusion_circuit",
+    "R": "comminutioncraft:reactor_plating"
+  },
+  "pattern": [
+    "RFR",
+    "FDF",
+    "RFR"
+  ],
+  "result": {
+    "id": "comminutioncraft:fusion_drill"
+  }
+}

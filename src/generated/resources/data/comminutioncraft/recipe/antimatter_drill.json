@@ -1,0 +1,17 @@
+{
+  "type": "comminutioncraft:tool_upgrade",
+  "category": "equipment",
+  "key": {
+    "A": "comminutioncraft:antimatter_circuit",
+    "D": "comminutioncraft:fusion_drill",
+    "X": "#c:storage_blocks/diamond"
+  },
+  "pattern": [
+    "XAX",
+    "ADA",
+    "XAX"
+  ],
+  "result": {
+    "id": "comminutioncraft:antimatter_drill"
+  }
+}

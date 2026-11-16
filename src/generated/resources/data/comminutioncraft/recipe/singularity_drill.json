@@ -1,0 +1,17 @@
+{
+  "type": "comminutioncraft:tool_upgrade",
+  "category": "equipment",
+  "key": {
+    "D": "comminutioncraft:antimatter_drill",
+    "H": "comminutioncraft:singularity_shard",
+    "S": "comminutioncraft:singularity_circuit"
+  },
+  "pattern": [
+    "HSH",
+    "SDS",
+    "HSH"
+  ],
+  "result": {
+    "id": "comminutioncraft:singularity_drill"
+  }
+}

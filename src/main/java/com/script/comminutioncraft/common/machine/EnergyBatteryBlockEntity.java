@@ -10,6 +10,13 @@ import com.script.comminutioncraft.common.registry.ModBlockEntities;
 import com.script.comminutioncraft.common.registry.ModMenus;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.Container;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.Containers;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.network.chat.Component;
@@ -74,6 +81,24 @@ public class EnergyBatteryBlockEntity extends BlockEntity implements TickingMach
     private final EnergyHandler inputFace;
     private final EnergyHandler outputFace;
     private final MachineControls controls = new MachineControls(MachineControls.outputBelow(), this::onControlsChanged);
+    /** The charge slot (owner, 2026-11-16): whatever FE item sits here is filled from the battery. */
+    private final SimpleContainer charge = new SimpleContainer(1) {
+        @Override
+        public boolean canPlaceItem(int slot, ItemStack stack) {
+            return canCharge(stack);
+        }
+
+        @Override
+        public int getMaxStackSize() {
+            return 1;
+        }
+
+        @Override
+        public void setChanged() {
+            super.setChanged();
+            EnergyBatteryBlockEntity.this.setChanged();
+        }
+    };
     /** FE that came in / went out during the last tick (for the GUI and Jade). */
     private int received;
     private int sent;
@@ -199,11 +224,21 @@ public class EnergyBatteryBlockEntity extends BlockEntity implements TickingMach
         refreshFaces();
     }
 
+    /** Whether a stack can be charged: it has an FE handler (our drills and chainsaws, other mods' FE items). */
+    public static boolean canCharge(ItemStack stack) {
+        return !stack.isEmpty() && ItemAccess.forStack(stack.copy()).getCapability(Capabilities.Energy.ITEM) != null;
+    }
+
+    public Container getChargeSlot() {
+        return charge;
+    }
+
     @Override
     public void serverTick(ServerLevel level, BlockPos pos, BlockState state) {
         // Inserts happen during other blocks' ticks, so whatever arrived since our last tick counts as received.
         received = Math.max(0, energy.getEnergy() - energyAfterLastTick);
         sent = controls.canRun(level, pos) ? pushEnergy(level, pos) : 0;
+        sent += chargeItem();
         energyAfterLastTick = energy.getEnergy();
 
         int charge = chargeLevel(energy.getEnergy());
@@ -214,6 +249,31 @@ public class EnergyBatteryBlockEntity extends BlockEntity implements TickingMach
         if (signal != lastComparatorSignal) {
             lastComparatorSignal = signal;
             level.updateNeighbourForOutputSignal(pos, state.getBlock());
+        }
+    }
+
+    /** Fills the item in the charge slot, up to the transfer rate per tick (redstone doesn't stop it). */
+    private int chargeItem() {
+        ItemStack stack = charge.getItem(0);
+        if (stack.isEmpty()) {
+            return 0;
+        }
+        EnergyHandler item = ItemAccess.forStack(stack).getCapability(Capabilities.Energy.ITEM);
+        if (item == null) {
+            return 0;
+        }
+        int moved = EnergyHandlerUtil.move(energy, item, Math.min(transferRate, energy.getEnergy()), null);
+        if (moved > 0) {
+            charge.setChanged();
+        }
+        return moved;
+    }
+
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        super.preRemoveSideEffects(pos, state);
+        if (level != null) {
+            Containers.dropContents(level, pos, charge);
         }
     }
 
@@ -261,6 +321,9 @@ public class EnergyBatteryBlockEntity extends BlockEntity implements TickingMach
         energy.deserialize(input);
         energyAfterLastTick = energy.getEnergy();
         controls.load(input);
+        NonNullList<ItemStack> items = NonNullList.withSize(1, ItemStack.EMPTY);
+        ContainerHelper.loadAllItems(input.childOrEmpty("charge"), items);
+        charge.setItem(0, items.get(0));
     }
 
     @Override
@@ -268,6 +331,7 @@ public class EnergyBatteryBlockEntity extends BlockEntity implements TickingMach
         super.saveAdditional(output);
         energy.serialize(output);
         controls.save(output);
+        ContainerHelper.saveAllItems(output.child("charge"), charge.getItems());
     }
 
     // ---- GUI ----
@@ -279,6 +343,6 @@ public class EnergyBatteryBlockEntity extends BlockEntity implements TickingMach
 
     @Override
     public AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player player) {
-        return new EnergyBatteryMenu(menuType, containerId, inventory, this, dataAccess);
+        return new EnergyBatteryMenu(menuType, containerId, inventory, this, charge, dataAccess);
     }
 }

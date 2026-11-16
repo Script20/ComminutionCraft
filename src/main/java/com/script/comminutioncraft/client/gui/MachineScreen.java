@@ -97,7 +97,7 @@ public abstract class MachineScreen<M extends AbstractContainerMenu & Controllab
     private static final int SLOT_LIGHT = 0xFF545964;
 
     protected final Identifier texture;
-    private final Tier tier;
+    protected final Tier tier;
     /** Set while switching to the side config screen, so the menu isn't torn down on the client. */
     private boolean openingSubScreen;
 

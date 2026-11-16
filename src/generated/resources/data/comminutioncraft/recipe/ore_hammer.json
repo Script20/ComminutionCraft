@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "B": "#c:storage_blocks/iron",
+    "I": "#c:ingots/iron",
+    "S": "minecraft:stick"
+  },
+  "pattern": [
+    "IBI",
+    " S ",
+    " S "
+  ],
+  "result": {
+    "id": "comminutioncraft:ore_hammer"
+  }
+}

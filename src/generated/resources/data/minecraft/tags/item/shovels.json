@@ -1,0 +1,14 @@
+{
+  "values": [
+    "comminutioncraft:reactor_plating_shovel",
+    "comminutioncraft:reactor_plating_paxel",
+    "comminutioncraft:singularity_shovel",
+    "comminutioncraft:singularity_paxel",
+    "comminutioncraft:coal_drill",
+    "comminutioncraft:electric_drill",
+    "comminutioncraft:plasma_drill",
+    "comminutioncraft:fusion_drill",
+    "comminutioncraft:antimatter_drill",
+    "comminutioncraft:singularity_drill"
+  ]
+}

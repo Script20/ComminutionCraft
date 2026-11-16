@@ -6,6 +6,10 @@ import com.script.comminutioncraft.common.config.ComminutionConfig;
 import com.script.comminutioncraft.common.item.EnergyBatteryItem;
 import com.script.comminutioncraft.common.item.WrenchItem;
 import com.script.comminutioncraft.common.item.WrenchMode;
+import com.script.comminutioncraft.common.item.tool.DrillItem;
+import com.script.comminutioncraft.common.item.tool.PaxelItem;
+import com.script.comminutioncraft.common.item.tool.PoweredTool;
+import com.script.comminutioncraft.common.item.tool.ToolTier;
 import com.script.comminutioncraft.common.machine.AcceleratorPortBlock;
 import com.script.comminutioncraft.common.machine.ContainmentCellBlock;
 import com.script.comminutioncraft.common.machine.ContainmentCellBlockEntity;
@@ -17,6 +21,7 @@ import com.script.comminutioncraft.common.machine.HorizonControllerBlock;
 import com.script.comminutioncraft.common.machine.HorizonPortBlock;
 import com.script.comminutioncraft.common.machine.upgrade.UpgradeType;
 import com.script.comminutioncraft.common.registry.ModDataComponents;
+import com.script.comminutioncraft.common.registry.ModItems;
 import com.script.comminutioncraft.common.registry.ModFluids;
 import com.script.comminutioncraft.common.storage.SoarynChestBlock;
 import java.util.ArrayList;
@@ -70,6 +75,22 @@ public final class ModTooltips {
         if (upgrade != null) {
             lines.add(gray("tooltip.comminutioncraft.upgrade", UpgradeType.MAX));
             lines.add(Component.translatable("tooltip.comminutioncraft.upgrade." + upgrade.id()).withColor(upgrade.colour()));
+            return lines;
+        }
+        if (stack.getItem() instanceof PoweredTool tool) {
+            toolDetails(stack, tool, lines);
+            return lines;
+        }
+        if (stack.is(ModItems.ORE_HAMMER.get())) {
+            lines.add(gray("tooltip.comminutioncraft.ore_hammer"));
+            return lines;
+        }
+        if (stack.is(ModItems.DRILL_BIT.get())) {
+            lines.add(gray("tooltip.comminutioncraft.drill_bit"));
+            return lines;
+        }
+        if (stack.getItem() instanceof PaxelItem) {
+            lines.add(gray("tooltip.comminutioncraft.paxel"));
             return lines;
         }
         Block block = stack.getItem() instanceof BlockItem item ? item.getBlock() : null;
@@ -139,6 +160,44 @@ public final class ModTooltips {
             lines.add(gray("tooltip.comminutioncraft.machine_settings"));
         }
         return lines;
+    }
+
+    /** A drill or chainsaw: what it mines, its power (FE or bit), and its tier's abilities. */
+    private static void toolDetails(ItemStack stack, PoweredTool tool, List<Component> lines) {
+        ToolTier tier = tool.tier();
+        boolean drill = tool instanceof DrillItem;
+        lines.add(gray(drill ? "tooltip.comminutioncraft.drill.role" : "tooltip.comminutioncraft.chainsaw.role"));
+        if (tier.powered()) {
+            lines.add(gray("tooltip.comminutioncraft.tool_energy", number(PoweredTool.energy(stack)), number(tier.capacity())));
+            lines.add(Component.translatable("tooltip.comminutioncraft.tool_charge").withStyle(ChatFormatting.DARK_GRAY));
+        } else if (tool.bitWorn(stack)) {
+            lines.add(Component.translatable("tooltip.comminutioncraft.bit_worn").withStyle(ChatFormatting.RED));
+        } else {
+            lines.add(gray("tooltip.comminutioncraft.bit_uses", number(stack.getMaxDamage() - 1 - stack.getDamageValue()),
+                    number(stack.getMaxDamage() - 1)));
+        }
+        List<String> abilities = new ArrayList<>();
+        if (drill) {
+            if (tier.level >= 4) {
+                abilities.add("area");
+            }
+            if (tier.level >= 5) {
+                abilities.add("fortune");
+            }
+            if (tier.level >= 6) {
+                abilities.add("vein");
+            }
+        } else {
+            if (tier.level >= 4) {
+                abilities.add("fell");
+            }
+            if (tier.level >= 6) {
+                abilities.add("clear");
+            }
+        }
+        for (String ability : abilities) {
+            lines.add(Component.translatable("tooltip.comminutioncraft.ability." + ability).withColor(tier.colour));
+        }
     }
 
     private static Component gray(String key, Object... args) {

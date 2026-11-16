@@ -3,14 +3,25 @@ package com.script.comminutioncraft.common.registry;
 import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.item.EnergyBatteryItem;
 import com.script.comminutioncraft.common.item.WrenchItem;
+import com.script.comminutioncraft.common.item.tool.ChainsawItem;
+import com.script.comminutioncraft.common.item.tool.DrillItem;
+import com.script.comminutioncraft.common.item.tool.ModToolMaterials;
+import com.script.comminutioncraft.common.item.tool.PaxelItem;
+import com.script.comminutioncraft.common.item.tool.ToolTier;
 import com.script.comminutioncraft.common.machine.AtmosphericWaterGeneratorBlockEntity;
 import com.script.comminutioncraft.common.machine.EnergyBatteryBlockEntity;
+import java.util.List;
+import java.util.function.UnaryOperator;
+import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.BoatItem;
 import net.minecraft.world.item.DoubleHighBlockItem;
 import net.minecraft.world.item.HangingSignItem;
+import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.item.SignItem;
+import net.minecraft.world.item.ToolMaterial;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -87,6 +98,57 @@ public final class ModItems {
     public static final DeferredItem<Item> FUSION_FUEL_PELLET = ITEMS.registerSimpleItem("fusion_fuel_pellet");
     /** Tiny Coal: 1 coal crafts 8, each burns 200 ticks = one item in a furnace (fuel value: ModDataMapProvider). */
     public static final DeferredItem<Item> TINY_COAL = ITEMS.registerSimpleItem("tiny_coal");
+
+    // ---- Tools (owner, 2026-11-16) ----
+    /** Mines like an iron pickaxe; ores drop 2 granulated ore per raw ore (OreHammer). */
+    public static final DeferredItem<Item> ORE_HAMMER = ITEMS.registerItem("ore_hammer", Item::new,
+            properties -> properties.pickaxe(ToolMaterial.IRON, 1.5F, -3.0F));
+    /** The Coal Drill's replaceable bit. */
+    public static final DeferredItem<Item> DRILL_BIT = ITEMS.registerSimpleItem("drill_bit");
+    public static final DeferredItem<DrillItem> COAL_DRILL = drill(ToolTier.COAL);
+    public static final DeferredItem<DrillItem> ELECTRIC_DRILL = drill(ToolTier.ELECTRIC);
+    public static final DeferredItem<DrillItem> PLASMA_DRILL = drill(ToolTier.PLASMA);
+    public static final DeferredItem<DrillItem> FUSION_DRILL = drill(ToolTier.FUSION);
+    public static final DeferredItem<DrillItem> ANTIMATTER_DRILL = drill(ToolTier.ANTIMATTER);
+    public static final DeferredItem<DrillItem> SINGULARITY_DRILL = drill(ToolTier.SINGULARITY);
+    public static final DeferredItem<ChainsawItem> PLASMA_CHAINSAW = chainsaw(ToolTier.PLASMA);
+    public static final DeferredItem<ChainsawItem> FUSION_CHAINSAW = chainsaw(ToolTier.FUSION);
+    public static final DeferredItem<ChainsawItem> ANTIMATTER_CHAINSAW = chainsaw(ToolTier.ANTIMATTER);
+    public static final DeferredItem<ChainsawItem> SINGULARITY_CHAINSAW = chainsaw(ToolTier.SINGULARITY);
+    public static final List<DeferredItem<DrillItem>> DRILLS = List.of(COAL_DRILL, ELECTRIC_DRILL, PLASMA_DRILL, FUSION_DRILL,
+            ANTIMATTER_DRILL, SINGULARITY_DRILL);
+    public static final List<DeferredItem<ChainsawItem>> CHAINSAWS = List.of(PLASMA_CHAINSAW, FUSION_CHAINSAW, ANTIMATTER_CHAINSAW,
+            SINGULARITY_CHAINSAW);
+
+    public static final ToolSet REACTOR_PLATING_TOOLS = toolSet("reactor_plating", ModToolMaterials.PLATING, false);
+    public static final ToolSet SINGULARITY_TOOLS = toolSet("singularity", ModToolMaterials.SINGULARITY, true);
+
+    /** One material's pickaxe, axe, shovel, hoe, sword and paxel. */
+    public record ToolSet(DeferredItem<Item> pickaxe, DeferredItem<AxeItem> axe, DeferredItem<ShovelItem> shovel,
+                          DeferredItem<HoeItem> hoe, DeferredItem<Item> sword, DeferredItem<PaxelItem> paxel) {
+        public List<DeferredItem<? extends Item>> all() {
+            return List.of(pickaxe, axe, shovel, hoe, sword, paxel);
+        }
+    }
+
+    private static DeferredItem<DrillItem> drill(ToolTier tier) {
+        return ITEMS.registerItem(tier.id + "_drill", properties -> new DrillItem(tier, properties));
+    }
+
+    private static DeferredItem<ChainsawItem> chainsaw(ToolTier tier) {
+        return ITEMS.registerItem(tier.id + "_chainsaw", properties -> new ChainsawItem(tier, properties));
+    }
+
+    private static ToolSet toolSet(String name, ToolMaterial material, boolean fireResistant) {
+        UnaryOperator<Item.Properties> extra = properties -> fireResistant ? properties.fireResistant() : properties;
+        return new ToolSet(
+                ITEMS.registerItem(name + "_pickaxe", Item::new, properties -> extra.apply(properties).pickaxe(material, 1.0F, -2.8F)),
+                ITEMS.registerItem(name + "_axe", properties -> new AxeItem(material, 5.0F, -3.0F, properties), extra),
+                ITEMS.registerItem(name + "_shovel", properties -> new ShovelItem(material, 1.5F, -3.0F, properties), extra),
+                ITEMS.registerItem(name + "_hoe", properties -> new HoeItem(material, -3.0F, 0.0F, properties), extra),
+                ITEMS.registerItem(name + "_sword", Item::new, properties -> extra.apply(properties).sword(material, 3.0F, -2.4F)),
+                ITEMS.registerItem(name + "_paxel", properties -> new PaxelItem(material, 5.0F, -3.0F, properties), extra));
+    }
 
     /** Doubles an Atmospheric Water Generator's output; wears down by 1 per 100 mB of water it makes. */
     public static final DeferredItem<Item> AIR_FILTER = ITEMS.registerSimpleItem("air_filter",

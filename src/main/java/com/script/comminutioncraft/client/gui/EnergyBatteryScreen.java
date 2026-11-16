@@ -3,6 +3,7 @@ package com.script.comminutioncraft.client.gui;
 import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.machine.EnergyBatteryMenu;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
@@ -47,6 +48,17 @@ public class EnergyBatteryScreen extends MachineScreen<EnergyBatteryMenu> {
     public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         super.extractBackground(graphics, mouseX, mouseY, partialTick);
         drawEnergyBar(graphics, menu.getEnergy(), menu.getEnergyCapacity());
+        // the charge slot: a rim in the tier colour, and a faint bolt while it's empty
+        int x = leftPos + EnergyBatteryMenu.CHARGE_X;
+        int y = topPos + EnergyBatteryMenu.CHARGE_Y;
+        int rim = tier.seamOn;
+        graphics.fill(x - 2, y - 2, x + 18, y - 1, rim);
+        graphics.fill(x - 2, y + 17, x + 18, y + 18, rim);
+        graphics.fill(x - 2, y - 1, x - 1, y + 17, rim);
+        graphics.fill(x + 17, y - 1, x + 18, y + 17, rim);
+        if (!menu.getSlot(EnergyBatteryMenu.CHARGE_SLOT).hasItem()) {
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, x, y, 192, 0, 16, 16, 256, 256);
+        }
     }
 
     @Override
@@ -60,6 +72,8 @@ public class EnergyBatteryScreen extends MachineScreen<EnergyBatteryMenu> {
                 TEXT_X, 48, LABEL_COLOR, false);
         graphics.text(font, Component.translatable("gui.comminutioncraft.battery.output", formatFe(menu.getSent())),
                 TEXT_X, 58, LABEL_COLOR, false);
+        Component charge = Component.translatable("gui.comminutioncraft.battery.charge");
+        graphics.text(font, charge, EnergyBatteryMenu.CHARGE_X + 8 - font.width(charge) / 2, EnergyBatteryMenu.CHARGE_Y + 21, LABEL_COLOR, false);
     }
 
     @Override

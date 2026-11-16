@@ -58,9 +58,18 @@ import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.ShapelessRecipe;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.material.Fluids;
 
@@ -173,6 +182,12 @@ public class ComminutionJeiPlugin implements IModPlugin {
         registration.addRecipes(PRESSING.get(), ClientRecipes.pressing());
         registration.addRecipes(FLOTATION.get(), ClientRecipes.flotation());
         registration.addRecipes(SINGULARITY.get(), ClientRecipes.singularity());
+        // the Coal Drill's new-bit recipe is a special recipe JEI can't show: a plain shapeless stand-in for it
+        registration.addRecipes(RecipeTypes.CRAFTING, List.of(new RecipeHolder<>(
+                ResourceKey.create(Registries.RECIPE, ComminutionCraft.id("coal_drill_new_bit_display")),
+                new ShapelessRecipe(new Recipe.CommonInfo(false), new CraftingRecipe.CraftingBookInfo(CraftingBookCategory.EQUIPMENT, ""),
+                        new ItemStackTemplate(ModItems.COAL_DRILL.get()),
+                        List.of(Ingredient.of(ModItems.COAL_DRILL.get()), Ingredient.of(ModItems.DRILL_BIT.get()))))));
         registration.addRecipes(PURIFYING.get(), ClientRecipes.purifying());
         registration.addRecipes(FusionReactorCategory.TYPE, List.of(FusionReactorCategory.Structure.INSTANCE));
         registration.addRecipes(ParticleAcceleratorCategory.TYPE, List.of(ParticleAcceleratorCategory.Structure.INSTANCE));

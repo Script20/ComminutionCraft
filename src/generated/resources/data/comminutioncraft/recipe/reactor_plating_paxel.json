@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "comminutioncraft:reactor_plating_pickaxe",
+    "comminutioncraft:reactor_plating_axe",
+    "comminutioncraft:reactor_plating_shovel",
+    "comminutioncraft:reactor_plating_hoe"
+  ],
+  "result": {
+    "id": "comminutioncraft:reactor_plating_paxel"
+  }
+}

@@ -3,6 +3,7 @@ package com.script.comminutioncraft.common.data;
 import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.block.StoneSet;
 import com.script.comminutioncraft.common.recipe.AssemblingRecipe;
+import com.script.comminutioncraft.common.recipe.DrillBitRecipe;
 import com.script.comminutioncraft.common.recipe.FlotationRecipe;
 import com.script.comminutioncraft.common.recipe.GranulatingRecipe;
 import com.script.comminutioncraft.common.recipe.PressingRecipe;
@@ -11,10 +12,14 @@ import com.script.comminutioncraft.common.recipe.SingularityRecipe;
 import com.script.comminutioncraft.common.recipe.TagBlastingRecipe;
 import com.script.comminutioncraft.common.recipe.TagResult;
 import com.script.comminutioncraft.common.recipe.TagSmeltingRecipe;
+import com.script.comminutioncraft.common.recipe.ToolUpgradeRecipe;
 import com.script.comminutioncraft.common.recipe.WashingRecipe;
 import com.script.comminutioncraft.common.registry.ModBlocks;
 import com.script.comminutioncraft.common.registry.ModItems;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -33,9 +38,13 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.item.crafting.BlastingRecipe;
 import net.minecraft.world.item.crafting.CookingBookCategory;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.ShapedRecipePattern;
 import net.minecraft.world.item.crafting.SmeltingRecipe;
+import net.minecraft.world.item.crafting.SmithingTransformRecipe;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SlabBlock;
@@ -43,6 +52,7 @@ import net.neoforged.neoforge.common.conditions.AndCondition;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.conditions.NotCondition;
 import net.neoforged.neoforge.common.conditions.TagEmptyCondition;
+import net.neoforged.neoforge.registries.DeferredItem;
 
 public class ModRecipeProvider extends RecipeProvider {
     private static final int SMELTING_TIME = 200;
@@ -723,6 +733,102 @@ public class ModRecipeProvider extends RecipeProvider {
 
         ModBlocks.STONE_SETS.forEach(this::stoneRecipes);
         purpleheartRecipes();
+        toolRecipes();
+    }
+
+    // ---- Tools (owner, 2026-11-16) ----
+
+    private void toolRecipes() {
+        Ingredient iron = tag(ProcessedMetal.commonItemTag("ingots/iron"));
+        Ingredient stick = Ingredient.of(Items.STICK);
+        shaped(RecipeCategory.TOOLS, ModItems.ORE_HAMMER.get())
+                .pattern("IBI").pattern(" S ").pattern(" S ")
+                .define('I', iron).define('B', tag(ProcessedMetal.commonItemTag("storage_blocks/iron"))).define('S', stick)
+                .unlockedBy("has_iron", has(Items.IRON_INGOT))
+                .save(output, key("ore_hammer"));
+        shaped(RecipeCategory.TOOLS, ModItems.DRILL_BIT.get())
+                .pattern(" I ").pattern("IFI").pattern(" I ")
+                .define('I', iron).define('F', Items.FLINT)
+                .unlockedBy("has_iron", has(Items.IRON_INGOT))
+                .save(output, key("drill_bit"));
+        shaped(RecipeCategory.TOOLS, ModItems.COAL_DRILL.get())
+                .pattern(" IB").pattern("IPI").pattern("SI ")
+                .define('I', iron).define('B', ModItems.DRILL_BIT.get()).define('P', Items.PISTON).define('S', stick)
+                .unlockedBy("has_drill_bit", has(ModItems.DRILL_BIT.get()))
+                .save(output, key("coal_drill"));
+        output.accept(key("coal_drill_new_bit"), DrillBitRecipe.INSTANCE, null);
+        shaped(RecipeCategory.TOOLS, ModItems.PLASMA_CHAINSAW.get())
+                .pattern(" IP").pattern("IXI").pattern("GI ")
+                .define('I', iron).define('P', ModItems.PLASMA_CIRCUIT.get()).define('X', Items.IRON_AXE)
+                .define('G', tag(ProcessedMetal.commonItemTag("ingots/gold")))
+                .unlockedBy("has_plasma_circuit", has(ModItems.PLASMA_CIRCUIT.get()))
+                .save(output, key("plasma_chainsaw"));
+
+        // each tier: the tool below in the middle, that tier's circuit and parts round it (FE carries over)
+        Ingredient electronic = Ingredient.of(ModItems.ELECTRONIC_CIRCUIT.get());
+        Ingredient plasma = Ingredient.of(ModItems.PLASMA_CIRCUIT.get());
+        Ingredient fusion = Ingredient.of(ModItems.FUSION_CIRCUIT.get());
+        Ingredient antimatter = Ingredient.of(ModItems.ANTIMATTER_CIRCUIT.get());
+        Ingredient singularity = Ingredient.of(ModItems.SINGULARITY_CIRCUIT.get());
+        Ingredient plating = Ingredient.of(ModItems.REACTOR_PLATING.get());
+        Ingredient diamondBlock = tag(ProcessedMetal.commonItemTag("storage_blocks/diamond"));
+        Ingredient shard = Ingredient.of(ModItems.SINGULARITY_SHARD.get());
+        toolUpgrade(ModItems.ELECTRIC_DRILL.get(), ModItems.COAL_DRILL.get(), Map.of('E', electronic,
+                'C', tag(ProcessedMetal.commonItemTag("ingots/copper")), 'R', tag(ProcessedMetal.commonItemTag("storage_blocks/redstone"))),
+                " E ", "CDC", " R ");
+        toolUpgrade(ModItems.PLASMA_DRILL.get(), ModItems.ELECTRIC_DRILL.get(), Map.of('P', plasma,
+                'G', tag(ProcessedMetal.commonItemTag("ingots/gold")), 'X', tag(ProcessedMetal.commonItemTag("gems/diamond"))),
+                " P ", "GDG", " X ");
+        for (var pair : List.of(List.of(ModItems.FUSION_DRILL, ModItems.PLASMA_DRILL), List.of(ModItems.FUSION_CHAINSAW, ModItems.PLASMA_CHAINSAW))) {
+            toolUpgrade(pair.get(0).get(), pair.get(1).get(), Map.of('R', plating, 'F', fusion), "RFR", "FDF", "RFR");
+        }
+        for (var pair : List.of(List.of(ModItems.ANTIMATTER_DRILL, ModItems.FUSION_DRILL), List.of(ModItems.ANTIMATTER_CHAINSAW, ModItems.FUSION_CHAINSAW))) {
+            toolUpgrade(pair.get(0).get(), pair.get(1).get(), Map.of('X', diamondBlock, 'A', antimatter), "XAX", "ADA", "XAX");
+        }
+        for (var pair : List.of(List.of(ModItems.SINGULARITY_DRILL, ModItems.ANTIMATTER_DRILL),
+                List.of(ModItems.SINGULARITY_CHAINSAW, ModItems.ANTIMATTER_CHAINSAW))) {
+            toolUpgrade(pair.get(0).get(), pair.get(1).get(), Map.of('H', shard, 'S', singularity), "HSH", "SDS", "HSH");
+        }
+
+        // Reactor Plating tools: the vanilla shapes; the paxel from the four tools
+        ModItems.ToolSet set = ModItems.REACTOR_PLATING_TOOLS;
+        shaped(RecipeCategory.TOOLS, set.pickaxe().get()).pattern("XXX").pattern(" S ").pattern(" S ")
+                .define('X', plating).define('S', stick).unlockedBy("has_reactor_plating", has(ModItems.REACTOR_PLATING.get()))
+                .save(output, key("reactor_plating_pickaxe"));
+        shaped(RecipeCategory.TOOLS, set.axe().get()).pattern("XX").pattern("XS").pattern(" S")
+                .define('X', plating).define('S', stick).unlockedBy("has_reactor_plating", has(ModItems.REACTOR_PLATING.get()))
+                .save(output, key("reactor_plating_axe"));
+        shaped(RecipeCategory.TOOLS, set.shovel().get()).pattern("X").pattern("S").pattern("S")
+                .define('X', plating).define('S', stick).unlockedBy("has_reactor_plating", has(ModItems.REACTOR_PLATING.get()))
+                .save(output, key("reactor_plating_shovel"));
+        shaped(RecipeCategory.TOOLS, set.hoe().get()).pattern("XX").pattern(" S").pattern(" S")
+                .define('X', plating).define('S', stick).unlockedBy("has_reactor_plating", has(ModItems.REACTOR_PLATING.get()))
+                .save(output, key("reactor_plating_hoe"));
+        shaped(RecipeCategory.COMBAT, set.sword().get()).pattern("X").pattern("X").pattern("S")
+                .define('X', plating).define('S', stick).unlockedBy("has_reactor_plating", has(ModItems.REACTOR_PLATING.get()))
+                .save(output, key("reactor_plating_sword"));
+        shapeless(RecipeCategory.TOOLS, set.paxel().get())
+                .requires(set.pickaxe().get()).requires(set.axe().get()).requires(set.shovel().get()).requires(set.hoe().get())
+                .unlockedBy("has_reactor_plating", has(ModItems.REACTOR_PLATING.get()))
+                .save(output, key("reactor_plating_paxel"));
+
+        // Singularity tools: a Reactor Plating tool + a Singularity Shard in a smithing table (keeps its enchantments)
+        List<DeferredItem<? extends Item>> from = ModItems.REACTOR_PLATING_TOOLS.all();
+        List<DeferredItem<? extends Item>> to = ModItems.SINGULARITY_TOOLS.all();
+        for (int i = 0; i < from.size(); i++) {
+            String name = to.get(i).getId().getPath();
+            output.accept(key(name + "_smithing"), new SmithingTransformRecipe(new Recipe.CommonInfo(true), Optional.empty(),
+                    Ingredient.of(from.get(i).get()), Optional.of(shard), new ItemStackTemplate(to.get(i).get())), null);
+        }
+    }
+
+    /** A {@link ToolUpgradeRecipe}: shaped, 'D' = the tool below; the result keeps its FE. */
+    private void toolUpgrade(Item result, Item previous, Map<Character, Ingredient> key, String... rows) {
+        Map<Character, Ingredient> all = new HashMap<>(key);
+        all.put('D', Ingredient.of(previous));
+        output.accept(key(BuiltInRegistries.ITEM.getKey(result).getPath()), new ToolUpgradeRecipe(new Recipe.CommonInfo(true),
+                new CraftingRecipe.CraftingBookInfo(CraftingBookCategory.EQUIPMENT, ""), ShapedRecipePattern.of(all, rows),
+                new ItemStackTemplate(result)), null);
     }
 
     // ---- Purpleheart (vanilla's oak recipes) ----

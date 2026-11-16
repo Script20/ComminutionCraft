@@ -11,6 +11,8 @@ import com.script.comminutioncraft.common.data.ProcessedMetal;
 import com.script.comminutioncraft.common.energy.MachineEnergyStorage;
 import com.script.comminutioncraft.common.item.WrenchItem;
 import com.script.comminutioncraft.common.item.WrenchMode;
+import com.script.comminutioncraft.common.item.tool.PoweredTool;
+import com.script.comminutioncraft.common.item.tool.ToolTier;
 import com.script.comminutioncraft.common.machine.AcceleratorPortBlock;
 import com.script.comminutioncraft.common.machine.AnnihilationGeneratorBlockEntity;
 import com.script.comminutioncraft.common.machine.AntimatterPurifierBlockEntity;
@@ -45,6 +47,7 @@ import com.script.comminutioncraft.common.machine.TritiumBreederBlockEntity;
 import com.script.comminutioncraft.common.machine.control.RedstoneMode;
 import com.script.comminutioncraft.common.machine.control.RelativeSide;
 import com.script.comminutioncraft.common.machine.control.SideMode;
+import com.script.comminutioncraft.common.recipe.DrillBitRecipe;
 import com.script.comminutioncraft.common.recipe.TagResult;
 import com.script.comminutioncraft.common.recipe.TagSmeltingRecipe;
 import com.script.comminutioncraft.common.registry.ModBlocks;
@@ -191,6 +194,15 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("water_bucket_fills_ore_washer", () -> ModGameTests::waterBucketFillsOreWasher);
         TEST_FUNCTIONS.register("switched_off_machines_still_output", () -> ModGameTests::switchedOffMachinesStillOutput);
         TEST_FUNCTIONS.register("matter_mass_values", () -> ModGameTests::matterMassValues);
+        TEST_FUNCTIONS.register("ore_hammer_drops_granulated", () -> ModGameTests::oreHammerDropsGranulated);
+        TEST_FUNCTIONS.register("tall_fusion_drill_mines_3x3", () -> ModGameTests::fusionDrillMines3x3);
+        TEST_FUNCTIONS.register("drill_without_power_is_a_hand", () -> ModGameTests::drillWithoutPowerIsAHand);
+        TEST_FUNCTIONS.register("coal_drill_bit_wears_and_swaps", () -> ModGameTests::coalDrillBitWearsAndSwaps);
+        TEST_FUNCTIONS.register("tall_fusion_chainsaw_fells_trees_only", () -> ModGameTests::fusionChainsawFellsTreesOnly);
+        TEST_FUNCTIONS.register("tall_singularity_chainsaw_clears_and_replants", () -> ModGameTests::singularityChainsawClearsAndReplants);
+        TEST_FUNCTIONS.register("singularity_drill_vein_mines", () -> ModGameTests::singularityDrillVeinMines);
+        TEST_FUNCTIONS.register("paxel_strips_paths_and_tills", () -> ModGameTests::paxelStripsPathsAndTills);
+        TEST_FUNCTIONS.register("battery_charges_drill_and_upgrade_keeps_fe", () -> ModGameTests::batteryChargesDrillAndUpgradeKeepsFe);
     }
 
     public static void registerTests(RegisterGameTestsEvent event) {
@@ -1204,6 +1216,203 @@ public final class ModGameTests {
             helper.assertTrue(got == mass, item + " should weigh " + mass + ", weighs " + got);
         });
         helper.succeed();
+    }
+
+    // ---- Tools ----
+
+    /** A survival player holding a tool, standing just south of the test area's middle, looking north. */
+    private static ServerPlayer toolPlayer(GameTestHelper helper, ItemStack tool) {
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        player.setGameMode(GameType.SURVIVAL);
+        player.setItemInHand(InteractionHand.MAIN_HAND, tool);
+        player.setYRot(180);
+        player.setXRot(0);
+        return player;
+    }
+
+    private static ItemStack charged(Item tool) {
+        ItemStack stack = new ItemStack(tool);
+        stack.set(ModDataComponents.STORED_ENERGY.get(), ((PoweredTool) tool).tier().capacity());
+        return stack;
+    }
+
+    private static int itemsAround(GameTestHelper helper, BlockPos pos, Item item) {
+        return helper.getLevel().getEntitiesOfClass(ItemEntity.class,
+                        new AABB(helper.absolutePos(pos)).inflate(3))
+                .stream().filter(e -> e.getItem().is(item)).mapToInt(e -> e.getItem().getCount()).sum();
+    }
+
+    /** Iron ore broken with the Ore Hammer drops 2 granulated iron (not raw iron). */
+    private static void oreHammerDropsGranulated(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, Blocks.IRON_ORE);
+        ServerPlayer player = toolPlayer(helper, new ItemStack(ModItems.ORE_HAMMER.get()));
+        player.gameMode.destroyBlock(helper.absolutePos(pos));
+        helper.assertBlockPresent(Blocks.AIR, pos);
+        helper.assertTrue(itemsAround(helper, pos, ModItems.GRANULATED_IRON.get()) == 2, "The hammer should drop 2 granulated iron");
+        helper.assertTrue(itemsAround(helper, pos, Items.RAW_IRON) == 0, "The hammer shouldn't drop raw iron");
+        helper.succeed();
+    }
+
+    /** A charged Fusion Drill breaks the 3x3 of stone facing the player, using FE for each block. */
+    private static void fusionDrillMines3x3(GameTestHelper helper) {
+        int z = 4;
+        for (int x = 3; x <= 5; x++) {
+            for (int y = 1; y <= 3; y++) {
+                helper.setBlock(new BlockPos(x, y, z), Blocks.STONE);
+            }
+        }
+        ItemStack drill = charged(ModItems.FUSION_DRILL.get());
+        int before = PoweredTool.energy(drill);
+        ServerPlayer player = toolPlayer(helper, drill);
+        player.gameMode.destroyBlock(helper.absolutePos(new BlockPos(4, 2, z)));
+        for (int x = 3; x <= 5; x++) {
+            for (int y = 1; y <= 3; y++) {
+                helper.assertBlockPresent(Blocks.AIR, new BlockPos(x, y, z));
+            }
+        }
+        int used = before - PoweredTool.energy(player.getMainHandItem());
+        int expected = 9 * ToolTier.FUSION.energyPerBlock();
+        helper.assertTrue(used == expected, "9 blocks should cost " + expected + " FE, used " + used);
+        helper.succeed();
+    }
+
+    /** With no FE a drill mines like a bare hand and gets no drops (stone gives no cobblestone). */
+    private static void drillWithoutPowerIsAHand(GameTestHelper helper) {
+        ItemStack empty = new ItemStack(ModItems.ELECTRIC_DRILL.get());
+        ItemStack charged = charged(ModItems.ELECTRIC_DRILL.get());
+        var stone = Blocks.STONE.defaultBlockState();
+        helper.assertTrue(empty.getDestroySpeed(stone) == 1.0F && !empty.isCorrectToolForDrops(stone),
+                "An empty drill should be like a bare hand");
+        helper.assertTrue(charged.getDestroySpeed(stone) > 1.0F && charged.isCorrectToolForDrops(stone), "A charged drill should mine stone");
+        helper.succeed();
+    }
+
+    /** The Coal Drill's bit wears down to its last use without breaking; crafting it with a new Drill Bit restores it. */
+    private static void coalDrillBitWearsAndSwaps(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, Blocks.STONE);
+        ItemStack drill = new ItemStack(ModItems.COAL_DRILL.get());
+        drill.setDamageValue(drill.getMaxDamage() - 2); // one use left
+        ServerPlayer player = toolPlayer(helper, drill);
+        player.gameMode.destroyBlock(helper.absolutePos(pos));
+        ItemStack worn = player.getMainHandItem();
+        helper.assertTrue(worn.is(ModItems.COAL_DRILL.get()), "The drill broke instead of keeping a worn bit");
+        helper.assertTrue(((PoweredTool) worn.getItem()).bitWorn(worn), "The bit should be worn out now");
+        var input = CraftingInput.of(2, 1, List.of(worn, new ItemStack(ModItems.DRILL_BIT.get())));
+        helper.assertTrue(DrillBitRecipe.INSTANCE.matches(input, helper.getLevel()), "Drill + bit should be a recipe");
+        ItemStack fixed = DrillBitRecipe.INSTANCE.assemble(input);
+        helper.assertTrue(fixed.is(ModItems.COAL_DRILL.get()) && fixed.getDamageValue() == 0, "The new bit should be fresh: " + fixed);
+        helper.succeed();
+    }
+
+    /** One swing of a Fusion Chainsaw takes a whole tree (logs with leaves), but only one log of a leafless log pillar. */
+    private static void fusionChainsawFellsTreesOnly(GameTestHelper helper) {
+        BlockPos tree = new BlockPos(2, 1, 2);
+        BlockPos pillar = new BlockPos(6, 1, 6);
+        for (int y = 0; y < 5; y++) {
+            helper.setBlock(tree.above(y), Blocks.OAK_LOG);
+            helper.setBlock(pillar.above(y), Blocks.OAK_LOG);
+        }
+        helper.setBlock(tree.above(5), Blocks.OAK_LEAVES);
+        helper.setBlock(tree.above(4).east(), Blocks.OAK_LEAVES);
+        ServerPlayer player = toolPlayer(helper, charged(ModItems.FUSION_CHAINSAW.get()));
+        player.gameMode.destroyBlock(helper.absolutePos(tree));
+        player.gameMode.destroyBlock(helper.absolutePos(pillar));
+        for (int y = 0; y < 5; y++) {
+            helper.assertBlockPresent(Blocks.AIR, tree.above(y));
+        }
+        helper.assertBlockPresent(Blocks.AIR, pillar);
+        helper.assertBlockPresent(Blocks.OAK_LOG, pillar.above());
+        helper.assertTrue(itemsAround(helper, tree.above(2), Items.OAK_LOG) == 5, "The tree's 5 logs should drop");
+        helper.succeed();
+    }
+
+    /** Right-clicking a tree with the Singularity Chainsaw clears logs and leaves, plants a sapling and drops sticks. */
+    private static void singularityChainsawClearsAndReplants(GameTestHelper helper) {
+        BlockPos base = new BlockPos(4, 1, 4);
+        helper.setBlock(base.below(), Blocks.DIRT);
+        for (int y = 0; y < 4; y++) {
+            helper.setBlock(base.above(y), Blocks.OAK_LOG);
+        }
+        for (BlockPos p : BlockPos.betweenClosed(base.above(3).offset(-1, 0, -1), base.above(4).offset(1, 0, 1))) {
+            if (helper.getBlockState(p.immutable()).isAir()) {
+                helper.setBlock(p.immutable(), Blocks.OAK_LEAVES);
+            }
+        }
+        ServerPlayer player = toolPlayer(helper, charged(ModItems.SINGULARITY_CHAINSAW.get()));
+        BlockPos clicked = helper.absolutePos(base.above());
+        player.gameMode.useItemOn(player, helper.getLevel(), player.getMainHandItem(), InteractionHand.MAIN_HAND,
+                new BlockHitResult(Vec3.atCenterOf(clicked), Direction.NORTH, clicked, false));
+        helper.assertBlockPresent(Blocks.OAK_SAPLING, base);
+        for (BlockPos p : BlockPos.betweenClosed(base.above().offset(-1, 0, -1), base.above(4).offset(1, 0, 1))) {
+            helper.assertBlockPresent(Blocks.AIR, p.immutable());
+        }
+        helper.assertTrue(itemsAround(helper, base, Items.STICK) > 0, "Clearing the leaves should give some sticks");
+        helper.assertTrue(itemsAround(helper, base.above(2), Items.OAK_LOG) == 4, "The 4 logs should drop");
+        helper.succeed();
+    }
+
+    /** Right-clicking an ore with the Singularity Drill takes the whole connected vein. */
+    private static void singularityDrillVeinMines(GameTestHelper helper) {
+        List<BlockPos> vein = List.of(new BlockPos(1, 1, 1), new BlockPos(2, 1, 1), new BlockPos(2, 2, 2), new BlockPos(3, 1, 2), new BlockPos(3, 2, 3));
+        vein.forEach(p -> helper.setBlock(p, Blocks.IRON_ORE));
+        helper.setBlock(new BlockPos(0, 1, 4), Blocks.IRON_ORE); // not touching: stays
+        ServerPlayer player = toolPlayer(helper, charged(ModItems.SINGULARITY_DRILL.get()));
+        BlockPos clicked = helper.absolutePos(vein.get(0));
+        player.gameMode.useItemOn(player, helper.getLevel(), player.getMainHandItem(), InteractionHand.MAIN_HAND,
+                new BlockHitResult(Vec3.atCenterOf(clicked), Direction.UP, clicked, false));
+        vein.forEach(p -> helper.assertBlockPresent(Blocks.AIR, p));
+        helper.assertBlockPresent(Blocks.IRON_ORE, new BlockPos(0, 1, 4));
+        helper.succeed();
+    }
+
+    /** The paxel strips a log, makes a path on grass, and tills grass when sneaking. */
+    private static void paxelStripsPathsAndTills(GameTestHelper helper) {
+        BlockPos log = new BlockPos(1, 1, 1);
+        BlockPos path = new BlockPos(2, 1, 3);
+        BlockPos field = new BlockPos(3, 1, 3);
+        helper.setBlock(log, Blocks.OAK_LOG);
+        helper.setBlock(path, Blocks.GRASS_BLOCK);
+        helper.setBlock(field, Blocks.GRASS_BLOCK);
+        ServerPlayer player = toolPlayer(helper, new ItemStack(ModItems.REACTOR_PLATING_TOOLS.paxel().get()));
+        for (BlockPos pos : List.of(log, path, field)) {
+            player.setShiftKeyDown(pos == field);
+            BlockPos abs = helper.absolutePos(pos);
+            player.gameMode.useItemOn(player, helper.getLevel(), player.getMainHandItem(), InteractionHand.MAIN_HAND,
+                    new BlockHitResult(Vec3.atCenterOf(abs).add(0, 0.5, 0), Direction.UP, abs, false));
+        }
+        helper.assertBlockPresent(Blocks.STRIPPED_OAK_LOG, log);
+        helper.assertBlockPresent(Blocks.DIRT_PATH, path);
+        helper.assertBlockPresent(Blocks.FARMLAND, field);
+        helper.succeed();
+    }
+
+    /** An Energy Battery fills a drill in its charge slot; upgrading the drill keeps the FE it held. */
+    private static void batteryChargesDrillAndUpgradeKeepsFe(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, ModBlocks.ENERGY_BATTERY.get());
+        EnergyBatteryBlockEntity battery = helper.getBlockEntity(pos, EnergyBatteryBlockEntity.class);
+        battery.setEnergy(100_000);
+        battery.getChargeSlot().setItem(0, new ItemStack(ModItems.ELECTRIC_DRILL.get()));
+        helper.runAfterDelay(10, () -> {
+            ItemStack drill = battery.getChargeSlot().getItem(0);
+            int stored = PoweredTool.energy(drill);
+            helper.assertTrue(stored > 0, "The battery should have charged the drill");
+            var recipes = helper.getLevel().getServer().getRecipeManager();
+            var holder = recipes.byKey(ResourceKey.create(Registries.RECIPE, ComminutionCraft.id("plasma_drill")));
+            helper.assertTrue(holder.isPresent(), "The Plasma Drill upgrade recipe didn't load");
+            ItemStack plasma = new ItemStack(ModItems.PLASMA_CIRCUIT.get());
+            ItemStack gold = new ItemStack(Items.GOLD_INGOT);
+            var input = CraftingInput.of(3, 3, List.of(
+                    ItemStack.EMPTY, plasma, ItemStack.EMPTY, gold, drill, gold, ItemStack.EMPTY, new ItemStack(Items.DIAMOND), ItemStack.EMPTY));
+            var recipe = (CraftingRecipe) holder.get().value();
+            helper.assertTrue(recipe.matches(input, helper.getLevel()), "The upgrade recipe should match");
+            ItemStack upgraded = recipe.assemble(input);
+            helper.assertTrue(upgraded.is(ModItems.PLASMA_DRILL.get()) && PoweredTool.energy(upgraded) == stored,
+                    "The Plasma Drill should keep the " + stored + " FE, has " + PoweredTool.energy(upgraded));
+            helper.succeed();
+        });
     }
 
     private static void guideBookRecipe(GameTestHelper helper) {

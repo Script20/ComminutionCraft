@@ -1,0 +1,18 @@
+{
+  "type": "comminutioncraft:tool_upgrade",
+  "category": "equipment",
+  "key": {
+    "C": "#c:ingots/copper",
+    "D": "comminutioncraft:coal_drill",
+    "E": "comminutioncraft:electronic_circuit",
+    "R": "#c:storage_blocks/redstone"
+  },
+  "pattern": [
+    " E ",
+    "CDC",
+    " R "
+  ],
+  "result": {
+    "id": "comminutioncraft:electric_drill"
+  }
+}

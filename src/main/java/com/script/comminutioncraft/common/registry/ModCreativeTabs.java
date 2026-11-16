@@ -23,6 +23,13 @@ public final class ModCreativeTabs {
                         // Tools
                         output.accept(ModItems.WRENCH.get());
                         output.accept(ModItems.TINY_COAL.get());
+                        // Tools
+                        output.accept(ModItems.ORE_HAMMER.get());
+                        output.accept(ModItems.DRILL_BIT.get());
+                        ModItems.DRILLS.forEach(item -> output.accept(item.get()));
+                        ModItems.CHAINSAWS.forEach(item -> output.accept(item.get()));
+                        ModItems.REACTOR_PLATING_TOOLS.all().forEach(item -> output.accept(item.get()));
+                        ModItems.SINGULARITY_TOOLS.all().forEach(item -> output.accept(item.get()));
                         // Processing, by tier
                         output.accept(ModItems.COAL_GRANULATOR.get());
                         output.accept(ModItems.COAL_SMELTER.get());

@@ -7,7 +7,9 @@ import com.script.comminutioncraft.common.registry.ModEntities;
 import com.script.comminutioncraft.common.registry.ModItems;
 import com.script.comminutioncraft.common.registry.ModSounds;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 
@@ -236,6 +238,24 @@ public class ModLanguageProvider extends LanguageProvider {
                 "If on, placing a Soaryn Chest also takes your hotbar, not just the main inventory.");
         add(ModItems.AIR_FILTER.get(), "Air Filter");
         add(ModItems.TINY_COAL.get(), "Tiny Coal");
+        add(ModItems.ORE_HAMMER.get(), "Ore Hammer");
+        add(ModItems.DRILL_BIT.get(), "Drill Bit");
+        Stream.of(ModItems.DRILLS, ModItems.CHAINSAWS, ModItems.REACTOR_PLATING_TOOLS.all(), ModItems.SINGULARITY_TOOLS.all())
+                .flatMap(List::stream).forEach(tool -> add(tool.get(), titleCase(tool.getId().getPath())));
+        add("tooltip.comminutioncraft.ore_hammer", "Ores drop 2 granulated ore for each raw ore");
+        add("tooltip.comminutioncraft.drill_bit", "Fits a Coal Drill: craft them together to replace a worn bit");
+        add("tooltip.comminutioncraft.paxel", "Pickaxe, axe, shovel and hoe in one; sneak to till instead of making a path");
+        add("tooltip.comminutioncraft.tool_energy", "Energy: %s / %s FE");
+        add("tooltip.comminutioncraft.tool_charge", "Charge it in an Energy Battery's charge slot");
+        add("tooltip.comminutioncraft.bit_uses", "Bit: %s / %s uses left");
+        add("tooltip.comminutioncraft.bit_worn", "The bit is worn out: craft the drill with a new Drill Bit");
+        add("tooltip.comminutioncraft.drill.role", "Mines like a pickaxe and a shovel");
+        add("tooltip.comminutioncraft.chainsaw.role", "Cuts like an axe, and through leaves");
+        add("tooltip.comminutioncraft.ability.area", "Mines 3x3");
+        add("tooltip.comminutioncraft.ability.fortune", "Fortune III");
+        add("tooltip.comminutioncraft.ability.vein", "Right-click an ore to mine the whole vein");
+        add("tooltip.comminutioncraft.ability.fell", "Fells a whole tree in one swing");
+        add("tooltip.comminutioncraft.ability.clear", "Right-click a tree to clear it, leaves too, and replant it");
         add(ModBlocks.PLASMA_GRANULATOR.get(), "Plasma Granulator");
         add(ModBlocks.PLASMA_SMELTER.get(), "Plasma Smelter");
         add(ModBlocks.PLASMA_ENERGY_BATTERY.get(), "Plasma Energy Battery");
@@ -289,6 +309,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.comminutioncraft.battery.capacity", "of %s FE");
         add("gui.comminutioncraft.battery.input", "In: %s FE/t");
         add("gui.comminutioncraft.battery.output", "Out: %s FE/t");
+        add("gui.comminutioncraft.battery.charge", "Charge");
 
         add("gui.comminutioncraft.redstone", "Redstone: %s");
         add("gui.comminutioncraft.redstone.ignore", "Ignore");

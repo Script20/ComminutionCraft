@@ -1,5 +1,6 @@
 package com.script.comminutioncraft.common.machine;
 
+import net.minecraft.world.SimpleContainer;
 import com.script.comminutioncraft.common.energy.EnergySync;
 import com.script.comminutioncraft.common.machine.control.ControllableMenu;
 import com.script.comminutioncraft.common.machine.control.MachineControls;
@@ -18,10 +19,14 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.Nullable;
 
-/** Battery GUI: no slots of its own, just the player inventory, the energy bar and the in/out rates. */
+/** Battery GUI: the player inventory, the charge slot (after it), the energy bar and the in/out rates. */
 public class EnergyBatteryMenu extends AbstractContainerMenu implements ControllableMenu {
     private static final int INV_END = 27;
     private static final int HOTBAR_END = INV_END + 9;
+    /** The charge slot, after the player inventory. */
+    public static final int CHARGE_SLOT = HOTBAR_END;
+    public static final int CHARGE_X = 150;
+    public static final int CHARGE_Y = 30;
 
     /** The battery itself on the server; null on the client, which only sees the synced data. */
     private final @Nullable EnergyBatteryBlockEntity battery;
@@ -30,36 +35,47 @@ public class EnergyBatteryMenu extends AbstractContainerMenu implements Controll
     // Client-side constructors (called when the server tells the client to open the GUI)
     public static EnergyBatteryMenu client(int containerId, Inventory inventory) {
         return new EnergyBatteryMenu(ModMenus.ENERGY_BATTERY.get(), containerId, inventory, null,
-                new SimpleContainerData(EnergyBatteryBlockEntity.DATA_COUNT));
+                new SimpleContainer(1), new SimpleContainerData(EnergyBatteryBlockEntity.DATA_COUNT));
     }
 
     public static EnergyBatteryMenu clientPlasma(int containerId, Inventory inventory) {
         return new EnergyBatteryMenu(ModMenus.PLASMA_ENERGY_BATTERY.get(), containerId, inventory, null,
-                new SimpleContainerData(EnergyBatteryBlockEntity.DATA_COUNT));
+                new SimpleContainer(1), new SimpleContainerData(EnergyBatteryBlockEntity.DATA_COUNT));
     }
 
     public static EnergyBatteryMenu clientSingularity(int containerId, Inventory inventory) {
         return new EnergyBatteryMenu(ModMenus.SINGULARITY_ENERGY_BATTERY.get(), containerId, inventory, null,
-                new SimpleContainerData(EnergyBatteryBlockEntity.DATA_COUNT));
+                new SimpleContainer(1), new SimpleContainerData(EnergyBatteryBlockEntity.DATA_COUNT));
     }
 
     public static EnergyBatteryMenu clientAntimatter(int containerId, Inventory inventory) {
         return new EnergyBatteryMenu(ModMenus.ANTIMATTER_ENERGY_BATTERY.get(), containerId, inventory, null,
-                new SimpleContainerData(EnergyBatteryBlockEntity.DATA_COUNT));
+                new SimpleContainer(1), new SimpleContainerData(EnergyBatteryBlockEntity.DATA_COUNT));
     }
 
     public static EnergyBatteryMenu clientFusion(int containerId, Inventory inventory) {
         return new EnergyBatteryMenu(ModMenus.FUSION_ENERGY_BATTERY.get(), containerId, inventory, null,
-                new SimpleContainerData(EnergyBatteryBlockEntity.DATA_COUNT));
+                new SimpleContainer(1), new SimpleContainerData(EnergyBatteryBlockEntity.DATA_COUNT));
     }
 
     public EnergyBatteryMenu(MenuType<?> type, int containerId, Inventory inventory, @Nullable EnergyBatteryBlockEntity battery,
-                             ContainerData data) {
+                             Container charge, ContainerData data) {
         super(type, containerId);
         checkContainerDataCount(data, EnergyBatteryBlockEntity.DATA_COUNT);
         this.battery = battery;
         this.data = data;
         addStandardInventorySlots(inventory, 8, 84);
+        addSlot(new Slot(charge, 0, CHARGE_X, CHARGE_Y) {
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                return EnergyBatteryBlockEntity.canCharge(stack);
+            }
+
+            @Override
+            public int getMaxStackSize() {
+                return 1;
+            }
+        });
         addDataSlots(data);
     }
 
@@ -85,7 +101,7 @@ public class EnergyBatteryMenu extends AbstractContainerMenu implements Controll
         return battery == null || Container.stillValidBlockEntity(battery, player);
     }
 
-    /** Shift-click moves stacks between the main inventory and the hotbar. */
+    /** Shift-click: the charge slot to the inventory; a chargeable item into the charge slot; else inventory <-> hotbar. */
     @Override
     public ItemStack quickMoveStack(Player player, int index) {
         Slot slot = slots.get(index);
@@ -94,9 +110,16 @@ public class EnergyBatteryMenu extends AbstractContainerMenu implements Controll
         }
         ItemStack stack = slot.getItem();
         ItemStack original = stack.copy();
-        boolean moved = index < INV_END
-                ? moveItemStackTo(stack, INV_END, HOTBAR_END, false)
-                : moveItemStackTo(stack, 0, INV_END, false);
+        boolean moved;
+        if (index == CHARGE_SLOT) {
+            moved = moveItemStackTo(stack, 0, HOTBAR_END, false);
+        } else if (EnergyBatteryBlockEntity.canCharge(stack) && moveItemStackTo(stack, CHARGE_SLOT, CHARGE_SLOT + 1, false)) {
+            moved = true;
+        } else {
+            moved = index < INV_END
+                    ? moveItemStackTo(stack, INV_END, HOTBAR_END, false)
+                    : moveItemStackTo(stack, 0, INV_END, false);
+        }
         if (!moved) {
             return ItemStack.EMPTY;
         }

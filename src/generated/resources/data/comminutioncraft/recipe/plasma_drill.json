@@ -1,0 +1,18 @@
+{
+  "type": "comminutioncraft:tool_upgrade",
+  "category": "equipment",
+  "key": {
+    "D": "comminutioncraft:electric_drill",
+    "G": "#c:ingots/gold",
+    "P": "comminutioncraft:plasma_circuit",
+    "X": "#c:gems/diamond"
+  },
+  "pattern": [
+    " P ",
+    "GDG",
+    " X "
+  ],
+  "result": {
+    "id": "comminutioncraft:plasma_drill"
+  }
+}

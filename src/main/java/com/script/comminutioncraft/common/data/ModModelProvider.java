@@ -12,6 +12,7 @@ import com.script.comminutioncraft.common.machine.EnergyBatteryBlock;
 import com.script.comminutioncraft.common.registry.ModBlocks;
 import com.script.comminutioncraft.common.registry.ModDataComponents;
 import com.script.comminutioncraft.common.registry.ModItems;
+import java.util.stream.Stream;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.ModelProvider;
@@ -175,6 +176,12 @@ public class ModModelProvider extends ModelProvider {
                 ChestSpecialRenderer.REGULAR, true);
         itemModels.generateFlatItem(ModItems.AIR_FILTER.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.TINY_COAL.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.DRILL_BIT.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.ORE_HAMMER.get(), ModelTemplates.FLAT_HANDHELD_ITEM);
+        Stream.concat(ModItems.DRILLS.stream(), ModItems.CHAINSAWS.stream())
+                .forEach(tool -> itemModels.generateFlatItem(tool.get(), ModelTemplates.FLAT_HANDHELD_ITEM));
+        Stream.concat(ModItems.REACTOR_PLATING_TOOLS.all().stream(), ModItems.SINGULARITY_TOOLS.all().stream())
+                .forEach(tool -> itemModels.generateFlatItem(tool.get(), ModelTemplates.FLAT_HANDHELD_ITEM));
         itemModels.generateFlatItem(ModItems.ELECTRONIC_CIRCUIT.get(), ModelTemplates.FLAT_ITEM);
         blockModels.createFurnace(ModBlocks.PLASMA_GRANULATOR.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         blockModels.createFurnace(ModBlocks.PLASMA_SMELTER.get(), TexturedModel.ORIENTABLE_ONLY_TOP);

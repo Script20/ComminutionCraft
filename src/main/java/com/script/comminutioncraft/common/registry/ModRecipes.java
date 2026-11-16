@@ -2,6 +2,7 @@ package com.script.comminutioncraft.common.registry;
 
 import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.recipe.AssemblingRecipe;
+import com.script.comminutioncraft.common.recipe.DrillBitRecipe;
 import com.script.comminutioncraft.common.recipe.FlotationRecipe;
 import com.script.comminutioncraft.common.recipe.GranulatingRecipe;
 import com.script.comminutioncraft.common.recipe.PressingRecipe;
@@ -9,6 +10,7 @@ import com.script.comminutioncraft.common.recipe.PurifyingRecipe;
 import com.script.comminutioncraft.common.recipe.SingularityRecipe;
 import com.script.comminutioncraft.common.recipe.TagBlastingRecipe;
 import com.script.comminutioncraft.common.recipe.TagSmeltingRecipe;
+import com.script.comminutioncraft.common.recipe.ToolUpgradeRecipe;
 import com.script.comminutioncraft.common.recipe.WashingRecipe;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -21,6 +23,14 @@ public final class ModRecipes {
             DeferredRegister.create(Registries.RECIPE_TYPE, ComminutionCraft.MODID);
     public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS =
             DeferredRegister.create(Registries.RECIPE_SERIALIZER, ComminutionCraft.MODID);
+
+    /** "comminutioncraft:drill_bit" — a Coal Drill + a Drill Bit = the drill with a fresh bit. */
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<DrillBitRecipe>> DRILL_BIT_SERIALIZER =
+            RECIPE_SERIALIZERS.register("drill_bit", () -> new RecipeSerializer<>(DrillBitRecipe.MAP_CODEC, DrillBitRecipe.STREAM_CODEC));
+
+    /** "comminutioncraft:tool_upgrade" — shaped; the next tier's drill / chainsaw keeps the old one's FE. */
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<ToolUpgradeRecipe>> TOOL_UPGRADE_SERIALIZER =
+            RECIPE_SERIALIZERS.register("tool_upgrade", () -> new RecipeSerializer<>(ToolUpgradeRecipe.MAP_CODEC, ToolUpgradeRecipe.STREAM_CODEC));
 
     /** "comminutioncraft:granulating" — used by the Coal Granulator (and future granulators). */
     public static final DeferredHolder<RecipeType<?>, RecipeType<GranulatingRecipe>> GRANULATING_TYPE =
