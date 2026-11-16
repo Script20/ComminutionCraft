@@ -541,7 +541,7 @@
   "comminutioncraft.configuration.soaryn_chest": "Soaryn Chest",
   "comminutioncraft.configuration.sounds": "Sounds",
   "comminutioncraft.configuration.title": "Comminution Craft Config",
-  "comminutioncraft.configuration.tools": "Drills and chainsaws (they hold half their tier's Energy Battery)",
+  "comminutioncraft.configuration.tools": "Drills and chainsaws",
   "comminutioncraft.configuration.tools.antimatterEnergyPerBlock": "FE per block (antimatter)",
   "comminutioncraft.configuration.tools.antimatterEnergyPerBlock.tooltip": "FE a antimatter drill or chainsaw uses per block it breaks",
   "comminutioncraft.configuration.tools.electricEnergyPerBlock": "FE per block (electric)",
