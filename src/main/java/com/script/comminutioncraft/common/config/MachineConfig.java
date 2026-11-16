@@ -402,12 +402,12 @@ public final class MachineConfig {
         ACCELERATOR_ANTIMATTER_CAPACITY = integer(builder, "particle_accelerator", "antimatterCapacity", "Antimatter capacity", "Antimatter tank, mB (pipe it into a Containment Cell)", 1_000);
         ACCELERATOR_PORT_ANTIMATTER_OUTPUT = integer(builder, "particle_accelerator", "portAntimatterOutput", "Port antimatter output", "Max mB of antimatter per tick pushed out of each port", 1_000);
         builder.pop();
-        section(builder, "tools", "Drills and chainsaws (they hold half their tier's Energy Battery)");
+        section(builder, "tools", "Drills and chainsaws");
         int[] perBlock = {0, 0, 200, 300, 400, 600, 800};
         String[] tiers = {"", "", "electric", "plasma", "fusion", "antimatter", "singularity"};
         for (int tier = 2; tier <= 6; tier++) {
             TOOL_ENERGY_PER_BLOCK[tier] = integer(builder, "tools", tiers[tier] + "EnergyPerBlock",
-                    "FE per block (" + tiers[tier] + ")", "FE a " + tiers[tier] + " drill or chainsaw uses per block it breaks", perBlock[tier]);
+                    "FE per block (" + tiers[tier] + ")", "FE " + tiers[tier] + " drills and chainsaws use per block they break", perBlock[tier]);
         }
         TOOL_VEIN_MAX = integer(builder, "tools", "veinMax", "Vein mining limit", "Most ore blocks one right-click with a Singularity Drill takes", 64);
         TOOL_TREE_MAX = integer(builder, "tools", "treeMax", "Tree felling limit", "Most logs a Fusion or better chainsaw fells at once", 256);
