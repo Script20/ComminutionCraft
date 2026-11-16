@@ -7,34 +7,41 @@ import com.script.comminutioncraft.client.gui.CoalSmelterScreen;
 import com.script.comminutioncraft.client.gui.ElectricGeneratorScreen;
 import com.script.comminutioncraft.client.gui.ElectricMachineScreen;
 import com.script.comminutioncraft.client.gui.MachineScreen;
+import com.script.comminutioncraft.client.gui.PlasmaMachineScreen;
 import com.script.comminutioncraft.common.data.ProcessedMetal;
+import com.script.comminutioncraft.common.machine.AnnihilationGeneratorBlockEntity;
+import com.script.comminutioncraft.common.machine.AntimatterGranulatorBlockEntity;
+import com.script.comminutioncraft.common.machine.AntimatterPurifierBlockEntity;
+import com.script.comminutioncraft.common.machine.AntimatterWasherBlockEntity;
+import com.script.comminutioncraft.common.machine.CircuitAssemblerBlockEntity;
+import com.script.comminutioncraft.common.machine.CoalGranulatorBlockEntity;
+import com.script.comminutioncraft.common.machine.ElectricGranulatorBlockEntity;
+import com.script.comminutioncraft.common.machine.ElectrolyserBlockEntity;
+import com.script.comminutioncraft.common.machine.FrothFlotationCellBlockEntity;
+import com.script.comminutioncraft.common.machine.IsotopeSeparatorBlockEntity;
+import com.script.comminutioncraft.common.machine.MhdGeneratorBlockEntity;
+import com.script.comminutioncraft.common.machine.OrePurifierBlockEntity;
+import com.script.comminutioncraft.common.machine.OreWasherBlockEntity;
+import com.script.comminutioncraft.common.machine.PelletPressBlockEntity;
+import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlockEntity;
+import com.script.comminutioncraft.common.machine.PlasmaGranulatorBlockEntity;
+import com.script.comminutioncraft.common.machine.SingularityProcessorBlockEntity;
+import com.script.comminutioncraft.common.machine.TritiumBreederBlockEntity;
 import com.script.comminutioncraft.common.recipe.AssemblingRecipe;
+import com.script.comminutioncraft.common.recipe.FlotationRecipe;
 import com.script.comminutioncraft.common.recipe.GranulatingRecipe;
 import com.script.comminutioncraft.common.recipe.PressingRecipe;
 import com.script.comminutioncraft.common.recipe.PurifyingRecipe;
 import com.script.comminutioncraft.common.recipe.SingularityRecipe;
-import com.script.comminutioncraft.common.machine.OrePurifierBlockEntity;
-import com.script.comminutioncraft.common.machine.PelletPressBlockEntity;
 import com.script.comminutioncraft.common.recipe.WashingRecipe;
-import com.script.comminutioncraft.client.gui.PlasmaMachineScreen;
-import com.script.comminutioncraft.common.machine.CircuitAssemblerBlockEntity;
-import com.script.comminutioncraft.common.machine.CoalGranulatorBlockEntity;
-import com.script.comminutioncraft.common.machine.ElectricGranulatorBlockEntity;
-import com.script.comminutioncraft.common.machine.OreWasherBlockEntity;
-import com.script.comminutioncraft.common.machine.PlasmaGranulatorBlockEntity;
-import net.minecraft.network.chat.Component;
+import com.script.comminutioncraft.common.registry.ModFluids;
 import com.script.comminutioncraft.common.registry.ModItems;
 import com.script.comminutioncraft.common.registry.ModMenus;
 import com.script.comminutioncraft.common.registry.ModRecipes;
-import com.script.comminutioncraft.common.registry.ModFluids;
-import com.script.comminutioncraft.common.machine.ElectrolyserBlockEntity;
-import com.script.comminutioncraft.common.machine.IsotopeSeparatorBlockEntity;
-import com.script.comminutioncraft.common.machine.MhdGeneratorBlockEntity;
-import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlockEntity;
-import com.script.comminutioncraft.common.machine.TritiumBreederBlockEntity;
-import net.minecraft.world.level.ItemLike;
-import net.minecraft.world.level.material.Fluids;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import mezz.jei.api.IModPlugin;
@@ -51,8 +58,11 @@ import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.material.Fluids;
 
 /**
  * JEI: a Granulating category (both granulators), our smelters and the generator listed as smelting / fuel
@@ -67,9 +77,9 @@ public class ComminutionJeiPlugin implements IModPlugin {
             IRecipeHolderType.createDeferred(ModRecipes.ASSEMBLING_TYPE::get);
     public static final Supplier<IRecipeHolderType<WashingRecipe>> WASHING =
             IRecipeHolderType.createDeferred(ModRecipes.WASHING_TYPE::get);
-    public static final Supplier<IRecipeHolderType<com.script.comminutioncraft.common.recipe.FlotationRecipe>> FLOTATION =
+    public static final Supplier<IRecipeHolderType<FlotationRecipe>> FLOTATION =
             IRecipeHolderType.createDeferred(ModRecipes.FLOTATION_TYPE::get);
-    public static final Supplier<IRecipeHolderType<com.script.comminutioncraft.common.recipe.SingularityRecipe>> SINGULARITY =
+    public static final Supplier<IRecipeHolderType<SingularityRecipe>> SINGULARITY =
             IRecipeHolderType.createDeferred(ModRecipes.SINGULARITY_TYPE::get);
     public static final Supplier<IRecipeHolderType<PressingRecipe>> PRESSING =
             IRecipeHolderType.createDeferred(ModRecipes.PRESSING_TYPE::get);
@@ -97,7 +107,7 @@ public class ComminutionJeiPlugin implements IModPlugin {
                         new ProcessingCategory.Station("jei.comminutioncraft.time.electric_granulator", ElectricGranulatorBlockEntity.PROCESS_TIME.get()),
                         new ProcessingCategory.Station("jei.comminutioncraft.time.plasma_granulator", PlasmaGranulatorBlockEntity.PROCESS_TIME.get()),
                         new ProcessingCategory.Station("jei.comminutioncraft.time.antimatter_granulator",
-                                com.script.comminutioncraft.common.machine.AntimatterGranulatorBlockEntity.PROCESS_TIME.get())),
+                                AntimatterGranulatorBlockEntity.PROCESS_TIME.get())),
                         List.of(), recipe -> recipe.getMinTier() >= 2
                                 ? List.of(Component.translatable("jei.comminutioncraft.electric_granulators_only"))
                                 : List.of()),
@@ -113,7 +123,7 @@ public class ComminutionJeiPlugin implements IModPlugin {
                         ModItems.ORE_WASHER.get(), List.of(
                         new ProcessingCategory.Station("jei.comminutioncraft.time.ore_washer", OreWasherBlockEntity.PROCESS_TIME.get()),
                         new ProcessingCategory.Station("jei.comminutioncraft.time.antimatter_washer",
-                                com.script.comminutioncraft.common.machine.AntimatterWasherBlockEntity.PROCESS_TIME.get())),
+                                AntimatterWasherBlockEntity.PROCESS_TIME.get())),
                         List.of()).withFluids(new ProcessingCategory.FluidCost(Fluids.WATER, OreWasherBlockEntity.WATER_PER_OPERATION.get())),
                 new ProcessingCategory<>(gui, PRESSING.get(), Component.translatable("jei.comminutioncraft.pressing"),
                         ModItems.PELLET_PRESS.get(), List.of(
@@ -125,23 +135,23 @@ public class ComminutionJeiPlugin implements IModPlugin {
                         ModItems.ORE_PURIFIER.get(), List.of(
                         new ProcessingCategory.Station("jei.comminutioncraft.time.ore_purifier", OrePurifierBlockEntity.PROCESS_TIME.get()),
                         new ProcessingCategory.Station("jei.comminutioncraft.time.antimatter_purifier",
-                                com.script.comminutioncraft.common.machine.AntimatterPurifierBlockEntity.PROCESS_TIME.get())),
+                                AntimatterPurifierBlockEntity.PROCESS_TIME.get())),
                         List.of(), recipe -> List.of(),
                         new ProcessingCategory.SecondOutput<>(PurifyingRecipe::getByproduct, PurifyingRecipe::getChance)).withFluids(
                         new ProcessingCategory.FluidCost(ModFluids.OXYGEN.get(), OrePurifierBlockEntity.OXYGEN_PER_OPERATION.get())),
                 new ProcessingCategory<>(gui, FLOTATION.get(), Component.translatable("jei.comminutioncraft.flotation"),
                         ModItems.FROTH_FLOTATION_CELL.get(), List.of(
                         new ProcessingCategory.Station("jei.comminutioncraft.time.froth_flotation_cell",
-                                com.script.comminutioncraft.common.machine.FrothFlotationCellBlockEntity.PROCESS_TIME.get())),
+                                FrothFlotationCellBlockEntity.PROCESS_TIME.get())),
                         List.of()).withFluids(
-                        new ProcessingCategory.FluidCost(Fluids.WATER, com.script.comminutioncraft.common.machine.FrothFlotationCellBlockEntity.WATER_PER_OPERATION.get()),
-                        new ProcessingCategory.FluidCost(ModFluids.OXYGEN.get(), com.script.comminutioncraft.common.machine.FrothFlotationCellBlockEntity.OXYGEN_PER_OPERATION.get())),
+                        new ProcessingCategory.FluidCost(Fluids.WATER, FrothFlotationCellBlockEntity.WATER_PER_OPERATION.get()),
+                        new ProcessingCategory.FluidCost(ModFluids.OXYGEN.get(), FrothFlotationCellBlockEntity.OXYGEN_PER_OPERATION.get())),
                 new ProcessingCategory<>(gui, SINGULARITY.get(), Component.translatable("jei.comminutioncraft.singularity"),
                         ModItems.SINGULARITY_PROCESSOR.get(), List.of(
                         new ProcessingCategory.Station("jei.comminutioncraft.time.singularity_processor",
-                                com.script.comminutioncraft.common.machine.SingularityProcessorBlockEntity.PROCESS_TIME.get())),
+                                SingularityProcessorBlockEntity.PROCESS_TIME.get())),
                         List.of(Component.translatable("jei.comminutioncraft.singularity.needs_hole",
-                                com.script.comminutioncraft.common.machine.SingularityProcessorBlockEntity.REACTOR_RANGE.get())),
+                                SingularityProcessorBlockEntity.REACTOR_RANGE.get())),
                         recipe -> recipe.getByproducts().stream().map(b -> (Component) Component.translatable(
                                 "jei.comminutioncraft.singularity.byproduct", b.item().create().getHoverName(),
                                 ProcessingCategory.percent(b.chance()))).toList(),
@@ -203,7 +213,7 @@ public class ComminutionJeiPlugin implements IModPlugin {
     private record FluidMachinePage(IRecipeType<FluidConversionCategory.Conversion> type, ItemLike machine,
                                     FluidConversionCategory.Conversion conversion) {}
 
-    private static final java.util.Map<String, IRecipeType<FluidConversionCategory.Conversion>> PAGE_TYPES = new java.util.HashMap<>();
+    private static final Map<String, IRecipeType<FluidConversionCategory.Conversion>> PAGE_TYPES = new HashMap<>();
 
     private static IRecipeType<FluidConversionCategory.Conversion> pageType(String name) {
         return PAGE_TYPES.computeIfAbsent(name, n -> IRecipeType.create(ComminutionCraft.MODID, n, FluidConversionCategory.Conversion.class));
@@ -217,7 +227,7 @@ public class ComminutionJeiPlugin implements IModPlugin {
     /** A generator's page: fluid in, FE out, with "X FE per mB" and its rate on two lines. */
     private static FluidMachinePage generatorPage(String name, ItemLike machine, List<FluidConversionCategory.Amount> in,
                                                   int energyPerMb, Component rate) {
-        Component perMb = Component.translatable("jei.comminutioncraft.generator.per_mb", String.format(java.util.Locale.ROOT, "%,d", energyPerMb));
+        Component perMb = Component.translatable("jei.comminutioncraft.generator.per_mb", String.format(Locale.ROOT, "%,d", energyPerMb));
         return new FluidMachinePage(pageType(name), machine, new FluidConversionCategory.Conversion(in, List.of(), List.of(perMb, rate), true));
     }
 
@@ -242,13 +252,13 @@ public class ComminutionJeiPlugin implements IModPlugin {
                                 PlasmaGeneratorBlockEntity.MAX_PLASMA_PER_TICK.get())),
                 generatorPage("mhd_generator", ModItems.MHD_GENERATOR.get(),
                         List.of(new FluidConversionCategory.Amount(ModFluids.PLASMA.get(), 1)), MhdGeneratorBlockEntity.ENERGY_PER_MB.get(),
-                        Component.translatable("jei.comminutioncraft.generator.up_to", String.format(java.util.Locale.ROOT, "%,d",
+                        Component.translatable("jei.comminutioncraft.generator.up_to", String.format(Locale.ROOT, "%,d",
                                 MhdGeneratorBlockEntity.ENERGY_PER_MB.get() * MhdGeneratorBlockEntity.MAX_PLASMA_PER_TICK.get()))),
                 generatorPage("annihilation_generator", ModItems.ANNIHILATION_GENERATOR.get(),
                         List.of(new FluidConversionCategory.Amount(ModFluids.ANTIMATTER.get(), 1)),
-                        com.script.comminutioncraft.common.machine.AnnihilationGeneratorBlockEntity.ENERGY_PER_MB.get(),
-                        Component.translatable("jei.comminutioncraft.generator.while_burning", String.format(java.util.Locale.ROOT, "%,d",
-                                com.script.comminutioncraft.common.machine.AnnihilationGeneratorBlockEntity.energyPerTick()))),
+                        AnnihilationGeneratorBlockEntity.ENERGY_PER_MB.get(),
+                        Component.translatable("jei.comminutioncraft.generator.while_burning", String.format(Locale.ROOT, "%,d",
+                                AnnihilationGeneratorBlockEntity.energyPerTick()))),
                 page("isotope_separator", ModItems.ISOTOPE_SEPARATOR.get(),
                         List.of(new FluidConversionCategory.Amount(Fluids.WATER, IsotopeSeparatorBlockEntity.WATER_PER_MB.get())),
                         List.of(new FluidConversionCategory.Amount(ModFluids.DEUTERIUM.get(), 1)),

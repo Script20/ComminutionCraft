@@ -1,9 +1,11 @@
 package com.script.comminutioncraft.common.machine;
 
+import com.script.comminutioncraft.common.machine.control.ControllableMachine;
 import com.script.comminutioncraft.common.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -29,7 +31,7 @@ public class AcceleratorPortBlock extends MachineBlock {
     }
 
     @Override
-    protected BlockEntityType<? extends net.minecraft.world.level.block.entity.BlockEntity> getBlockEntityType() {
+    protected BlockEntityType<? extends BlockEntity> getBlockEntityType() {
         return ModBlockEntities.ACCELERATOR_PORT.get();
     }
 
@@ -42,7 +44,7 @@ public class AcceleratorPortBlock extends MachineBlock {
         BlockState state = level.getBlockState(pos);
         boolean output = !state.getValue(OUTPUT);
         level.setBlock(pos, state.setValue(OUTPUT, output), Block.UPDATE_ALL);
-        if (level.getBlockEntity(pos) instanceof com.script.comminutioncraft.common.machine.control.ControllableMachine port) {
+        if (level.getBlockEntity(pos) instanceof ControllableMachine port) {
             port.refreshFaces(); // pipes and cables next to it re-check what it now offers
         }
         return output;

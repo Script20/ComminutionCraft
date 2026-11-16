@@ -1,11 +1,15 @@
 package com.script.comminutioncraft.common.machine;
 
+import com.script.comminutioncraft.common.config.ConfigInt;
+import com.script.comminutioncraft.common.config.MachineConfig;
 import com.script.comminutioncraft.common.fluid.MachineFluidTank;
 import com.script.comminutioncraft.common.machine.control.SideMode;
 import com.script.comminutioncraft.common.recipe.PressingRecipe;
 import com.script.comminutioncraft.common.registry.ModBlockEntities;
 import com.script.comminutioncraft.common.registry.ModFluids;
 import com.script.comminutioncraft.common.registry.ModRecipes;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -18,6 +22,7 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.transfer.CombinedResourceHandler;
@@ -31,11 +36,11 @@ import org.jspecify.annotations.Nullable;
  * at 40 FE/t. Both gases come in through Input faces; pellets go out of Output faces like any machine's results.
  */
 public class PelletPressBlockEntity extends ElectricMachineBlockEntity {
-    public static final com.script.comminutioncraft.common.config.ConfigInt PROCESS_TIME = com.script.comminutioncraft.common.config.MachineConfig.PELLET_PRESS_PROCESS_TIME;
-    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_PER_TICK = com.script.comminutioncraft.common.config.MachineConfig.PELLET_PRESS_ENERGY_PER_TICK;
-    public static final com.script.comminutioncraft.common.config.ConfigInt DEUTERIUM_PER_PELLET = com.script.comminutioncraft.common.config.MachineConfig.PELLET_PRESS_DEUTERIUM_PER_PELLET;
-    public static final com.script.comminutioncraft.common.config.ConfigInt TRITIUM_PER_PELLET = com.script.comminutioncraft.common.config.MachineConfig.PELLET_PRESS_TRITIUM_PER_PELLET;
-    public static final com.script.comminutioncraft.common.config.ConfigInt TANK_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.PELLET_PRESS_TANK_CAPACITY;
+    public static final ConfigInt PROCESS_TIME = MachineConfig.PELLET_PRESS_PROCESS_TIME;
+    public static final ConfigInt ENERGY_PER_TICK = MachineConfig.PELLET_PRESS_ENERGY_PER_TICK;
+    public static final ConfigInt DEUTERIUM_PER_PELLET = MachineConfig.PELLET_PRESS_DEUTERIUM_PER_PELLET;
+    public static final ConfigInt TRITIUM_PER_PELLET = MachineConfig.PELLET_PRESS_TRITIUM_PER_PELLET;
+    public static final ConfigInt TANK_CAPACITY = MachineConfig.PELLET_PRESS_TANK_CAPACITY;
 
     public static final int DATA_DEUTERIUM = ElectricMachineBlockEntity.DATA_COUNT;
     public static final int DATA_DEUTERIUM_CAPACITY = DATA_DEUTERIUM + 1;
@@ -74,20 +79,20 @@ public class PelletPressBlockEntity extends ElectricMachineBlockEntity {
     }
 
     @Override
-    protected java.util.Collection<net.minecraft.world.level.material.Fluid> consumedFluids() {
-        return java.util.List.of(com.script.comminutioncraft.common.registry.ModFluids.DEUTERIUM.get(), com.script.comminutioncraft.common.registry.ModFluids.TRITIUM.get());
+    protected Collection<Fluid> consumedFluids() {
+        return List.of(ModFluids.DEUTERIUM.get(), ModFluids.TRITIUM.get());
     }
 
     @Override
     protected boolean hasOperationResources() {
-        return deuterium.getAmount() >= fluidCost(com.script.comminutioncraft.common.registry.ModFluids.DEUTERIUM.get(), DEUTERIUM_PER_PELLET.get())
-                && tritium.getAmount() >= fluidCost(com.script.comminutioncraft.common.registry.ModFluids.TRITIUM.get(), TRITIUM_PER_PELLET.get());
+        return deuterium.getAmount() >= fluidCost(ModFluids.DEUTERIUM.get(), DEUTERIUM_PER_PELLET.get())
+                && tritium.getAmount() >= fluidCost(ModFluids.TRITIUM.get(), TRITIUM_PER_PELLET.get());
     }
 
     @Override
     protected void onOperationDone() {
-        deuterium.drain(fluidCost(com.script.comminutioncraft.common.registry.ModFluids.DEUTERIUM.get(), DEUTERIUM_PER_PELLET.get()));
-        tritium.drain(fluidCost(com.script.comminutioncraft.common.registry.ModFluids.TRITIUM.get(), TRITIUM_PER_PELLET.get()));
+        deuterium.drain(fluidCost(ModFluids.DEUTERIUM.get(), DEUTERIUM_PER_PELLET.get()));
+        tritium.drain(fluidCost(ModFluids.TRITIUM.get(), TRITIUM_PER_PELLET.get()));
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.script.comminutioncraft.common.machine;
 
+import com.script.comminutioncraft.common.config.ConfigInt;
+import com.script.comminutioncraft.common.config.MachineConfig;
 import com.script.comminutioncraft.common.fluid.MachineFluidTank;
 import com.script.comminutioncraft.common.registry.ModBlockEntities;
 import com.script.comminutioncraft.common.registry.ModFluids;
@@ -18,10 +20,10 @@ import net.minecraft.world.level.block.state.BlockState;
  * The whole chain pays: a mB of plasma costs 2 mB water + 10 FE (Electrolyser) + 16 FE (Plasma Generator) and gives 60 FE.
  */
 public class MhdGeneratorBlockEntity extends FluidMachineBlockEntity {
-    public static final com.script.comminutioncraft.common.config.ConfigInt MAX_PLASMA_PER_TICK = com.script.comminutioncraft.common.config.MachineConfig.MHD_GENERATOR_PLASMA_PER_TICK;
-    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_PER_MB = com.script.comminutioncraft.common.config.MachineConfig.MHD_GENERATOR_ENERGY_PER_MB;
-    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.MHD_GENERATOR_ENERGY_CAPACITY;
-    public static final com.script.comminutioncraft.common.config.ConfigInt MAX_ENERGY_OUTPUT = com.script.comminutioncraft.common.config.MachineConfig.MHD_GENERATOR_MAX_ENERGY_OUTPUT;
+    public static final ConfigInt MAX_PLASMA_PER_TICK = MachineConfig.MHD_GENERATOR_PLASMA_PER_TICK;
+    public static final ConfigInt ENERGY_PER_MB = MachineConfig.MHD_GENERATOR_ENERGY_PER_MB;
+    public static final ConfigInt ENERGY_CAPACITY = MachineConfig.MHD_GENERATOR_ENERGY_CAPACITY;
+    public static final ConfigInt MAX_ENERGY_OUTPUT = MachineConfig.MHD_GENERATOR_MAX_ENERGY_OUTPUT;
 
     public static final int TANK_PLASMA = 0;
     public static final int TANK_COUNT = 1;

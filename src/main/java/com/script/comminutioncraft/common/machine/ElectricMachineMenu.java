@@ -1,11 +1,15 @@
 package com.script.comminutioncraft.common.machine;
 
+import com.script.comminutioncraft.common.energy.EnergySync;
 import com.script.comminutioncraft.common.machine.control.ControllableMenu;
 import com.script.comminutioncraft.common.machine.control.MachineControls;
 import com.script.comminutioncraft.common.machine.control.RedstoneMode;
 import com.script.comminutioncraft.common.machine.control.RelativeSide;
 import com.script.comminutioncraft.common.machine.control.SideMode;
-import com.script.comminutioncraft.common.energy.EnergySync;
+import com.script.comminutioncraft.common.machine.upgrade.MachineUpgrades;
+import com.script.comminutioncraft.common.machine.upgrade.UpgradeHolder;
+import com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot;
+import com.script.comminutioncraft.common.machine.upgrade.UpgradeType;
 import com.script.comminutioncraft.common.registry.ModMenus;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -28,6 +32,7 @@ public class ElectricMachineMenu extends AbstractContainerMenu implements Contro
     private final Container container;
     private final ContainerData data;
     private final int upgradeStart;
+    private final MachineUpgrades upgrades;
 
     // Client-side constructors (called when the server tells the client to open the GUI)
     public static ElectricMachineMenu clientGranulator(int containerId, Inventory inventory) {
@@ -78,10 +83,10 @@ public class ElectricMachineMenu extends AbstractContainerMenu implements Contro
         addStandardInventorySlots(inventory, 8, 84);
         // Speed / Energy / Gas / Liquid, shown in the Upgrades panel (after the inventory, so other indices stay put)
         upgradeStart = slots.size();
-        Container upgrades = container instanceof com.script.comminutioncraft.common.machine.upgrade.UpgradeHolder holder
-                ? holder.getUpgrades() : com.script.comminutioncraft.common.machine.upgrade.MachineUpgrades.client(() -> data.get(ElectricMachineBlockEntity.DATA_UPGRADES));
-        for (com.script.comminutioncraft.common.machine.upgrade.UpgradeType upgrade : com.script.comminutioncraft.common.machine.upgrade.UpgradeType.values()) {
-            addSlot(new com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot(upgrades, upgrade, inventory.player.level().isClientSide()));
+        upgrades = container instanceof UpgradeHolder holder
+                ? holder.getUpgrades() : MachineUpgrades.client(() -> data.get(ElectricMachineBlockEntity.DATA_UPGRADES));
+        for (UpgradeType upgrade : UpgradeType.values()) {
+            addSlot(new UpgradeSlot(upgrades, upgrade, inventory.player.level().isClientSide()));
         }
         addDataSlots(data);
     }
@@ -92,8 +97,8 @@ public class ElectricMachineMenu extends AbstractContainerMenu implements Contro
     }
 
     @Override
-    public boolean takesUpgrade(com.script.comminutioncraft.common.machine.upgrade.UpgradeType type) {
-        return (data.get(ElectricMachineBlockEntity.DATA_UPGRADES) & (1 << type.ordinal())) != 0;
+    public boolean takesUpgrade(UpgradeType type) {
+        return upgrades.allows(type);
     }
 
     // ---- Redstone / side settings (synced through data slots, changed with button clicks) ----
@@ -128,12 +133,12 @@ public class ElectricMachineMenu extends AbstractContainerMenu implements Contro
         ItemStack stack = slot.getItem();
         ItemStack original = stack.copy();
 
-        int upgradeEnd = upgradeStart + com.script.comminutioncraft.common.machine.upgrade.UpgradeType.values().length;
+        int upgradeEnd = upgradeStart + UpgradeType.values().length;
         if (index >= upgradeStart && index < upgradeEnd) {
             if (!moveItemStackTo(stack, INV_START, HOTBAR_END, false)) {
                 return ItemStack.EMPTY;
             }
-        } else if (index >= INV_START && index < HOTBAR_END && com.script.comminutioncraft.common.machine.upgrade.UpgradeType.of(stack) != null
+        } else if (index >= INV_START && index < HOTBAR_END && UpgradeType.of(stack) != null
                 && moveItemStackTo(stack, upgradeStart, upgradeEnd, false)) {
             // an upgrade: into its slot
         } else if (index == ElectricMachineBlockEntity.SLOT_OUTPUT) {

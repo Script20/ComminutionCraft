@@ -1,6 +1,7 @@
 package com.script.comminutioncraft.client.compat.jei;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.script.comminutioncraft.ComminutionCraft;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -24,8 +25,10 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenPosition;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
@@ -234,8 +237,8 @@ public abstract class MultiblockCategory<T> extends AbstractRecipeCategory<T> {
                 } else {
                     layer = layer < 0 ? sizeY - 1 : layer - 1;
                 }
-                Minecraft.getInstance().getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(
-                        net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(
+                        SoundEvents.UI_BUTTON_CLICK, 1.0F));
             }
             return true;
         }
@@ -276,7 +279,7 @@ public abstract class MultiblockCategory<T> extends AbstractRecipeCategory<T> {
     }
 
     protected static IDrawable energyIcon(IGuiHelper guiHelper) {
-        return guiHelper.drawableBuilder(com.script.comminutioncraft.ComminutionCraft.id("textures/gui/jei_energy.png"), 0, 0, 16, 16)
+        return guiHelper.drawableBuilder(ComminutionCraft.id("textures/gui/jei_energy.png"), 0, 0, 16, 16)
                 .setTextureSize(16, 16)
                 .build();
     }

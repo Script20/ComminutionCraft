@@ -1,5 +1,7 @@
 package com.script.comminutioncraft.common.machine;
 
+import com.script.comminutioncraft.common.config.ConfigInt;
+import com.script.comminutioncraft.common.config.MachineConfig;
 import com.script.comminutioncraft.common.registry.ModBlockEntities;
 import com.script.comminutioncraft.common.registry.ModMenus;
 import java.util.Optional;
@@ -22,8 +24,8 @@ import net.minecraft.world.level.block.state.BlockState;
  * Twice as fast as the Electric Smelter (25 ticks vs 50) at 80 FE/t = 2,000 FE per item.
  */
 public class PlasmaSmelterBlockEntity extends ElectricMachineBlockEntity {
-    public static final com.script.comminutioncraft.common.config.ConfigInt PROCESS_TIME = com.script.comminutioncraft.common.config.MachineConfig.PLASMA_SMELTER_PROCESS_TIME;
-    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_PER_TICK = com.script.comminutioncraft.common.config.MachineConfig.PLASMA_SMELTER_ENERGY_PER_TICK;
+    public static final ConfigInt PROCESS_TIME = MachineConfig.PLASMA_SMELTER_PROCESS_TIME;
+    public static final ConfigInt ENERGY_PER_TICK = MachineConfig.PLASMA_SMELTER_ENERGY_PER_TICK;
 
     private final RecipeManager.CachedCheck<SingleRecipeInput, SmeltingRecipe> recipeCheck =
             RecipeManager.createCheck(RecipeType.SMELTING);

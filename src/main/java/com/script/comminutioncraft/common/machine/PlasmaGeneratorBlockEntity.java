@@ -1,14 +1,18 @@
 package com.script.comminutioncraft.common.machine;
 
+import com.script.comminutioncraft.common.config.ConfigInt;
+import com.script.comminutioncraft.common.config.MachineConfig;
 import com.script.comminutioncraft.common.fluid.MachineFluidTank;
 import com.script.comminutioncraft.common.registry.ModBlockEntities;
 import com.script.comminutioncraft.common.registry.ModFluids;
 import com.script.comminutioncraft.common.registry.ModMenus;
+import java.util.Collection;
+import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.minecraft.world.level.material.Fluid;
 
 /**
  * Tier 3 Plasma Generator: superheats hydrogen into plasma with FE, 1 mB for 1 mB, up to
@@ -16,10 +20,10 @@ import net.neoforged.neoforge.transfer.fluid.FluidResource;
  * (from an Electrolyser); plasma goes out of Output faces (to machines, tanks or an MHD Generator).
  */
 public class PlasmaGeneratorBlockEntity extends FluidMachineBlockEntity {
-    public static final com.script.comminutioncraft.common.config.ConfigInt MAX_PLASMA_PER_TICK = com.script.comminutioncraft.common.config.MachineConfig.PLASMA_GENERATOR_PLASMA_PER_TICK;
-    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_PER_MB = com.script.comminutioncraft.common.config.MachineConfig.PLASMA_GENERATOR_ENERGY_PER_MB;
-    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.PLASMA_GENERATOR_ENERGY_CAPACITY;
-    public static final com.script.comminutioncraft.common.config.ConfigInt MAX_ENERGY_INPUT = com.script.comminutioncraft.common.config.MachineConfig.PLASMA_GENERATOR_MAX_ENERGY_INPUT;
+    public static final ConfigInt MAX_PLASMA_PER_TICK = MachineConfig.PLASMA_GENERATOR_PLASMA_PER_TICK;
+    public static final ConfigInt ENERGY_PER_MB = MachineConfig.PLASMA_GENERATOR_ENERGY_PER_MB;
+    public static final ConfigInt ENERGY_CAPACITY = MachineConfig.PLASMA_GENERATOR_ENERGY_CAPACITY;
+    public static final ConfigInt MAX_ENERGY_INPUT = MachineConfig.PLASMA_GENERATOR_MAX_ENERGY_INPUT;
 
     public static final int TANK_HYDROGEN = 0;
     public static final int TANK_PLASMA = 1;
@@ -33,22 +37,14 @@ public class PlasmaGeneratorBlockEntity extends FluidMachineBlockEntity {
     }
 
     @Override
-    protected java.util.Collection<net.minecraft.world.level.material.Fluid> consumedFluids() {
-        return java.util.List.of(com.script.comminutioncraft.common.registry.ModFluids.HYDROGEN.get());
+    protected Collection<Fluid> consumedFluids() {
+        return List.of(ModFluids.HYDROGEN.get());
     }
 
     @Override
     protected int work(ServerLevel level) {
-        int perMb = upgradedEnergy(ENERGY_PER_MB.get());
-        int make = Math.min(Math.min(upgradedRate(MAX_PLASMA_PER_TICK.get()), affordable(com.script.comminutioncraft.common.registry.ModFluids.HYDROGEN.get(), hydrogen.getAmount(), 1)),
-                Math.min(plasma.getSpace(), energy.getEnergy() / perMb));
-        if (make <= 0) {
-            return 0;
-        }
-        energy.consume(make * perMb);
-        hydrogen.drain(drainFor(com.script.comminutioncraft.common.registry.ModFluids.HYDROGEN.get(), make, 1));
-        plasma.fill(FluidResource.of(ModFluids.PLASMA.get()), make);
-        return make;
+        return convert(hydrogen, ModFluids.HYDROGEN.get(), 1, plasma, ModFluids.PLASMA.get(),
+                MAX_PLASMA_PER_TICK.get(), ENERGY_PER_MB.get());
     }
 
     @Override

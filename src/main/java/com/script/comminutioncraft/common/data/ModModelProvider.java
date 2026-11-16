@@ -2,12 +2,14 @@ package com.script.comminutioncraft.common.data;
 
 import com.mojang.math.Quadrant;
 import com.script.comminutioncraft.ComminutionCraft;
+import com.script.comminutioncraft.client.render.TankItemRenderer;
 import com.script.comminutioncraft.common.block.StoneSet;
 import com.script.comminutioncraft.common.cable.CableConnection;
 import com.script.comminutioncraft.common.cable.ConduitBlock;
+import com.script.comminutioncraft.common.item.WrenchMode;
+import com.script.comminutioncraft.common.machine.AcceleratorPortBlock;
 import com.script.comminutioncraft.common.machine.EnergyBatteryBlock;
 import com.script.comminutioncraft.common.registry.ModBlocks;
-import com.script.comminutioncraft.common.item.WrenchMode;
 import com.script.comminutioncraft.common.registry.ModDataComponents;
 import com.script.comminutioncraft.common.registry.ModItems;
 import net.minecraft.client.data.models.BlockModelGenerators;
@@ -18,6 +20,7 @@ import net.minecraft.client.data.models.blockstates.MultiPartGenerator;
 import net.minecraft.client.data.models.blockstates.MultiVariantGenerator;
 import net.minecraft.client.data.models.blockstates.PropertyDispatch;
 import net.minecraft.client.data.models.model.ItemModelUtils;
+import net.minecraft.client.data.models.model.ModelLocationUtils;
 import net.minecraft.client.data.models.model.ModelTemplate;
 import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.client.data.models.model.TextureMapping;
@@ -25,12 +28,15 @@ import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.client.data.models.model.TexturedModel;
 import net.minecraft.client.renderer.block.dispatch.VariantMutator;
 import net.minecraft.client.renderer.item.properties.select.ComponentContents;
+import net.minecraft.client.renderer.special.ChestSpecialRenderer;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.neoforged.neoforge.client.model.generators.template.ExtendedModelTemplateBuilder;
 
 /**
@@ -93,12 +99,12 @@ public class ModModelProvider extends ModelProvider {
     }
 
     /** A tank item = its block model plus the inner walls and the fluid it holds (client/render/TankItemRenderer). */
-    private static void tankItem(ItemModelGenerators itemModels, net.minecraft.world.level.block.Block tank) {
-        net.minecraft.resources.Identifier model = net.minecraft.client.data.models.model.ModelLocationUtils.getModelLocation(tank);
+    private static void tankItem(ItemModelGenerators itemModels, Block tank) {
+        Identifier model = ModelLocationUtils.getModelLocation(tank);
         itemModels.itemModelOutput.accept(tank.asItem(), ItemModelUtils.composite(
                 ItemModelUtils.plainModel(model),
-                ItemModelUtils.specialModel(model, new com.script.comminutioncraft.client.render.TankItemRenderer.Unbaked(
-                        net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(tank)))));
+                ItemModelUtils.specialModel(model, new TankItemRenderer.Unbaked(
+                        BuiltInRegistries.BLOCK.getKey(tank)))));
     }
 
     @Override
@@ -165,8 +171,8 @@ public class ModModelProvider extends ModelProvider {
         blockModels.createFurnace(ModBlocks.HORIZON_CONTROLLER.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         blockModels.createFurnace(ModBlocks.ACCELERATOR_CONTROLLER.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         // Soaryn Chest: drawn by the vanilla ChestRenderer; the block model is particles only, the item a special model
-        blockModels.createChest(ModBlocks.SOARYN_CHEST.get(), net.minecraft.world.level.block.Blocks.OAK_PLANKS,
-                net.minecraft.client.renderer.special.ChestSpecialRenderer.REGULAR, true);
+        blockModels.createChest(ModBlocks.SOARYN_CHEST.get(), Blocks.OAK_PLANKS,
+                ChestSpecialRenderer.REGULAR, true);
         itemModels.generateFlatItem(ModItems.AIR_FILTER.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.TINY_COAL.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.ELECTRONIC_CIRCUIT.get(), ModelTemplates.FLAT_ITEM);
@@ -258,8 +264,8 @@ public class ModModelProvider extends ModelProvider {
                     : ModelTemplates.CUBE_COLUMN.createWithSuffix(block, suffix, textures, blockModels.modelOutput);
         }
         blockModels.blockStateOutput.accept(MultiVariantGenerator.dispatch(block)
-                .with(net.minecraft.client.data.models.blockstates.PropertyDispatch.initial(BlockStateProperties.LIT,
-                                com.script.comminutioncraft.common.machine.AcceleratorPortBlock.OUTPUT)
+                .with(PropertyDispatch.initial(BlockStateProperties.LIT,
+                                AcceleratorPortBlock.OUTPUT)
                         .select(false, false, BlockModelGenerators.plainVariant(models[0]))
                         .select(true, false, BlockModelGenerators.plainVariant(models[1]))
                         .select(false, true, BlockModelGenerators.plainVariant(models[2]))

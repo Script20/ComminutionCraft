@@ -111,10 +111,6 @@ public class FusionReactorMenu extends AbstractContainerMenu implements Controll
         return data.get(FusionReactorBlockEntity.DATA_HEAT);
     }
 
-    public int getBurnTicks() {
-        return data.get(FusionReactorBlockEntity.DATA_BURN);
-    }
-
     public int getPlasma() {
         return data.get(FusionReactorBlockEntity.DATA_PLASMA);
     }

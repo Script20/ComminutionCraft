@@ -1,5 +1,6 @@
 package com.script.comminutioncraft.common.data;
 
+import com.script.comminutioncraft.common.registry.ModBlocks;
 import com.script.comminutioncraft.common.registry.ModDataMaps;
 import com.script.comminutioncraft.common.registry.ModItems;
 import java.util.Map;
@@ -13,6 +14,9 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.DataMapProvider;
+import net.neoforged.neoforge.registries.datamaps.builtin.FurnaceFuel;
+import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
+import net.neoforged.neoforge.registries.datamaps.builtin.Strippable;
 
 /**
  * Masses for the Event Horizon Reactor's black hole (owner, 2026-11-14): everything else weighs 1 (stone, cobble, dirt,
@@ -149,14 +153,14 @@ public class ModDataMapProvider extends DataMapProvider {
         mass(mass, ModItems.SINGULARITY_CIRCUIT.get(), 2048);
 
         // Tiny Coal: an eighth of coal's 1,600 ticks, i.e. one item in a furnace
-        builder(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.FURNACE_FUELS)
-                .add(ModItems.TINY_COAL.getId(), new net.neoforged.neoforge.registries.datamaps.builtin.FurnaceFuel(200), false);
+        builder(NeoForgeDataMaps.FURNACE_FUELS)
+                .add(ModItems.TINY_COAL.getId(), new FurnaceFuel(200), false);
 
         // An axe strips Purpleheart logs and wood
-        var strip = builder(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.STRIPPABLES);
-        var wood = com.script.comminutioncraft.common.registry.ModBlocks.PURPLEHEART;
-        strip.add(wood.log.getId(), new net.neoforged.neoforge.registries.datamaps.builtin.Strippable(wood.strippedLog.get()), false);
-        strip.add(wood.wood.getId(), new net.neoforged.neoforge.registries.datamaps.builtin.Strippable(wood.strippedWood.get()), false);
+        var strip = builder(NeoForgeDataMaps.STRIPPABLES);
+        var wood = ModBlocks.PURPLEHEART;
+        strip.add(wood.log.getId(), new Strippable(wood.strippedLog.get()), false);
+        strip.add(wood.wood.getId(), new Strippable(wood.strippedWood.get()), false);
     }
 
     /** A gem: the gem, its block (9 x) and its ore (roughly what it drops). */

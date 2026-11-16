@@ -1,19 +1,26 @@
 package com.script.comminutioncraft.common.machine;
 
+import com.script.comminutioncraft.common.config.ConfigInt;
+import com.script.comminutioncraft.common.config.MachineConfig;
 import com.script.comminutioncraft.common.energy.EnergySync;
 import com.script.comminutioncraft.common.energy.MachineEnergyStorage;
 import com.script.comminutioncraft.common.machine.control.ControllableMachine;
 import com.script.comminutioncraft.common.machine.control.MachineControls;
 import com.script.comminutioncraft.common.machine.control.SideMode;
+import com.script.comminutioncraft.common.machine.upgrade.MachineUpgrades;
+import com.script.comminutioncraft.common.machine.upgrade.UpgradeHolder;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.component.DataComponentGetter;
-import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponentGetter;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.Containers;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.Item;
@@ -25,6 +32,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
@@ -39,7 +47,7 @@ import org.jspecify.annotations.Nullable;
  */
 public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntity
         implements WorldlyContainer, TickingMachine, MachineExperience.Holder, ControllableMachine,
-        com.script.comminutioncraft.common.machine.upgrade.UpgradeHolder {
+        UpgradeHolder {
     public static final int SLOT_INPUT = 0;
     public static final int SLOT_OUTPUT = 1;
     public static final int SLOT_COUNT = 2;
@@ -61,11 +69,11 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
     public static final int DATA_UPGRADES = 8;
     public static final int DATA_COUNT = 9;
 
-    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.ELECTRIC_MACHINES_ENERGY_CAPACITY;
-    public static final com.script.comminutioncraft.common.config.ConfigInt MAX_ENERGY_INPUT = com.script.comminutioncraft.common.config.MachineConfig.ELECTRIC_MACHINES_MAX_ENERGY_INPUT;
+    public static final ConfigInt ENERGY_CAPACITY = MachineConfig.ELECTRIC_MACHINES_ENERGY_CAPACITY;
+    public static final ConfigInt MAX_ENERGY_INPUT = MachineConfig.ELECTRIC_MACHINES_MAX_ENERGY_INPUT;
     /** Tier-3 machines (Plasma Granulator / Smelter, Ore Washer, Circuit Assembler) hold more and take FE faster. */
-    public static final com.script.comminutioncraft.common.config.ConfigInt TIER3_ENERGY_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.PLASMA_MACHINES_ENERGY_CAPACITY;
-    public static final com.script.comminutioncraft.common.config.ConfigInt TIER3_MAX_ENERGY_INPUT = com.script.comminutioncraft.common.config.MachineConfig.PLASMA_MACHINES_MAX_ENERGY_INPUT;
+    public static final ConfigInt TIER3_ENERGY_CAPACITY = MachineConfig.PLASMA_MACHINES_ENERGY_CAPACITY;
+    public static final ConfigInt TIER3_MAX_ENERGY_INPUT = MachineConfig.PLASMA_MACHINES_MAX_ENERGY_INPUT;
     /** How long the front stays lit after work stops, so a machine on a thin power supply doesn't flicker. */
     private static final int LIT_COOLDOWN = 10;
 
@@ -76,8 +84,8 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
     private @Nullable Item lastInputItem;
     private final MachineExperience experience = new MachineExperience();
     private final MachineControls controls = new MachineControls(MachineControls.outputBelow(), this::onControlsChanged);
-    private final com.script.comminutioncraft.common.machine.upgrade.MachineUpgrades upgrades =
-            new com.script.comminutioncraft.common.machine.upgrade.MachineUpgrades(this::onUpgradesChanged, this::consumedFluids);
+    private final MachineUpgrades upgrades =
+            new MachineUpgrades(this::onUpgradesChanged, this::consumedFluids);
 
     protected final ContainerData dataAccess = new ContainerData() {
         @Override
@@ -164,7 +172,7 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
     // ---- Upgrades (Speed, Energy, Gas, Liquid) ----
 
     @Override
-    public com.script.comminutioncraft.common.machine.upgrade.MachineUpgrades getUpgrades() {
+    public MachineUpgrades getUpgrades() {
         return upgrades;
     }
 
@@ -186,12 +194,12 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
     }
 
     /** The fluids an operation uses up (decides whether Gas / Liquid upgrades fit); none by default. */
-    protected java.util.Collection<net.minecraft.world.level.material.Fluid> consumedFluids() {
-        return java.util.List.of();
+    protected Collection<Fluid> consumedFluids() {
+        return List.of();
     }
 
     /** A per-operation fluid cost after Gas / Liquid upgrades. */
-    protected int fluidCost(net.minecraft.world.level.material.Fluid fluid, int amount) {
+    protected int fluidCost(Fluid fluid, int amount) {
         return upgrades.fluidCost(fluid, amount);
     }
 
@@ -219,17 +227,33 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
 
     @Override
     public void serverTick(ServerLevel level, BlockPos pos, BlockState state) {
-        // Switched off by redstone: pauses (progress kept); it still accepts power and still pushes finished items out.
-        if (!controls.canRun(level, pos)) {
+        // Switched off by redstone: the work pauses (progress kept); it still accepts power and pushes finished items out.
+        boolean changed = false;
+        if (controls.canRun(level, pos)) {
+            changed = process(level);
+        } else {
             litCooldown = 0;
-            if (state.getValue(MachineBlock.LIT)) {
-                level.setBlock(pos, state.setValue(MachineBlock.LIT, false), Block.UPDATE_ALL);
-            }
-            if (!items.get(SLOT_OUTPUT).isEmpty()) {
-                pushItemsOut(level, pos);
-            }
-            return;
         }
+
+        if (litCooldown > 0) {
+            litCooldown--;
+        }
+        boolean lit = litCooldown > 0;
+        if (state.getValue(MachineBlock.LIT) != lit) {
+            level.setBlock(pos, state.setValue(MachineBlock.LIT, lit), Block.UPDATE_ALL);
+        }
+
+        if (!items.get(SLOT_OUTPUT).isEmpty()) {
+            pushItemsOut(level, pos);
+        }
+
+        if (changed) {
+            setChanged();
+        }
+    }
+
+    /** One tick of work on the input slot; true if the slots changed. */
+    private boolean process(ServerLevel level) {
         boolean changed = false;
         ItemStack input = items.get(SLOT_INPUT);
 
@@ -258,22 +282,7 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
                 changed = true;
             }
         }
-
-        if (litCooldown > 0) {
-            litCooldown--;
-        }
-        boolean lit = litCooldown > 0;
-        if (state.getValue(MachineBlock.LIT) != lit) {
-            level.setBlock(pos, state.setValue(MachineBlock.LIT, lit), Block.UPDATE_ALL);
-        }
-
-        if (!items.get(SLOT_OUTPUT).isEmpty()) {
-            pushItemsOut(level, pos);
-        }
-
-        if (changed) {
-            setChanged();
-        }
+        return changed;
     }
 
     // ---- Experience ----
@@ -289,7 +298,7 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
         super.preRemoveSideEffects(pos, state);
         if (level instanceof ServerLevel serverLevel) {
             experience.pop(serverLevel, Vec3.atCenterOf(pos));
-            net.minecraft.world.Containers.dropContents(serverLevel, pos, upgrades); // (the wrench empties them first)
+            Containers.dropContents(serverLevel, pos, upgrades); // (the wrench empties them first)
         }
     }
 

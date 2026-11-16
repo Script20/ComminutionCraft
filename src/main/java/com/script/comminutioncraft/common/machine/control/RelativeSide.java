@@ -39,17 +39,6 @@ public enum RelativeSide {
         return side == facing.getClockWise() ? LEFT : RIGHT;
     }
 
-    public Direction toDirection(Direction facing) {
-        return switch (this) {
-            case FRONT -> facing;
-            case BACK -> facing.getOpposite();
-            case LEFT -> facing.getClockWise();
-            case RIGHT -> facing.getCounterClockWise();
-            case TOP -> Direction.UP;
-            case BOTTOM -> Direction.DOWN;
-        };
-    }
-
     public Component displayName() {
         return Component.translatable("gui.comminutioncraft.side." + name);
     }

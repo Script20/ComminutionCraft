@@ -2,26 +2,22 @@ package com.script.comminutioncraft.common.data;
 
 import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.registry.ModBlocks;
+import com.script.comminutioncraft.common.registry.ModDamageTypes;
 import com.script.comminutioncraft.common.registry.ModFeatures;
 import com.script.comminutioncraft.common.worldgen.LavaCrustFeature;
 import com.script.comminutioncraft.common.worldgen.ModTrees;
-import net.minecraft.data.worldgen.placement.PlacementUtils;
-import net.minecraft.data.worldgen.placement.VegetationPlacements;
-import net.minecraft.util.valueproviders.ConstantInt;
-import net.minecraft.world.level.levelgen.feature.configurations.TreeConfiguration;
-import net.minecraft.world.level.levelgen.feature.featuresize.TwoLayersFeatureSize;
-import net.minecraft.world.level.levelgen.feature.foliageplacers.BlobFoliagePlacer;
-import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
-import net.minecraft.world.level.levelgen.feature.trunkplacers.StraightTrunkPlacer;
 import java.util.List;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstrapContext;
+import net.minecraft.data.worldgen.placement.PlacementUtils;
+import net.minecraft.data.worldgen.placement.VegetationPlacements;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.util.valueproviders.ConstantInt;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.levelgen.GenerationStep;
@@ -29,6 +25,11 @@ import net.minecraft.world.level.levelgen.VerticalAnchor;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
+import net.minecraft.world.level.levelgen.feature.configurations.TreeConfiguration;
+import net.minecraft.world.level.levelgen.feature.featuresize.TwoLayersFeatureSize;
+import net.minecraft.world.level.levelgen.feature.foliageplacers.BlobFoliagePlacer;
+import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
+import net.minecraft.world.level.levelgen.feature.trunkplacers.StraightTrunkPlacer;
 import net.minecraft.world.level.levelgen.placement.BiomeFilter;
 import net.minecraft.world.level.levelgen.placement.CountPlacement;
 import net.minecraft.world.level.levelgen.placement.HeightRangePlacement;
@@ -65,7 +66,7 @@ public final class ModWorldGen {
             .add(Registries.CONFIGURED_FEATURE, ModWorldGen::configuredFeatures)
             .add(Registries.PLACED_FEATURE, ModWorldGen::placedFeatures)
             .add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, ModWorldGen::biomeModifiers)
-            .add(Registries.DAMAGE_TYPE, com.script.comminutioncraft.common.registry.ModDamageTypes::bootstrap);
+            .add(Registries.DAMAGE_TYPE, ModDamageTypes::bootstrap);
 
     private static void configuredFeatures(BootstrapContext<ConfiguredFeature<?, ?>> context) {
         HolderGetter<Block> blocks = context.lookup(Registries.BLOCK);

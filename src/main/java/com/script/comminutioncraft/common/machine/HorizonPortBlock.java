@@ -1,6 +1,7 @@
 package com.script.comminutioncraft.common.machine;
 
 import com.script.comminutioncraft.common.registry.ModBlockEntities;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
 /**
@@ -13,7 +14,7 @@ public class HorizonPortBlock extends AcceleratorPortBlock {
     }
 
     @Override
-    protected BlockEntityType<? extends net.minecraft.world.level.block.entity.BlockEntity> getBlockEntityType() {
+    protected BlockEntityType<? extends BlockEntity> getBlockEntityType() {
         return ModBlockEntities.HORIZON_PORT.get();
     }
 }

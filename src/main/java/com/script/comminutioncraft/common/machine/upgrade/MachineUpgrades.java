@@ -3,7 +3,10 @@ package com.script.comminutioncraft.common.machine.upgrade;
 import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.registry.ModDataComponents;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.function.IntSupplier;
+import java.util.function.Supplier;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
@@ -40,27 +43,27 @@ public class MachineUpgrades extends SimpleContainer {
     private static final double BUFFER_STEP = 0.5;
 
     private final Runnable onChanged;
-    private final java.util.function.IntSupplier allowedMask;
+    private final IntSupplier allowedMask;
 
     /** A machine's upgrades; {@code consumed} = the fluids it uses up (decides Gas / Liquid). */
-    public MachineUpgrades(Runnable onChanged, java.util.function.Supplier<java.util.Collection<Fluid>> consumed) {
+    public MachineUpgrades(Runnable onChanged, Supplier<Collection<Fluid>> consumed) {
         super(UpgradeType.values().length);
         this.onChanged = onChanged;
         this.allowedMask = () -> maskFor(consumed.get());
     }
 
     /** The client's stand-in in a machine menu: what fits comes from the synced mask. */
-    public static MachineUpgrades client(java.util.function.IntSupplier mask) {
+    public static MachineUpgrades client(IntSupplier mask) {
         return new MachineUpgrades(mask);
     }
 
-    private MachineUpgrades(java.util.function.IntSupplier mask) {
+    private MachineUpgrades(IntSupplier mask) {
         super(UpgradeType.values().length);
         this.onChanged = () -> {};
         this.allowedMask = mask;
     }
 
-    private static int maskFor(java.util.Collection<Fluid> consumed) {
+    private static int maskFor(Collection<Fluid> consumed) {
         int mask = (1 << UpgradeType.SPEED.ordinal()) | (1 << UpgradeType.ENERGY.ordinal());
         for (Fluid fluid : consumed) {
             mask |= 1 << (isGas(fluid) ? UpgradeType.GAS : UpgradeType.LIQUID).ordinal();
@@ -82,13 +85,28 @@ public class MachineUpgrades extends SimpleContainer {
         return stack.is(type.item()) && allows(type) ? Math.min(stack.getCount(), UpgradeType.MAX) : 0;
     }
 
+    /** The speed multiplier N Speed upgrades give. */
+    public static double speedFor(int n) {
+        return 1 + SPEED_STEP * n;
+    }
+
+    /** The share of FE or fluid N Energy / Gas / Liquid upgrades save (0..1). */
+    public static double savingFor(int n) {
+        return 1 - remaining(n);
+    }
+
+    /** What's left to pay after N Energy / Gas / Liquid upgrades (1 = full cost). */
+    private static double remaining(int n) {
+        return Math.pow(SAVING, n);
+    }
+
     public double speed() {
-        return 1 + SPEED_STEP * count(UpgradeType.SPEED);
+        return speedFor(count(UpgradeType.SPEED));
     }
 
     /** FE per operation, relative to no upgrades. */
     public double energyPerOperation() {
-        return (1 + SPEED_COST_STEP * count(UpgradeType.SPEED)) * Math.pow(SAVING, count(UpgradeType.ENERGY));
+        return (1 + SPEED_COST_STEP * count(UpgradeType.SPEED)) * remaining(count(UpgradeType.ENERGY));
     }
 
     /** FE per tick, relative to no upgrades. */
@@ -106,7 +124,7 @@ public class MachineUpgrades extends SimpleContainer {
 
     /** How much of this fluid an operation uses, relative to no upgrades. */
     public double fluidUse(Fluid fluid) {
-        return Math.pow(SAVING, count(isGas(fluid) ? UpgradeType.GAS : UpgradeType.LIQUID));
+        return remaining(count(isGas(fluid) ? UpgradeType.GAS : UpgradeType.LIQUID));
     }
 
     /** A per-operation fluid cost after the Gas / Liquid upgrades (never below 1 mB if it was more than 0). */
@@ -149,7 +167,7 @@ public class MachineUpgrades extends SimpleContainer {
     // ---- Saving, and the item a machine becomes when picked up with the wrench ----
 
     public void save(ValueOutput output) {
-        ContainerHelper.saveAllItems(output.child("upgrades"), stacks());
+        ContainerHelper.saveAllItems(output.child("upgrades"), getItems());
     }
 
     public void load(ValueInput input) {
@@ -161,26 +179,9 @@ public class MachineUpgrades extends SimpleContainer {
         onChanged.run();
     }
 
-    private NonNullList<ItemStack> stacks() {
-        NonNullList<ItemStack> stacks = NonNullList.withSize(getContainerSize(), ItemStack.EMPTY);
-        for (int i = 0; i < stacks.size(); i++) {
-            stacks.set(i, getItem(i));
-        }
-        return stacks;
-    }
-
-    public boolean isAllEmpty() {
-        for (int i = 0; i < getContainerSize(); i++) {
-            if (!getItem(i).isEmpty()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     /** Counts in slot order, on the picked-up item ({@code comminutioncraft:upgrades}). */
     public void saveTo(DataComponentMap.Builder components) {
-        if (!isAllEmpty()) {
+        if (!isEmpty()) {
             List<Integer> counts = new ArrayList<>();
             for (UpgradeType type : UpgradeType.values()) {
                 counts.add(count(type));

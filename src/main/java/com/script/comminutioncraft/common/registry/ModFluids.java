@@ -9,6 +9,7 @@ import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
 
 /**
  * Tier 3's fluids: Plasma (the Circuit Assembler uses it, the MHD Generator burns it for FE), Hydrogen (what plasma is
@@ -76,7 +77,7 @@ public final class ModFluids {
             FLUIDS.register("flowing_antimatter", () -> new BaseFlowingFluid.Flowing(antimatterProperties()));
 
     /** Antimatter needs containment: ordinary tanks and pipes refuse it. */
-    public static boolean isAntimatter(net.neoforged.neoforge.transfer.fluid.FluidResource resource) {
+    public static boolean isAntimatter(FluidResource resource) {
         return resource.is(ANTIMATTER_TYPE.get());
     }
 

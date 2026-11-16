@@ -3,6 +3,7 @@ package com.script.comminutioncraft.client.gui;
 import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.machine.CreativeFluidTankBlockEntity;
 import com.script.comminutioncraft.common.machine.CreativeFluidTankMenu;
+import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -48,7 +49,7 @@ public class CreativeFluidTankScreen extends AbstractContainerScreen<CreativeFlu
 
     /** All the choices: null ("no fluid") first, then every fluid. */
     private static List<@Nullable Fluid> choices() {
-        List<@Nullable Fluid> list = new java.util.ArrayList<>();
+        List<@Nullable Fluid> list = new ArrayList<>();
         list.add(null);
         list.addAll(CreativeFluidTankBlockEntity.fluids());
         return list;

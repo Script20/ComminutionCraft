@@ -5,55 +5,64 @@ import com.script.comminutioncraft.common.cable.CableConnection;
 import com.script.comminutioncraft.common.cable.ConduitBlock;
 import com.script.comminutioncraft.common.cable.EnergyCableBlock;
 import com.script.comminutioncraft.common.cable.FluidPipeBlock;
-import com.script.comminutioncraft.common.machine.FluidTankBlockEntity;
-import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlockEntity;
+import com.script.comminutioncraft.common.config.MachineConfig;
+import com.script.comminutioncraft.common.data.ModWorldGen;
+import com.script.comminutioncraft.common.data.ProcessedMetal;
+import com.script.comminutioncraft.common.energy.MachineEnergyStorage;
+import com.script.comminutioncraft.common.item.WrenchItem;
+import com.script.comminutioncraft.common.item.WrenchMode;
+import com.script.comminutioncraft.common.machine.AcceleratorPortBlock;
+import com.script.comminutioncraft.common.machine.AnnihilationGeneratorBlockEntity;
+import com.script.comminutioncraft.common.machine.AntimatterPurifierBlockEntity;
+import com.script.comminutioncraft.common.machine.AntimatterWasherBlockEntity;
 import com.script.comminutioncraft.common.machine.AtmosphericWaterGeneratorBlockEntity;
-import com.script.comminutioncraft.common.machine.ElectrolyserBlockEntity;
-import com.script.comminutioncraft.common.machine.MhdGeneratorBlockEntity;
-import java.util.List;
-import net.minecraft.world.level.biome.Biomes;
-import net.neoforged.neoforge.common.NeoForgeMod;
-import com.script.comminutioncraft.common.machine.PlasmaMachineBlockEntity;
-import com.script.comminutioncraft.common.machine.OreWasherBlockEntity;
-import com.script.comminutioncraft.common.machine.IsotopeSeparatorBlockEntity;
-import com.script.comminutioncraft.common.machine.PelletPressBlockEntity;
-import com.script.comminutioncraft.common.machine.TritiumBreederBlockEntity;
-import com.script.comminutioncraft.common.machine.FusionReactorBlockEntity;
-import com.script.comminutioncraft.common.machine.ReactorPortBlockEntity;
-import com.script.comminutioncraft.common.machine.ParticleAcceleratorBlockEntity;
-import com.script.comminutioncraft.common.machine.OrePurifierBlockEntity;
+import com.script.comminutioncraft.common.machine.CircuitAssemblerBlockEntity;
+import com.script.comminutioncraft.common.machine.ContainmentCellBlockEntity;
 import com.script.comminutioncraft.common.machine.CreativeFluidTankBlockEntity;
 import com.script.comminutioncraft.common.machine.CreativeFluidTankMenu;
-import net.minecraft.world.inventory.SimpleContainerData;
-import com.script.comminutioncraft.common.energy.MachineEnergyStorage;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.transfer.energy.EnergyHandler;
-import net.neoforged.neoforge.transfer.transaction.Transaction;
-import com.script.comminutioncraft.common.registry.ModFluids;
-import net.minecraft.world.level.material.Fluids;
-import net.neoforged.neoforge.transfer.fluid.FluidResource;
-import com.script.comminutioncraft.common.data.ModWorldGen;
 import com.script.comminutioncraft.common.machine.ElectricGeneratorBlockEntity;
 import com.script.comminutioncraft.common.machine.ElectricMachineBlockEntity;
+import com.script.comminutioncraft.common.machine.ElectrolyserBlockEntity;
 import com.script.comminutioncraft.common.machine.EnergyBatteryBlock;
 import com.script.comminutioncraft.common.machine.EnergyBatteryBlockEntity;
+import com.script.comminutioncraft.common.machine.EventHorizonReactorBlockEntity;
+import com.script.comminutioncraft.common.machine.FluidTankBlockEntity;
+import com.script.comminutioncraft.common.machine.FrothFlotationCellBlockEntity;
+import com.script.comminutioncraft.common.machine.FuelMachineBlockEntity;
+import com.script.comminutioncraft.common.machine.FusionReactorBlockEntity;
+import com.script.comminutioncraft.common.machine.IsotopeSeparatorBlockEntity;
 import com.script.comminutioncraft.common.machine.MachineBlock;
-import com.script.comminutioncraft.common.registry.ModBlocks;
-import com.script.comminutioncraft.common.registry.ModDataComponents;
-import com.script.comminutioncraft.common.registry.ModItems;
-import com.script.comminutioncraft.common.data.ProcessedMetal;
+import com.script.comminutioncraft.common.machine.MhdGeneratorBlockEntity;
+import com.script.comminutioncraft.common.machine.OrePurifierBlockEntity;
+import com.script.comminutioncraft.common.machine.OreWasherBlockEntity;
+import com.script.comminutioncraft.common.machine.ParticleAcceleratorBlockEntity;
+import com.script.comminutioncraft.common.machine.PelletPressBlockEntity;
+import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlockEntity;
+import com.script.comminutioncraft.common.machine.PlasmaMachineBlockEntity;
+import com.script.comminutioncraft.common.machine.ReactorPortBlockEntity;
+import com.script.comminutioncraft.common.machine.SingularityProcessorBlockEntity;
+import com.script.comminutioncraft.common.machine.TritiumBreederBlockEntity;
+import com.script.comminutioncraft.common.machine.control.RedstoneMode;
+import com.script.comminutioncraft.common.machine.control.RelativeSide;
+import com.script.comminutioncraft.common.machine.control.SideMode;
 import com.script.comminutioncraft.common.recipe.TagResult;
 import com.script.comminutioncraft.common.recipe.TagSmeltingRecipe;
-import net.minecraft.data.recipes.RecipeBuilder;
-import net.minecraft.world.item.crafting.AbstractCookingRecipe;
-import net.minecraft.world.item.crafting.CookingBookCategory;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.SingleRecipeInput;
+import com.script.comminutioncraft.common.registry.ModBlocks;
+import com.script.comminutioncraft.common.registry.ModDataComponents;
+import com.script.comminutioncraft.common.registry.ModDataMaps;
+import com.script.comminutioncraft.common.registry.ModFluids;
+import com.script.comminutioncraft.common.registry.ModItems;
+import com.script.comminutioncraft.common.storage.SoarynChestBlockEntity;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.gametest.framework.FunctionGameTestInstance;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.TestData;
@@ -61,29 +70,43 @@ import net.minecraft.gametest.framework.TestEnvironmentDefinition;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import com.script.comminutioncraft.common.item.WrenchMode;
-import com.script.comminutioncraft.common.machine.FuelMachineBlockEntity;
-import com.script.comminutioncraft.common.machine.control.RedstoneMode;
-import com.script.comminutioncraft.common.machine.control.RelativeSide;
-import com.script.comminutioncraft.common.machine.control.SideMode;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import com.script.comminutioncraft.common.item.WrenchItem;
-import net.minecraft.world.item.Item;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.SimpleContainerData;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.item.crafting.AbstractCookingRecipe;
+import net.minecraft.world.item.crafting.CookingBookCategory;
+import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.FlowerPotBlock;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.SaplingBlock;
+import net.minecraft.world.level.block.entity.HangingSignBlockEntity;
+import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.RegisterGameTestsEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.transfer.energy.EnergyHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 /**
  * Server-side checks for the tier-2 power system. Run with {@code gradlew runGameTestServer}
@@ -178,7 +201,7 @@ public final class ModGameTests {
             boolean tall = name.startsWith("tall_");
             event.registerTest(function.getId(), new FunctionGameTestInstance(ResourceKey.create(Registries.TEST_FUNCTION, function.getId()),
                     new TestData<>(environment, name.startsWith("horizon_") || tall ? BIG_FLOOR : FLOOR, 400, 0, true,
-                            net.minecraft.world.level.block.Rotation.NONE, false, 1, 1, tall, 0)));
+                            Rotation.NONE, false, 1, 1, tall, 0)));
         });
     }
 
@@ -338,7 +361,7 @@ public final class ModGameTests {
         helper.setBlock(pos, ModBlocks.ELECTRIC_SMELTER.get().defaultBlockState().setValue(MachineBlock.FACING, Direction.NORTH));
         ElectricMachineBlockEntity smelter = helper.getBlockEntity(pos, ElectricMachineBlockEntity.class);
         // Defaults: output below, input elsewhere.
-        helper.assertTrue(java.util.Arrays.equals(smelter.getSlotsForFace(Direction.DOWN), new int[] {ElectricMachineBlockEntity.SLOT_OUTPUT}),
+        helper.assertTrue(Arrays.equals(smelter.getSlotsForFace(Direction.DOWN), new int[] {ElectricMachineBlockEntity.SLOT_OUTPUT}),
                 "Bottom should give the output slot by default");
 
         // Facing north, the machine's left (as you look at its front) is east.
@@ -465,8 +488,8 @@ public final class ModGameTests {
 
     /** Changing the server config in a running world changes a cable's rate and a machine's process time at once. */
     private static void configChangesApply(GameTestHelper helper) {
-        var cableRate = com.script.comminutioncraft.common.config.MachineConfig.CABLES_ENERGY_CABLE;
-        var washerTime = com.script.comminutioncraft.common.config.MachineConfig.ORE_WASHER_PROCESS_TIME;
+        var cableRate = MachineConfig.CABLES_ENERGY_CABLE;
+        var washerTime = MachineConfig.ORE_WASHER_PROCESS_TIME;
         int oldRate = cableRate.get();
         int oldTime = washerTime.get();
         try {
@@ -474,7 +497,7 @@ public final class ModGameTests {
             washerTime.set(7);
             int rate = ((EnergyCableBlock) ModBlocks.ENERGY_CABLE.get()).getTransferRate();
             helper.assertTrue(rate == 1_234, "The Energy Cable should carry the configured 1,234 FE/t, carries " + rate);
-            helper.assertTrue(com.script.comminutioncraft.common.machine.OreWasherBlockEntity.PROCESS_TIME.get() == 7,
+            helper.assertTrue(OreWasherBlockEntity.PROCESS_TIME.get() == 7,
                     "The Ore Washer should take the configured 7 ticks");
         } finally {
             cableRate.set(oldRate);
@@ -502,7 +525,7 @@ public final class ModGameTests {
 
         BlockPos chestPos = floor.above();
         helper.assertBlockPresent(ModBlocks.SOARYN_CHEST.get(), chestPos);
-        var chest = helper.getBlockEntity(chestPos, com.script.comminutioncraft.common.storage.SoarynChestBlockEntity.class);
+        var chest = helper.getBlockEntity(chestPos, SoarynChestBlockEntity.class);
         helper.assertTrue(chest.getItem(0).is(Items.RAW_IRON) && chest.getItem(0).getCount() == 20,
                 "The chest's first slot should hold the 20 raw iron, found " + chest.getItem(0));
         helper.assertTrue(chest.getItem(1).is(Items.COAL), "The chest's second slot should hold the coal, found " + chest.getItem(1));
@@ -811,7 +834,7 @@ public final class ModGameTests {
         BlockPos tankPos = new BlockPos(3, 1, 2);
         helper.setBlock(cellPos, ModBlocks.CONTAINMENT_CELL.get());
         helper.setBlock(tankPos, ModBlocks.FLUID_TANK.get());
-        var cell = helper.getBlockEntity(cellPos, com.script.comminutioncraft.common.machine.ContainmentCellBlockEntity.class).getTank();
+        var cell = helper.getBlockEntity(cellPos, ContainmentCellBlockEntity.class).getTank();
         var tank = helper.getBlockEntity(tankPos, FluidTankBlockEntity.class).getTank();
         FluidResource antimatter = FluidResource.of(ModFluids.ANTIMATTER.get());
         int water;
@@ -826,7 +849,7 @@ public final class ModGameTests {
         helper.assertTrue(water == 0, "The Containment Cell took " + water + " mB of water");
         helper.assertTrue(contained == 1_000 && cell.getAmount() == 1_000, "The Containment Cell should hold 1,000 mB of antimatter, took " + contained);
         helper.assertTrue(tanked == 0 && tank.getAmount() == 0, "The Fluid Tank took " + tanked + " mB of antimatter");
-        helper.assertTrue(cell.getCapacity() == com.script.comminutioncraft.common.machine.ContainmentCellBlockEntity.CAPACITY.get(),
+        helper.assertTrue(cell.getCapacity() == ContainmentCellBlockEntity.CAPACITY.get(),
                 "The Containment Cell should be its configured size");
         helper.succeed();
     }
@@ -855,7 +878,7 @@ public final class ModGameTests {
             piped = pipeHandler.insert(antimatter, 500, transaction);
             transaction.commit();
         }
-        var cell = helper.getBlockEntity(cellPos, com.script.comminutioncraft.common.machine.ContainmentCellBlockEntity.class).getTank();
+        var cell = helper.getBlockEntity(cellPos, ContainmentCellBlockEntity.class).getTank();
         helper.assertTrue(water == 0, "The Magnetic Conduit carried " + water + " mB of water");
         helper.assertTrue(carried == 500 && cell.getAmount() == 500, "Expected 500 mB of antimatter in the cell, carried " + carried);
         helper.assertTrue(piped == 0, "The Fluid Pipe carried " + piped + " mB of antimatter");
@@ -962,18 +985,18 @@ public final class ModGameTests {
                 "The Ore Washer uses water: it should take Liquid upgrades but not Gas");
         washer.getUpgrades().setItem(3, new ItemStack(ModItems.LIQUID_UPGRADE.get(), 8));
         ((MachineEnergyStorage) washer.getEnergyHandler()).set(ElectricMachineBlockEntity.TIER3_ENERGY_CAPACITY.get());
-        washer.getWater().fill(net.neoforged.neoforge.transfer.fluid.FluidResource.of(Fluids.WATER), 300);
+        washer.getWater().fill(FluidResource.of(Fluids.WATER), 300);
         washer.setItem(ElectricMachineBlockEntity.SLOT_INPUT, new ItemStack(Items.RAW_IRON));
         helper.succeedWhen(() -> {
             helper.assertTrue(!washer.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT).isEmpty(), "Still washing");
             helper.assertTrue(washer.getWater().getAmount() == 300 - 62, "Expected 62 mB used, " + (300 - washer.getWater().getAmount()) + " were");
             // what the wrench puts on the picked-up item
-            List<Integer> carried = washer.collectComponents().get(com.script.comminutioncraft.common.registry.ModDataComponents.UPGRADES.get());
+            List<Integer> carried = washer.collectComponents().get(ModDataComponents.UPGRADES.get());
             helper.assertTrue(carried != null && carried.equals(List.of(0, 0, 0, 8)), "The picked-up item should carry 8 Liquid upgrades, has " + carried);
             // broken normally: the upgrades drop
             helper.getLevel().destroyBlock(helper.absolutePos(pos), true);
-            int dropped = helper.getLevel().getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class,
-                            new net.minecraft.world.phys.AABB(helper.absolutePos(pos)).inflate(2))
+            int dropped = helper.getLevel().getEntitiesOfClass(ItemEntity.class,
+                            new AABB(helper.absolutePos(pos)).inflate(2))
                     .stream().filter(e -> e.getItem().is(ModItems.LIQUID_UPGRADE.get())).mapToInt(e -> e.getItem().getCount()).sum();
             helper.assertTrue(dropped == 8, "Breaking it should drop the 8 Liquid upgrades, dropped " + dropped);
         });
@@ -993,7 +1016,7 @@ public final class ModGameTests {
         var level = helper.getLevel();
         for (int i = 0; i < 20 && !level.getBlockState(absolute).is(wood.log.get()); i++) {
             var state = level.getBlockState(absolute);
-            if (state.getBlock() instanceof net.minecraft.world.level.block.SaplingBlock sapling) {
+            if (state.getBlock() instanceof SaplingBlock sapling) {
                 sapling.advanceTree(level, absolute, state, level.getRandom());
             }
         }
@@ -1041,11 +1064,11 @@ public final class ModGameTests {
                 "Purpleheart leaves should burn like oak leaves");
         helper.assertTrue(level.fuelValues().burnDuration(new ItemStack(wood.planks.get())) == 300, "Purpleheart planks should be furnace fuel");
         helper.assertTrue(level.fuelValues().burnDuration(new ItemStack(wood.log.get())) == 300, "Purpleheart logs should be furnace fuel");
-        helper.assertTrue(helper.getLevel().getBlockEntity(helper.absolutePos(sign)) instanceof net.minecraft.world.level.block.entity.SignBlockEntity,
+        helper.assertTrue(helper.getLevel().getBlockEntity(helper.absolutePos(sign)) instanceof SignBlockEntity,
                 "A purpleheart sign should have a sign block entity");
-        helper.assertTrue(helper.getLevel().getBlockEntity(helper.absolutePos(hangingSign)) instanceof net.minecraft.world.level.block.entity.HangingSignBlockEntity,
+        helper.assertTrue(helper.getLevel().getBlockEntity(helper.absolutePos(hangingSign)) instanceof HangingSignBlockEntity,
                 "A purpleheart hanging sign should have a hanging sign block entity");
-        var pots = ((net.minecraft.world.level.block.FlowerPotBlock) Blocks.FLOWER_POT).getFullPotsView();
+        var pots = ((FlowerPotBlock) Blocks.FLOWER_POT).getFullPotsView();
         helper.assertTrue(pots.containsKey(wood.sapling.getId()) && pots.get(wood.sapling.getId()).get() == wood.pottedSapling.get(),
                 "A flower pot should take the purpleheart sapling");
         helper.succeed();
@@ -1056,8 +1079,8 @@ public final class ModGameTests {
         var recipes = helper.getLevel().getServer().getRecipeManager();
         var holder = recipes.byKey(ResourceKey.create(Registries.RECIPE, ComminutionCraft.id("tiny_coal")));
         helper.assertTrue(holder.isPresent(), "The tiny coal recipe didn't load");
-        var input = net.minecraft.world.item.crafting.CraftingInput.of(1, 1, List.of(new ItemStack(Items.COAL)));
-        ItemStack result = ((net.minecraft.world.item.crafting.CraftingRecipe) holder.get().value()).assemble(input);
+        var input = CraftingInput.of(1, 1, List.of(new ItemStack(Items.COAL)));
+        ItemStack result = ((CraftingRecipe) holder.get().value()).assemble(input);
         helper.assertTrue(result.is(ModItems.TINY_COAL.get()) && result.getCount() == 8, "1 coal should make 8 Tiny Coal, got " + result);
         int burn = helper.getLevel().fuelValues().burnDuration(new ItemStack(ModItems.TINY_COAL.get()));
         helper.assertTrue(burn == 200, "Tiny Coal should burn 200 ticks (one furnace item), but burns " + burn);
@@ -1076,7 +1099,7 @@ public final class ModGameTests {
             player.setGameMode(GameType.SURVIVAL);
             BlockPos absolute = helper.absolutePos(pos);
             var hit = new BlockHitResult(Vec3.atCenterOf(absolute).add(0, 0.5, 0), Direction.UP, absolute, false);
-            var washer = helper.getBlockEntity(pos, com.script.comminutioncraft.common.machine.OreWasherBlockEntity.class);
+            var washer = helper.getBlockEntity(pos, OreWasherBlockEntity.class);
 
             player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.WATER_BUCKET));
             player.gameMode.useItemOn(player, helper.getLevel(), player.getMainHandItem(), InteractionHand.MAIN_HAND, hit);
@@ -1104,7 +1127,7 @@ public final class ModGameTests {
         smelter.getControls().setRedstone(RedstoneMode.HIGH);
         smelter.setItem(ElectricMachineBlockEntity.SLOT_INPUT, new ItemStack(Items.RAW_IRON));
         smelter.setItem(ElectricMachineBlockEntity.SLOT_OUTPUT, new ItemStack(Items.IRON_INGOT, 5));
-        if (smelter.getEnergyHandler() instanceof com.script.comminutioncraft.common.energy.MachineEnergyStorage power) {
+        if (smelter.getEnergyHandler() instanceof MachineEnergyStorage power) {
             power.set(power.getCapacity());
         }
 
@@ -1114,7 +1137,7 @@ public final class ModGameTests {
         helper.setBlock(granulatorPos, ModBlocks.ELECTRIC_GRANULATOR.get());
         ElectricGeneratorBlockEntity generator = helper.getBlockEntity(generatorPos, ElectricGeneratorBlockEntity.class);
         generator.getControls().setRedstone(RedstoneMode.HIGH);
-        if (generator.getEnergyHandler() instanceof com.script.comminutioncraft.common.energy.MachineEnergyStorage power) {
+        if (generator.getEnergyHandler() instanceof MachineEnergyStorage power) {
             power.set(10_000);
         }
         ElectricMachineBlockEntity granulator = helper.getBlockEntity(granulatorPos, ElectricMachineBlockEntity.class);
@@ -1146,7 +1169,7 @@ public final class ModGameTests {
      * blocks 9 x, single items overriding their tags (copper ore drops several, nether gold ore drops nuggets).
      */
     private static void matterMassValues(GameTestHelper helper) {
-        var expected = new java.util.LinkedHashMap<net.minecraft.world.item.Item, Integer>();
+        var expected = new LinkedHashMap<Item, Integer>();
         expected.put(Items.COBBLESTONE, 1);
         expected.put(Items.DIRT, 1);
         expected.put(Items.OAK_LOG, 1);
@@ -1177,7 +1200,7 @@ public final class ModGameTests {
         expected.put(ModItems.WASHED_GOLD.get(), 32);
         expected.put(ModItems.SINGULARITY_SHARD.get(), 1024);
         expected.forEach((item, mass) -> {
-            int got = com.script.comminutioncraft.common.registry.ModDataMaps.massOf(new ItemStack(item));
+            int got = ModDataMaps.massOf(new ItemStack(item));
             helper.assertTrue(got == mass, item + " should weigh " + mass + ", weighs " + got);
         });
         helper.succeed();
@@ -1185,14 +1208,14 @@ public final class ModGameTests {
 
     private static void guideBookRecipe(GameTestHelper helper) {
         var recipes = helper.getLevel().getServer().getRecipeManager();
-        var key = net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.RECIPE,
-                com.script.comminutioncraft.ComminutionCraft.id("guide_book"));
+        var key = ResourceKey.create(Registries.RECIPE,
+                ComminutionCraft.id("guide_book"));
         var holder = recipes.byKey(key);
         helper.assertTrue(holder.isPresent(), "The guide book recipe didn't load (is Patchouli missing?)");
-        var input = net.minecraft.world.item.crafting.CraftingInput.of(2, 1,
+        var input = CraftingInput.of(2, 1,
                 List.of(new ItemStack(Items.BOOK), new ItemStack(ModItems.WRENCH.get())));
-        ItemStack result = ((net.minecraft.world.item.crafting.CraftingRecipe) holder.get().value()).assemble(input);
-        var bookId = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(result.getItem());
+        ItemStack result = ((CraftingRecipe) holder.get().value()).assemble(input);
+        var bookId = BuiltInRegistries.ITEM.getKey(result.getItem());
         helper.assertTrue(bookId.toString().equals("patchouli:guide_book"), "Expected Patchouli's guide book, got " + result);
         helper.assertTrue(result.getComponentsPatch().toString().contains("comminutioncraft:guide"),
                 "The book should be the Comminution Craft guide: " + result.getComponentsPatch());
@@ -1458,7 +1481,7 @@ public final class ModGameTests {
         ParticleAcceleratorBlockEntity accelerator = buildAccelerator(helper);
         BlockPos port = new BlockPos(0, 1, 2);
         BlockPos outputPort = new BlockPos(4, 1, 2);
-        helper.setBlock(outputPort, ModBlocks.ACCELERATOR_PORT.get().defaultBlockState().setValue(com.script.comminutioncraft.common.machine.AcceleratorPortBlock.OUTPUT, true));
+        helper.setBlock(outputPort, ModBlocks.ACCELERATOR_PORT.get().defaultBlockState().setValue(AcceleratorPortBlock.OUTPUT, true));
         helper.setBlock(outputPort.below(), ModBlocks.CONTAINMENT_CELL.get());
         helper.setBlock(port.below(), ModBlocks.CONTAINMENT_CELL.get());
         helper.setBlock(port.above(), ModBlocks.CREATIVE_ENERGY_BATTERY.get());
@@ -1468,8 +1491,8 @@ public final class ModGameTests {
                 new SimpleContainerData(CreativeFluidTankBlockEntity.DATA_COUNT));
         int hydrogen = CreativeFluidTankBlockEntity.fluids().indexOf(ModFluids.HYDROGEN.get()) + 1;
         helper.assertTrue(hydrogen > 0 && menu.clickMenuButton(helper.makeMockPlayer(GameType.CREATIVE), hydrogen), "The picker refused hydrogen");
-        var cell = helper.getBlockEntity(outputPort.below(), com.script.comminutioncraft.common.machine.ContainmentCellBlockEntity.class).getTank();
-        var inputSide = helper.getBlockEntity(port.below(), com.script.comminutioncraft.common.machine.ContainmentCellBlockEntity.class).getTank();
+        var cell = helper.getBlockEntity(outputPort.below(), ContainmentCellBlockEntity.class).getTank();
+        var inputSide = helper.getBlockEntity(port.below(), ContainmentCellBlockEntity.class).getTank();
         helper.succeedWhen(() -> {
             helper.assertTrue(cell.getAmount() >= 2 && ModFluids.isAntimatter(cell.getFluid()),
                     "Expected antimatter in the cell, has " + cell.getStack() + " (accelerator: " + accelerator.getStatus() + ")");
@@ -1486,10 +1509,10 @@ public final class ModGameTests {
         BlockPos pos = new BlockPos(2, 1, 2);
         helper.setBlock(pos, ModBlocks.ANNIHILATION_GENERATOR.get());
         helper.setBlock(pos.east(), ModBlocks.ANTIMATTER_ENERGY_BATTERY.get());
-        var generator = helper.getBlockEntity(pos, com.script.comminutioncraft.common.machine.AnnihilationGeneratorBlockEntity.class);
+        var generator = helper.getBlockEntity(pos, AnnihilationGeneratorBlockEntity.class);
         EnergyBatteryBlockEntity battery = helper.getBlockEntity(pos.east(), EnergyBatteryBlockEntity.class);
         generator.getAntimatter().fill(FluidResource.of(ModFluids.ANTIMATTER.get()), 2);
-        int expected = 2 * com.script.comminutioncraft.common.machine.AnnihilationGeneratorBlockEntity.ENERGY_PER_MB.get();
+        int expected = 2 * AnnihilationGeneratorBlockEntity.ENERGY_PER_MB.get();
         helper.succeedWhen(() -> {
             helper.assertTrue(generator.getAntimatter().getAmount() == 0, "The generator should have burned both mB");
             helper.assertTrue(battery.getEnergy() == expected, "Expected " + expected + " FE in the battery, has " + battery.getEnergy());
@@ -1502,10 +1525,10 @@ public final class ModGameTests {
      */
     private static void assemblerMakesAntimatterCircuit(GameTestHelper helper) {
         PlasmaMachineBlockEntity assembler = placeAssembler(helper, new BlockPos(1, 1, 2), new ItemStack(ModItems.FUSION_CIRCUIT.get(), 2));
-        var antimatter = ((com.script.comminutioncraft.common.machine.CircuitAssemblerBlockEntity) assembler).getAntimatter();
+        var antimatter = ((CircuitAssemblerBlockEntity) assembler).getAntimatter();
         antimatter.fill(FluidResource.of(ModFluids.ANTIMATTER.get()), 15);
         PlasmaMachineBlockEntity plain = placeAssembler(helper, new BlockPos(3, 1, 2), new ItemStack(ModItems.ELECTRONIC_CIRCUIT.get()));
-        int time = com.script.comminutioncraft.common.machine.CircuitAssemblerBlockEntity.PROCESS_TIME.get();
+        int time = CircuitAssemblerBlockEntity.PROCESS_TIME.get();
         helper.runAfterDelay(time * 2 + 20, () -> {
             ItemStack output = assembler.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT);
             helper.assertTrue(output.is(ModItems.ANTIMATTER_CIRCUIT.get()) && output.getCount() == 1,
@@ -1524,14 +1547,14 @@ public final class ModGameTests {
     private static void flotationCellMakesConcentrate(GameTestHelper helper) {
         BlockPos pos = new BlockPos(2, 1, 2);
         helper.setBlock(pos, ModBlocks.FROTH_FLOTATION_CELL.get());
-        var cell = helper.getBlockEntity(pos, com.script.comminutioncraft.common.machine.FrothFlotationCellBlockEntity.class);
-        ((MachineEnergyStorage) cell.getEnergyHandler()).set(com.script.comminutioncraft.common.config.MachineConfig.ANTIMATTER_MACHINES_ENERGY_CAPACITY.get());
-        int water = com.script.comminutioncraft.common.machine.FrothFlotationCellBlockEntity.WATER_PER_OPERATION.get();
-        int oxygen = com.script.comminutioncraft.common.machine.FrothFlotationCellBlockEntity.OXYGEN_PER_OPERATION.get();
+        var cell = helper.getBlockEntity(pos, FrothFlotationCellBlockEntity.class);
+        ((MachineEnergyStorage) cell.getEnergyHandler()).set(MachineConfig.ANTIMATTER_MACHINES_ENERGY_CAPACITY.get());
+        int water = FrothFlotationCellBlockEntity.WATER_PER_OPERATION.get();
+        int oxygen = FrothFlotationCellBlockEntity.OXYGEN_PER_OPERATION.get();
         cell.getWater().fill(FluidResource.of(Fluids.WATER), water * 2);
         cell.getOxygen().fill(FluidResource.of(ModFluids.OXYGEN.get()), oxygen * 2);
         cell.setItem(ElectricMachineBlockEntity.SLOT_INPUT, new ItemStack(Items.RAW_IRON, 3));
-        int time = com.script.comminutioncraft.common.machine.FrothFlotationCellBlockEntity.PROCESS_TIME.get();
+        int time = FrothFlotationCellBlockEntity.PROCESS_TIME.get();
         helper.runAfterDelay(time * 3 + 20, () -> {
             ItemStack output = cell.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT);
             helper.assertTrue(output.is(ModItems.CONCENTRATE_IRON.get()) && output.getCount() == 8, "Expected 8 Iron Concentrate, got " + output);
@@ -1547,7 +1570,7 @@ public final class ModGameTests {
      * the Smelter granulated iron into an ingot.
      */
     private static void antimatterSuiteRunsTheChain(GameTestHelper helper) {
-        int fe = com.script.comminutioncraft.common.config.MachineConfig.ANTIMATTER_MACHINES_ENERGY_CAPACITY.get();
+        int fe = MachineConfig.ANTIMATTER_MACHINES_ENERGY_CAPACITY.get();
         BlockPos washerPos = new BlockPos(0, 1, 0);
         BlockPos purifierPos = new BlockPos(4, 1, 0);
         BlockPos granulatorPos = new BlockPos(0, 1, 4);
@@ -1556,8 +1579,8 @@ public final class ModGameTests {
         helper.setBlock(purifierPos, ModBlocks.ANTIMATTER_PURIFIER.get());
         helper.setBlock(granulatorPos, ModBlocks.ANTIMATTER_GRANULATOR.get());
         helper.setBlock(smelterPos, ModBlocks.ANTIMATTER_SMELTER.get());
-        var washer = helper.getBlockEntity(washerPos, com.script.comminutioncraft.common.machine.AntimatterWasherBlockEntity.class);
-        var purifier = helper.getBlockEntity(purifierPos, com.script.comminutioncraft.common.machine.AntimatterPurifierBlockEntity.class);
+        var washer = helper.getBlockEntity(washerPos, AntimatterWasherBlockEntity.class);
+        var purifier = helper.getBlockEntity(purifierPos, AntimatterPurifierBlockEntity.class);
         ElectricMachineBlockEntity granulator = helper.getBlockEntity(granulatorPos, ElectricMachineBlockEntity.class);
         ElectricMachineBlockEntity smelter = helper.getBlockEntity(smelterPos, ElectricMachineBlockEntity.class);
         for (ElectricMachineBlockEntity machine : List.of(washer, purifier, granulator, smelter)) {
@@ -1589,11 +1612,11 @@ public final class ModGameTests {
         Player player = helper.makeMockPlayer(GameType.CREATIVE);
         ItemStack wrench = new ItemStack(ModItems.WRENCH.get());
         wrench.set(ModDataComponents.WRENCH_MODE.get(), WrenchMode.CONFIGURE);
-        helper.assertTrue(!helper.getBlockState(pos).getValue(com.script.comminutioncraft.common.machine.AcceleratorPortBlock.OUTPUT), "A new port should be Input");
+        helper.assertTrue(!helper.getBlockState(pos).getValue(AcceleratorPortBlock.OUTPUT), "A new port should be Input");
         useWrench(helper, player, wrench, pos, new Vec3(0, 0.5, 0), Direction.UP);
-        helper.assertTrue(helper.getBlockState(pos).getValue(com.script.comminutioncraft.common.machine.AcceleratorPortBlock.OUTPUT), "One Configure click should make it Output");
+        helper.assertTrue(helper.getBlockState(pos).getValue(AcceleratorPortBlock.OUTPUT), "One Configure click should make it Output");
         useWrench(helper, player, wrench, pos, new Vec3(0.5, 0, 0), Direction.EAST);
-        helper.assertTrue(!helper.getBlockState(pos).getValue(com.script.comminutioncraft.common.machine.AcceleratorPortBlock.OUTPUT), "A second click should make it Input again");
+        helper.assertTrue(!helper.getBlockState(pos).getValue(AcceleratorPortBlock.OUTPUT), "A second click should make it Input again");
         helper.succeed();
     }
 
@@ -1607,18 +1630,18 @@ public final class ModGameTests {
         helper.setBlock(inside, Blocks.STONE);
         helper.setBlock(new BlockPos(0, 1, 4), ModBlocks.ANTIMATTER_ENERGY_BATTERY.get());
         EnergyBatteryBlockEntity battery = helper.getBlockEntity(new BlockPos(0, 1, 4), EnergyBatteryBlockEntity.class);
-        int wait = com.script.comminutioncraft.common.machine.EventHorizonReactorBlockEntity.FORM_CHECK_INTERVAL + 2;
+        int wait = EventHorizonReactorBlockEntity.FORM_CHECK_INTERVAL + 2;
         helper.runAfterDelay(wait, () -> {
             helper.assertTrue(!reactor.isFormed(), "It formed with a block inside");
             helper.setBlock(inside, Blocks.AIR);
-            reactor.getAntimatter().fill(FluidResource.of(ModFluids.ANTIMATTER.get()), com.script.comminutioncraft.common.machine.EventHorizonReactorBlockEntity.IGNITION_ANTIMATTER.get());
+            reactor.getAntimatter().fill(FluidResource.of(ModFluids.ANTIMATTER.get()), EventHorizonReactorBlockEntity.IGNITION_ANTIMATTER.get());
             helper.runAfterDelay(wait, () -> {
                 helper.assertTrue(reactor.isFormed() && reactor.isIgnited(), "It should have formed and ignited (" + reactor.getStatus() + ")");
                 helper.assertTrue(reactor.getAntimatter().getAmount() == 0, "Ignition should use the antimatter");
                 helper.spawnItem(Items.COBBLESTONE, new Vec3(4.5, 4.5, 4.5)).getItem().setCount(64);
                 helper.succeedWhen(() -> {
                     helper.assertTrue(helper.getLevel().getEntitiesOfClass(ItemEntity.class, reactor.getField()).isEmpty(), "The cobblestone wasn't eaten");
-                    helper.assertTrue(battery.getEnergy() >= 64L * com.script.comminutioncraft.common.machine.EventHorizonReactorBlockEntity.ENERGY_PER_MASS.get() - 1,
+                    helper.assertTrue(battery.getEnergy() >= 64L * EventHorizonReactorBlockEntity.ENERGY_PER_MASS.get() - 1,
                             "Expected 64 mass worth of FE in the battery, has " + battery.getEnergy() + " (mass left " + reactor.getMass() + ")");
                     helper.assertTrue(helper.getBlockState(new BlockPos(1, 1, 1)).getValue(MachineBlock.LIT), "The frame should glow");
                 });
@@ -1629,10 +1652,10 @@ public final class ModGameTests {
     /** Anything alive that walks into a running reactor's field dies - a pig, and a player in creative mode. */
     private static void horizonFieldKillsEvenCreative(GameTestHelper helper) {
         var reactor = buildHorizon(helper);
-        reactor.getAntimatter().fill(FluidResource.of(ModFluids.ANTIMATTER.get()), com.script.comminutioncraft.common.machine.EventHorizonReactorBlockEntity.IGNITION_ANTIMATTER.get());
-        helper.runAfterDelay(com.script.comminutioncraft.common.machine.EventHorizonReactorBlockEntity.FORM_CHECK_INTERVAL + 2, () -> {
+        reactor.getAntimatter().fill(FluidResource.of(ModFluids.ANTIMATTER.get()), EventHorizonReactorBlockEntity.IGNITION_ANTIMATTER.get());
+        helper.runAfterDelay(EventHorizonReactorBlockEntity.FORM_CHECK_INTERVAL + 2, () -> {
             helper.assertTrue(reactor.isIgnited(), "It should have ignited (" + reactor.getStatus() + ")");
-            var pig = helper.spawn(net.minecraft.world.entity.EntityType.PIG, new Vec3(4.5, 3.0, 4.5));
+            var pig = helper.spawn(EntityType.PIG, new Vec3(4.5, 3.0, 4.5));
             ServerPlayer player = helper.makeMockServerPlayerInLevel();
             player.setGameMode(GameType.CREATIVE);
             Vec3 centre = helper.absoluteVec(new Vec3(3.5, 3.0, 3.5));
@@ -1651,13 +1674,13 @@ public final class ModGameTests {
      */
     private static void horizonRedstoneOffIsSafe(GameTestHelper helper) {
         var reactor = buildHorizon(helper);
-        int ignition = com.script.comminutioncraft.common.machine.EventHorizonReactorBlockEntity.IGNITION_ANTIMATTER.get();
+        int ignition = EventHorizonReactorBlockEntity.IGNITION_ANTIMATTER.get();
         reactor.getControls().setRedstone(RedstoneMode.HIGH); // no signal: off
         reactor.getAntimatter().fill(FluidResource.of(ModFluids.ANTIMATTER.get()), ignition);
-        var pig = helper.spawn(net.minecraft.world.entity.EntityType.PIG, new Vec3(4.5, 4.0, 4.5));
+        var pig = helper.spawn(EntityType.PIG, new Vec3(4.5, 4.0, 4.5));
         pig.setNoAi(true);
         pig.setNoGravity(true); // stays in the field (the bottom layer it would fall to is outside it)
-        int wait = com.script.comminutioncraft.common.machine.EventHorizonReactorBlockEntity.FORM_CHECK_INTERVAL + 2;
+        int wait = EventHorizonReactorBlockEntity.FORM_CHECK_INTERVAL + 2;
         helper.runAfterDelay(wait, () -> {
             helper.assertTrue(reactor.isFormed() && !reactor.isIgnited(), "Switched off, it ignited anyway (" + reactor.getStatus() + ")");
             helper.assertTrue(reactor.getAntimatter().getAmount() == ignition, "Switched off, it used the antimatter");
@@ -1690,8 +1713,8 @@ public final class ModGameTests {
         ServerPlayer watcher = helper.makeMockServerPlayerInLevel();
         Vec3 outside = helper.absoluteVec(new Vec3(8.5, 1.0, 8.5));
         watcher.teleportTo(outside.x, outside.y, outside.z);
-        reactor.getAntimatter().fill(FluidResource.of(ModFluids.ANTIMATTER.get()), com.script.comminutioncraft.common.machine.EventHorizonReactorBlockEntity.IGNITION_ANTIMATTER.get());
-        helper.runAfterDelay(com.script.comminutioncraft.common.machine.EventHorizonReactorBlockEntity.FORM_CHECK_INTERVAL + 2, () -> {
+        reactor.getAntimatter().fill(FluidResource.of(ModFluids.ANTIMATTER.get()), EventHorizonReactorBlockEntity.IGNITION_ANTIMATTER.get());
+        helper.runAfterDelay(EventHorizonReactorBlockEntity.FORM_CHECK_INTERVAL + 2, () -> {
             helper.assertTrue(reactor.isActive(), "It should have ignited (" + reactor.getStatus() + ")");
             helper.assertTrue(advancementDone(helper, watcher, "event_horizon"), "The player nearby didn't get Event Horizon");
             helper.assertTrue(!advancementDone(helper, watcher, "spaghettified"), "Spaghettified without going in");
@@ -1705,7 +1728,7 @@ public final class ModGameTests {
     }
 
     private static boolean advancementDone(GameTestHelper helper, ServerPlayer player, String name) {
-        var holder = helper.getLevel().getServer().getAdvancements().get(com.script.comminutioncraft.ComminutionCraft.id("main/" + name));
+        var holder = helper.getLevel().getServer().getAdvancements().get(ComminutionCraft.id("main/" + name));
         helper.assertTrue(holder != null, "No advancement main/" + name);
         return player.getAdvancements().getOrStartProgress(holder).isDone();
     }
@@ -1718,13 +1741,13 @@ public final class ModGameTests {
         var reactor = buildHorizon(helper);
         BlockPos pos = new BlockPos(8, 1, 8);
         helper.setBlock(pos, ModBlocks.SINGULARITY_PROCESSOR.get());
-        var processor = helper.getBlockEntity(pos, com.script.comminutioncraft.common.machine.SingularityProcessorBlockEntity.class);
-        ((MachineEnergyStorage) processor.getEnergyHandler()).set(com.script.comminutioncraft.common.config.MachineConfig.SINGULARITY_PROCESSOR_ENERGY_CAPACITY.get());
+        var processor = helper.getBlockEntity(pos, SingularityProcessorBlockEntity.class);
+        ((MachineEnergyStorage) processor.getEnergyHandler()).set(MachineConfig.SINGULARITY_PROCESSOR_ENERGY_CAPACITY.get());
         processor.setItem(ElectricMachineBlockEntity.SLOT_INPUT, new ItemStack(Items.RAW_IRON, 2));
-        int time = com.script.comminutioncraft.common.machine.SingularityProcessorBlockEntity.PROCESS_TIME.get();
+        int time = SingularityProcessorBlockEntity.PROCESS_TIME.get();
         helper.runAfterDelay(time + 25, () -> {
             helper.assertTrue(processor.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT).isEmpty(), "It worked without a black hole nearby");
-            reactor.getAntimatter().fill(FluidResource.of(ModFluids.ANTIMATTER.get()), com.script.comminutioncraft.common.machine.EventHorizonReactorBlockEntity.IGNITION_ANTIMATTER.get());
+            reactor.getAntimatter().fill(FluidResource.of(ModFluids.ANTIMATTER.get()), EventHorizonReactorBlockEntity.IGNITION_ANTIMATTER.get());
             helper.succeedWhen(() -> {
                 ItemStack output = processor.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT);
                 helper.assertTrue(output.is(Items.IRON_INGOT) && output.getCount() == 10,
@@ -1740,7 +1763,7 @@ public final class ModGameTests {
      * controller in the middle of the south bottom edge facing south, an Input port in the east bottom edge and an
      * Output port in the west bottom edge. Its middle is (4, 4, 4).
      */
-    private static com.script.comminutioncraft.common.machine.EventHorizonReactorBlockEntity buildHorizon(GameTestHelper helper) {
+    private static EventHorizonReactorBlockEntity buildHorizon(GameTestHelper helper) {
         for (int x = 1; x <= 7; x++) {
             for (int y = 1; y <= 7; y++) {
                 for (int z = 1; z <= 7; z++) {
@@ -1755,8 +1778,8 @@ public final class ModGameTests {
         helper.setBlock(controller, ModBlocks.HORIZON_CONTROLLER.get().defaultBlockState().setValue(MachineBlock.FACING, Direction.SOUTH));
         helper.setBlock(new BlockPos(7, 1, 4), ModBlocks.HORIZON_PORT.get());
         helper.setBlock(new BlockPos(1, 1, 4), ModBlocks.HORIZON_PORT.get().defaultBlockState()
-                .setValue(com.script.comminutioncraft.common.machine.AcceleratorPortBlock.OUTPUT, true));
-        return helper.getBlockEntity(controller, com.script.comminutioncraft.common.machine.EventHorizonReactorBlockEntity.class);
+                .setValue(AcceleratorPortBlock.OUTPUT, true));
+        return helper.getBlockEntity(controller, EventHorizonReactorBlockEntity.class);
     }
 
     /**

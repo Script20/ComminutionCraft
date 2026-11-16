@@ -1,5 +1,6 @@
 package com.script.comminutioncraft.common.machine;
 
+import com.script.comminutioncraft.common.advancement.MachineEventTrigger;
 import com.script.comminutioncraft.common.config.ConfigInt;
 import com.script.comminutioncraft.common.config.MachineConfig;
 import com.script.comminutioncraft.common.machine.control.SideMode;
@@ -101,7 +102,7 @@ public class SingularityProcessorBlockEntity extends ElectricMachineBlockEntity 
             return;
         }
         if (level instanceof ServerLevel server) {
-            com.script.comminutioncraft.common.advancement.MachineEventTrigger.fireNear(server, worldPosition, com.script.comminutioncraft.common.advancement.MachineEventTrigger.SINGULARITY_PROCESSED, 16);
+            MachineEventTrigger.fireNear(server, worldPosition, MachineEventTrigger.SINGULARITY_PROCESSED, 16);
         }
         for (SingularityRecipe.Byproduct byproduct : singularity.getByproducts()) {
             if (level.getRandom().nextFloat() < byproduct.chance()) {

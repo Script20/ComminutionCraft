@@ -1,5 +1,8 @@
 package com.script.comminutioncraft.common.machine;
 
+import com.script.comminutioncraft.common.config.ConfigDouble;
+import com.script.comminutioncraft.common.config.ConfigInt;
+import com.script.comminutioncraft.common.config.MachineConfig;
 import com.script.comminutioncraft.common.energy.EnergySync;
 import com.script.comminutioncraft.common.energy.MachineEnergyStorage;
 import com.script.comminutioncraft.common.machine.control.ControllableMachine;
@@ -7,10 +10,10 @@ import com.script.comminutioncraft.common.machine.control.MachineControls;
 import com.script.comminutioncraft.common.machine.control.SideMode;
 import com.script.comminutioncraft.common.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.component.DataComponentGetter;
-import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponentGetter;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.ContainerHelper;
@@ -46,11 +49,11 @@ public class ElectricGeneratorBlockEntity extends BaseContainerBlockEntity
     private static final int[] SLOTS_FUEL = {SLOT_FUEL};
     private static final int[] SLOTS_NONE = {};
 
-    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_PER_TICK = com.script.comminutioncraft.common.config.MachineConfig.ELECTRIC_GENERATOR_ENERGY_PER_TICK;
-    public static final com.script.comminutioncraft.common.config.ConfigDouble BURN_TIME_MULTIPLIER = com.script.comminutioncraft.common.config.MachineConfig.ELECTRIC_GENERATOR_BURN_TIME_MULTIPLIER;
-    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.ELECTRIC_GENERATOR_ENERGY_CAPACITY;
+    public static final ConfigInt ENERGY_PER_TICK = MachineConfig.ELECTRIC_GENERATOR_ENERGY_PER_TICK;
+    public static final ConfigDouble BURN_TIME_MULTIPLIER = MachineConfig.ELECTRIC_GENERATOR_BURN_TIME_MULTIPLIER;
+    public static final ConfigInt ENERGY_CAPACITY = MachineConfig.ELECTRIC_GENERATOR_ENERGY_CAPACITY;
     /** Max FE pushed out per tick, across all sides. */
-    public static final com.script.comminutioncraft.common.config.ConfigInt MAX_OUTPUT = com.script.comminutioncraft.common.config.MachineConfig.ELECTRIC_GENERATOR_MAX_OUTPUT;
+    public static final ConfigInt MAX_OUTPUT = MachineConfig.ELECTRIC_GENERATOR_MAX_OUTPUT;
 
     // ContainerData indices, synced to the open GUI (energy split in two, see EnergySync)
     public static final int DATA_LIT_TIME = 0;
@@ -133,13 +136,23 @@ public class ElectricGeneratorBlockEntity extends BaseContainerBlockEntity
     @Override
     public void serverTick(ServerLevel level, BlockPos pos, BlockState state) {
         // Switched off by redstone: no burning (the fuel is kept), but the FE it already holds still goes out.
-        if (!controls.canRun(level, pos)) {
-            if (state.getValue(MachineBlock.LIT)) {
-                level.setBlock(pos, state.setValue(MachineBlock.LIT, false), Block.UPDATE_ALL);
-            }
-            pushEnergy(level, pos);
-            return;
+        boolean on = controls.canRun(level, pos);
+        boolean changed = on && burn(level);
+        boolean lit = on && isLit();
+
+        pushEnergy(level, pos);
+
+        if (state.getValue(MachineBlock.LIT) != lit) {
+            changed = true;
+            level.setBlock(pos, state.setValue(MachineBlock.LIT, lit), Block.UPDATE_ALL);
         }
+        if (changed) {
+            setChanged();
+        }
+    }
+
+    /** One tick of burning; true if a new piece of fuel was used. */
+    private boolean burn(ServerLevel level) {
         boolean changed = false;
 
         if (isLit()) {
@@ -159,16 +172,7 @@ public class ElectricGeneratorBlockEntity extends BaseContainerBlockEntity
                 changed = true;
             }
         }
-
-        pushEnergy(level, pos);
-
-        if (state.getValue(MachineBlock.LIT) != isLit()) {
-            changed = true;
-            level.setBlock(pos, state.setValue(MachineBlock.LIT, isLit()), Block.UPDATE_ALL);
-        }
-        if (changed) {
-            setChanged();
-        }
+        return changed;
     }
 
     /** Offers energy to every neighbour that accepts FE, up to {@link #MAX_OUTPUT} per tick in total. */

@@ -1,15 +1,17 @@
 package com.script.comminutioncraft.common.machine;
 
+import com.script.comminutioncraft.common.config.ConfigInt;
+import com.script.comminutioncraft.common.config.MachineConfig;
 import com.script.comminutioncraft.common.fluid.MachineFluidTank;
 import com.script.comminutioncraft.common.machine.control.SideMode;
 import com.script.comminutioncraft.common.recipe.WashingRecipe;
 import com.script.comminutioncraft.common.registry.ModBlockEntities;
-import com.script.comminutioncraft.common.registry.ModRecipes;
-import java.util.Optional;
 import com.script.comminutioncraft.common.registry.ModMenus;
+import com.script.comminutioncraft.common.registry.ModRecipes;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
@@ -17,11 +19,14 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -38,11 +43,11 @@ import org.jspecify.annotations.Nullable;
  * source block touching it: {@link #WATER_PER_SOURCE} mB/t each, without using the source up.
  */
 public class OreWasherBlockEntity extends ElectricMachineBlockEntity {
-    public static final com.script.comminutioncraft.common.config.ConfigInt PROCESS_TIME = com.script.comminutioncraft.common.config.MachineConfig.ORE_WASHER_PROCESS_TIME;
-    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_PER_TICK = com.script.comminutioncraft.common.config.MachineConfig.ORE_WASHER_ENERGY_PER_TICK;
-    public static final com.script.comminutioncraft.common.config.ConfigInt WATER_PER_OPERATION = com.script.comminutioncraft.common.config.MachineConfig.ORE_WASHER_WATER_PER_OPERATION;
-    public static final com.script.comminutioncraft.common.config.ConfigInt WATER_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.ORE_WASHER_WATER_CAPACITY;
-    public static final com.script.comminutioncraft.common.config.ConfigInt WATER_PER_SOURCE = com.script.comminutioncraft.common.config.MachineConfig.ORE_WASHER_WATER_PER_SOURCE;
+    public static final ConfigInt PROCESS_TIME = MachineConfig.ORE_WASHER_PROCESS_TIME;
+    public static final ConfigInt ENERGY_PER_TICK = MachineConfig.ORE_WASHER_ENERGY_PER_TICK;
+    public static final ConfigInt WATER_PER_OPERATION = MachineConfig.ORE_WASHER_WATER_PER_OPERATION;
+    public static final ConfigInt WATER_CAPACITY = MachineConfig.ORE_WASHER_WATER_CAPACITY;
+    public static final ConfigInt WATER_PER_SOURCE = MachineConfig.ORE_WASHER_WATER_PER_SOURCE;
 
     public static final int DATA_WATER = ElectricMachineBlockEntity.DATA_COUNT;
     public static final int DATA_WATER_CAPACITY = DATA_WATER + 1;
@@ -98,18 +103,18 @@ public class OreWasherBlockEntity extends ElectricMachineBlockEntity {
     }
 
     @Override
-    protected java.util.Collection<net.minecraft.world.level.material.Fluid> consumedFluids() {
-        return java.util.List.of(net.minecraft.world.level.material.Fluids.WATER);
+    protected Collection<Fluid> consumedFluids() {
+        return List.of(Fluids.WATER);
     }
 
     @Override
     protected boolean hasOperationResources() {
-        return water.getAmount() >= fluidCost(net.minecraft.world.level.material.Fluids.WATER, waterPerOperation());
+        return water.getAmount() >= fluidCost(Fluids.WATER, waterPerOperation());
     }
 
     @Override
     protected void onOperationDone() {
-        water.drain(fluidCost(net.minecraft.world.level.material.Fluids.WATER, waterPerOperation()));
+        water.drain(fluidCost(Fluids.WATER, waterPerOperation()));
     }
 
     @Override

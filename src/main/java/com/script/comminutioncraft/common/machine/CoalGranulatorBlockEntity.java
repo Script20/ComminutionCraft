@@ -1,5 +1,8 @@
 package com.script.comminutioncraft.common.machine;
 
+import com.script.comminutioncraft.common.config.ConfigDouble;
+import com.script.comminutioncraft.common.config.ConfigInt;
+import com.script.comminutioncraft.common.config.MachineConfig;
 import com.script.comminutioncraft.common.recipe.GranulatingRecipe;
 import com.script.comminutioncraft.common.registry.ModBlockEntities;
 import com.script.comminutioncraft.common.registry.ModMenus;
@@ -25,8 +28,8 @@ import net.minecraft.world.level.block.state.BlockState;
  * also 33% more efficient. Speed and efficiency move together at one flat rate.
  */
 public class CoalGranulatorBlockEntity extends FuelMachineBlockEntity {
-    public static final com.script.comminutioncraft.common.config.ConfigInt PROCESS_TIME = com.script.comminutioncraft.common.config.MachineConfig.COAL_GRANULATOR_PROCESS_TIME;
-    public static final com.script.comminutioncraft.common.config.ConfigDouble BURN_TIME_MULTIPLIER = com.script.comminutioncraft.common.config.MachineConfig.COAL_GRANULATOR_BURN_TIME_MULTIPLIER;
+    public static final ConfigInt PROCESS_TIME = MachineConfig.COAL_GRANULATOR_PROCESS_TIME;
+    public static final ConfigDouble BURN_TIME_MULTIPLIER = MachineConfig.COAL_GRANULATOR_BURN_TIME_MULTIPLIER;
 
     private final RecipeManager.CachedCheck<SingleRecipeInput, GranulatingRecipe> recipeCheck =
             RecipeManager.createCheck(ModRecipes.GRANULATING_TYPE.get());

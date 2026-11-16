@@ -2,12 +2,14 @@ package com.script.comminutioncraft.common.registry;
 
 import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.recipe.AssemblingRecipe;
+import com.script.comminutioncraft.common.recipe.FlotationRecipe;
 import com.script.comminutioncraft.common.recipe.GranulatingRecipe;
 import com.script.comminutioncraft.common.recipe.PressingRecipe;
 import com.script.comminutioncraft.common.recipe.PurifyingRecipe;
-import com.script.comminutioncraft.common.recipe.WashingRecipe;
+import com.script.comminutioncraft.common.recipe.SingularityRecipe;
 import com.script.comminutioncraft.common.recipe.TagBlastingRecipe;
 import com.script.comminutioncraft.common.recipe.TagSmeltingRecipe;
+import com.script.comminutioncraft.common.recipe.WashingRecipe;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -45,20 +47,20 @@ public final class ModRecipes {
                     () -> new RecipeSerializer<>(WashingRecipe.CODEC, WashingRecipe.STREAM_CODEC));
 
     /** "comminutioncraft:flotation" — Froth Flotation Cell (tier 5, the 4x step). */
-    public static final DeferredHolder<RecipeType<?>, RecipeType<com.script.comminutioncraft.common.recipe.FlotationRecipe>> FLOTATION_TYPE =
+    public static final DeferredHolder<RecipeType<?>, RecipeType<FlotationRecipe>> FLOTATION_TYPE =
             RECIPE_TYPES.register("flotation", RecipeType::simple);
 
-    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<com.script.comminutioncraft.common.recipe.FlotationRecipe>> FLOTATION_SERIALIZER =
-            RECIPE_SERIALIZERS.register("flotation", () -> new RecipeSerializer<>(com.script.comminutioncraft.common.recipe.FlotationRecipe.CODEC,
-                    com.script.comminutioncraft.common.recipe.FlotationRecipe.STREAM_CODEC));
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<FlotationRecipe>> FLOTATION_SERIALIZER =
+            RECIPE_SERIALIZERS.register("flotation", () -> new RecipeSerializer<>(FlotationRecipe.CODEC,
+                    FlotationRecipe.STREAM_CODEC));
 
     /** "comminutioncraft:singularity_processing" — Singularity Processor (tier 6, the 5x step). */
-    public static final DeferredHolder<RecipeType<?>, RecipeType<com.script.comminutioncraft.common.recipe.SingularityRecipe>> SINGULARITY_TYPE =
+    public static final DeferredHolder<RecipeType<?>, RecipeType<SingularityRecipe>> SINGULARITY_TYPE =
             RECIPE_TYPES.register("singularity_processing", RecipeType::simple);
 
-    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<com.script.comminutioncraft.common.recipe.SingularityRecipe>> SINGULARITY_SERIALIZER =
-            RECIPE_SERIALIZERS.register("singularity_processing", () -> new RecipeSerializer<>(com.script.comminutioncraft.common.recipe.SingularityRecipe.CODEC,
-                    com.script.comminutioncraft.common.recipe.SingularityRecipe.STREAM_CODEC));
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<SingularityRecipe>> SINGULARITY_SERIALIZER =
+            RECIPE_SERIALIZERS.register("singularity_processing", () -> new RecipeSerializer<>(SingularityRecipe.CODEC,
+                    SingularityRecipe.STREAM_CODEC));
 
     /** "comminutioncraft:pressing" — Pellet Press (tier 4). */
     public static final DeferredHolder<RecipeType<?>, RecipeType<PressingRecipe>> PRESSING_TYPE =

@@ -2,41 +2,59 @@ package com.script.comminutioncraft.common.registry;
 
 import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.block.StoneSet;
+import com.script.comminutioncraft.common.block.WoodSet;
 import com.script.comminutioncraft.common.cable.EnergyCableBlock;
 import com.script.comminutioncraft.common.cable.FluidPipeBlock;
-import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import com.script.comminutioncraft.common.machine.AcceleratorControllerBlock;
+import com.script.comminutioncraft.common.machine.AcceleratorPortBlock;
+import com.script.comminutioncraft.common.machine.AcceleratorSegmentBlock;
+import com.script.comminutioncraft.common.machine.AnnihilationGeneratorBlock;
+import com.script.comminutioncraft.common.machine.AntimatterGranulatorBlock;
+import com.script.comminutioncraft.common.machine.AntimatterPurifierBlock;
+import com.script.comminutioncraft.common.machine.AntimatterSmelterBlock;
+import com.script.comminutioncraft.common.machine.AntimatterWasherBlock;
+import com.script.comminutioncraft.common.machine.AtmosphericWaterGeneratorBlock;
+import com.script.comminutioncraft.common.machine.CircuitAssemblerBlock;
 import com.script.comminutioncraft.common.machine.CoalGranulatorBlock;
 import com.script.comminutioncraft.common.machine.CoalSmelterBlock;
+import com.script.comminutioncraft.common.machine.ContainmentCellBlock;
+import com.script.comminutioncraft.common.machine.ContainmentFrameBlock;
+import com.script.comminutioncraft.common.machine.CreativeEnergyBatteryBlock;
+import com.script.comminutioncraft.common.machine.CreativeFluidTankBlock;
 import com.script.comminutioncraft.common.machine.ElectricGeneratorBlock;
 import com.script.comminutioncraft.common.machine.ElectricGranulatorBlock;
 import com.script.comminutioncraft.common.machine.ElectricSmelterBlock;
+import com.script.comminutioncraft.common.machine.ElectrolyserBlock;
 import com.script.comminutioncraft.common.machine.EnergyBatteryBlock;
 import com.script.comminutioncraft.common.machine.FluidTankBlock;
-import com.script.comminutioncraft.common.machine.MachineBlock;
-import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlock;
-import com.script.comminutioncraft.common.machine.AtmosphericWaterGeneratorBlock;
-import com.script.comminutioncraft.common.machine.ElectrolyserBlock;
-import com.script.comminutioncraft.common.machine.MhdGeneratorBlock;
+import com.script.comminutioncraft.common.machine.FrothFlotationCellBlock;
+import com.script.comminutioncraft.common.machine.HorizonControllerBlock;
+import com.script.comminutioncraft.common.machine.HorizonPortBlock;
 import com.script.comminutioncraft.common.machine.IsotopeSeparatorBlock;
+import com.script.comminutioncraft.common.machine.MachineBlock;
+import com.script.comminutioncraft.common.machine.MhdGeneratorBlock;
+import com.script.comminutioncraft.common.machine.OrePurifierBlock;
+import com.script.comminutioncraft.common.machine.OreWasherBlock;
 import com.script.comminutioncraft.common.machine.PelletPressBlock;
-import com.script.comminutioncraft.common.machine.TritiumBreederBlock;
+import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlock;
+import com.script.comminutioncraft.common.machine.PlasmaGranulatorBlock;
+import com.script.comminutioncraft.common.machine.PlasmaSmelterBlock;
 import com.script.comminutioncraft.common.machine.ReactorCasingBlock;
 import com.script.comminutioncraft.common.machine.ReactorControllerBlock;
 import com.script.comminutioncraft.common.machine.ReactorGlassBlock;
 import com.script.comminutioncraft.common.machine.ReactorPortBlock;
-import com.script.comminutioncraft.common.machine.OrePurifierBlock;
-import com.script.comminutioncraft.common.machine.CreativeEnergyBatteryBlock;
-import com.script.comminutioncraft.common.machine.CreativeFluidTankBlock;
-import com.script.comminutioncraft.common.machine.PlasmaGranulatorBlock;
-import com.script.comminutioncraft.common.machine.CircuitAssemblerBlock;
-import com.script.comminutioncraft.common.machine.OreWasherBlock;
-import com.script.comminutioncraft.common.machine.PlasmaSmelterBlock;
+import com.script.comminutioncraft.common.machine.SingularityProcessorBlock;
+import com.script.comminutioncraft.common.machine.TritiumBreederBlock;
+import com.script.comminutioncraft.common.storage.SoarynChestBlock;
+import com.script.comminutioncraft.common.worldgen.ModTrees;
 import java.util.List;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
 
 public final class ModBlocks {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(ComminutionCraft.MODID);
@@ -125,8 +143,8 @@ public final class ModBlocks {
 
     // Tier 5 (antimatter), phase 5A part 1: containment
     /** Antimatter tank; see-through window like the Fluid Tank. */
-    public static final DeferredBlock<com.script.comminutioncraft.common.machine.ContainmentCellBlock> CONTAINMENT_CELL = BLOCKS.registerBlock(
-            "containment_cell", com.script.comminutioncraft.common.machine.ContainmentCellBlock::new, properties -> tier2MachineProperties(properties)
+    public static final DeferredBlock<ContainmentCellBlock> CONTAINMENT_CELL = BLOCKS.registerBlock(
+            "containment_cell", ContainmentCellBlock::new, properties -> tier2MachineProperties(properties)
                     .noOcclusion()
                     .isViewBlocking((state, level, pos) -> false)
                     .isSuffocating((state, level, pos) -> false)
@@ -143,44 +161,44 @@ public final class ModBlocks {
                     .noOcclusion());
 
     // Tier 5 (antimatter), phase 5A part 2: the Particle Accelerator ring
-    public static final DeferredBlock<com.script.comminutioncraft.common.machine.AcceleratorSegmentBlock> ACCELERATOR_SEGMENT = BLOCKS.registerBlock(
-            "accelerator_segment", com.script.comminutioncraft.common.machine.AcceleratorSegmentBlock::new, ModBlocks::tier2MachineProperties);
+    public static final DeferredBlock<AcceleratorSegmentBlock> ACCELERATOR_SEGMENT = BLOCKS.registerBlock(
+            "accelerator_segment", AcceleratorSegmentBlock::new, ModBlocks::tier2MachineProperties);
 
-    public static final DeferredBlock<com.script.comminutioncraft.common.machine.AcceleratorPortBlock> ACCELERATOR_PORT = BLOCKS.registerBlock(
-            "accelerator_port", com.script.comminutioncraft.common.machine.AcceleratorPortBlock::new, ModBlocks::tier2MachineProperties);
+    public static final DeferredBlock<AcceleratorPortBlock> ACCELERATOR_PORT = BLOCKS.registerBlock(
+            "accelerator_port", AcceleratorPortBlock::new, ModBlocks::tier2MachineProperties);
 
-    public static final DeferredBlock<com.script.comminutioncraft.common.machine.AcceleratorControllerBlock> ACCELERATOR_CONTROLLER = BLOCKS.registerBlock(
-            "accelerator_controller", com.script.comminutioncraft.common.machine.AcceleratorControllerBlock::new, ModBlocks::tier2MachineProperties);
+    public static final DeferredBlock<AcceleratorControllerBlock> ACCELERATOR_CONTROLLER = BLOCKS.registerBlock(
+            "accelerator_controller", AcceleratorControllerBlock::new, ModBlocks::tier2MachineProperties);
 
     // Tier 6 phase 6A: the Event Horizon Reactor
-    public static final DeferredBlock<com.script.comminutioncraft.common.machine.ContainmentFrameBlock> CONTAINMENT_FRAME = BLOCKS.registerBlock(
-            "containment_frame", com.script.comminutioncraft.common.machine.ContainmentFrameBlock::new, ModBlocks::tier2MachineProperties);
+    public static final DeferredBlock<ContainmentFrameBlock> CONTAINMENT_FRAME = BLOCKS.registerBlock(
+            "containment_frame", ContainmentFrameBlock::new, ModBlocks::tier2MachineProperties);
 
-    public static final DeferredBlock<com.script.comminutioncraft.common.machine.HorizonControllerBlock> HORIZON_CONTROLLER = BLOCKS.registerBlock(
-            "horizon_controller", com.script.comminutioncraft.common.machine.HorizonControllerBlock::new, ModBlocks::tier2MachineProperties);
+    public static final DeferredBlock<HorizonControllerBlock> HORIZON_CONTROLLER = BLOCKS.registerBlock(
+            "horizon_controller", HorizonControllerBlock::new, ModBlocks::tier2MachineProperties);
 
-    public static final DeferredBlock<com.script.comminutioncraft.common.machine.HorizonPortBlock> HORIZON_PORT = BLOCKS.registerBlock(
-            "horizon_port", com.script.comminutioncraft.common.machine.HorizonPortBlock::new, ModBlocks::tier2MachineProperties);
+    public static final DeferredBlock<HorizonPortBlock> HORIZON_PORT = BLOCKS.registerBlock(
+            "horizon_port", HorizonPortBlock::new, ModBlocks::tier2MachineProperties);
 
     // Tier 5 phase 5C: the 4x step and the antimatter machine suite
-    public static final DeferredBlock<com.script.comminutioncraft.common.machine.AntimatterGranulatorBlock> ANTIMATTER_GRANULATOR = BLOCKS.registerBlock(
-            "antimatter_granulator", com.script.comminutioncraft.common.machine.AntimatterGranulatorBlock::new, ModBlocks::tier2MachineProperties);
-    public static final DeferredBlock<com.script.comminutioncraft.common.machine.AntimatterSmelterBlock> ANTIMATTER_SMELTER = BLOCKS.registerBlock(
-            "antimatter_smelter", com.script.comminutioncraft.common.machine.AntimatterSmelterBlock::new, ModBlocks::tier2MachineProperties);
-    public static final DeferredBlock<com.script.comminutioncraft.common.machine.FrothFlotationCellBlock> FROTH_FLOTATION_CELL = BLOCKS.registerBlock(
-            "froth_flotation_cell", com.script.comminutioncraft.common.machine.FrothFlotationCellBlock::new, ModBlocks::tier2MachineProperties);
-    public static final DeferredBlock<com.script.comminutioncraft.common.machine.AntimatterWasherBlock> ANTIMATTER_WASHER = BLOCKS.registerBlock(
-            "antimatter_washer", com.script.comminutioncraft.common.machine.AntimatterWasherBlock::new, ModBlocks::tier2MachineProperties);
-    public static final DeferredBlock<com.script.comminutioncraft.common.machine.AntimatterPurifierBlock> ANTIMATTER_PURIFIER = BLOCKS.registerBlock(
-            "antimatter_purifier", com.script.comminutioncraft.common.machine.AntimatterPurifierBlock::new, ModBlocks::tier2MachineProperties);
+    public static final DeferredBlock<AntimatterGranulatorBlock> ANTIMATTER_GRANULATOR = BLOCKS.registerBlock(
+            "antimatter_granulator", AntimatterGranulatorBlock::new, ModBlocks::tier2MachineProperties);
+    public static final DeferredBlock<AntimatterSmelterBlock> ANTIMATTER_SMELTER = BLOCKS.registerBlock(
+            "antimatter_smelter", AntimatterSmelterBlock::new, ModBlocks::tier2MachineProperties);
+    public static final DeferredBlock<FrothFlotationCellBlock> FROTH_FLOTATION_CELL = BLOCKS.registerBlock(
+            "froth_flotation_cell", FrothFlotationCellBlock::new, ModBlocks::tier2MachineProperties);
+    public static final DeferredBlock<AntimatterWasherBlock> ANTIMATTER_WASHER = BLOCKS.registerBlock(
+            "antimatter_washer", AntimatterWasherBlock::new, ModBlocks::tier2MachineProperties);
+    public static final DeferredBlock<AntimatterPurifierBlock> ANTIMATTER_PURIFIER = BLOCKS.registerBlock(
+            "antimatter_purifier", AntimatterPurifierBlock::new, ModBlocks::tier2MachineProperties);
 
     // Tier 5 phase 5B: antimatter power
-    public static final DeferredBlock<com.script.comminutioncraft.common.machine.AnnihilationGeneratorBlock> ANNIHILATION_GENERATOR = BLOCKS.registerBlock(
-            "annihilation_generator", com.script.comminutioncraft.common.machine.AnnihilationGeneratorBlock::new, ModBlocks::tier2MachineProperties);
+    public static final DeferredBlock<AnnihilationGeneratorBlock> ANNIHILATION_GENERATOR = BLOCKS.registerBlock(
+            "annihilation_generator", AnnihilationGeneratorBlock::new, ModBlocks::tier2MachineProperties);
 
     // Tier 6 phase 6B: the 5x step and tier-6 power gear
-    public static final DeferredBlock<com.script.comminutioncraft.common.machine.SingularityProcessorBlock> SINGULARITY_PROCESSOR = BLOCKS.registerBlock(
-            "singularity_processor", com.script.comminutioncraft.common.machine.SingularityProcessorBlock::new, ModBlocks::tier2MachineProperties);
+    public static final DeferredBlock<SingularityProcessorBlock> SINGULARITY_PROCESSOR = BLOCKS.registerBlock(
+            "singularity_processor", SingularityProcessorBlock::new, ModBlocks::tier2MachineProperties);
 
     public static final DeferredBlock<EnergyCableBlock> SINGULARITY_CABLE = BLOCKS.registerBlock(
             "singularity_cable", properties -> new EnergyCableBlock(properties, EnergyCableBlock.SINGULARITY_CABLE_RATE), properties -> properties
@@ -256,12 +274,12 @@ public final class ModBlocks {
             "creative_energy_battery", CreativeEnergyBatteryBlock::new, ModBlocks::tier2MachineProperties);
 
     /** Soaryn Chest: vanilla chest properties (wood, 2.5 strength, burns in lava). */
-    public static final DeferredBlock<com.script.comminutioncraft.common.storage.SoarynChestBlock> SOARYN_CHEST = BLOCKS.registerBlock(
-            "soaryn_chest", com.script.comminutioncraft.common.storage.SoarynChestBlock::new, properties -> properties
-                    .mapColor(net.minecraft.world.level.material.MapColor.WOOD)
-                    .instrument(net.minecraft.world.level.block.state.properties.NoteBlockInstrument.BASS)
+    public static final DeferredBlock<SoarynChestBlock> SOARYN_CHEST = BLOCKS.registerBlock(
+            "soaryn_chest", SoarynChestBlock::new, properties -> properties
+                    .mapColor(MapColor.WOOD)
+                    .instrument(NoteBlockInstrument.BASS)
                     .strength(2.5F)
-                    .sound(net.minecraft.world.level.block.SoundType.WOOD)
+                    .sound(SoundType.WOOD)
                     .ignitedByLava());
 
     public static final DeferredBlock<CreativeFluidTankBlock> CREATIVE_FLUID_TANK = BLOCKS.registerBlock(
@@ -277,9 +295,9 @@ public final class ModBlocks {
     public static final List<StoneSet> STONE_SETS = List.of(MARBLE, VOLCANIC_BASALT);
 
     // Purpleheart wood (a tall, straight jungle tree; purple heartwood)
-    public static final com.script.comminutioncraft.common.block.WoodSet PURPLEHEART = new com.script.comminutioncraft.common.block.WoodSet(
+    public static final WoodSet PURPLEHEART = new WoodSet(
             BLOCKS, "purpleheart", MapColor.COLOR_PURPLE, MapColor.COLOR_GRAY, 0xFF3C7640,
-            com.script.comminutioncraft.common.worldgen.ModTrees.PURPLEHEART_GROWER);
+            ModTrees.PURPLEHEART_GROWER);
 
     /** Same feel as a vanilla furnace: needs a pickaxe, glows while burning. */
     private static BlockBehaviour.Properties tier1MachineProperties(BlockBehaviour.Properties properties) {

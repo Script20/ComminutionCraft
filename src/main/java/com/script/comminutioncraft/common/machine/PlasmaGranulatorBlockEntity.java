@@ -1,5 +1,7 @@
 package com.script.comminutioncraft.common.machine;
 
+import com.script.comminutioncraft.common.config.ConfigInt;
+import com.script.comminutioncraft.common.config.MachineConfig;
 import com.script.comminutioncraft.common.recipe.GranulatingRecipe;
 import com.script.comminutioncraft.common.registry.ModBlockEntities;
 import com.script.comminutioncraft.common.registry.ModMenus;
@@ -22,8 +24,8 @@ import net.minecraft.world.level.block.state.BlockState;
  * Almost twice as fast as the Electric Granulator (40 ticks vs 75) at 60 FE/t = 2,400 FE per operation.
  */
 public class PlasmaGranulatorBlockEntity extends ElectricMachineBlockEntity {
-    public static final com.script.comminutioncraft.common.config.ConfigInt PROCESS_TIME = com.script.comminutioncraft.common.config.MachineConfig.PLASMA_GRANULATOR_PROCESS_TIME;
-    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_PER_TICK = com.script.comminutioncraft.common.config.MachineConfig.PLASMA_GRANULATOR_ENERGY_PER_TICK;
+    public static final ConfigInt PROCESS_TIME = MachineConfig.PLASMA_GRANULATOR_PROCESS_TIME;
+    public static final ConfigInt ENERGY_PER_TICK = MachineConfig.PLASMA_GRANULATOR_ENERGY_PER_TICK;
 
     private final RecipeManager.CachedCheck<SingleRecipeInput, GranulatingRecipe> recipeCheck =
             RecipeManager.createCheck(ModRecipes.GRANULATING_TYPE.get());

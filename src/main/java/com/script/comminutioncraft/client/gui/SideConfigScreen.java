@@ -6,9 +6,9 @@ import com.script.comminutioncraft.common.machine.control.MachineControls;
 import com.script.comminutioncraft.common.machine.control.RelativeSide;
 import com.script.comminutioncraft.common.machine.control.SideMode;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
@@ -212,7 +212,7 @@ public class SideConfigScreen extends Screen {
     }
 
     private void drawLegend(GuiGraphicsExtractor graphics) {
-        SideMode[] modes = java.util.Arrays.stream(SideMode.values())
+        SideMode[] modes = Arrays.stream(SideMode.values())
                 .filter(mode -> mode != SideMode.BYPRODUCT || controls.hasByproductOutput())
                 .toArray(SideMode[]::new);
         int[] widths = new int[modes.length];

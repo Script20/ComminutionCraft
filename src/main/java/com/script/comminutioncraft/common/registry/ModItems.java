@@ -3,10 +3,14 @@ package com.script.comminutioncraft.common.registry;
 import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.item.EnergyBatteryItem;
 import com.script.comminutioncraft.common.item.WrenchItem;
-import com.script.comminutioncraft.common.machine.EnergyBatteryBlockEntity;
 import com.script.comminutioncraft.common.machine.AtmosphericWaterGeneratorBlockEntity;
+import com.script.comminutioncraft.common.machine.EnergyBatteryBlockEntity;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.BoatItem;
+import net.minecraft.world.item.DoubleHighBlockItem;
+import net.minecraft.world.item.HangingSignItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.SignItem;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -157,19 +161,19 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> ENERGY_CABLE = ITEMS.registerSimpleBlockItem("energy_cable", ModBlocks.ENERGY_CABLE);
 
     // Purpleheart: the door, signs and boats need their own item classes; every other block gets a plain block item below
-    public static final DeferredItem<net.minecraft.world.item.DoubleHighBlockItem> PURPLEHEART_DOOR = ITEMS.registerItem("purpleheart_door",
-            properties -> new net.minecraft.world.item.DoubleHighBlockItem(ModBlocks.PURPLEHEART.door.get(), properties),
+    public static final DeferredItem<DoubleHighBlockItem> PURPLEHEART_DOOR = ITEMS.registerItem("purpleheart_door",
+            properties -> new DoubleHighBlockItem(ModBlocks.PURPLEHEART.door.get(), properties),
             properties -> properties.useBlockDescriptionPrefix());
-    public static final DeferredItem<net.minecraft.world.item.SignItem> PURPLEHEART_SIGN = ITEMS.registerItem("purpleheart_sign",
-            properties -> new net.minecraft.world.item.SignItem(ModBlocks.PURPLEHEART.sign.get(), ModBlocks.PURPLEHEART.wallSign.get(), properties),
+    public static final DeferredItem<SignItem> PURPLEHEART_SIGN = ITEMS.registerItem("purpleheart_sign",
+            properties -> new SignItem(ModBlocks.PURPLEHEART.sign.get(), ModBlocks.PURPLEHEART.wallSign.get(), properties),
             properties -> properties.stacksTo(16).useBlockDescriptionPrefix());
-    public static final DeferredItem<net.minecraft.world.item.HangingSignItem> PURPLEHEART_HANGING_SIGN = ITEMS.registerItem("purpleheart_hanging_sign",
-            properties -> new net.minecraft.world.item.HangingSignItem(ModBlocks.PURPLEHEART.hangingSign.get(), ModBlocks.PURPLEHEART.wallHangingSign.get(), properties),
+    public static final DeferredItem<HangingSignItem> PURPLEHEART_HANGING_SIGN = ITEMS.registerItem("purpleheart_hanging_sign",
+            properties -> new HangingSignItem(ModBlocks.PURPLEHEART.hangingSign.get(), ModBlocks.PURPLEHEART.wallHangingSign.get(), properties),
             properties -> properties.stacksTo(16).useBlockDescriptionPrefix());
-    public static final DeferredItem<net.minecraft.world.item.BoatItem> PURPLEHEART_BOAT = ITEMS.registerItem("purpleheart_boat",
-            properties -> new net.minecraft.world.item.BoatItem(ModEntities.PURPLEHEART_BOAT.get(), properties), properties -> properties.stacksTo(1));
-    public static final DeferredItem<net.minecraft.world.item.BoatItem> PURPLEHEART_CHEST_BOAT = ITEMS.registerItem("purpleheart_chest_boat",
-            properties -> new net.minecraft.world.item.BoatItem(ModEntities.PURPLEHEART_CHEST_BOAT.get(), properties), properties -> properties.stacksTo(1));
+    public static final DeferredItem<BoatItem> PURPLEHEART_BOAT = ITEMS.registerItem("purpleheart_boat",
+            properties -> new BoatItem(ModEntities.PURPLEHEART_BOAT.get(), properties), properties -> properties.stacksTo(1));
+    public static final DeferredItem<BoatItem> PURPLEHEART_CHEST_BOAT = ITEMS.registerItem("purpleheart_chest_boat",
+            properties -> new BoatItem(ModEntities.PURPLEHEART_CHEST_BOAT.get(), properties), properties -> properties.stacksTo(1));
 
     // Block items for every decorative stone block and the plain Purpleheart blocks
     static {

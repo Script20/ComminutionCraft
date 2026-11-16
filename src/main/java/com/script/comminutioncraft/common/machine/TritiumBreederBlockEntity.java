@@ -1,14 +1,18 @@
 package com.script.comminutioncraft.common.machine;
 
+import com.script.comminutioncraft.common.config.ConfigInt;
+import com.script.comminutioncraft.common.config.MachineConfig;
 import com.script.comminutioncraft.common.fluid.MachineFluidTank;
 import com.script.comminutioncraft.common.registry.ModBlockEntities;
 import com.script.comminutioncraft.common.registry.ModFluids;
 import com.script.comminutioncraft.common.registry.ModMenus;
+import java.util.Collection;
+import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.minecraft.world.level.material.Fluid;
 
 /**
  * Tier 4 Tritium Breeder: bombards deuterium into tritium, 1 mB for 1 mB, up to {@link #MAX_TRITIUM_PER_TICK} mB/t at
@@ -16,10 +20,10 @@ import net.neoforged.neoforge.transfer.fluid.FluidResource;
  * own tritium once it runs). Deuterium comes in through Input faces; tritium goes out of Output faces.
  */
 public class TritiumBreederBlockEntity extends FluidMachineBlockEntity {
-    public static final com.script.comminutioncraft.common.config.ConfigInt MAX_TRITIUM_PER_TICK = com.script.comminutioncraft.common.config.MachineConfig.TRITIUM_BREEDER_TRITIUM_PER_TICK;
-    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_PER_MB = com.script.comminutioncraft.common.config.MachineConfig.TRITIUM_BREEDER_ENERGY_PER_MB;
-    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.TRITIUM_BREEDER_ENERGY_CAPACITY;
-    public static final com.script.comminutioncraft.common.config.ConfigInt MAX_ENERGY_INPUT = com.script.comminutioncraft.common.config.MachineConfig.TRITIUM_BREEDER_MAX_ENERGY_INPUT;
+    public static final ConfigInt MAX_TRITIUM_PER_TICK = MachineConfig.TRITIUM_BREEDER_TRITIUM_PER_TICK;
+    public static final ConfigInt ENERGY_PER_MB = MachineConfig.TRITIUM_BREEDER_ENERGY_PER_MB;
+    public static final ConfigInt ENERGY_CAPACITY = MachineConfig.TRITIUM_BREEDER_ENERGY_CAPACITY;
+    public static final ConfigInt MAX_ENERGY_INPUT = MachineConfig.TRITIUM_BREEDER_MAX_ENERGY_INPUT;
 
     public static final int TANK_DEUTERIUM = 0;
     public static final int TANK_TRITIUM = 1;
@@ -33,22 +37,14 @@ public class TritiumBreederBlockEntity extends FluidMachineBlockEntity {
     }
 
     @Override
-    protected java.util.Collection<net.minecraft.world.level.material.Fluid> consumedFluids() {
-        return java.util.List.of(com.script.comminutioncraft.common.registry.ModFluids.DEUTERIUM.get());
+    protected Collection<Fluid> consumedFluids() {
+        return List.of(ModFluids.DEUTERIUM.get());
     }
 
     @Override
     protected int work(ServerLevel level) {
-        int perMb = upgradedEnergy(ENERGY_PER_MB.get());
-        int make = Math.min(Math.min(upgradedRate(MAX_TRITIUM_PER_TICK.get()), affordable(com.script.comminutioncraft.common.registry.ModFluids.DEUTERIUM.get(), deuterium.getAmount(), 1)),
-                Math.min(tritium.getSpace(), energy.getEnergy() / perMb));
-        if (make <= 0) {
-            return 0;
-        }
-        energy.consume(make * perMb);
-        deuterium.drain(drainFor(com.script.comminutioncraft.common.registry.ModFluids.DEUTERIUM.get(), make, 1));
-        tritium.fill(FluidResource.of(ModFluids.TRITIUM.get()), make);
-        return make;
+        return convert(deuterium, ModFluids.DEUTERIUM.get(), 1, tritium, ModFluids.TRITIUM.get(),
+                MAX_TRITIUM_PER_TICK.get(), ENERGY_PER_MB.get());
     }
 
     @Override

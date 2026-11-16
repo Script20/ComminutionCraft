@@ -1,9 +1,13 @@
 package com.script.comminutioncraft.common.machine;
 
+import com.script.comminutioncraft.common.config.ConfigInt;
+import com.script.comminutioncraft.common.config.MachineConfig;
 import com.script.comminutioncraft.common.fluid.MachineFluidTank;
 import com.script.comminutioncraft.common.machine.control.ControllableMachine;
 import com.script.comminutioncraft.common.machine.control.MachineControls;
 import com.script.comminutioncraft.common.registry.ModBlockEntities;
+import com.script.comminutioncraft.common.registry.ModFluids;
+import java.util.function.Predicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -33,8 +37,8 @@ import org.jspecify.annotations.Nullable;
  * for {@code FluidTankRenderer}.
  */
 public class FluidTankBlockEntity extends BlockEntity implements TickingMachine, ControllableMachine {
-    public static final com.script.comminutioncraft.common.config.ConfigInt CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.FLUID_TANK_CAPACITY;
-    public static final com.script.comminutioncraft.common.config.ConfigInt OUTPUT_RATE = com.script.comminutioncraft.common.config.MachineConfig.FLUID_TANK_OUTPUT_RATE;
+    public static final ConfigInt CAPACITY = MachineConfig.FLUID_TANK_CAPACITY;
+    public static final ConfigInt OUTPUT_RATE = MachineConfig.FLUID_TANK_OUTPUT_RATE;
     /** At most one client sync every this many ticks while the contents keep changing. */
     private static final int SYNC_INTERVAL = 5;
 
@@ -49,12 +53,12 @@ public class FluidTankBlockEntity extends BlockEntity implements TickingMachine,
 
     /** For the Creative Fluid Tank: any fluid but antimatter, {@link #CAPACITY} mB. */
     protected FluidTankBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
-        this(type, pos, state, CAPACITY.get(), resource -> !com.script.comminutioncraft.common.registry.ModFluids.isAntimatter(resource));
+        this(type, pos, state, CAPACITY.get(), resource -> !ModFluids.isAntimatter(resource));
     }
 
     /** For the Containment Cell: its own size and the fluids it takes. */
     protected FluidTankBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, int capacity,
-                                   java.util.function.Predicate<FluidResource> accepts) {
+                                   Predicate<FluidResource> accepts) {
         super(type, pos, state);
         tank = new MachineFluidTank(capacity, accepts, this::onTankChanged);
     }

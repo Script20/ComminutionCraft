@@ -1,5 +1,7 @@
 package com.script.comminutioncraft.common.machine;
 
+import com.script.comminutioncraft.common.config.ConfigInt;
+import com.script.comminutioncraft.common.config.MachineConfig;
 import com.script.comminutioncraft.common.energy.EnergySync;
 import com.script.comminutioncraft.common.energy.MachineEnergyStorage;
 import com.script.comminutioncraft.common.machine.control.ControllableMachine;
@@ -39,16 +41,16 @@ import org.jspecify.annotations.Nullable;
  * Mined with a pickaxe it forgets everything; picked up with the wrench it keeps its charge and settings.
  */
 public class EnergyBatteryBlockEntity extends BlockEntity implements TickingMachine, ControllableMachine, MenuProvider {
-    public static final com.script.comminutioncraft.common.config.ConfigInt CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.ENERGY_BATTERY_CAPACITY;
-    public static final com.script.comminutioncraft.common.config.ConfigInt TRANSFER_RATE = com.script.comminutioncraft.common.config.MachineConfig.ENERGY_BATTERY_TRANSFER_RATE;
-    public static final com.script.comminutioncraft.common.config.ConfigInt PLASMA_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.PLASMA_ENERGY_BATTERY_CAPACITY;
-    public static final com.script.comminutioncraft.common.config.ConfigInt PLASMA_TRANSFER_RATE = com.script.comminutioncraft.common.config.MachineConfig.PLASMA_ENERGY_BATTERY_TRANSFER_RATE;
-    public static final com.script.comminutioncraft.common.config.ConfigInt FUSION_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.FUSION_ENERGY_BATTERY_CAPACITY;
-    public static final com.script.comminutioncraft.common.config.ConfigInt FUSION_TRANSFER_RATE = com.script.comminutioncraft.common.config.MachineConfig.FUSION_ENERGY_BATTERY_TRANSFER_RATE;
-    public static final com.script.comminutioncraft.common.config.ConfigInt ANTIMATTER_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.ANTIMATTER_ENERGY_BATTERY_CAPACITY;
-    public static final com.script.comminutioncraft.common.config.ConfigInt ANTIMATTER_TRANSFER_RATE = com.script.comminutioncraft.common.config.MachineConfig.ANTIMATTER_ENERGY_BATTERY_TRANSFER_RATE;
-    public static final com.script.comminutioncraft.common.config.ConfigInt SINGULARITY_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.SINGULARITY_ENERGY_BATTERY_CAPACITY;
-    public static final com.script.comminutioncraft.common.config.ConfigInt SINGULARITY_TRANSFER_RATE = com.script.comminutioncraft.common.config.MachineConfig.SINGULARITY_ENERGY_BATTERY_TRANSFER_RATE;
+    public static final ConfigInt CAPACITY = MachineConfig.ENERGY_BATTERY_CAPACITY;
+    public static final ConfigInt TRANSFER_RATE = MachineConfig.ENERGY_BATTERY_TRANSFER_RATE;
+    public static final ConfigInt PLASMA_CAPACITY = MachineConfig.PLASMA_ENERGY_BATTERY_CAPACITY;
+    public static final ConfigInt PLASMA_TRANSFER_RATE = MachineConfig.PLASMA_ENERGY_BATTERY_TRANSFER_RATE;
+    public static final ConfigInt FUSION_CAPACITY = MachineConfig.FUSION_ENERGY_BATTERY_CAPACITY;
+    public static final ConfigInt FUSION_TRANSFER_RATE = MachineConfig.FUSION_ENERGY_BATTERY_TRANSFER_RATE;
+    public static final ConfigInt ANTIMATTER_CAPACITY = MachineConfig.ANTIMATTER_ENERGY_BATTERY_CAPACITY;
+    public static final ConfigInt ANTIMATTER_TRANSFER_RATE = MachineConfig.ANTIMATTER_ENERGY_BATTERY_TRANSFER_RATE;
+    public static final ConfigInt SINGULARITY_CAPACITY = MachineConfig.SINGULARITY_ENERGY_BATTERY_CAPACITY;
+    public static final ConfigInt SINGULARITY_TRANSFER_RATE = MachineConfig.SINGULARITY_ENERGY_BATTERY_TRANSFER_RATE;
     /** Charge cells on the front texture (blockstate {@code charge} 0..CELLS). */
     public static final int CELLS = 6;
 

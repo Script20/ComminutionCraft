@@ -41,10 +41,6 @@ public final class MachineControls {
         this.byproduct = byproduct;
     }
 
-    public boolean hasByproduct() {
-        return byproduct;
-    }
-
     /** The usual layout: output at the bottom, input everywhere else. */
     public static Map<RelativeSide, SideMode> outputBelow() {
         EnumMap<RelativeSide, SideMode> map = new EnumMap<>(RelativeSide.class);

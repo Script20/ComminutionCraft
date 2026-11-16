@@ -26,7 +26,6 @@ public class AnnihilationGeneratorBlockEntity extends FluidMachineBlockEntity {
     public static final ConfigInt ENERGY_CAPACITY = MachineConfig.ANNIHILATION_GENERATOR_ENERGY_CAPACITY;
     public static final ConfigInt MAX_ENERGY_OUTPUT = MachineConfig.ANNIHILATION_GENERATOR_MAX_ENERGY_OUTPUT;
 
-    public static final int TANK_ANTIMATTER = 0;
     public static final int TANK_COUNT = 1;
 
     private final MachineFluidTank antimatter = addTank("antimatter", ModFluids::isAntimatter, TankRole.INPUT);

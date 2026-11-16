@@ -1,5 +1,8 @@
 package com.script.comminutioncraft.common.machine;
 
+import com.script.comminutioncraft.common.config.ConfigDouble;
+import com.script.comminutioncraft.common.config.ConfigInt;
+import com.script.comminutioncraft.common.config.MachineConfig;
 import com.script.comminutioncraft.common.fluid.MachineFluidTank;
 import com.script.comminutioncraft.common.machine.control.ControllableMachine;
 import com.script.comminutioncraft.common.machine.control.MachineControls;
@@ -17,6 +20,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.WorldlyContainer;
+import net.minecraft.world.attribute.EnvironmentAttributes;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
@@ -29,7 +33,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import net.minecraft.world.attribute.EnvironmentAttributes;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.transfer.ResourceHandler;
@@ -54,17 +57,17 @@ public class AtmosphericWaterGeneratorBlockEntity extends BaseContainerBlockEnti
     private static final int[] SLOTS_FILTER = {SLOT_FILTER};
     private static final int[] SLOTS_NONE = {};
 
-    public static final com.script.comminutioncraft.common.config.ConfigDouble WATER_PER_INTAKE = com.script.comminutioncraft.common.config.MachineConfig.ATMOSPHERIC_WATER_GENERATOR_WATER_PER_OPEN_FACE;
-    public static final com.script.comminutioncraft.common.config.ConfigDouble HUMIDITY_MAX = com.script.comminutioncraft.common.config.MachineConfig.ATMOSPHERIC_WATER_GENERATOR_HUMIDITY_MAX;
-    public static final com.script.comminutioncraft.common.config.ConfigDouble HUMIDITY_WATER_BIOME = com.script.comminutioncraft.common.config.MachineConfig.ATMOSPHERIC_WATER_GENERATOR_HUMIDITY_WATER_BIOME_MULTIPLIER;
-    public static final com.script.comminutioncraft.common.config.ConfigDouble HUMIDITY_PER_DOWNFALL = com.script.comminutioncraft.common.config.MachineConfig.ATMOSPHERIC_WATER_GENERATOR_HUMIDITY_PER_DOWNFALL;
-    public static final com.script.comminutioncraft.common.config.ConfigDouble HUMIDITY_BASE = com.script.comminutioncraft.common.config.MachineConfig.ATMOSPHERIC_WATER_GENERATOR_HUMIDITY_BASE;
-    public static final com.script.comminutioncraft.common.config.ConfigDouble FILTER_MULTIPLIER = com.script.comminutioncraft.common.config.MachineConfig.ATMOSPHERIC_WATER_GENERATOR_FILTER_MULTIPLIER;
+    public static final ConfigDouble WATER_PER_INTAKE = MachineConfig.ATMOSPHERIC_WATER_GENERATOR_WATER_PER_OPEN_FACE;
+    public static final ConfigDouble HUMIDITY_MAX = MachineConfig.ATMOSPHERIC_WATER_GENERATOR_HUMIDITY_MAX;
+    public static final ConfigDouble HUMIDITY_WATER_BIOME = MachineConfig.ATMOSPHERIC_WATER_GENERATOR_HUMIDITY_WATER_BIOME_MULTIPLIER;
+    public static final ConfigDouble HUMIDITY_PER_DOWNFALL = MachineConfig.ATMOSPHERIC_WATER_GENERATOR_HUMIDITY_PER_DOWNFALL;
+    public static final ConfigDouble HUMIDITY_BASE = MachineConfig.ATMOSPHERIC_WATER_GENERATOR_HUMIDITY_BASE;
+    public static final ConfigDouble FILTER_MULTIPLIER = MachineConfig.ATMOSPHERIC_WATER_GENERATOR_FILTER_MULTIPLIER;
     public static final int FILTER_DURABILITY = 10_000;
-    public static final com.script.comminutioncraft.common.config.ConfigInt MB_PER_FILTER_WEAR = com.script.comminutioncraft.common.config.MachineConfig.ATMOSPHERIC_WATER_GENERATOR_WATER_PER_FILTER_WEAR;
-    public static final com.script.comminutioncraft.common.config.ConfigInt WATER_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.ATMOSPHERIC_WATER_GENERATOR_WATER_CAPACITY;
+    public static final ConfigInt MB_PER_FILTER_WEAR = MachineConfig.ATMOSPHERIC_WATER_GENERATOR_WATER_PER_FILTER_WEAR;
+    public static final ConfigInt WATER_CAPACITY = MachineConfig.ATMOSPHERIC_WATER_GENERATOR_WATER_CAPACITY;
     /** Max mB pushed out per tick, across all output faces. */
-    public static final com.script.comminutioncraft.common.config.ConfigInt MAX_WATER_OUTPUT = com.script.comminutioncraft.common.config.MachineConfig.ATMOSPHERIC_WATER_GENERATOR_MAX_WATER_OUTPUT;
+    public static final ConfigInt MAX_WATER_OUTPUT = MachineConfig.ATMOSPHERIC_WATER_GENERATOR_MAX_WATER_OUTPUT;
     private static final int LIT_COOLDOWN = 10;
 
     // ContainerData indices, synced to the open GUI
@@ -198,15 +201,25 @@ public class AtmosphericWaterGeneratorBlockEntity extends BaseContainerBlockEnti
         humidity = humidity(level, pos);
         rate = 0;
         // Switched off by redstone: makes no water, but the water in its tank still goes out.
-        if (!controls.canRun(level, pos)) {
+        if (controls.canRun(level, pos)) {
+            breathe(level);
+        } else {
             litCooldown = 0;
-            if (state.getValue(MachineBlock.LIT)) {
-                level.setBlock(pos, state.setValue(MachineBlock.LIT, false), Block.UPDATE_ALL);
-            }
-            pushWater(level, pos);
-            return;
         }
 
+        pushWater(level, pos);
+
+        if (litCooldown > 0) {
+            litCooldown--;
+        }
+        boolean lit = litCooldown > 0;
+        if (state.getValue(MachineBlock.LIT) != lit) {
+            level.setBlock(pos, state.setValue(MachineBlock.LIT, lit), Block.UPDATE_ALL);
+        }
+    }
+
+    /** One tick of drawing water from the air (and wearing the filter). */
+    private void breathe(ServerLevel level) {
         boolean filtered = hasFilter();
         float perTick = intake * WATER_PER_INTAKE.getFloat() * humidity * (filtered ? FILTER_MULTIPLIER.getFloat() : 1);
         if (perTick > 0 && tank.getSpace() > 0) {
@@ -223,16 +236,6 @@ public class AtmosphericWaterGeneratorBlockEntity extends BaseContainerBlockEnti
                     sinceWear %= MB_PER_FILTER_WEAR.get();
                 }
             }
-        }
-
-        pushWater(level, pos);
-
-        if (litCooldown > 0) {
-            litCooldown--;
-        }
-        boolean lit = litCooldown > 0;
-        if (state.getValue(MachineBlock.LIT) != lit) {
-            level.setBlock(pos, state.setValue(MachineBlock.LIT, lit), Block.UPDATE_ALL);
         }
     }
 

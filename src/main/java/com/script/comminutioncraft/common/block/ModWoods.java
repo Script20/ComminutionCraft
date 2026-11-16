@@ -2,6 +2,7 @@ package com.script.comminutioncraft.common.block;
 
 import com.script.comminutioncraft.common.registry.ModBlocks;
 import java.lang.reflect.Method;
+import java.util.List;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FireBlock;
@@ -33,7 +34,7 @@ public final class ModWoods {
         event.enqueueWork(() -> {
             WoodSet wood = ModBlocks.PURPLEHEART;
             // vanilla's odds (FireBlock.bootStrap): planks and their shapes 5/20, logs 5/5, leaves 30/60
-            for (var block : java.util.List.of(wood.planks, wood.stairs, wood.slab, wood.fence, wood.fenceGate)) {
+            for (var block : List.of(wood.planks, wood.stairs, wood.slab, wood.fence, wood.fenceGate)) {
                 setFlammable(block.get(), 5, 20);
             }
             wood.logs().forEach(block -> setFlammable(block.get(), 5, 5));

@@ -1,28 +1,34 @@
 package com.script.comminutioncraft.common.machine;
 
+import com.script.comminutioncraft.common.advancement.MachineEventTrigger;
+import com.script.comminutioncraft.common.config.ConfigInt;
+import com.script.comminutioncraft.common.config.MachineConfig;
 import com.script.comminutioncraft.common.fluid.MachineFluidTank;
 import com.script.comminutioncraft.common.machine.control.SideMode;
 import com.script.comminutioncraft.common.recipe.PurifyingRecipe;
 import com.script.comminutioncraft.common.registry.ModBlockEntities;
 import com.script.comminutioncraft.common.registry.ModFluids;
-import com.script.comminutioncraft.common.registry.ModRecipes;
-import java.util.Optional;
 import com.script.comminutioncraft.common.registry.ModMenus;
+import com.script.comminutioncraft.common.registry.ModRecipes;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.transfer.ResourceHandler;
@@ -36,10 +42,10 @@ import org.jspecify.annotations.Nullable;
  * Input faces (from an Electrolyser's By-product face); both outputs go out of Output faces.
  */
 public class OrePurifierBlockEntity extends ElectricMachineBlockEntity {
-    public static final com.script.comminutioncraft.common.config.ConfigInt PROCESS_TIME = com.script.comminutioncraft.common.config.MachineConfig.ORE_PURIFIER_PROCESS_TIME;
-    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_PER_TICK = com.script.comminutioncraft.common.config.MachineConfig.ORE_PURIFIER_ENERGY_PER_TICK;
-    public static final com.script.comminutioncraft.common.config.ConfigInt OXYGEN_PER_OPERATION = com.script.comminutioncraft.common.config.MachineConfig.ORE_PURIFIER_OXYGEN_PER_OPERATION;
-    public static final com.script.comminutioncraft.common.config.ConfigInt OXYGEN_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.ORE_PURIFIER_OXYGEN_CAPACITY;
+    public static final ConfigInt PROCESS_TIME = MachineConfig.ORE_PURIFIER_PROCESS_TIME;
+    public static final ConfigInt ENERGY_PER_TICK = MachineConfig.ORE_PURIFIER_ENERGY_PER_TICK;
+    public static final ConfigInt OXYGEN_PER_OPERATION = MachineConfig.ORE_PURIFIER_OXYGEN_PER_OPERATION;
+    public static final ConfigInt OXYGEN_CAPACITY = MachineConfig.ORE_PURIFIER_OXYGEN_CAPACITY;
 
     public static final int SLOT_BYPRODUCT = SLOT_COUNT;
     private static final int[] SLOTS_OUTPUTS = {SLOT_OUTPUT, SLOT_BYPRODUCT};
@@ -96,25 +102,25 @@ public class OrePurifierBlockEntity extends ElectricMachineBlockEntity {
     }
 
     @Override
-    protected java.util.Collection<net.minecraft.world.level.material.Fluid> consumedFluids() {
-        return java.util.List.of(com.script.comminutioncraft.common.registry.ModFluids.OXYGEN.get());
+    protected Collection<Fluid> consumedFluids() {
+        return List.of(ModFluids.OXYGEN.get());
     }
 
     @Override
     protected boolean hasOperationResources() {
-        return oxygen.getAmount() >= fluidCost(com.script.comminutioncraft.common.registry.ModFluids.OXYGEN.get(), oxygenPerOperation());
+        return oxygen.getAmount() >= fluidCost(ModFluids.OXYGEN.get(), oxygenPerOperation());
     }
 
     @Override
     protected void onOperationDone(RecipeHolder<? extends Recipe<SingleRecipeInput>> recipe) {
-        oxygen.drain(fluidCost(com.script.comminutioncraft.common.registry.ModFluids.OXYGEN.get(), oxygenPerOperation()));
+        oxygen.drain(fluidCost(ModFluids.OXYGEN.get(), oxygenPerOperation()));
         if (recipe.value() instanceof PurifyingRecipe purifying && level != null && level.getRandom().nextFloat() < purifying.getChance()) {
             ItemStack byproduct = purifying.getByproduct().create();
             if (MachineSlots.canFit(items, SLOT_BYPRODUCT, byproduct, getMaxStackSize())) {
                 MachineSlots.addTo(items, SLOT_BYPRODUCT, byproduct);
             }
-            if (level instanceof net.minecraft.server.level.ServerLevel server) {
-                com.script.comminutioncraft.common.advancement.MachineEventTrigger.fireNear(server, worldPosition, com.script.comminutioncraft.common.advancement.MachineEventTrigger.PURIFIER_BYPRODUCT, 16);
+            if (level instanceof ServerLevel server) {
+                MachineEventTrigger.fireNear(server, worldPosition, MachineEventTrigger.PURIFIER_BYPRODUCT, 16);
             }
         }
     }

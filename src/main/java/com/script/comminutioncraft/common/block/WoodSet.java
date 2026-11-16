@@ -2,6 +2,7 @@ package com.script.comminutioncraft.common.block;
 
 import com.script.comminutioncraft.ComminutionCraft;
 import java.util.List;
+import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.level.block.Block;
@@ -121,7 +122,7 @@ public final class WoodSet {
     }
 
     private static BlockBehaviour.Properties log(BlockBehaviour.Properties p, MapColor end, MapColor side) {
-        return p.mapColor(state -> state.getValue(RotatedPillarBlock.AXIS) == net.minecraft.core.Direction.Axis.Y ? end : side)
+        return p.mapColor(state -> state.getValue(RotatedPillarBlock.AXIS) == Direction.Axis.Y ? end : side)
                 .instrument(NoteBlockInstrument.BASS).strength(2.0F).sound(SoundType.WOOD).ignitedByLava();
     }
 

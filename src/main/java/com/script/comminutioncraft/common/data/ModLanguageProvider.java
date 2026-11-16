@@ -1,8 +1,11 @@
 package com.script.comminutioncraft.common.data;
 
 import com.script.comminutioncraft.ComminutionCraft;
+import com.script.comminutioncraft.common.config.MachineConfig;
 import com.script.comminutioncraft.common.registry.ModBlocks;
+import com.script.comminutioncraft.common.registry.ModEntities;
 import com.script.comminutioncraft.common.registry.ModItems;
+import com.script.comminutioncraft.common.registry.ModSounds;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import net.minecraft.data.PackOutput;
@@ -50,18 +53,12 @@ public class ModLanguageProvider extends LanguageProvider {
         add("jei.comminutioncraft.multiblock.up", "Up a layer (past the top: all)");
         add("jei.comminutioncraft.multiblock.down", "Down a layer (past the bottom: all)");
         add("jei.comminutioncraft.multiblock.port_rule", "Input or Output port (switch with the wrench)");
-        add("jei.comminutioncraft.fusion_reactor.bottom", "Bottom");
-        add("jei.comminutioncraft.fusion_reactor.middle", "Middle");
-        add("jei.comminutioncraft.fusion_reactor.top", "Top");
-        add("jei.comminutioncraft.fusion_reactor.core", "air");
-        add("jei.comminutioncraft.fusion_reactor.core_tip", "The core: leave this block empty");
         add("jei.comminutioncraft.fusion_reactor.frame", "Edge or corner: Reactor Casing or a Reactor Port");
         add("jei.comminutioncraft.fusion_reactor.face_centre", "Face centre: Reactor Casing, Reactor Glass or a Reactor Port");
         add("jei.comminutioncraft.fusion_reactor.controller", "The Controller: the middle of one face, facing out (the core is behind it)");
         add("jei.comminutioncraft.fusion_reactor.ignite", "Heats the core to ignition (1,000 mB from cold)");
         add("jei.comminutioncraft.fusion_reactor.tritium", "Given back by each spent pellet");
         add("jei.comminutioncraft.fusion_reactor.output", "%s FE/t while burning");
-        add("jei.comminutioncraft.fusion_reactor.hint", "Seen from above; the controller's face is at the bottom");
         add(ModBlocks.REACTOR_CASING.get(), "Reactor Casing");
         add(ModBlocks.REACTOR_GLASS.get(), "Reactor Glass");
         add(ModBlocks.REACTOR_PORT.get(), "Reactor Port");
@@ -116,7 +113,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("jei.comminutioncraft.time.singularity_processor", "Singularity Processor: %s");
         add("jei.comminutioncraft.singularity.needs_hole", "Needs a running Event Horizon Reactor within %s blocks");
         add("jei.comminutioncraft.singularity.byproduct", "Sometimes: %s (%s)");
-        add(com.script.comminutioncraft.common.registry.ModEntities.BLACK_HOLE.get(), "Black Hole");
+        add(ModEntities.BLACK_HOLE.get(), "Black Hole");
         add(ModBlocks.HORIZON_CONTROLLER.get(), "Event Horizon Controller");
         add(ModBlocks.HORIZON_PORT.get(), "Horizon Port");
         add("death.attack.comminutioncraft.event_horizon", "%1$s crossed the event horizon");
@@ -135,14 +132,9 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.comminutioncraft.horizon.mass_bar", "Mass: %s / %s");
         add("gui.comminutioncraft.horizon.evaporates", "Evaporates in %s s");
         add("jei.comminutioncraft.event_horizon", "Event Horizon Reactor");
-        add("jei.comminutioncraft.event_horizon.layer", "Grid: the bottom and top layers");
-        add("jei.comminutioncraft.event_horizon.middle", "Middle layers: corner columns only");
         add("jei.comminutioncraft.event_horizon.inside", "Inside 5x5x5: must be empty");
-        add("jei.comminutioncraft.event_horizon.sides", "Sides: open, or anything");
         add("jei.comminutioncraft.event_horizon.frame", "Any edge: frame or a port");
         add("jei.comminutioncraft.event_horizon.controller", "Middle of a bottom edge, facing out");
-        add("jei.comminutioncraft.event_horizon.input_port", "Input: items and antimatter in");
-        add("jei.comminutioncraft.event_horizon.output_port", "Output: FE out");
         add("jei.comminutioncraft.event_horizon.any_item", "Any item: 1 mass each by default");
         add("jei.comminutioncraft.event_horizon.ignite", "Ignites the black hole");
         add("jei.comminutioncraft.event_horizon.per_mass", "%s FE per mass");
@@ -152,7 +144,6 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModItems.ANTIMATTER_CIRCUIT.get(), "Antimatter Circuit");
         add("jei.comminutioncraft.energy_out", "Energy (FE)");
         add("jei.comminutioncraft.energy_in", "Energy (FE)");
-        add("jei.comminutioncraft.particle_accelerator.energy", "%s FE/t per ring block (7x7: %s FE/t)");
         add("jei.comminutioncraft.generator.per_mb", "%s FE per mB");
         add("jei.comminutioncraft.generator.up_to", "up to %s FE/t");
         add("jei.comminutioncraft.generator.while_burning", "%s FE/t while burning");
@@ -175,7 +166,6 @@ public class ModLanguageProvider extends LanguageProvider {
         add("message.comminutioncraft.wrench.port_output", "Accelerator Port: Output (gives antimatter)");
         add("tooltip.comminutioncraft.accelerator_port", "Input: takes FE and hydrogen · Output: gives antimatter");
         add("tooltip.comminutioncraft.accelerator_port.switch", "Switch with the wrench in Configure mode");
-        add("jei.comminutioncraft.particle_accelerator.output_port", "Output Port: gives antimatter (switch a port with the wrench, Configure mode)");
         add(ModBlocks.ACCELERATOR_CONTROLLER.get(), "Particle Accelerator Controller");
         add("gui.comminutioncraft.antimatter", "Antimatter: %s / %s mB");
         add("gui.comminutioncraft.accelerator.not_formed", "Not formed");
@@ -190,8 +180,6 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.comminutioncraft.accelerator.rate", "Makes %s mB/t");
         add("gui.comminutioncraft.accelerator.progress", "Next mB: %s%%");
         add("jei.comminutioncraft.particle_accelerator", "Particle Accelerator");
-        add("jei.comminutioncraft.particle_accelerator.segment", "The ring: Accelerator Segments (or Ports), one block high");
-        add("jei.comminutioncraft.particle_accelerator.port", "Input Port: takes FE and hydrogen (any spot in the ring)");
         add("jei.comminutioncraft.particle_accelerator.controller", "The Controller: any spot in the ring");
         add("jei.comminutioncraft.particle_accelerator.sizes", "Square ring, %s to %s a side");
         add("jei.comminutioncraft.particle_accelerator.example", "7x7: %s FE/t, %s mB/t");
@@ -222,7 +210,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("comminutioncraft.configuration.soaryn_chest", "Soaryn Chest");
         add("comminutioncraft.configuration.section.comminutioncraft.server.toml", "Machine Settings");
         add("comminutioncraft.configuration.section.comminutioncraft.server.toml.title", "Machine Settings");
-        for (String[] entry : com.script.comminutioncraft.common.config.MachineConfig.LANG) {
+        for (String[] entry : MachineConfig.LANG) {
             add(entry[0], entry[1]);
         }
         add("comminutioncraft.configuration.section.comminutioncraft.client.toml", "Client Settings");
@@ -231,9 +219,9 @@ public class ModLanguageProvider extends LanguageProvider {
         add("comminutioncraft.configuration.machineSoundVolume", "Machine Sound Volume");
         add("comminutioncraft.configuration.machineSoundVolume.tooltip",
                 "Volume of the machines' working sounds and the black hole, in percent (on top of Minecraft's Blocks volume).");
-        for (String name : com.script.comminutioncraft.common.registry.ModSounds.MACHINES) {
+        for (String name : ModSounds.MACHINES) {
             add(ModSoundsProvider.subtitle("machine." + name),
-                    com.script.comminutioncraft.common.registry.ModSounds.displayName(name) + " runs");
+                    ModSounds.displayName(name) + " runs");
         }
         ModAdvancements.lang().forEach(this::add);
         add(ModSoundsProvider.subtitle("black_hole.form"), "Black hole forms");
@@ -264,8 +252,8 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModBlocks.PURPLEHEART.pottedSapling.get(), "Potted Purpleheart Sapling");
         add(ModItems.PURPLEHEART_BOAT.get(), "Purpleheart Boat");
         add(ModItems.PURPLEHEART_CHEST_BOAT.get(), "Purpleheart Boat with Chest");
-        add(com.script.comminutioncraft.common.registry.ModEntities.PURPLEHEART_BOAT.get(), "Purpleheart Boat");
-        add(com.script.comminutioncraft.common.registry.ModEntities.PURPLEHEART_CHEST_BOAT.get(), "Purpleheart Boat with Chest");
+        add(ModEntities.PURPLEHEART_BOAT.get(), "Purpleheart Boat");
+        add(ModEntities.PURPLEHEART_CHEST_BOAT.get(), "Purpleheart Boat with Chest");
 
         add(ModItems.WRENCH.get(), "Wrench");
         add("item.comminutioncraft.wrench.mode.rotate", "Mode: Rotate");
@@ -294,7 +282,6 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.comminutioncraft.generating", "%s FE/t");
         add("gui.comminutioncraft.battery.stored", "%s FE");
         add("gui.comminutioncraft.intake", "Intake: %s/6");
-        add("gui.comminutioncraft.plasma_rate", "%s mB/t");
         add("gui.comminutioncraft.plasma", "Plasma: %s / %s mB");
         add("gui.comminutioncraft.no_filter", "No filter");
         add("gui.comminutioncraft.no_filter.desc", "An Air Filter doubles how much water it makes");

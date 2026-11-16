@@ -7,6 +7,7 @@ import com.script.comminutioncraft.common.machine.FluidTankBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
@@ -17,8 +18,8 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.sprite.SpriteGetter;
 import net.minecraft.client.resources.model.sprite.SpriteId;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.util.LightCoordsUtil;
-import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.fluid.FluidTintSource;
@@ -63,7 +64,7 @@ public class FluidTankRenderer implements BlockEntityRenderer<FluidTankBlockEnti
     public void extractRenderState(FluidTankBlockEntity tank, State state, float partialTicks, Vec3 cameraPosition,
                                    ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
         BlockEntityRenderer.super.extractRenderState(tank, state, partialTicks, cameraPosition, breakProgress);
-        String block = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(tank.getBlockState().getBlock()).getPath();
+        String block = BuiltInRegistries.BLOCK.getKey(tank.getBlockState().getBlock()).getPath();
         state.side = new SpriteId(TextureAtlas.LOCATION_BLOCKS, ComminutionCraft.id("block/" + block + "_side"));
         state.end = new SpriteId(TextureAtlas.LOCATION_BLOCKS, ComminutionCraft.id("block/" + block + "_top"));
         FluidStack stack = tank.getTank().getStack();

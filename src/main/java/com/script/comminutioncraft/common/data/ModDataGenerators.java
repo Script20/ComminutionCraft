@@ -1,5 +1,7 @@
 package com.script.comminutioncraft.common.data;
 
+import java.util.List;
+import net.minecraft.data.advancements.AdvancementProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 
 /** Registered from the client entrypoint; runs with the "data" run config (./gradlew runData). */
@@ -17,8 +19,8 @@ public final class ModDataGenerators {
         event.createProvider(ModModelProvider::new);
         event.createProvider(ModLanguageProvider::new);
         event.createProvider(ModSoundsProvider::new);
-        event.createProvider((output, registries) -> new net.minecraft.data.advancements.AdvancementProvider(
-                output, registries, java.util.List.of(new ModAdvancements())));
+        event.createProvider((output, registries) -> new AdvancementProvider(
+                output, registries, List.of(new ModAdvancements())));
     }
 
     private ModDataGenerators() {}

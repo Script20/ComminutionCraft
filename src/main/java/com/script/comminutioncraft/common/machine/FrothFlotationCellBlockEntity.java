@@ -8,6 +8,8 @@ import com.script.comminutioncraft.common.recipe.FlotationRecipe;
 import com.script.comminutioncraft.common.registry.ModBlockEntities;
 import com.script.comminutioncraft.common.registry.ModFluids;
 import com.script.comminutioncraft.common.registry.ModRecipes;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -20,6 +22,8 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.common.NeoForgeMod;
@@ -80,20 +84,20 @@ public class FrothFlotationCellBlockEntity extends ElectricMachineBlockEntity {
     }
 
     @Override
-    protected java.util.Collection<net.minecraft.world.level.material.Fluid> consumedFluids() {
-        return java.util.List.of(net.minecraft.world.level.material.Fluids.WATER, com.script.comminutioncraft.common.registry.ModFluids.OXYGEN.get());
+    protected Collection<Fluid> consumedFluids() {
+        return List.of(Fluids.WATER, ModFluids.OXYGEN.get());
     }
 
     @Override
     protected boolean hasOperationResources() {
-        return water.getAmount() >= fluidCost(net.minecraft.world.level.material.Fluids.WATER, WATER_PER_OPERATION.get())
-                && oxygen.getAmount() >= fluidCost(com.script.comminutioncraft.common.registry.ModFluids.OXYGEN.get(), OXYGEN_PER_OPERATION.get());
+        return water.getAmount() >= fluidCost(Fluids.WATER, WATER_PER_OPERATION.get())
+                && oxygen.getAmount() >= fluidCost(ModFluids.OXYGEN.get(), OXYGEN_PER_OPERATION.get());
     }
 
     @Override
     protected void onOperationDone() {
-        water.drain(fluidCost(net.minecraft.world.level.material.Fluids.WATER, WATER_PER_OPERATION.get()));
-        oxygen.drain(fluidCost(com.script.comminutioncraft.common.registry.ModFluids.OXYGEN.get(), OXYGEN_PER_OPERATION.get()));
+        water.drain(fluidCost(Fluids.WATER, WATER_PER_OPERATION.get()));
+        oxygen.drain(fluidCost(ModFluids.OXYGEN.get(), OXYGEN_PER_OPERATION.get()));
     }
 
     @Override

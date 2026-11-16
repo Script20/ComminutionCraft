@@ -3,6 +3,7 @@ package com.script.comminutioncraft.client.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.script.comminutioncraft.ComminutionCraft;
+import com.script.comminutioncraft.client.sound.MachineSounds;
 import com.script.comminutioncraft.common.machine.EventHorizonReactorBlockEntity;
 import com.script.comminutioncraft.common.machine.MachineBlock;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -93,7 +94,7 @@ public class BlackHoleRenderer implements BlockEntityRenderer<EventHorizonReacto
         state.camY = (float) (cameraPosition.y - (centre.getY() + 0.5));
         state.camZ = (float) (cameraPosition.z - (centre.getZ() + 0.5));
         state.time = reactor.getLevel() == null ? 0 : (reactor.getLevel().getGameTime() + (double) partialTicks) / 20.0;
-        int forming = com.script.comminutioncraft.client.sound.MachineSounds.formingTicks(pos);
+        int forming = MachineSounds.formingTicks(pos);
         state.forming = forming < 0 ? -1 : forming + partialTicks;
     }
 

@@ -1,5 +1,7 @@
 package com.script.comminutioncraft.common.machine;
 
+import com.script.comminutioncraft.common.config.ConfigInt;
+import com.script.comminutioncraft.common.config.MachineConfig;
 import com.script.comminutioncraft.common.energy.EnergySync;
 import com.script.comminutioncraft.common.energy.MachineEnergyStorage;
 import com.script.comminutioncraft.common.fluid.MachineFluidTank;
@@ -7,8 +9,12 @@ import com.script.comminutioncraft.common.machine.control.ControllableMachine;
 import com.script.comminutioncraft.common.machine.control.MachineControls;
 import com.script.comminutioncraft.common.machine.control.RelativeSide;
 import com.script.comminutioncraft.common.machine.control.SideMode;
+import com.script.comminutioncraft.common.machine.upgrade.MachineUpgrades;
+import com.script.comminutioncraft.common.machine.upgrade.UpgradeHolder;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -18,6 +24,7 @@ import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -28,6 +35,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -48,9 +56,9 @@ import org.jspecify.annotations.Nullable;
  * Mined with a pickaxe it forgets everything; picked up with the wrench it keeps its FE and settings.
  */
 public abstract class FluidMachineBlockEntity extends BlockEntity implements TickingMachine, ControllableMachine, MenuProvider,
-        com.script.comminutioncraft.common.machine.upgrade.UpgradeHolder {
-    public static final com.script.comminutioncraft.common.config.ConfigInt TANK_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.FLUID_MACHINES_TANK_CAPACITY;
-    public static final com.script.comminutioncraft.common.config.ConfigInt MAX_FLUID_OUTPUT = com.script.comminutioncraft.common.config.MachineConfig.FLUID_MACHINES_MAX_FLUID_OUTPUT;
+        UpgradeHolder {
+    public static final ConfigInt TANK_CAPACITY = MachineConfig.FLUID_MACHINES_TANK_CAPACITY;
+    public static final ConfigInt MAX_FLUID_OUTPUT = MachineConfig.FLUID_MACHINES_MAX_FLUID_OUTPUT;
     private static final int LIT_COOLDOWN = 10;
 
     // ContainerData indices, synced to the open GUI (energy split in two, see EnergySync); then amount + capacity per tank
@@ -80,9 +88,9 @@ public abstract class FluidMachineBlockEntity extends BlockEntity implements Tic
     private @Nullable ResourceHandler<FluidResource> byproductFaces;
     private int rate;
     private int litCooldown;
-    private final com.script.comminutioncraft.common.machine.upgrade.MachineUpgrades upgrades = new com.script.comminutioncraft.common.machine.upgrade.MachineUpgrades(this::onUpgradesChanged, this::consumedFluids);
+    private final MachineUpgrades upgrades = new MachineUpgrades(this::onUpgradesChanged, this::consumedFluids);
     /** Fractions of a mB already paid for by earlier ticks (Gas / Liquid upgrades make per-unit costs fractional). */
-    private final java.util.Map<net.minecraft.world.level.material.Fluid, Double> inputCredit = new java.util.HashMap<>();
+    private final Map<Fluid, Double> inputCredit = new HashMap<>();
 
     protected final ContainerData dataAccess = new ContainerData() {
         @Override
@@ -161,8 +169,8 @@ public abstract class FluidMachineBlockEntity extends BlockEntity implements Tic
     // ---- Upgrades: the converters (not the generators) take Speed, Energy, Gas and Liquid upgrades ----
 
     /** The fluids it uses up (decides whether Gas / Liquid upgrades fit); none by default. */
-    protected java.util.Collection<net.minecraft.world.level.material.Fluid> consumedFluids() {
-        return java.util.List.of();
+    protected Collection<Fluid> consumedFluids() {
+        return List.of();
     }
 
     /** Whether this machine has an Upgrades tab (generators don't). */
@@ -171,7 +179,7 @@ public abstract class FluidMachineBlockEntity extends BlockEntity implements Tic
     }
 
     @Override
-    public com.script.comminutioncraft.common.machine.upgrade.MachineUpgrades getUpgrades() {
+    public MachineUpgrades getUpgrades() {
         return upgrades;
     }
 
@@ -182,28 +190,38 @@ public abstract class FluidMachineBlockEntity extends BlockEntity implements Tic
         setChanged();
     }
 
-    /** A per-tick output limit after Speed upgrades. */
-    protected int upgradedRate(int base) {
-        return Math.max(1, (int) Math.round(base * upgrades.speed()));
+    /**
+     * The converters' work: turns {@code input} (holding {@code inFluid}) into {@code outFluid} in {@code output}, up to
+     * {@code maxPerTick} mB a tick (after Speed upgrades), each mB made costing {@code inPerMb} mB of input (after Gas /
+     * Liquid upgrades) and {@code energyPerMb} FE (after Speed and Energy upgrades). Returns the mB made.
+     */
+    protected int convert(MachineFluidTank input, Fluid inFluid, int inPerMb,
+                          MachineFluidTank output, Fluid outFluid, int maxPerTick, int energyPerMb) {
+        int perMb = Math.max(1, (int) Math.round(energyPerMb * upgrades.energyPerOperation()));
+        int rate = Math.max(1, (int) Math.round(maxPerTick * upgrades.speed()));
+        int make = Math.min(Math.min(rate, affordable(inFluid, input.getAmount(), inPerMb)),
+                Math.min(output.getSpace(), energy.getEnergy() / perMb));
+        if (make <= 0) {
+            return 0;
+        }
+        energy.consume(make * perMb);
+        input.drain(drainFor(inFluid, make, inPerMb));
+        output.fill(FluidResource.of(outFluid), make);
+        return make;
     }
 
-    /** FE per unit made after Speed and Energy upgrades. */
-    protected int upgradedEnergy(int perUnit) {
-        return Math.max(1, (int) Math.round(perUnit * upgrades.energyPerOperation()));
-    }
-
-    private double inputCost(net.minecraft.world.level.material.Fluid fluid, int perUnit) {
+    private double inputCost(Fluid fluid, int perUnit) {
         return perUnit * upgrades.fluidUse(fluid);
     }
 
     /** How many units AVAILABLE mB of this input pays for, after Gas / Liquid upgrades. */
-    protected int affordable(net.minecraft.world.level.material.Fluid fluid, int available, int perUnit) {
+    private int affordable(Fluid fluid, int available, int perUnit) {
         double cost = inputCost(fluid, perUnit);
         return cost <= 0 ? Integer.MAX_VALUE : (int) Math.floor((available + inputCredit.getOrDefault(fluid, 0.0)) / cost + 1e-9);
     }
 
     /** mB of input to drain for UNITS made (whole mB; the fraction left over is kept for next time). */
-    protected int drainFor(net.minecraft.world.level.material.Fluid fluid, int units, int perUnit) {
+    private int drainFor(Fluid fluid, int units, int perUnit) {
         double need = units * inputCost(fluid, perUnit) - inputCredit.getOrDefault(fluid, 0.0);
         int drain = Math.max(0, (int) Math.ceil(need - 1e-9));
         inputCredit.put(fluid, drain - need);
@@ -214,7 +232,7 @@ public abstract class FluidMachineBlockEntity extends BlockEntity implements Tic
     public void preRemoveSideEffects(BlockPos pos, BlockState state) {
         super.preRemoveSideEffects(pos, state);
         if (level != null) {
-            net.minecraft.world.Containers.dropContents(level, pos, upgrades); // (the wrench empties them first)
+            Containers.dropContents(level, pos, upgrades); // (the wrench empties them first)
         }
     }
 
@@ -279,21 +297,14 @@ public abstract class FluidMachineBlockEntity extends BlockEntity implements Tic
     @Override
     public void serverTick(ServerLevel level, BlockPos pos, BlockState state) {
         // Switched off by redstone: no work, but what's already in the output tanks / FE buffer still goes out.
-        if (!controls.canRun(level, pos)) {
+        if (controls.canRun(level, pos)) {
+            rate = work(level);
+            if (rate > 0) {
+                litCooldown = LIT_COOLDOWN;
+            }
+        } else {
             rate = 0;
             litCooldown = 0;
-            if (state.getValue(MachineBlock.LIT)) {
-                level.setBlock(pos, state.setValue(MachineBlock.LIT, false), Block.UPDATE_ALL);
-            }
-            pushFluids(level, pos);
-            if (pushesEnergy()) {
-                pushEnergy(level, pos);
-            }
-            return;
-        }
-        rate = work(level);
-        if (rate > 0) {
-            litCooldown = LIT_COOLDOWN;
         }
         pushFluids(level, pos);
         if (pushesEnergy()) {

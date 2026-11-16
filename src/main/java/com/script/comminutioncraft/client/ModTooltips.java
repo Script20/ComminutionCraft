@@ -2,14 +2,23 @@ package com.script.comminutioncraft.client;
 
 import com.script.comminutioncraft.common.cable.EnergyCableBlock;
 import com.script.comminutioncraft.common.cable.FluidPipeBlock;
+import com.script.comminutioncraft.common.config.ComminutionConfig;
 import com.script.comminutioncraft.common.item.EnergyBatteryItem;
 import com.script.comminutioncraft.common.item.WrenchItem;
 import com.script.comminutioncraft.common.item.WrenchMode;
+import com.script.comminutioncraft.common.machine.AcceleratorPortBlock;
+import com.script.comminutioncraft.common.machine.ContainmentCellBlock;
+import com.script.comminutioncraft.common.machine.ContainmentCellBlockEntity;
 import com.script.comminutioncraft.common.machine.CreativeEnergyBatteryBlock;
 import com.script.comminutioncraft.common.machine.CreativeFluidTankBlock;
 import com.script.comminutioncraft.common.machine.FluidTankBlock;
 import com.script.comminutioncraft.common.machine.FluidTankBlockEntity;
+import com.script.comminutioncraft.common.machine.HorizonControllerBlock;
+import com.script.comminutioncraft.common.machine.HorizonPortBlock;
+import com.script.comminutioncraft.common.machine.upgrade.UpgradeType;
 import com.script.comminutioncraft.common.registry.ModDataComponents;
+import com.script.comminutioncraft.common.registry.ModFluids;
+import com.script.comminutioncraft.common.storage.SoarynChestBlock;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -57,9 +66,9 @@ public final class ModTooltips {
                     .withStyle(ChatFormatting.DARK_GRAY));
             return lines;
         }
-        com.script.comminutioncraft.common.machine.upgrade.UpgradeType upgrade = com.script.comminutioncraft.common.machine.upgrade.UpgradeType.of(stack);
+        UpgradeType upgrade = UpgradeType.of(stack);
         if (upgrade != null) {
-            lines.add(gray("tooltip.comminutioncraft.upgrade", com.script.comminutioncraft.common.machine.upgrade.UpgradeType.MAX));
+            lines.add(gray("tooltip.comminutioncraft.upgrade", UpgradeType.MAX));
             lines.add(Component.translatable("tooltip.comminutioncraft.upgrade." + upgrade.id()).withColor(upgrade.colour()));
             return lines;
         }
@@ -71,7 +80,7 @@ public final class ModTooltips {
             lines.add(gray("tooltip.comminutioncraft.cable_rate", number(cable.getTransferRate())));
         } else if (block instanceof FluidPipeBlock pipe) {
             lines.add(gray("tooltip.comminutioncraft.pipe_rate", number(pipe.getTransferRate())));
-            if (pipe.carries(FluidResource.of(com.script.comminutioncraft.common.registry.ModFluids.ANTIMATTER.get()))) {
+            if (pipe.carries(FluidResource.of(ModFluids.ANTIMATTER.get()))) {
                 lines.add(Component.translatable("tooltip.comminutioncraft.antimatter_only").withStyle(ChatFormatting.WHITE));
             } else if (!pipe.carries(FluidResource.of(Fluids.WATER))) {
                 lines.add(Component.translatable("tooltip.comminutioncraft.plasma_only").withStyle(ChatFormatting.LIGHT_PURPLE));
@@ -79,8 +88,8 @@ public final class ModTooltips {
         } else if (block instanceof CreativeFluidTankBlock) {
             lines.add(gray("tooltip.comminutioncraft.creative_tank"));
         } else if (block instanceof FluidTankBlock) {
-            boolean cell = block instanceof com.script.comminutioncraft.common.machine.ContainmentCellBlock;
-            String capacity = number(cell ? com.script.comminutioncraft.common.machine.ContainmentCellBlockEntity.CAPACITY.get()
+            boolean cell = block instanceof ContainmentCellBlock;
+            String capacity = number(cell ? ContainmentCellBlockEntity.CAPACITY.get()
                     : FluidTankBlockEntity.CAPACITY.get());
             if (cell) {
                 lines.add(Component.translatable("tooltip.comminutioncraft.antimatter_only").withStyle(ChatFormatting.WHITE));
@@ -89,19 +98,19 @@ public final class ModTooltips {
                     ? gray("tooltip.comminutioncraft.tank_amount", "0", capacity)
                     : gray("tooltip.comminutioncraft.tank_amount_fluid", contents.getHoverName(), number(contents.getAmount()), capacity));
             contents = FluidStack.EMPTY;  // shown already
-        } else if (block instanceof com.script.comminutioncraft.common.storage.SoarynChestBlock) {
+        } else if (block instanceof SoarynChestBlock) {
             lines.add(gray("tooltip.comminutioncraft.soaryn_chest"));
-            if (com.script.comminutioncraft.common.config.ComminutionConfig.SOARYN_CHEST_INCLUDE_HOTBAR.get()) {
+            if (ComminutionConfig.SOARYN_CHEST_INCLUDE_HOTBAR.get()) {
                 lines.add(gray("tooltip.comminutioncraft.soaryn_chest_hotbar"));
             }
         } else if (block instanceof CreativeEnergyBatteryBlock) {
             lines.add(gray("tooltip.comminutioncraft.creative_battery"));
-        } else if (block instanceof com.script.comminutioncraft.common.machine.HorizonPortBlock) {
+        } else if (block instanceof HorizonPortBlock) {
             lines.add(gray("tooltip.comminutioncraft.horizon_port"));
             lines.add(Component.translatable("tooltip.comminutioncraft.accelerator_port.switch").withStyle(ChatFormatting.DARK_GRAY));
-        } else if (block instanceof com.script.comminutioncraft.common.machine.HorizonControllerBlock) {
+        } else if (block instanceof HorizonControllerBlock) {
             lines.add(Component.translatable("tooltip.comminutioncraft.horizon_controller").withStyle(ChatFormatting.GOLD));
-        } else if (block instanceof com.script.comminutioncraft.common.machine.AcceleratorPortBlock) {
+        } else if (block instanceof AcceleratorPortBlock) {
             lines.add(gray("tooltip.comminutioncraft.accelerator_port"));
             lines.add(Component.translatable("tooltip.comminutioncraft.accelerator_port.switch").withStyle(ChatFormatting.DARK_GRAY));
         }
@@ -118,7 +127,7 @@ public final class ModTooltips {
         List<Integer> upgrades = stack.get(ModDataComponents.UPGRADES.get());
         if (upgrades != null) { // a machine picked up with the wrench: "Upgrades: 3 Speed, 8 Energy"
             List<String> parts = new ArrayList<>();
-            for (com.script.comminutioncraft.common.machine.upgrade.UpgradeType type : com.script.comminutioncraft.common.machine.upgrade.UpgradeType.values()) {
+            for (UpgradeType type : UpgradeType.values()) {
                 int n = type.ordinal() < upgrades.size() ? upgrades.get(type.ordinal()) : 0;
                 if (n > 0) {
                     parts.add(n + " " + Component.translatable("gui.comminutioncraft.upgrade." + type.id() + ".name").getString());

@@ -1,14 +1,19 @@
 package com.script.comminutioncraft.common.machine;
 
+import com.script.comminutioncraft.common.config.ConfigInt;
+import com.script.comminutioncraft.common.config.MachineConfig;
 import com.script.comminutioncraft.common.fluid.MachineFluidTank;
 import com.script.comminutioncraft.common.machine.control.SideMode;
 import com.script.comminutioncraft.common.registry.ModFluids;
+import java.util.Collection;
+import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.transfer.ResourceHandler;
@@ -22,7 +27,7 @@ import org.jspecify.annotations.Nullable;
  * The other tier-3 machines run on FE alone.
  */
 public abstract class PlasmaMachineBlockEntity extends ElectricMachineBlockEntity {
-    public static final com.script.comminutioncraft.common.config.ConfigInt PLASMA_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.CIRCUIT_ASSEMBLER_PLASMA_CAPACITY;
+    public static final ConfigInt PLASMA_CAPACITY = MachineConfig.CIRCUIT_ASSEMBLER_PLASMA_CAPACITY;
 
     // ContainerData indices after the electric machine's (plasma fits in one 16-bit slot)
     public static final int DATA_PLASMA = ElectricMachineBlockEntity.DATA_COUNT;
@@ -52,18 +57,18 @@ public abstract class PlasmaMachineBlockEntity extends ElectricMachineBlockEntit
     }
 
     @Override
-    protected java.util.Collection<net.minecraft.world.level.material.Fluid> consumedFluids() {
-        return java.util.List.of(com.script.comminutioncraft.common.registry.ModFluids.PLASMA.get());
+    protected Collection<Fluid> consumedFluids() {
+        return List.of(ModFluids.PLASMA.get());
     }
 
     @Override
     protected boolean hasOperationResources() {
-        return tank.getAmount() >= fluidCost(com.script.comminutioncraft.common.registry.ModFluids.PLASMA.get(), getPlasmaPerOperation());
+        return tank.getAmount() >= fluidCost(ModFluids.PLASMA.get(), getPlasmaPerOperation());
     }
 
     @Override
     protected void onOperationDone() {
-        tank.drain(fluidCost(com.script.comminutioncraft.common.registry.ModFluids.PLASMA.get(), getPlasmaPerOperation()));
+        tank.drain(fluidCost(ModFluids.PLASMA.get(), getPlasmaPerOperation()));
     }
 
     @Override

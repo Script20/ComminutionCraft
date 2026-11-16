@@ -1,5 +1,6 @@
 package com.script.comminutioncraft.common.machine;
 
+import com.script.comminutioncraft.common.machine.upgrade.UpgradeType;
 import com.script.comminutioncraft.common.registry.ModMenus;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -14,7 +15,7 @@ import net.minecraft.world.item.ItemStack;
 /** Ore Purifier menu: input, output (moved up) and a by-product slot under it, plus the oxygen gauge. */
 public class OrePurifierMenu extends ElectricMachineMenu {
     /** The by-product slot comes after the player inventory (the parent's slot layout stays as it is). */
-    private static final int BYPRODUCT_INDEX = ElectricMachineBlockEntity.SLOT_COUNT + 36 + com.script.comminutioncraft.common.machine.upgrade.UpgradeType.values().length;
+    private static final int BYPRODUCT_INDEX = ElectricMachineBlockEntity.SLOT_COUNT + 36 + UpgradeType.values().length;
 
     private final ContainerData data;
 

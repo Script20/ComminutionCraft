@@ -1,5 +1,7 @@
 package com.script.comminutioncraft.common.machine.control;
 
+import com.script.comminutioncraft.common.machine.upgrade.UpgradeType;
+
 /** A machine menu that exposes the synced redstone and side settings to its screen. */
 public interface ControllableMenu {
     RedstoneMode getRedstoneMode();
@@ -17,7 +19,7 @@ public interface ControllableMenu {
     }
 
     /** Whether this machine takes that upgrade (Gas / Liquid only where it uses one). */
-    default boolean takesUpgrade(com.script.comminutioncraft.common.machine.upgrade.UpgradeType type) {
+    default boolean takesUpgrade(UpgradeType type) {
         return upgradeSlotStart() >= 0;
     }
 }

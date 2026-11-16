@@ -1,29 +1,42 @@
 package com.script.comminutioncraft.common.registry;
 
 import com.script.comminutioncraft.ComminutionCraft;
+import com.script.comminutioncraft.common.machine.AcceleratorPortBlockEntity;
+import com.script.comminutioncraft.common.machine.AnnihilationGeneratorBlockEntity;
+import com.script.comminutioncraft.common.machine.AntimatterGranulatorBlockEntity;
+import com.script.comminutioncraft.common.machine.AntimatterPurifierBlockEntity;
+import com.script.comminutioncraft.common.machine.AntimatterSmelterBlockEntity;
+import com.script.comminutioncraft.common.machine.AntimatterWasherBlockEntity;
+import com.script.comminutioncraft.common.machine.AtmosphericWaterGeneratorBlockEntity;
+import com.script.comminutioncraft.common.machine.CircuitAssemblerBlockEntity;
 import com.script.comminutioncraft.common.machine.CoalGranulatorBlockEntity;
 import com.script.comminutioncraft.common.machine.CoalSmelterBlockEntity;
+import com.script.comminutioncraft.common.machine.ContainmentCellBlockEntity;
+import com.script.comminutioncraft.common.machine.CreativeEnergyBatteryBlockEntity;
+import com.script.comminutioncraft.common.machine.CreativeFluidTankBlockEntity;
 import com.script.comminutioncraft.common.machine.ElectricGeneratorBlockEntity;
 import com.script.comminutioncraft.common.machine.ElectricGranulatorBlockEntity;
 import com.script.comminutioncraft.common.machine.ElectricSmelterBlockEntity;
-import com.script.comminutioncraft.common.machine.EnergyBatteryBlockEntity;
-import com.script.comminutioncraft.common.machine.FluidTankBlockEntity;
-import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlockEntity;
-import com.script.comminutioncraft.common.machine.AtmosphericWaterGeneratorBlockEntity;
 import com.script.comminutioncraft.common.machine.ElectrolyserBlockEntity;
-import com.script.comminutioncraft.common.machine.MhdGeneratorBlockEntity;
-import com.script.comminutioncraft.common.machine.IsotopeSeparatorBlockEntity;
-import com.script.comminutioncraft.common.machine.PelletPressBlockEntity;
-import com.script.comminutioncraft.common.machine.TritiumBreederBlockEntity;
+import com.script.comminutioncraft.common.machine.EnergyBatteryBlockEntity;
+import com.script.comminutioncraft.common.machine.EventHorizonReactorBlockEntity;
+import com.script.comminutioncraft.common.machine.FluidTankBlockEntity;
+import com.script.comminutioncraft.common.machine.FrothFlotationCellBlockEntity;
 import com.script.comminutioncraft.common.machine.FusionReactorBlockEntity;
-import com.script.comminutioncraft.common.machine.ReactorPortBlockEntity;
+import com.script.comminutioncraft.common.machine.HorizonPortBlockEntity;
+import com.script.comminutioncraft.common.machine.IsotopeSeparatorBlockEntity;
+import com.script.comminutioncraft.common.machine.MhdGeneratorBlockEntity;
 import com.script.comminutioncraft.common.machine.OrePurifierBlockEntity;
-import com.script.comminutioncraft.common.machine.CreativeEnergyBatteryBlockEntity;
-import com.script.comminutioncraft.common.machine.CreativeFluidTankBlockEntity;
-import com.script.comminutioncraft.common.machine.PlasmaGranulatorBlockEntity;
-import com.script.comminutioncraft.common.machine.CircuitAssemblerBlockEntity;
 import com.script.comminutioncraft.common.machine.OreWasherBlockEntity;
+import com.script.comminutioncraft.common.machine.ParticleAcceleratorBlockEntity;
+import com.script.comminutioncraft.common.machine.PelletPressBlockEntity;
+import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlockEntity;
+import com.script.comminutioncraft.common.machine.PlasmaGranulatorBlockEntity;
 import com.script.comminutioncraft.common.machine.PlasmaSmelterBlockEntity;
+import com.script.comminutioncraft.common.machine.ReactorPortBlockEntity;
+import com.script.comminutioncraft.common.machine.SingularityProcessorBlockEntity;
+import com.script.comminutioncraft.common.machine.TritiumBreederBlockEntity;
+import com.script.comminutioncraft.common.storage.SoarynChestBlockEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -133,55 +146,55 @@ public final class ModBlockEntities {
             BLOCK_ENTITY_TYPES.register("creative_fluid_tank",
                     () -> new BlockEntityType<>(CreativeFluidTankBlockEntity::new, ModBlocks.CREATIVE_FLUID_TANK.get()));
 
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.script.comminutioncraft.common.storage.SoarynChestBlockEntity>> SOARYN_CHEST =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SoarynChestBlockEntity>> SOARYN_CHEST =
             BLOCK_ENTITY_TYPES.register("soaryn_chest",
-                    () -> new BlockEntityType<>(com.script.comminutioncraft.common.storage.SoarynChestBlockEntity::new, ModBlocks.SOARYN_CHEST.get()));
+                    () -> new BlockEntityType<>(SoarynChestBlockEntity::new, ModBlocks.SOARYN_CHEST.get()));
 
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.script.comminutioncraft.common.machine.ContainmentCellBlockEntity>> CONTAINMENT_CELL =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ContainmentCellBlockEntity>> CONTAINMENT_CELL =
             BLOCK_ENTITY_TYPES.register("containment_cell",
-                    () -> new BlockEntityType<>(com.script.comminutioncraft.common.machine.ContainmentCellBlockEntity::new, ModBlocks.CONTAINMENT_CELL.get()));
+                    () -> new BlockEntityType<>(ContainmentCellBlockEntity::new, ModBlocks.CONTAINMENT_CELL.get()));
 
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.script.comminutioncraft.common.machine.ParticleAcceleratorBlockEntity>> PARTICLE_ACCELERATOR =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ParticleAcceleratorBlockEntity>> PARTICLE_ACCELERATOR =
             BLOCK_ENTITY_TYPES.register("particle_accelerator",
-                    () -> new BlockEntityType<>(com.script.comminutioncraft.common.machine.ParticleAcceleratorBlockEntity::new, ModBlocks.ACCELERATOR_CONTROLLER.get()));
+                    () -> new BlockEntityType<>(ParticleAcceleratorBlockEntity::new, ModBlocks.ACCELERATOR_CONTROLLER.get()));
 
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.script.comminutioncraft.common.machine.AcceleratorPortBlockEntity>> ACCELERATOR_PORT =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AcceleratorPortBlockEntity>> ACCELERATOR_PORT =
             BLOCK_ENTITY_TYPES.register("accelerator_port",
-                    () -> new BlockEntityType<>(com.script.comminutioncraft.common.machine.AcceleratorPortBlockEntity::new, ModBlocks.ACCELERATOR_PORT.get()));
+                    () -> new BlockEntityType<>(AcceleratorPortBlockEntity::new, ModBlocks.ACCELERATOR_PORT.get()));
 
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.script.comminutioncraft.common.machine.AnnihilationGeneratorBlockEntity>> ANNIHILATION_GENERATOR =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AnnihilationGeneratorBlockEntity>> ANNIHILATION_GENERATOR =
             BLOCK_ENTITY_TYPES.register("annihilation_generator",
-                    () -> new BlockEntityType<>(com.script.comminutioncraft.common.machine.AnnihilationGeneratorBlockEntity::new, ModBlocks.ANNIHILATION_GENERATOR.get()));
+                    () -> new BlockEntityType<>(AnnihilationGeneratorBlockEntity::new, ModBlocks.ANNIHILATION_GENERATOR.get()));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<EnergyBatteryBlockEntity>> ANTIMATTER_ENERGY_BATTERY =
             BLOCK_ENTITY_TYPES.register("antimatter_energy_battery",
                     () -> new BlockEntityType<>(EnergyBatteryBlockEntity::antimatter, ModBlocks.ANTIMATTER_ENERGY_BATTERY.get()));
 
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.script.comminutioncraft.common.machine.AntimatterGranulatorBlockEntity>> ANTIMATTER_GRANULATOR =
-            BLOCK_ENTITY_TYPES.register("antimatter_granulator", () -> new BlockEntityType<>(com.script.comminutioncraft.common.machine.AntimatterGranulatorBlockEntity::new, ModBlocks.ANTIMATTER_GRANULATOR.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AntimatterGranulatorBlockEntity>> ANTIMATTER_GRANULATOR =
+            BLOCK_ENTITY_TYPES.register("antimatter_granulator", () -> new BlockEntityType<>(AntimatterGranulatorBlockEntity::new, ModBlocks.ANTIMATTER_GRANULATOR.get()));
 
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.script.comminutioncraft.common.machine.AntimatterSmelterBlockEntity>> ANTIMATTER_SMELTER =
-            BLOCK_ENTITY_TYPES.register("antimatter_smelter", () -> new BlockEntityType<>(com.script.comminutioncraft.common.machine.AntimatterSmelterBlockEntity::new, ModBlocks.ANTIMATTER_SMELTER.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AntimatterSmelterBlockEntity>> ANTIMATTER_SMELTER =
+            BLOCK_ENTITY_TYPES.register("antimatter_smelter", () -> new BlockEntityType<>(AntimatterSmelterBlockEntity::new, ModBlocks.ANTIMATTER_SMELTER.get()));
 
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.script.comminutioncraft.common.machine.FrothFlotationCellBlockEntity>> FROTH_FLOTATION_CELL =
-            BLOCK_ENTITY_TYPES.register("froth_flotation_cell", () -> new BlockEntityType<>(com.script.comminutioncraft.common.machine.FrothFlotationCellBlockEntity::new, ModBlocks.FROTH_FLOTATION_CELL.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FrothFlotationCellBlockEntity>> FROTH_FLOTATION_CELL =
+            BLOCK_ENTITY_TYPES.register("froth_flotation_cell", () -> new BlockEntityType<>(FrothFlotationCellBlockEntity::new, ModBlocks.FROTH_FLOTATION_CELL.get()));
 
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.script.comminutioncraft.common.machine.AntimatterWasherBlockEntity>> ANTIMATTER_WASHER =
-            BLOCK_ENTITY_TYPES.register("antimatter_washer", () -> new BlockEntityType<>(com.script.comminutioncraft.common.machine.AntimatterWasherBlockEntity::new, ModBlocks.ANTIMATTER_WASHER.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AntimatterWasherBlockEntity>> ANTIMATTER_WASHER =
+            BLOCK_ENTITY_TYPES.register("antimatter_washer", () -> new BlockEntityType<>(AntimatterWasherBlockEntity::new, ModBlocks.ANTIMATTER_WASHER.get()));
 
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.script.comminutioncraft.common.machine.AntimatterPurifierBlockEntity>> ANTIMATTER_PURIFIER =
-            BLOCK_ENTITY_TYPES.register("antimatter_purifier", () -> new BlockEntityType<>(com.script.comminutioncraft.common.machine.AntimatterPurifierBlockEntity::new, ModBlocks.ANTIMATTER_PURIFIER.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AntimatterPurifierBlockEntity>> ANTIMATTER_PURIFIER =
+            BLOCK_ENTITY_TYPES.register("antimatter_purifier", () -> new BlockEntityType<>(AntimatterPurifierBlockEntity::new, ModBlocks.ANTIMATTER_PURIFIER.get()));
 
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.script.comminutioncraft.common.machine.EventHorizonReactorBlockEntity>> EVENT_HORIZON_REACTOR =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<EventHorizonReactorBlockEntity>> EVENT_HORIZON_REACTOR =
             BLOCK_ENTITY_TYPES.register("event_horizon_reactor",
-                    () -> new BlockEntityType<>(com.script.comminutioncraft.common.machine.EventHorizonReactorBlockEntity::new, ModBlocks.HORIZON_CONTROLLER.get()));
+                    () -> new BlockEntityType<>(EventHorizonReactorBlockEntity::new, ModBlocks.HORIZON_CONTROLLER.get()));
 
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.script.comminutioncraft.common.machine.HorizonPortBlockEntity>> HORIZON_PORT =
-            BLOCK_ENTITY_TYPES.register("horizon_port", () -> new BlockEntityType<>(com.script.comminutioncraft.common.machine.HorizonPortBlockEntity::new, ModBlocks.HORIZON_PORT.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<HorizonPortBlockEntity>> HORIZON_PORT =
+            BLOCK_ENTITY_TYPES.register("horizon_port", () -> new BlockEntityType<>(HorizonPortBlockEntity::new, ModBlocks.HORIZON_PORT.get()));
 
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.script.comminutioncraft.common.machine.SingularityProcessorBlockEntity>> SINGULARITY_PROCESSOR =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SingularityProcessorBlockEntity>> SINGULARITY_PROCESSOR =
             BLOCK_ENTITY_TYPES.register("singularity_processor",
-                    () -> new BlockEntityType<>(com.script.comminutioncraft.common.machine.SingularityProcessorBlockEntity::new, ModBlocks.SINGULARITY_PROCESSOR.get()));
+                    () -> new BlockEntityType<>(SingularityProcessorBlockEntity::new, ModBlocks.SINGULARITY_PROCESSOR.get()));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<EnergyBatteryBlockEntity>> SINGULARITY_ENERGY_BATTERY =
             BLOCK_ENTITY_TYPES.register("singularity_energy_battery",

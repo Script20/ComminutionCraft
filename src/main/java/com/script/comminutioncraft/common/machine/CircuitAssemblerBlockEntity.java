@@ -1,41 +1,46 @@
 package com.script.comminutioncraft.common.machine;
 
-import com.script.comminutioncraft.common.recipe.AssemblingRecipe;
-import com.script.comminutioncraft.common.registry.ModBlockEntities;
-import com.script.comminutioncraft.common.registry.ModMenus;
-import com.script.comminutioncraft.common.registry.ModRecipes;
+import com.script.comminutioncraft.common.config.ConfigInt;
+import com.script.comminutioncraft.common.config.MachineConfig;
 import com.script.comminutioncraft.common.fluid.MachineFluidTank;
 import com.script.comminutioncraft.common.machine.control.SideMode;
+import com.script.comminutioncraft.common.recipe.AssemblingRecipe;
+import com.script.comminutioncraft.common.registry.ModBlockEntities;
 import com.script.comminutioncraft.common.registry.ModFluids;
+import com.script.comminutioncraft.common.registry.ModMenus;
+import com.script.comminutioncraft.common.registry.ModRecipes;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.transfer.CombinedResourceHandler;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import org.jspecify.annotations.Nullable;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.item.crafting.RecipeManager;
-import net.minecraft.world.item.crafting.SingleRecipeInput;
-import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * Tier 3 Circuit Assembler: stamps an Electronic Circuit into a Plasma Circuit ({@code comminutioncraft:assembling}
  * recipes). Each one takes 100 ticks at 20 FE/t (2,000 FE) and 100 mB of plasma.
  */
 public class CircuitAssemblerBlockEntity extends PlasmaMachineBlockEntity {
-    public static final com.script.comminutioncraft.common.config.ConfigInt PROCESS_TIME = com.script.comminutioncraft.common.config.MachineConfig.CIRCUIT_ASSEMBLER_PROCESS_TIME;
-    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_PER_TICK = com.script.comminutioncraft.common.config.MachineConfig.CIRCUIT_ASSEMBLER_ENERGY_PER_TICK;
-    public static final com.script.comminutioncraft.common.config.ConfigInt PLASMA_PER_OPERATION = com.script.comminutioncraft.common.config.MachineConfig.CIRCUIT_ASSEMBLER_PLASMA_PER_OPERATION;
-    public static final com.script.comminutioncraft.common.config.ConfigInt ANTIMATTER_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.CIRCUIT_ASSEMBLER_ANTIMATTER_CAPACITY;
+    public static final ConfigInt PROCESS_TIME = MachineConfig.CIRCUIT_ASSEMBLER_PROCESS_TIME;
+    public static final ConfigInt ENERGY_PER_TICK = MachineConfig.CIRCUIT_ASSEMBLER_ENERGY_PER_TICK;
+    public static final ConfigInt PLASMA_PER_OPERATION = MachineConfig.CIRCUIT_ASSEMBLER_PLASMA_PER_OPERATION;
+    public static final ConfigInt ANTIMATTER_CAPACITY = MachineConfig.CIRCUIT_ASSEMBLER_ANTIMATTER_CAPACITY;
 
     // ContainerData indices after the plasma machine's
     public static final int DATA_ANTIMATTER = PlasmaMachineBlockEntity.DATA_COUNT;
@@ -83,19 +88,19 @@ public class CircuitAssemblerBlockEntity extends PlasmaMachineBlockEntity {
     }
 
     @Override
-    protected java.util.Collection<net.minecraft.world.level.material.Fluid> consumedFluids() {
-        return java.util.List.of(com.script.comminutioncraft.common.registry.ModFluids.PLASMA.get(), com.script.comminutioncraft.common.registry.ModFluids.ANTIMATTER.get());
+    protected Collection<Fluid> consumedFluids() {
+        return List.of(ModFluids.PLASMA.get(), ModFluids.ANTIMATTER.get());
     }
 
     @Override
     protected boolean hasOperationResources(RecipeHolder<? extends Recipe<SingleRecipeInput>> recipe) {
-        return hasOperationResources() && antimatter.getAmount() >= fluidCost(com.script.comminutioncraft.common.registry.ModFluids.ANTIMATTER.get(), antimatterFor(recipe));
+        return hasOperationResources() && antimatter.getAmount() >= fluidCost(ModFluids.ANTIMATTER.get(), antimatterFor(recipe));
     }
 
     @Override
     protected void onOperationDone(RecipeHolder<? extends Recipe<SingleRecipeInput>> recipe) {
         super.onOperationDone(recipe);
-        int used = fluidCost(com.script.comminutioncraft.common.registry.ModFluids.ANTIMATTER.get(), antimatterFor(recipe));
+        int used = fluidCost(ModFluids.ANTIMATTER.get(), antimatterFor(recipe));
         if (used > 0) {
             antimatter.drain(used);
         }

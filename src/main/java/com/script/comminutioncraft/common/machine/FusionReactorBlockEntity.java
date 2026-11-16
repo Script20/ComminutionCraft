@@ -1,5 +1,8 @@
 package com.script.comminutioncraft.common.machine;
 
+import com.script.comminutioncraft.common.advancement.MachineEventTrigger;
+import com.script.comminutioncraft.common.config.ConfigInt;
+import com.script.comminutioncraft.common.config.MachineConfig;
 import com.script.comminutioncraft.common.energy.EnergySync;
 import com.script.comminutioncraft.common.energy.MachineEnergyStorage;
 import com.script.comminutioncraft.common.fluid.MachineFluidTank;
@@ -52,14 +55,14 @@ public class FusionReactorBlockEntity extends BaseContainerBlockEntity implement
     public static final int SLOT_PELLETS = 0;
     private static final int[] SLOTS = {SLOT_PELLETS};
 
-    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.FUSION_REACTOR_ENERGY_CAPACITY;
-    public static final com.script.comminutioncraft.common.config.ConfigInt MAX_ENERGY_OUTPUT = com.script.comminutioncraft.common.config.MachineConfig.FUSION_REACTOR_MAX_ENERGY_OUTPUT;
-    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_PER_TICK = com.script.comminutioncraft.common.config.MachineConfig.FUSION_REACTOR_ENERGY_PER_TICK;
-    public static final com.script.comminutioncraft.common.config.ConfigInt PELLET_BURN_TICKS = com.script.comminutioncraft.common.config.MachineConfig.FUSION_REACTOR_PELLET_BURN_TICKS;
-    public static final com.script.comminutioncraft.common.config.ConfigInt TRITIUM_PER_PELLET = com.script.comminutioncraft.common.config.MachineConfig.FUSION_REACTOR_TRITIUM_PER_PELLET;
-    public static final com.script.comminutioncraft.common.config.ConfigInt IGNITION_PLASMA_PER_TICK = com.script.comminutioncraft.common.config.MachineConfig.FUSION_REACTOR_IGNITION_PLASMA_PER_TICK;
+    public static final ConfigInt ENERGY_CAPACITY = MachineConfig.FUSION_REACTOR_ENERGY_CAPACITY;
+    public static final ConfigInt MAX_ENERGY_OUTPUT = MachineConfig.FUSION_REACTOR_MAX_ENERGY_OUTPUT;
+    public static final ConfigInt ENERGY_PER_TICK = MachineConfig.FUSION_REACTOR_ENERGY_PER_TICK;
+    public static final ConfigInt PELLET_BURN_TICKS = MachineConfig.FUSION_REACTOR_PELLET_BURN_TICKS;
+    public static final ConfigInt TRITIUM_PER_PELLET = MachineConfig.FUSION_REACTOR_TRITIUM_PER_PELLET;
+    public static final ConfigInt IGNITION_PLASMA_PER_TICK = MachineConfig.FUSION_REACTOR_IGNITION_PLASMA_PER_TICK;
     public static final int MAX_HEAT = 100;
-    public static final com.script.comminutioncraft.common.config.ConfigInt TANK_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.FUSION_REACTOR_TANK_CAPACITY;
+    public static final ConfigInt TANK_CAPACITY = MachineConfig.FUSION_REACTOR_TANK_CAPACITY;
     public static final int FORM_CHECK_INTERVAL = 20;
 
     // ContainerData indices (energy split in two, see EnergySync)
@@ -68,16 +71,15 @@ public class FusionReactorBlockEntity extends BaseContainerBlockEntity implement
     public static final int DATA_CAPACITY_LOW = 2;
     public static final int DATA_CAPACITY_HIGH = 3;
     public static final int DATA_HEAT = 4;
-    public static final int DATA_BURN = 5;
-    public static final int DATA_PLASMA = 6;
-    public static final int DATA_PLASMA_CAPACITY = 7;
-    public static final int DATA_TRITIUM = 8;
-    public static final int DATA_TRITIUM_CAPACITY = 9;
-    public static final int DATA_FORMED = 10;
-    public static final int DATA_RATE = 11;
-    public static final int DATA_REDSTONE = 12;
-    public static final int DATA_SIDES = 13;
-    public static final int DATA_COUNT = 14;
+    public static final int DATA_PLASMA = 5;
+    public static final int DATA_PLASMA_CAPACITY = 6;
+    public static final int DATA_TRITIUM = 7;
+    public static final int DATA_TRITIUM_CAPACITY = 8;
+    public static final int DATA_FORMED = 9;
+    public static final int DATA_RATE = 10;
+    public static final int DATA_REDSTONE = 11;
+    public static final int DATA_SIDES = 12;
+    public static final int DATA_COUNT = 13;
 
     private NonNullList<ItemStack> items = NonNullList.withSize(1, ItemStack.EMPTY);
     private final MachineEnergyStorage energy = new MachineEnergyStorage(ENERGY_CAPACITY.get(), 0, MAX_ENERGY_OUTPUT.get(), this::setChanged);
@@ -105,7 +107,6 @@ public class FusionReactorBlockEntity extends BaseContainerBlockEntity implement
                 case DATA_CAPACITY_LOW -> EnergySync.low(energy.getCapacity());
                 case DATA_CAPACITY_HIGH -> EnergySync.high(energy.getCapacity());
                 case DATA_HEAT -> heat;
-                case DATA_BURN -> burnTicks;
                 case DATA_PLASMA -> plasma.getAmount();
                 case DATA_PLASMA_CAPACITY -> plasma.getCapacity();
                 case DATA_TRITIUM -> tritium.getAmount();
@@ -215,7 +216,7 @@ public class FusionReactorBlockEntity extends BaseContainerBlockEntity implement
                     pellets.shrink(1);
                     burnTicks = PELLET_BURN_TICKS.get();
                     setChanged();
-                    com.script.comminutioncraft.common.advancement.MachineEventTrigger.fireNear(level, pos, com.script.comminutioncraft.common.advancement.MachineEventTrigger.FUSION_REACTOR_LIT, 16);
+                    MachineEventTrigger.fireNear(level, pos, MachineEventTrigger.FUSION_REACTOR_LIT, 16);
                 } else {
                     heat--; // out of fuel: it cools off and will need plasma again
                 }

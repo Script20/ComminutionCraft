@@ -1,5 +1,6 @@
 package com.script.comminutioncraft.common.machine;
 
+import com.script.comminutioncraft.common.advancement.MachineEventTrigger;
 import com.script.comminutioncraft.common.config.ConfigInt;
 import com.script.comminutioncraft.common.config.MachineConfig;
 import com.script.comminutioncraft.common.energy.EnergySync;
@@ -12,6 +13,7 @@ import com.script.comminutioncraft.common.registry.ModBlocks;
 import com.script.comminutioncraft.common.registry.ModDamageTypes;
 import com.script.comminutioncraft.common.registry.ModDataMaps;
 import com.script.comminutioncraft.common.registry.ModFluids;
+import com.script.comminutioncraft.common.registry.ModTriggers;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.core.BlockPos;
@@ -21,12 +23,14 @@ import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
@@ -240,7 +244,7 @@ public class EventHorizonReactorBlockEntity extends BaseContainerBlockEntity imp
                 ignited = true;
                 starve = 0;
                 setChanged();
-                com.script.comminutioncraft.common.advancement.MachineEventTrigger.fireNear(level, getCentre(), com.script.comminutioncraft.common.advancement.MachineEventTrigger.BLACK_HOLE_IGNITED, 32);
+                MachineEventTrigger.fireNear(level, getCentre(), MachineEventTrigger.BLACK_HOLE_IGNITED, 32);
             } else {
                 status = Status.NEEDS_ANTIMATTER;
                 setCageLit(level, false);
@@ -312,11 +316,11 @@ public class EventHorizonReactorBlockEntity extends BaseContainerBlockEntity imp
                 }
                 setChanged();
             } else if (entity instanceof LivingEntity living) {
-                if (living instanceof net.minecraft.server.level.ServerPlayer player) {
-                    com.script.comminutioncraft.common.registry.ModTriggers.MACHINE_EVENT.get().trigger(player, com.script.comminutioncraft.common.advancement.MachineEventTrigger.SPAGHETTIFIED);
+                if (living instanceof ServerPlayer player) {
+                    ModTriggers.MACHINE_EVENT.get().trigger(player, MachineEventTrigger.SPAGHETTIFIED);
                 }
                 living.hurtServer(level, ModDamageTypes.eventHorizon(level), Float.MAX_VALUE);
-                if (living.isAlive() && !(living instanceof net.minecraft.world.entity.player.Player)) {
+                if (living.isAlive() && !(living instanceof Player)) {
                     living.kill(level);
                 }
             } else {

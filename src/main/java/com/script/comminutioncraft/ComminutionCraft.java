@@ -1,49 +1,59 @@
 package com.script.comminutioncraft;
 
-import com.mojang.logging.LogUtils;
-import com.script.comminutioncraft.common.recipe.RecipeSync;
-import net.neoforged.neoforge.common.NeoForge;
-import com.script.comminutioncraft.common.registry.ModBlockEntities;
-import com.script.comminutioncraft.common.registry.ModBlocks;
+import com.script.comminutioncraft.common.block.ModWoods;
 import com.script.comminutioncraft.common.cable.CableConnection;
 import com.script.comminutioncraft.common.cable.CableEnergyHandler;
-import com.script.comminutioncraft.common.machine.OreWasherBlockEntity;
-import com.script.comminutioncraft.common.machine.PelletPressBlockEntity;
-import com.script.comminutioncraft.common.machine.ReactorPortBlockEntity;
-import com.script.comminutioncraft.common.machine.OrePurifierBlockEntity;
-import com.script.comminutioncraft.common.machine.CreativeEnergyBatteryBlockEntity;
-import com.script.comminutioncraft.common.machine.CreativeFluidTankBlockEntity;
-import com.script.comminutioncraft.common.machine.PlasmaMachineBlockEntity;
 import com.script.comminutioncraft.common.cable.ConduitBlock;
 import com.script.comminutioncraft.common.cable.EnergyCableBlock;
 import com.script.comminutioncraft.common.cable.FluidPipeBlock;
 import com.script.comminutioncraft.common.cable.PipeFluidHandler;
-import com.script.comminutioncraft.common.machine.FluidTankBlockEntity;
+import com.script.comminutioncraft.common.compat.patchouli.GuideBook;
+import com.script.comminutioncraft.common.config.ComminutionConfig;
+import com.script.comminutioncraft.common.config.MachineConfig;
+import com.script.comminutioncraft.common.machine.AcceleratorPortBlockEntity;
 import com.script.comminutioncraft.common.machine.AtmosphericWaterGeneratorBlockEntity;
-import com.script.comminutioncraft.common.machine.FluidMachineBlockEntity;
+import com.script.comminutioncraft.common.machine.CreativeEnergyBatteryBlockEntity;
+import com.script.comminutioncraft.common.machine.CreativeFluidTankBlockEntity;
 import com.script.comminutioncraft.common.machine.EnergyBatteryBlockEntity;
+import com.script.comminutioncraft.common.machine.FluidMachineBlockEntity;
+import com.script.comminutioncraft.common.machine.FluidTankBlockEntity;
+import com.script.comminutioncraft.common.machine.FrothFlotationCellBlockEntity;
+import com.script.comminutioncraft.common.machine.HorizonPortBlockEntity;
+import com.script.comminutioncraft.common.machine.OrePurifierBlockEntity;
+import com.script.comminutioncraft.common.machine.OreWasherBlockEntity;
+import com.script.comminutioncraft.common.machine.PelletPressBlockEntity;
+import com.script.comminutioncraft.common.machine.PlasmaMachineBlockEntity;
+import com.script.comminutioncraft.common.machine.ReactorPortBlockEntity;
 import com.script.comminutioncraft.common.network.SwitchWrenchModePayload;
-import com.script.comminutioncraft.gametest.ModGameTests;
+import com.script.comminutioncraft.common.recipe.RecipeSync;
+import com.script.comminutioncraft.common.registry.ModBlockEntities;
+import com.script.comminutioncraft.common.registry.ModBlocks;
 import com.script.comminutioncraft.common.registry.ModCreativeTabs;
 import com.script.comminutioncraft.common.registry.ModDataComponents;
+import com.script.comminutioncraft.common.registry.ModDataMaps;
+import com.script.comminutioncraft.common.registry.ModEntities;
 import com.script.comminutioncraft.common.registry.ModFeatures;
 import com.script.comminutioncraft.common.registry.ModFluids;
 import com.script.comminutioncraft.common.registry.ModItems;
 import com.script.comminutioncraft.common.registry.ModMenus;
 import com.script.comminutioncraft.common.registry.ModRecipes;
+import com.script.comminutioncraft.common.registry.ModSounds;
+import com.script.comminutioncraft.common.registry.ModTriggers;
+import com.script.comminutioncraft.gametest.ModGameTests;
+import java.util.List;
 import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.transfer.item.WorldlyContainerWrapper;
-import org.slf4j.Logger;
 
 @Mod(ComminutionCraft.MODID)
 public class ComminutionCraft {
     public static final String MODID = "comminutioncraft";
-    public static final Logger LOGGER = LogUtils.getLogger();
 
     public ComminutionCraft(IEventBus modEventBus, ModContainer modContainer) {
         ModFluids.FLUID_TYPES.register(modEventBus);
@@ -53,29 +63,29 @@ public class ComminutionCraft {
         ModDataComponents.DATA_COMPONENTS.register(modEventBus);
         ModFeatures.FEATURES.register(modEventBus);
         ModBlockEntities.BLOCK_ENTITY_TYPES.register(modEventBus);
-        com.script.comminutioncraft.common.registry.ModEntities.ENTITY_TYPES.register(modEventBus);
-        com.script.comminutioncraft.common.registry.ModSounds.SOUND_EVENTS.register(modEventBus);
-        com.script.comminutioncraft.common.registry.ModTriggers.TRIGGERS.register(modEventBus);
+        ModEntities.ENTITY_TYPES.register(modEventBus);
+        ModSounds.SOUND_EVENTS.register(modEventBus);
+        ModTriggers.TRIGGERS.register(modEventBus);
         // the guide book (Patchouli, optional): who has been given one, and the first-join gift
-        com.script.comminutioncraft.common.compat.patchouli.GuideBook.ATTACHMENTS.register(modEventBus);
-        NeoForge.EVENT_BUS.addListener(com.script.comminutioncraft.common.compat.patchouli.GuideBook::onPlayerLoggedIn);
+        GuideBook.ATTACHMENTS.register(modEventBus);
+        NeoForge.EVENT_BUS.addListener(GuideBook::onPlayerLoggedIn);
         ModMenus.MENUS.register(modEventBus);
         ModRecipes.RECIPE_TYPES.register(modEventBus);
         ModRecipes.RECIPE_SERIALIZERS.register(modEventBus);
         ModCreativeTabs.CREATIVE_MODE_TABS.register(modEventBus);
-        modContainer.registerConfig(net.neoforged.fml.config.ModConfig.Type.COMMON,
-                com.script.comminutioncraft.common.config.ComminutionConfig.SPEC);
+        modContainer.registerConfig(ModConfig.Type.COMMON,
+                ComminutionConfig.SPEC);
         // Balance numbers: per world, synced to players (see MachineConfig)
-        modContainer.registerConfig(net.neoforged.fml.config.ModConfig.Type.SERVER,
-                com.script.comminutioncraft.common.config.MachineConfig.SPEC);
+        modContainer.registerConfig(ModConfig.Type.SERVER,
+                MachineConfig.SPEC);
 
         ModGameTests.TEST_FUNCTIONS.register(modEventBus);
 
         modEventBus.addListener(this::registerCapabilities);
-        modEventBus.addListener(com.script.comminutioncraft.common.registry.ModDataMaps::register);
+        modEventBus.addListener(ModDataMaps::register);
         modEventBus.addListener(ModGameTests::registerTests);
         modEventBus.addListener(SwitchWrenchModePayload::register);
-        com.script.comminutioncraft.common.block.ModWoods.register(modEventBus);
+        ModWoods.register(modEventBus);
 
         NeoForge.EVENT_BUS.addListener(RecipeSync::sendToClients);
     }
@@ -105,7 +115,7 @@ public class ComminutionCraft {
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.ATMOSPHERIC_WATER_GENERATOR.get(), WorldlyContainerWrapper::new);
         event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.ATMOSPHERIC_WATER_GENERATOR.get(),
                 AtmosphericWaterGeneratorBlockEntity::getFluidHandler);
-        for (var type : java.util.List.of(ModBlockEntities.ELECTROLYSER.get(), ModBlockEntities.PLASMA_GENERATOR.get(),
+        for (var type : List.of(ModBlockEntities.ELECTROLYSER.get(), ModBlockEntities.PLASMA_GENERATOR.get(),
                 ModBlockEntities.MHD_GENERATOR.get(), ModBlockEntities.ISOTOPE_SEPARATOR.get(), ModBlockEntities.TRITIUM_BREEDER.get(),
                 ModBlockEntities.ANNIHILATION_GENERATOR.get())) {
             event.registerBlockEntity(Capabilities.Energy.BLOCK, type, (machine, side) -> machine.getEnergyHandler());
@@ -138,12 +148,12 @@ public class ComminutionCraft {
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.SINGULARITY_PROCESSOR.get(), WorldlyContainerWrapper::new);
         event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.SINGULARITY_PROCESSOR.get(), (machine, side) -> machine.getEnergyHandler());
         // Tier 5 Particle Accelerator: like the reactor, through its ports (the controller answers only "no side")
-        event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.ACCELERATOR_PORT.get(), com.script.comminutioncraft.common.machine.AcceleratorPortBlockEntity::getFluidHandler);
-        event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.ACCELERATOR_PORT.get(), com.script.comminutioncraft.common.machine.AcceleratorPortBlockEntity::getEnergyHandler);
+        event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.ACCELERATOR_PORT.get(), AcceleratorPortBlockEntity::getFluidHandler);
+        event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.ACCELERATOR_PORT.get(), AcceleratorPortBlockEntity::getEnergyHandler);
         // Tier 6 Event Horizon Reactor: through its ports (the controller answers "no side" and takes items from hoppers)
-        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.HORIZON_PORT.get(), com.script.comminutioncraft.common.machine.HorizonPortBlockEntity::getItemHandler);
-        event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.HORIZON_PORT.get(), com.script.comminutioncraft.common.machine.HorizonPortBlockEntity::getFluidHandler);
-        event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.HORIZON_PORT.get(), com.script.comminutioncraft.common.machine.HorizonPortBlockEntity::getEnergyHandler);
+        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.HORIZON_PORT.get(), HorizonPortBlockEntity::getItemHandler);
+        event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.HORIZON_PORT.get(), HorizonPortBlockEntity::getFluidHandler);
+        event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.HORIZON_PORT.get(), HorizonPortBlockEntity::getEnergyHandler);
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.EVENT_HORIZON_REACTOR.get(), WorldlyContainerWrapper::new);
         event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.EVENT_HORIZON_REACTOR.get(),
                 (reactor, side) -> side == null ? reactor.getTanks() : null);
@@ -177,7 +187,7 @@ public class ComminutionCraft {
         event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.ORE_WASHER.get(), OreWasherBlockEntity::getFluidHandler);
         // Tier 4 Pellet Press: casings in / pellets out, FE, deuterium + tritium in through Input faces
         // Tier 5 suite and the Froth Flotation Cell
-        for (var type : java.util.List.of(ModBlockEntities.ANTIMATTER_GRANULATOR.get(), ModBlockEntities.ANTIMATTER_SMELTER.get())) {
+        for (var type : List.of(ModBlockEntities.ANTIMATTER_GRANULATOR.get(), ModBlockEntities.ANTIMATTER_SMELTER.get())) {
             event.registerBlockEntity(Capabilities.Item.BLOCK, type, WorldlyContainerWrapper::new);
             event.registerBlockEntity(Capabilities.Energy.BLOCK, type, (machine, side) -> machine.getEnergyHandler());
         }
@@ -190,7 +200,7 @@ public class ComminutionCraft {
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.FROTH_FLOTATION_CELL.get(), WorldlyContainerWrapper::new);
         event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.FROTH_FLOTATION_CELL.get(), (machine, side) -> machine.getEnergyHandler());
         event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.FROTH_FLOTATION_CELL.get(),
-                com.script.comminutioncraft.common.machine.FrothFlotationCellBlockEntity::getFluidHandler);
+                FrothFlotationCellBlockEntity::getFluidHandler);
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.PELLET_PRESS.get(), WorldlyContainerWrapper::new);
         event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.PELLET_PRESS.get(), (machine, side) -> machine.getEnergyHandler());
         event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.PELLET_PRESS.get(), PelletPressBlockEntity::getFluidHandler);

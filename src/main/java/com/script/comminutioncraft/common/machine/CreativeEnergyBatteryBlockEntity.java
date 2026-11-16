@@ -1,5 +1,7 @@
 package com.script.comminutioncraft.common.machine;
 
+import com.script.comminutioncraft.common.config.ConfigInt;
+import com.script.comminutioncraft.common.config.MachineConfig;
 import com.script.comminutioncraft.common.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -17,7 +19,7 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * to the block on each face, and anything can pull as much as it likes from it. It takes nothing in.
  */
 public class CreativeEnergyBatteryBlockEntity extends BlockEntity implements TickingMachine {
-    public static final com.script.comminutioncraft.common.config.ConfigInt PUSH_PER_FACE = com.script.comminutioncraft.common.config.MachineConfig.CREATIVE_ENERGY_BATTERY_PUSH_PER_FACE;
+    public static final ConfigInt PUSH_PER_FACE = MachineConfig.CREATIVE_ENERGY_BATTERY_PUSH_PER_FACE;
 
     /** Always full, never runs down, accepts nothing. */
     public static final EnergyHandler ENDLESS = new EnergyHandler() {

@@ -1,5 +1,7 @@
 package com.script.comminutioncraft.common.machine;
 
+import com.script.comminutioncraft.common.config.ConfigInt;
+import com.script.comminutioncraft.common.config.MachineConfig;
 import com.script.comminutioncraft.common.machine.control.ControllableMachine;
 import com.script.comminutioncraft.common.machine.control.MachineControls;
 import com.script.comminutioncraft.common.machine.control.SideMode;
@@ -30,7 +32,7 @@ import org.jspecify.annotations.Nullable;
  */
 public class ReactorPortBlockEntity extends BlockEntity implements TickingMachine, ControllableMachine {
     /** Max mB of tritium pushed per tick, across all output faces. */
-    public static final com.script.comminutioncraft.common.config.ConfigInt MAX_TRITIUM_OUTPUT = com.script.comminutioncraft.common.config.MachineConfig.FUSION_REACTOR_PORT_TRITIUM_OUTPUT;
+    public static final ConfigInt MAX_TRITIUM_OUTPUT = MachineConfig.FUSION_REACTOR_PORT_TRITIUM_OUTPUT;
 
     private final MachineControls controls = new MachineControls(MachineControls.outputBelow(), this::onControlsChanged);
     private @Nullable BlockPos controllerPos;

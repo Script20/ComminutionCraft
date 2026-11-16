@@ -1,5 +1,7 @@
 package com.script.comminutioncraft.common.machine;
 
+import com.script.comminutioncraft.common.config.ConfigInt;
+import com.script.comminutioncraft.common.config.MachineConfig;
 import com.script.comminutioncraft.common.registry.ModBlockEntities;
 import com.script.comminutioncraft.common.registry.ModMenus;
 import java.util.Optional;
@@ -23,8 +25,8 @@ import net.minecraft.world.level.block.state.BlockState;
  * burned in an Electric Generator (32,000 FE) smelts 16 items (vs 10 in tier 1).
  */
 public class ElectricSmelterBlockEntity extends ElectricMachineBlockEntity {
-    public static final com.script.comminutioncraft.common.config.ConfigInt PROCESS_TIME = com.script.comminutioncraft.common.config.MachineConfig.ELECTRIC_SMELTER_PROCESS_TIME;
-    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_PER_TICK = com.script.comminutioncraft.common.config.MachineConfig.ELECTRIC_SMELTER_ENERGY_PER_TICK;
+    public static final ConfigInt PROCESS_TIME = MachineConfig.ELECTRIC_SMELTER_PROCESS_TIME;
+    public static final ConfigInt ENERGY_PER_TICK = MachineConfig.ELECTRIC_SMELTER_ENERGY_PER_TICK;
 
     private final RecipeManager.CachedCheck<SingleRecipeInput, SmeltingRecipe> recipeCheck =
             RecipeManager.createCheck(RecipeType.SMELTING);

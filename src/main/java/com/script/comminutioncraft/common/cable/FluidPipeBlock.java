@@ -1,5 +1,9 @@
 package com.script.comminutioncraft.common.cable;
 
+import com.script.comminutioncraft.common.config.ConfigInt;
+import com.script.comminutioncraft.common.config.MachineConfig;
+import com.script.comminutioncraft.common.registry.ModFluids;
+import java.util.function.IntSupplier;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import net.minecraft.core.BlockPos;
@@ -16,18 +20,18 @@ import net.neoforged.neoforge.transfer.fluid.FluidResource;
  */
 public class FluidPipeBlock extends ConduitBlock {
     /** Fluid Pipe: any fluid. */
-    public static final com.script.comminutioncraft.common.config.ConfigInt FLUID_PIPE_RATE = com.script.comminutioncraft.common.config.MachineConfig.CABLES_FLUID_PIPE;
+    public static final ConfigInt FLUID_PIPE_RATE = MachineConfig.CABLES_FLUID_PIPE;
     /** Plasma Cable: plasma only. */
     /** Tier 5 Magnetic Conduit (antimatter only). */
-    public static final com.script.comminutioncraft.common.config.ConfigInt MAGNETIC_CONDUIT_RATE = com.script.comminutioncraft.common.config.MachineConfig.CABLES_MAGNETIC_CONDUIT;
-    public static final com.script.comminutioncraft.common.config.ConfigInt PLASMA_CABLE_RATE = com.script.comminutioncraft.common.config.MachineConfig.CABLES_PLASMA_CABLE;
+    public static final ConfigInt MAGNETIC_CONDUIT_RATE = MachineConfig.CABLES_MAGNETIC_CONDUIT;
+    public static final ConfigInt PLASMA_CABLE_RATE = MachineConfig.CABLES_PLASMA_CABLE;
 
-    private final java.util.function.IntSupplier transferRate;
+    private final IntSupplier transferRate;
     private final Predicate<FluidResource> carries;
     /** A fluid this pipe carries, used to ask neighbours whether they could hold it (EMPTY = any fluid). */
     private final Supplier<FluidResource> sample;
 
-    public FluidPipeBlock(Properties properties, java.util.function.IntSupplier transferRate, Predicate<FluidResource> carries,
+    public FluidPipeBlock(Properties properties, IntSupplier transferRate, Predicate<FluidResource> carries,
                           Supplier<FluidResource> sample) {
         super(properties);
         this.transferRate = transferRate;
@@ -36,8 +40,8 @@ public class FluidPipeBlock extends ConduitBlock {
     }
 
     /** A pipe for any fluid. */
-    public FluidPipeBlock(Properties properties, java.util.function.IntSupplier transferRate) {
-        this(properties, transferRate, resource -> !com.script.comminutioncraft.common.registry.ModFluids.isAntimatter(resource),
+    public FluidPipeBlock(Properties properties, IntSupplier transferRate) {
+        this(properties, transferRate, resource -> !ModFluids.isAntimatter(resource),
                 () -> FluidResource.EMPTY);
     }
 

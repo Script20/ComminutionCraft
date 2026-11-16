@@ -2,6 +2,7 @@ package com.script.comminutioncraft.common.machine;
 
 import com.script.comminutioncraft.common.registry.ModBlockEntities;
 import java.util.List;
+import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -114,7 +115,7 @@ public class CreativeFluidTankBlockEntity extends FluidTankBlockEntity implement
         super.loadAdditional(input);
         fluid = input.getString("creative_fluid")
                 .map(Identifier::tryParse)
-                .flatMap(id -> id == null ? java.util.Optional.empty() : BuiltInRegistries.FLUID.getOptional(id))
+                .flatMap(id -> id == null ? Optional.empty() : BuiltInRegistries.FLUID.getOptional(id))
                 .orElse(null);
     }
 

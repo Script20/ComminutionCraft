@@ -6,6 +6,9 @@ import com.script.comminutioncraft.common.machine.control.MachineControls;
 import com.script.comminutioncraft.common.machine.control.RedstoneMode;
 import com.script.comminutioncraft.common.machine.control.RelativeSide;
 import com.script.comminutioncraft.common.machine.control.SideMode;
+import com.script.comminutioncraft.common.machine.upgrade.MachineUpgrades;
+import com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot;
+import com.script.comminutioncraft.common.machine.upgrade.UpgradeType;
 import com.script.comminutioncraft.common.registry.ModMenus;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
@@ -27,6 +30,8 @@ public class FluidMachineMenu extends AbstractContainerMenu implements Controlla
     private final @Nullable FluidMachineBlockEntity machine;
     private final ContainerData data;
     private final int upgradeStart;
+    /** Null on the generators (no Upgrades tab). */
+    private final MachineUpgrades upgrades;
 
     /** Client-side constructor (called when the server tells the client to open the GUI). */
     public static FluidMachineMenu client(MenuType<?> type, int containerId, Inventory inventory, int tankCount) {
@@ -41,14 +46,15 @@ public class FluidMachineMenu extends AbstractContainerMenu implements Controlla
         this.data = data;
         addStandardInventorySlots(inventory, 8, 84);
         if (machine != null ? machine.supportsUpgrades() : takesUpgrades(type)) {
-        // Speed / Energy / Gas / Liquid, shown in the Upgrades panel (after the inventory, so other indices stay put)
-        upgradeStart = slots.size();
-        Container upgrades = machine != null ? machine.getUpgrades() : com.script.comminutioncraft.common.machine.upgrade.MachineUpgrades.client(() -> data.get(FluidMachineBlockEntity.DATA_UPGRADES));
-        for (com.script.comminutioncraft.common.machine.upgrade.UpgradeType upgrade : com.script.comminutioncraft.common.machine.upgrade.UpgradeType.values()) {
-            addSlot(new com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot(upgrades, upgrade, inventory.player.level().isClientSide()));
-        }
+            // Speed / Energy / Gas / Liquid, shown in the Upgrades panel (after the inventory, so other indices stay put)
+            upgradeStart = slots.size();
+            upgrades = machine != null ? machine.getUpgrades() : MachineUpgrades.client(() -> data.get(FluidMachineBlockEntity.DATA_UPGRADES));
+            for (UpgradeType upgrade : UpgradeType.values()) {
+                addSlot(new UpgradeSlot(upgrades, upgrade, inventory.player.level().isClientSide()));
+            }
         } else {
             upgradeStart = -1;
+            upgrades = null;
         }
         addDataSlots(data);
     }
@@ -64,8 +70,8 @@ public class FluidMachineMenu extends AbstractContainerMenu implements Controlla
     }
 
     @Override
-    public boolean takesUpgrade(com.script.comminutioncraft.common.machine.upgrade.UpgradeType type) {
-        return (data.get(FluidMachineBlockEntity.DATA_UPGRADES) & (1 << type.ordinal())) != 0;
+    public boolean takesUpgrade(UpgradeType type) {
+        return upgrades != null && upgrades.allows(type);
     }
 
     // ---- Redstone / side settings (synced through data slots, changed with button clicks) ----
@@ -107,8 +113,8 @@ public class FluidMachineMenu extends AbstractContainerMenu implements Controlla
         boolean moved;
         if (index >= HOTBAR_END) { // an upgrade slot: back to the inventory
             moved = moveItemStackTo(stack, 0, HOTBAR_END, false);
-        } else if (upgradeStart >= 0 && com.script.comminutioncraft.common.machine.upgrade.UpgradeType.of(stack) != null
-                && moveItemStackTo(stack, upgradeStart, upgradeStart + com.script.comminutioncraft.common.machine.upgrade.UpgradeType.values().length, false)) {
+        } else if (upgradeStart >= 0 && UpgradeType.of(stack) != null
+                && moveItemStackTo(stack, upgradeStart, upgradeStart + UpgradeType.values().length, false)) {
             moved = true;
         } else {
             moved = index < INV_END

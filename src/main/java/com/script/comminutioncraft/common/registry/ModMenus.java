@@ -1,23 +1,28 @@
 package com.script.comminutioncraft.common.registry;
 
 import com.script.comminutioncraft.ComminutionCraft;
+import com.script.comminutioncraft.common.machine.AnnihilationGeneratorBlockEntity;
+import com.script.comminutioncraft.common.machine.AtmosphericWaterGeneratorMenu;
+import com.script.comminutioncraft.common.machine.CreativeFluidTankMenu;
 import com.script.comminutioncraft.common.machine.ElectricGeneratorMenu;
 import com.script.comminutioncraft.common.machine.ElectricMachineMenu;
-import com.script.comminutioncraft.common.machine.EnergyBatteryMenu;
-import com.script.comminutioncraft.common.machine.FuelMachineMenu;
-import com.script.comminutioncraft.common.machine.AtmosphericWaterGeneratorMenu;
 import com.script.comminutioncraft.common.machine.ElectrolyserBlockEntity;
+import com.script.comminutioncraft.common.machine.EnergyBatteryMenu;
+import com.script.comminutioncraft.common.machine.EventHorizonMenu;
 import com.script.comminutioncraft.common.machine.FluidMachineMenu;
-import com.script.comminutioncraft.common.machine.MhdGeneratorBlockEntity;
-import com.script.comminutioncraft.common.machine.IsotopeSeparatorBlockEntity;
-import com.script.comminutioncraft.common.machine.PelletPressMenu;
-import com.script.comminutioncraft.common.machine.TritiumBreederBlockEntity;
+import com.script.comminutioncraft.common.machine.FrothFlotationCellMenu;
+import com.script.comminutioncraft.common.machine.FuelMachineMenu;
 import com.script.comminutioncraft.common.machine.FusionReactorMenu;
+import com.script.comminutioncraft.common.machine.IsotopeSeparatorBlockEntity;
+import com.script.comminutioncraft.common.machine.MhdGeneratorBlockEntity;
 import com.script.comminutioncraft.common.machine.OrePurifierMenu;
-import com.script.comminutioncraft.common.machine.CreativeFluidTankMenu;
+import com.script.comminutioncraft.common.machine.OreWasherMenu;
+import com.script.comminutioncraft.common.machine.ParticleAcceleratorMenu;
+import com.script.comminutioncraft.common.machine.PelletPressMenu;
 import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlockEntity;
 import com.script.comminutioncraft.common.machine.PlasmaMachineMenu;
-import com.script.comminutioncraft.common.machine.OreWasherMenu;
+import com.script.comminutioncraft.common.machine.SingularityProcessorMenu;
+import com.script.comminutioncraft.common.machine.TritiumBreederBlockEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.MenuType;
@@ -95,12 +100,12 @@ public final class ModMenus {
     public static final DeferredHolder<MenuType<?>, MenuType<OrePurifierMenu>> ORE_PURIFIER =
             MENUS.register("ore_purifier", () -> new MenuType<>(OrePurifierMenu::client, FeatureFlags.VANILLA_SET));
 
-    public static final DeferredHolder<MenuType<?>, MenuType<com.script.comminutioncraft.common.machine.ParticleAcceleratorMenu>> PARTICLE_ACCELERATOR =
-            MENUS.register("accelerator_controller", () -> new MenuType<>(com.script.comminutioncraft.common.machine.ParticleAcceleratorMenu::client, FeatureFlags.VANILLA_SET));
+    public static final DeferredHolder<MenuType<?>, MenuType<ParticleAcceleratorMenu>> PARTICLE_ACCELERATOR =
+            MENUS.register("accelerator_controller", () -> new MenuType<>(ParticleAcceleratorMenu::client, FeatureFlags.VANILLA_SET));
 
     public static final DeferredHolder<MenuType<?>, MenuType<FluidMachineMenu>> ANNIHILATION_GENERATOR = MENUS.register("annihilation_generator",
             () -> new MenuType<>((id, inventory) -> FluidMachineMenu.client(ModMenus.ANNIHILATION_GENERATOR.get(), id, inventory,
-                    com.script.comminutioncraft.common.machine.AnnihilationGeneratorBlockEntity.TANK_COUNT), FeatureFlags.VANILLA_SET));
+                    AnnihilationGeneratorBlockEntity.TANK_COUNT), FeatureFlags.VANILLA_SET));
 
     public static final DeferredHolder<MenuType<?>, MenuType<EnergyBatteryMenu>> ANTIMATTER_ENERGY_BATTERY =
             MENUS.register("antimatter_energy_battery", () -> new MenuType<>(EnergyBatteryMenu::clientAntimatter, FeatureFlags.VANILLA_SET));
@@ -117,14 +122,14 @@ public final class ModMenus {
     public static final DeferredHolder<MenuType<?>, MenuType<OrePurifierMenu>> ANTIMATTER_PURIFIER =
             MENUS.register("antimatter_purifier", () -> new MenuType<>(OrePurifierMenu::clientAntimatter, FeatureFlags.VANILLA_SET));
 
-    public static final DeferredHolder<MenuType<?>, MenuType<com.script.comminutioncraft.common.machine.FrothFlotationCellMenu>> FROTH_FLOTATION_CELL =
-            MENUS.register("froth_flotation_cell", () -> new MenuType<>(com.script.comminutioncraft.common.machine.FrothFlotationCellMenu::client, FeatureFlags.VANILLA_SET));
+    public static final DeferredHolder<MenuType<?>, MenuType<FrothFlotationCellMenu>> FROTH_FLOTATION_CELL =
+            MENUS.register("froth_flotation_cell", () -> new MenuType<>(FrothFlotationCellMenu::client, FeatureFlags.VANILLA_SET));
 
-    public static final DeferredHolder<MenuType<?>, MenuType<com.script.comminutioncraft.common.machine.EventHorizonMenu>> EVENT_HORIZON =
-            MENUS.register("horizon_controller", () -> new MenuType<>(com.script.comminutioncraft.common.machine.EventHorizonMenu::client, FeatureFlags.VANILLA_SET));
+    public static final DeferredHolder<MenuType<?>, MenuType<EventHorizonMenu>> EVENT_HORIZON =
+            MENUS.register("horizon_controller", () -> new MenuType<>(EventHorizonMenu::client, FeatureFlags.VANILLA_SET));
 
-    public static final DeferredHolder<MenuType<?>, MenuType<com.script.comminutioncraft.common.machine.SingularityProcessorMenu>> SINGULARITY_PROCESSOR =
-            MENUS.register("singularity_processor", () -> new MenuType<>(com.script.comminutioncraft.common.machine.SingularityProcessorMenu::client, FeatureFlags.VANILLA_SET));
+    public static final DeferredHolder<MenuType<?>, MenuType<SingularityProcessorMenu>> SINGULARITY_PROCESSOR =
+            MENUS.register("singularity_processor", () -> new MenuType<>(SingularityProcessorMenu::client, FeatureFlags.VANILLA_SET));
 
     public static final DeferredHolder<MenuType<?>, MenuType<EnergyBatteryMenu>> SINGULARITY_ENERGY_BATTERY =
             MENUS.register("singularity_energy_battery", () -> new MenuType<>(EnergyBatteryMenu::clientSingularity, FeatureFlags.VANILLA_SET));

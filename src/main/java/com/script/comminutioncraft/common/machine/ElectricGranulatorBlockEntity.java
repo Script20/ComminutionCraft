@@ -1,5 +1,7 @@
 package com.script.comminutioncraft.common.machine;
 
+import com.script.comminutioncraft.common.config.ConfigInt;
+import com.script.comminutioncraft.common.config.MachineConfig;
 import com.script.comminutioncraft.common.recipe.GranulatingRecipe;
 import com.script.comminutioncraft.common.registry.ModBlockEntities;
 import com.script.comminutioncraft.common.registry.ModMenus;
@@ -23,8 +25,8 @@ import net.minecraft.world.level.block.state.BlockState;
  * burned in an Electric Generator (32,000 FE) granulates ~15.8 raw ores (vs 10.67 in tier 1).
  */
 public class ElectricGranulatorBlockEntity extends ElectricMachineBlockEntity {
-    public static final com.script.comminutioncraft.common.config.ConfigInt PROCESS_TIME = com.script.comminutioncraft.common.config.MachineConfig.ELECTRIC_GRANULATOR_PROCESS_TIME;
-    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_PER_TICK = com.script.comminutioncraft.common.config.MachineConfig.ELECTRIC_GRANULATOR_ENERGY_PER_TICK;
+    public static final ConfigInt PROCESS_TIME = MachineConfig.ELECTRIC_GRANULATOR_PROCESS_TIME;
+    public static final ConfigInt ENERGY_PER_TICK = MachineConfig.ELECTRIC_GRANULATOR_ENERGY_PER_TICK;
 
     private final RecipeManager.CachedCheck<SingleRecipeInput, GranulatingRecipe> recipeCheck =
             RecipeManager.createCheck(ModRecipes.GRANULATING_TYPE.get());

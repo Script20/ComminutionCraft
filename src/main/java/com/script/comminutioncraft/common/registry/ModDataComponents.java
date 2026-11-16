@@ -3,6 +3,7 @@ package com.script.comminutioncraft.common.registry;
 import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.item.WrenchMode;
 import com.script.comminutioncraft.common.machine.control.MachineSettings;
+import java.util.List;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -28,7 +29,7 @@ public final class ModDataComponents {
                     .networkSynchronized(MachineSettings.STREAM_CODEC));
 
     /** A machine's upgrade counts (Speed, Energy, Gas, Liquid) when picked up with the wrench. */
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<java.util.List<Integer>>> UPGRADES =
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<List<Integer>>> UPGRADES =
             DATA_COMPONENTS.registerComponentType("upgrades", builder -> builder
                     .persistent(ExtraCodecs.NON_NEGATIVE_INT.listOf())
                     .networkSynchronized(ByteBufCodecs.VAR_INT.apply(ByteBufCodecs.list())));

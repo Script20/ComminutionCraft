@@ -1,9 +1,11 @@
 package com.script.comminutioncraft.client;
 
 import com.script.comminutioncraft.common.recipe.AssemblingRecipe;
+import com.script.comminutioncraft.common.recipe.FlotationRecipe;
 import com.script.comminutioncraft.common.recipe.GranulatingRecipe;
 import com.script.comminutioncraft.common.recipe.PressingRecipe;
 import com.script.comminutioncraft.common.recipe.PurifyingRecipe;
+import com.script.comminutioncraft.common.recipe.SingularityRecipe;
 import com.script.comminutioncraft.common.recipe.WashingRecipe;
 import com.script.comminutioncraft.common.registry.ModRecipes;
 import java.util.List;
@@ -39,11 +41,11 @@ public final class ClientRecipes {
         return List.copyOf(recipes.byType(ModRecipes.PURIFYING_TYPE.get()));
     }
 
-    public static List<RecipeHolder<com.script.comminutioncraft.common.recipe.FlotationRecipe>> flotation() {
+    public static List<RecipeHolder<FlotationRecipe>> flotation() {
         return List.copyOf(recipes.byType(ModRecipes.FLOTATION_TYPE.get()));
     }
 
-    public static List<RecipeHolder<com.script.comminutioncraft.common.recipe.SingularityRecipe>> singularity() {
+    public static List<RecipeHolder<SingularityRecipe>> singularity() {
         return List.copyOf(recipes.byType(ModRecipes.SINGULARITY_TYPE.get()));
     }
 

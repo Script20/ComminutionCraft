@@ -5,6 +5,10 @@ import com.script.comminutioncraft.common.item.WrenchMode;
 import com.script.comminutioncraft.common.machine.control.ControllableMenu;
 import com.script.comminutioncraft.common.machine.control.MachineControls;
 import com.script.comminutioncraft.common.machine.control.RedstoneMode;
+import com.script.comminutioncraft.common.machine.upgrade.MachineUpgrades;
+import com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot;
+import com.script.comminutioncraft.common.machine.upgrade.UpgradeType;
+import com.script.comminutioncraft.common.registry.ModItems;
 import java.util.List;
 import java.util.Locale;
 import net.minecraft.ChatFormatting;
@@ -125,10 +129,10 @@ public abstract class MachineScreen<M extends AbstractContainerMenu & Controllab
                 this::openSideConfig));
         if (hasUpgrades()) {
             addRenderableWidget(new MachineTab(tabX, topPos + 6 + (MachineTab.SIZE + TAB_GAP) * 2,
-                    () -> new ItemStack(com.script.comminutioncraft.common.registry.ModItems.SPEED_UPGRADE.get()),
+                    () -> new ItemStack(ModItems.SPEED_UPGRADE.get()),
                     () -> Component.translatable("gui.comminutioncraft.upgrades"),
                     tier.seamOn,
-                    () -> com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.panelOpen = !com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.panelOpen));
+                    () -> UpgradeSlot.panelOpen = !UpgradeSlot.panelOpen));
         }
     }
 
@@ -137,37 +141,38 @@ public abstract class MachineScreen<M extends AbstractContainerMenu & Controllab
     }
 
     private boolean panelShown() {
-        return hasUpgrades() && com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.panelOpen;
+        return hasUpgrades() && UpgradeSlot.panelOpen;
     }
 
     /** Whether the panel shows this upgrade's slot (one the machine takes, or one left over in it). */
-    private boolean upgradeShown(com.script.comminutioncraft.common.machine.upgrade.UpgradeType type) {
+    private boolean upgradeShown(UpgradeType type) {
         return menu.takesUpgrade(type) || !menu.getSlot(menu.upgradeSlotStart() + type.ordinal()).getItem().isEmpty();
     }
 
     /** Speed and Energy always; Gas and Liquid rows only on machines that use a gas or a liquid. */
     private int panelRows() {
-        return upgradeShown(com.script.comminutioncraft.common.machine.upgrade.UpgradeType.GAS) || upgradeShown(com.script.comminutioncraft.common.machine.upgrade.UpgradeType.LIQUID) ? 4 : 2;
+        return upgradeShown(UpgradeType.GAS) || upgradeShown(UpgradeType.LIQUID) ? 4 : 2;
     }
 
     private int panelHeight() {
-        return 16 + com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.STEP * panelRows() + 2;
+        return 16 + UpgradeSlot.STEP * panelRows() + 2;
     }
 
-    private int upgradeCount(com.script.comminutioncraft.common.machine.upgrade.UpgradeType type) {
+    private int upgradeCount(UpgradeType type) {
         ItemStack stack = menu.getSlot(menu.upgradeSlotStart() + type.ordinal()).getItem();
         return stack.is(type.item()) ? stack.getCount() : 0;
     }
 
     /** What n of this upgrade does, for the panel ("2.5x speed", "-75% FE/op"...). */
-    private static Component upgradeEffect(com.script.comminutioncraft.common.machine.upgrade.UpgradeType type, int n) {
+    private static Component upgradeEffect(UpgradeType type, int n) {
         if (n <= 0) {
             return Component.translatable("gui.comminutioncraft.upgrade." + type.id() + ".none");
         }
-        if (type == com.script.comminutioncraft.common.machine.upgrade.UpgradeType.SPEED) {
-            return Component.translatable("gui.comminutioncraft.upgrade.speed", String.format(Locale.ROOT, "%.1f", 1 + 0.5 * n));
+        if (type == UpgradeType.SPEED) {
+            return Component.translatable("gui.comminutioncraft.upgrade.speed",
+                    String.format(Locale.ROOT, "%.1f", MachineUpgrades.speedFor(n)));
         }
-        return Component.translatable("gui.comminutioncraft.upgrade." + type.id(), Math.round((1 - Math.pow(0.84, n)) * 100));
+        return Component.translatable("gui.comminutioncraft.upgrade." + type.id(), Math.round(MachineUpgrades.savingFor(n) * 100));
     }
 
     /** Clicks on the open panel belong to the GUI (otherwise a carried item would be thrown out). */
@@ -186,11 +191,11 @@ public abstract class MachineScreen<M extends AbstractContainerMenu & Controllab
         if (!panelShown()) {
             return;
         }
-        for (com.script.comminutioncraft.common.machine.upgrade.UpgradeType type : com.script.comminutioncraft.common.machine.upgrade.UpgradeType.values()) {
-            int sy = com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.Y + com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.STEP * type.ordinal();
-            if (upgradeShown(type) && upgradeCount(type) == 0 && isHovering(com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.X, sy, 16, 16, mouseX, mouseY)) {
+        for (UpgradeType type : UpgradeType.values()) {
+            int sy = UpgradeSlot.Y + UpgradeSlot.STEP * type.ordinal();
+            if (upgradeShown(type) && upgradeCount(type) == 0 && isHovering(UpgradeSlot.X, sy, 16, 16, mouseX, mouseY)) {
                 graphics.setTooltipForNextFrame(Component.translatable("gui.comminutioncraft.upgrade.slot",
-                        type.item().getName(new ItemStack(type.item())), com.script.comminutioncraft.common.machine.upgrade.UpgradeType.MAX), mouseX, mouseY);
+                        type.item().getName(new ItemStack(type.item())), UpgradeType.MAX), mouseX, mouseY);
             }
         }
     }
@@ -251,29 +256,29 @@ public abstract class MachineScreen<M extends AbstractContainerMenu & Controllab
         graphics.fill(x0 + 1, y0, x1 - 1, y1, PANEL_OUTLINE);
         graphics.fillGradient(x0 + 1, y0 + 1, x1 - 1, y1 - 1, PANEL_TOP, PANEL_BOTTOM);
         graphics.fill(x0 + 2, y0 + 1, x1 - 2, y0 + 2, PANEL_HIGHLIGHT);
-        for (com.script.comminutioncraft.common.machine.upgrade.UpgradeType type : com.script.comminutioncraft.common.machine.upgrade.UpgradeType.values()) {
+        for (UpgradeType type : UpgradeType.values()) {
             if (!upgradeShown(type)) {
                 continue;
             }
-            int sx = leftPos + com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.X - 1;
-            int sy = topPos + com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.Y + com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.STEP * type.ordinal() - 1;
+            int sx = leftPos + UpgradeSlot.X - 1;
+            int sy = topPos + UpgradeSlot.Y + UpgradeSlot.STEP * type.ordinal() - 1;
             graphics.fill(sx, sy, sx + 18, sy + 18, SLOT_LIGHT);
             graphics.fill(sx, sy, sx + 17, sy + 17, SLOT_DARK);
             graphics.fill(sx + 1, sy + 1, sx + 17, sy + 17, SLOT_FILL);
         }
         boolean faded = false;
-        for (com.script.comminutioncraft.common.machine.upgrade.UpgradeType type : com.script.comminutioncraft.common.machine.upgrade.UpgradeType.values()) {
+        for (UpgradeType type : UpgradeType.values()) {
             if (upgradeShown(type) && upgradeCount(type) == 0) {
-                graphics.item(new ItemStack(type.item()), leftPos + com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.X, topPos + com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.Y + com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.STEP * type.ordinal());
+                graphics.item(new ItemStack(type.item()), leftPos + UpgradeSlot.X, topPos + UpgradeSlot.Y + UpgradeSlot.STEP * type.ordinal());
                 faded = true;
             }
         }
         if (faded) { // dim the ghost icons
             graphics.nextStratum();
-            for (com.script.comminutioncraft.common.machine.upgrade.UpgradeType type : com.script.comminutioncraft.common.machine.upgrade.UpgradeType.values()) {
+            for (UpgradeType type : UpgradeType.values()) {
                 if (upgradeShown(type) && upgradeCount(type) == 0) {
-                    int sx = leftPos + com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.X;
-                    int sy = topPos + com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.Y + com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.STEP * type.ordinal();
+                    int sx = leftPos + UpgradeSlot.X;
+                    int sy = topPos + UpgradeSlot.Y + UpgradeSlot.STEP * type.ordinal();
                     graphics.fill(sx, sy, sx + 16, sy + 16, 0xC01C1E23);
                 }
             }
@@ -371,21 +376,21 @@ public abstract class MachineScreen<M extends AbstractContainerMenu & Controllab
 
         if (panelShown()) {
             graphics.text(font, Component.translatable("gui.comminutioncraft.upgrades"), PANEL_X + 6, PANEL_Y + 4, TITLE_COLOR, false);
-            for (com.script.comminutioncraft.common.machine.upgrade.UpgradeType type : com.script.comminutioncraft.common.machine.upgrade.UpgradeType.values()) {
+            for (UpgradeType type : UpgradeType.values()) {
                 int n = upgradeCount(type);
-                int tx = com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.X + 19;
-                int ty = com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.Y + com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.STEP * type.ordinal();
+                int tx = UpgradeSlot.X + 19;
+                int ty = UpgradeSlot.Y + UpgradeSlot.STEP * type.ordinal();
                 if (type.ordinal() >= panelRows()) {
                     continue;
                 }
                 if (!upgradeShown(type)) { // e.g. Gas on a machine that only uses water
                     graphics.text(font, Component.translatable("gui.comminutioncraft.upgrade." + type.id() + ".name"),
-                            com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.X - 1, ty, 0xFF5A5C64, false);
-                    graphics.text(font, Component.translatable("gui.comminutioncraft.upgrade.unused"), com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot.X - 1, ty + 9, 0xFF5A5C64, false);
+                            UpgradeSlot.X - 1, ty, 0xFF5A5C64, false);
+                    graphics.text(font, Component.translatable("gui.comminutioncraft.upgrade.unused"), UpgradeSlot.X - 1, ty + 9, 0xFF5A5C64, false);
                     continue;
                 }
                 graphics.text(font, Component.translatable("gui.comminutioncraft.upgrade.count",
-                        Component.translatable("gui.comminutioncraft.upgrade." + type.id() + ".name"), n, com.script.comminutioncraft.common.machine.upgrade.UpgradeType.MAX),
+                        Component.translatable("gui.comminutioncraft.upgrade." + type.id() + ".name"), n, UpgradeType.MAX),
                         tx, ty, n > 0 ? type.colour() : 0xFF8C8E96, false);
                 graphics.text(font, upgradeEffect(type, n), tx, ty + 9, n > 0 ? 0xFFBEBEC4 : 0xFF6E7078, false);
             }

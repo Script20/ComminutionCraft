@@ -1,5 +1,6 @@
 package com.script.comminutioncraft.common.machine;
 
+import com.script.comminutioncraft.common.advancement.MachineEventTrigger;
 import com.script.comminutioncraft.common.config.ConfigInt;
 import com.script.comminutioncraft.common.config.MachineConfig;
 import com.script.comminutioncraft.common.energy.EnergySync;
@@ -220,7 +221,7 @@ public class ParticleAcceleratorBlockEntity extends BlockEntity implements Ticki
             progress -= perMb;
             hydrogen.drain(HYDROGEN_PER_MB.get());
             antimatter.fill(FluidResource.of(ModFluids.ANTIMATTER.get()), 1);
-            com.script.comminutioncraft.common.advancement.MachineEventTrigger.fireNear(level, pos, com.script.comminutioncraft.common.advancement.MachineEventTrigger.ANTIMATTER_MADE, 24);
+            MachineEventTrigger.fireNear(level, pos, MachineEventTrigger.ANTIMATTER_MADE, 24);
         }
         progress = Math.min(progress, perMb);
         setChanged();

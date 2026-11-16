@@ -4,21 +4,20 @@ import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.block.StoneSet;
 import com.script.comminutioncraft.common.recipe.AssemblingRecipe;
 import com.script.comminutioncraft.common.recipe.FlotationRecipe;
-import com.script.comminutioncraft.common.recipe.SingularityRecipe;
 import com.script.comminutioncraft.common.recipe.GranulatingRecipe;
 import com.script.comminutioncraft.common.recipe.PressingRecipe;
 import com.script.comminutioncraft.common.recipe.PurifyingRecipe;
-import java.util.List;
-import net.neoforged.neoforge.common.conditions.AndCondition;
-import net.neoforged.neoforge.common.conditions.ICondition;
-import com.script.comminutioncraft.common.recipe.WashingRecipe;
+import com.script.comminutioncraft.common.recipe.SingularityRecipe;
 import com.script.comminutioncraft.common.recipe.TagBlastingRecipe;
 import com.script.comminutioncraft.common.recipe.TagResult;
 import com.script.comminutioncraft.common.recipe.TagSmeltingRecipe;
+import com.script.comminutioncraft.common.recipe.WashingRecipe;
 import com.script.comminutioncraft.common.registry.ModBlocks;
 import com.script.comminutioncraft.common.registry.ModItems;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.RecipeBuilder;
@@ -28,6 +27,7 @@ import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.SingleItemRecipeBuilder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.flag.FeatureFlags;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
@@ -39,6 +39,8 @@ import net.minecraft.world.item.crafting.SmeltingRecipe;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SlabBlock;
+import net.neoforged.neoforge.common.conditions.AndCondition;
+import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.conditions.NotCondition;
 import net.neoforged.neoforge.common.conditions.TagEmptyCondition;
 
@@ -78,8 +80,8 @@ public class ModRecipeProvider extends RecipeProvider {
     }
 
     /** The Singularity Processor's rare by-products (each rolled on its own chance per operation). */
-    private static java.util.List<SingularityRecipe.Byproduct> singularityByproducts() {
-        return java.util.List.of(
+    private static List<SingularityRecipe.Byproduct> singularityByproducts() {
+        return List.of(
                 new SingularityRecipe.Byproduct(new ItemStackTemplate(Items.DIAMOND), 0.03F),
                 new SingularityRecipe.Byproduct(new ItemStackTemplate(Items.EMERALD), 0.02F),
                 new SingularityRecipe.Byproduct(new ItemStackTemplate(ModItems.SINGULARITY_SHARD.get()), 0.02F),
@@ -88,7 +90,7 @@ public class ModRecipeProvider extends RecipeProvider {
     }
 
     /** {@code PAP / DMD / PAP}: plating, Antimatter Circuits, diamonds round the machine it upgrades. */
-    private void antimatterMachine(net.minecraft.world.item.Item result, net.minecraft.world.item.Item base) {
+    private void antimatterMachine(Item result, Item base) {
         shaped(RecipeCategory.MISC, result)
                 .pattern("PAP")
                 .pattern("DMD")
@@ -98,7 +100,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('D', tag(ProcessedMetal.commonItemTag("gems/diamond")))
                 .define('M', base)
                 .unlockedBy("has_antimatter_circuit", has(ModItems.ANTIMATTER_CIRCUIT.get()))
-                .save(output, key(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(result).getPath()));
+                .save(output, key(BuiltInRegistries.ITEM.getKey(result).getPath()));
     }
 
     @Override
@@ -805,7 +807,7 @@ public class ModRecipeProvider extends RecipeProvider {
     }
 
     /** A machine upgrade: RXR / XCX / RXR (redstone, the upgrade's ingredient, an Electronic Circuit). */
-    private void upgrade(RecipeOutput out, net.minecraft.world.item.Item upgrade, net.minecraft.world.level.ItemLike ingredient, String name) {
+    private void upgrade(RecipeOutput out, Item upgrade, ItemLike ingredient, String name) {
         shaped(RecipeCategory.MISC, upgrade)
                 .pattern("RXR")
                 .pattern("XCX")

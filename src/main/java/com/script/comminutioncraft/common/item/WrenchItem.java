@@ -1,14 +1,15 @@
 package com.script.comminutioncraft.common.item;
 
 import com.script.comminutioncraft.common.cable.ConduitBlock;
+import com.script.comminutioncraft.common.machine.AcceleratorPortBlock;
+import com.script.comminutioncraft.common.machine.HorizonPortBlock;
 import com.script.comminutioncraft.common.machine.control.ControllableMachine;
 import com.script.comminutioncraft.common.machine.control.RelativeSide;
 import com.script.comminutioncraft.common.machine.control.SideMode;
+import com.script.comminutioncraft.common.machine.upgrade.UpgradeHolder;
 import com.script.comminutioncraft.common.network.SwitchWrenchModePayload;
 import com.script.comminutioncraft.common.registry.ModDataComponents;
 import com.script.comminutioncraft.common.registry.ModItems;
-import java.util.function.Consumer;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
@@ -18,7 +19,9 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -50,8 +53,8 @@ public class WrenchItem extends Item {
 
     /** Crafting with the wrench (the guide book: a book + a wrench) gives it back. */
     @Override
-    public net.minecraft.world.item.ItemStackTemplate getCraftingRemainder(net.minecraft.world.item.ItemInstance instance) {
-        return new net.minecraft.world.item.ItemStackTemplate(this);
+    public ItemStackTemplate getCraftingRemainder(ItemInstance instance) {
+        return new ItemStackTemplate(this);
     }
 
     public static WrenchMode getMode(ItemStack stack) {
@@ -117,12 +120,12 @@ public class WrenchItem extends Item {
         if (!(level.getBlockEntity(pos) instanceof ControllableMachine machine)) {
             return InteractionResult.PASS;
         }
-        if (level.getBlockState(pos).getBlock() instanceof com.script.comminutioncraft.common.machine.AcceleratorPortBlock) {
+        if (level.getBlockState(pos).getBlock() instanceof AcceleratorPortBlock) {
             // An Accelerator Port is Input or Output as a whole: the wrench switches it.
             if (!level.isClientSide()) {
-                boolean output = com.script.comminutioncraft.common.machine.AcceleratorPortBlock.toggle(level, pos);
+                boolean output = AcceleratorPortBlock.toggle(level, pos);
                 if (context.getPlayer() != null) {
-                    String port = level.getBlockState(pos).getBlock() instanceof com.script.comminutioncraft.common.machine.HorizonPortBlock
+                    String port = level.getBlockState(pos).getBlock() instanceof HorizonPortBlock
                             ? "horizon_port" : "port";
                     context.getPlayer().sendOverlayMessage(Component.translatable("message.comminutioncraft.wrench." + port + (output ? "_output" : "_input")));
                 }
@@ -157,7 +160,7 @@ public class WrenchItem extends Item {
             ItemStack item = new ItemStack(state.getBlock());
             // The contents drop on removal below, so they mustn't be copied onto the item too.
             item.applyComponents(machine.collectComponents().filter(type -> type != DataComponents.CONTAINER));
-            if (machine instanceof com.script.comminutioncraft.common.machine.upgrade.UpgradeHolder holder) {
+            if (machine instanceof UpgradeHolder holder) {
                 holder.getUpgrades().clearContent(); // they're on the item now; don't drop them too
             }
             level.removeBlock(pos, false);

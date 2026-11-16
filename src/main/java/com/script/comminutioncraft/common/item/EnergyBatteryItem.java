@@ -1,6 +1,7 @@
 package com.script.comminutioncraft.common.item;
 
 import com.script.comminutioncraft.common.registry.ModDataComponents;
+import java.util.function.IntSupplier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
@@ -8,11 +9,11 @@ import net.minecraft.world.level.block.Block;
 
 /** Battery block item: a charge bar for the FE kept from a wrench pickup (the FE line is in {@code ModTooltips}). */
 public class EnergyBatteryItem extends BlockItem {
-    private final java.util.function.IntSupplier capacity;
+    private final IntSupplier capacity;
     private final int barColor;
 
     /** {@code barColor} is the tier colour (RGB). */
-    public EnergyBatteryItem(Block block, Properties properties, java.util.function.IntSupplier capacity, int barColor) {
+    public EnergyBatteryItem(Block block, Properties properties, IntSupplier capacity, int barColor) {
         super(block, properties);
         this.capacity = capacity;
         this.barColor = barColor;

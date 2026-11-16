@@ -1,13 +1,19 @@
 package com.script.comminutioncraft.common.machine;
 
+import com.script.comminutioncraft.common.config.ConfigInt;
+import com.script.comminutioncraft.common.config.MachineConfig;
 import com.script.comminutioncraft.common.fluid.MachineFluidTank;
 import com.script.comminutioncraft.common.registry.ModBlockEntities;
 import com.script.comminutioncraft.common.registry.ModFluids;
 import com.script.comminutioncraft.common.registry.ModMenus;
+import java.util.Collection;
+import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.common.NeoForgeMod;
@@ -21,11 +27,11 @@ import net.neoforged.neoforge.transfer.fluid.FluidResource;
  * later tiers: when its tank is full the rest is vented, so a full oxygen tank never stops the hydrogen.
  */
 public class ElectrolyserBlockEntity extends FluidMachineBlockEntity {
-    public static final com.script.comminutioncraft.common.config.ConfigInt MAX_HYDROGEN_PER_TICK = com.script.comminutioncraft.common.config.MachineConfig.ELECTROLYSER_HYDROGEN_PER_TICK;
-    public static final com.script.comminutioncraft.common.config.ConfigInt WATER_PER_HYDROGEN = com.script.comminutioncraft.common.config.MachineConfig.ELECTROLYSER_WATER_PER_HYDROGEN;
-    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_PER_HYDROGEN = com.script.comminutioncraft.common.config.MachineConfig.ELECTROLYSER_ENERGY_PER_HYDROGEN;
-    public static final com.script.comminutioncraft.common.config.ConfigInt ENERGY_CAPACITY = com.script.comminutioncraft.common.config.MachineConfig.ELECTROLYSER_ENERGY_CAPACITY;
-    public static final com.script.comminutioncraft.common.config.ConfigInt MAX_ENERGY_INPUT = com.script.comminutioncraft.common.config.MachineConfig.ELECTROLYSER_MAX_ENERGY_INPUT;
+    public static final ConfigInt MAX_HYDROGEN_PER_TICK = MachineConfig.ELECTROLYSER_HYDROGEN_PER_TICK;
+    public static final ConfigInt WATER_PER_HYDROGEN = MachineConfig.ELECTROLYSER_WATER_PER_HYDROGEN;
+    public static final ConfigInt ENERGY_PER_HYDROGEN = MachineConfig.ELECTROLYSER_ENERGY_PER_HYDROGEN;
+    public static final ConfigInt ENERGY_CAPACITY = MachineConfig.ELECTROLYSER_ENERGY_CAPACITY;
+    public static final ConfigInt MAX_ENERGY_INPUT = MachineConfig.ELECTROLYSER_MAX_ENERGY_INPUT;
 
     public static final int TANK_WATER = 0;
     public static final int TANK_HYDROGEN = 1;
@@ -43,21 +49,14 @@ public class ElectrolyserBlockEntity extends FluidMachineBlockEntity {
     }
 
     @Override
-    protected java.util.Collection<net.minecraft.world.level.material.Fluid> consumedFluids() {
-        return java.util.List.of(net.minecraft.world.level.material.Fluids.WATER);
+    protected Collection<Fluid> consumedFluids() {
+        return List.of(Fluids.WATER);
     }
 
     @Override
     protected int work(ServerLevel level) {
-        int perMb = upgradedEnergy(ENERGY_PER_HYDROGEN.get());
-        int make = Math.min(Math.min(upgradedRate(MAX_HYDROGEN_PER_TICK.get()), affordable(net.minecraft.world.level.material.Fluids.WATER, water.getAmount(), WATER_PER_HYDROGEN.get())),
-                Math.min(hydrogen.getSpace(), energy.getEnergy() / perMb));
-        if (make <= 0) {
-            return 0;
-        }
-        energy.consume(make * perMb);
-        water.drain(drainFor(net.minecraft.world.level.material.Fluids.WATER, make, WATER_PER_HYDROGEN.get()));
-        hydrogen.fill(FluidResource.of(ModFluids.HYDROGEN.get()), make);
+        int make = convert(water, Fluids.WATER, WATER_PER_HYDROGEN.get(),
+                hydrogen, ModFluids.HYDROGEN.get(), MAX_HYDROGEN_PER_TICK.get(), ENERGY_PER_HYDROGEN.get());
         oxygenHalves += make;
         int madeOxygen = oxygenHalves / 2;
         oxygenHalves %= 2;

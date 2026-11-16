@@ -144,15 +144,26 @@ public abstract class FuelMachineBlockEntity extends BaseContainerBlockEntity
     @Override
     public void serverTick(ServerLevel level, BlockPos pos, BlockState state) {
         // Switched off by redstone: the work pauses (fuel doesn't burn down, progress is kept); finished items still go out.
-        if (!controls.canRun(level, pos)) {
-            if (state.getValue(MachineBlock.LIT)) {
-                level.setBlock(pos, state.setValue(MachineBlock.LIT, false), Block.UPDATE_ALL);
-            }
-            if (!items.get(SLOT_OUTPUT).isEmpty()) {
-                pushItemsOut(level, pos);
-            }
-            return;
+        boolean on = controls.canRun(level, pos);
+        boolean changed = on && process(level);
+        boolean lit = on && isLit();
+
+        if (state.getValue(MachineBlock.LIT) != lit) {
+            changed = true;
+            level.setBlock(pos, state.setValue(MachineBlock.LIT, lit), Block.UPDATE_ALL);
         }
+
+        if (!items.get(SLOT_OUTPUT).isEmpty()) {
+            pushItemsOut(level, pos);
+        }
+
+        if (changed) {
+            setChanged();
+        }
+    }
+
+    /** One tick of burning and work; true if the slots changed. */
+    private boolean process(ServerLevel level) {
         boolean changed = false;
 
         if (isLit()) {
@@ -204,19 +215,7 @@ public abstract class FuelMachineBlockEntity extends BaseContainerBlockEntity
             // Out of fuel: progress drains back down, like a vanilla furnace.
             progress = Math.max(0, progress - 2);
         }
-
-        if (state.getValue(MachineBlock.LIT) != isLit()) {
-            changed = true;
-            level.setBlock(pos, state.setValue(MachineBlock.LIT, isLit()), Block.UPDATE_ALL);
-        }
-
-        if (!items.get(SLOT_OUTPUT).isEmpty()) {
-            pushItemsOut(level, pos);
-        }
-
-        if (changed) {
-            setChanged();
-        }
+        return changed;
     }
 
     private int getScaledBurnTime(ServerLevel level, ItemStack fuel) {

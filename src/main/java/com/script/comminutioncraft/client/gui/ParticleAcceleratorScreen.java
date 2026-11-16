@@ -4,6 +4,7 @@ import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.machine.ParticleAcceleratorBlockEntity;
 import com.script.comminutioncraft.common.machine.ParticleAcceleratorBlockEntity.Status;
 import com.script.comminutioncraft.common.machine.ParticleAcceleratorMenu;
+import java.util.List;
 import java.util.Locale;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -84,7 +85,7 @@ public class ParticleAcceleratorScreen extends MachineScreen<ParticleAccelerator
         gaugeTooltip(graphics, mouseX, mouseY, PLASMA_X, "gui.comminutioncraft.antimatter", menu.getAntimatter(), menu.getAntimatterCapacity());
         if (isHovering(BAR_X, BAR_Y, BAR_W, BAR_H, mouseX, mouseY)) {
             int percent = Math.min(100, 100 * menu.getProgress() / menu.getProgressMax());
-            graphics.setTooltipForNextFrame(java.util.List.of(
+            graphics.setTooltipForNextFrame(List.of(
                     Component.translatable("gui.comminutioncraft.accelerator.progress", percent).getVisualOrderText(),
                     Component.translatable("gui.comminutioncraft.accelerator.use", formatFe(menu.getEnergyUse())).getVisualOrderText()),
                     mouseX, mouseY);
