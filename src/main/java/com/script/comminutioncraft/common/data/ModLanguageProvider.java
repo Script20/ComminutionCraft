@@ -249,7 +249,6 @@ public class ModLanguageProvider extends LanguageProvider {
         add("tooltip.comminutioncraft.tool_charge", "Charge it in an Energy Battery's charge slot");
         add("tooltip.comminutioncraft.bit_uses", "Bit: %s / %s uses left");
         add("tooltip.comminutioncraft.bit_worn", "The bit is worn out: craft the drill with a new Drill Bit");
-        add("tooltip.comminutioncraft.drill.role", "Mines like a pickaxe and a shovel");
         add("tooltip.comminutioncraft.chainsaw.role", "Cuts like an axe, and through leaves");
         add("tooltip.comminutioncraft.ability.area", "Mines 3x3");
         add("tooltip.comminutioncraft.ability.fortune", "Fortune III");

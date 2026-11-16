@@ -166,7 +166,6 @@ public final class ModTooltips {
     private static void toolDetails(ItemStack stack, PoweredTool tool, List<Component> lines) {
         ToolTier tier = tool.tier();
         boolean drill = tool instanceof DrillItem;
-        lines.add(gray(drill ? "tooltip.comminutioncraft.drill.role" : "tooltip.comminutioncraft.chainsaw.role"));
         if (tier.powered()) {
             lines.add(gray("tooltip.comminutioncraft.tool_energy", number(PoweredTool.energy(stack)), number(tier.capacity())));
             lines.add(Component.translatable("tooltip.comminutioncraft.tool_charge").withStyle(ChatFormatting.DARK_GRAY));
