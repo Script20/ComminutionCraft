@@ -7,6 +7,7 @@ import com.script.comminutioncraft.client.ModTooltips;
 import com.script.comminutioncraft.client.gui.AtmosphericWaterGeneratorScreen;
 import com.script.comminutioncraft.client.gui.CoalGranulatorScreen;
 import com.script.comminutioncraft.client.gui.CoalSmelterScreen;
+import com.script.comminutioncraft.client.gui.ConfigSectionScreen;
 import com.script.comminutioncraft.client.gui.CreativeFluidTankScreen;
 import com.script.comminutioncraft.client.gui.ElectricGeneratorScreen;
 import com.script.comminutioncraft.client.gui.ElectricMachineScreen;
@@ -64,7 +65,7 @@ public class ComminutionCraftClient {
     public ComminutionCraftClient(IEventBus modEventBus, ModContainer modContainer) {
         // Mods menu > Comminution Craft > Config: NeoForge's generated screen for our config spec
         modContainer.registerExtensionPoint(IConfigScreenFactory.class,
-                ConfigurationScreen::new);
+                (container, parent) -> new ConfigurationScreen(container, parent, ConfigSectionScreen::new));
         modEventBus.addListener(ComminutionCraftClient::registerScreens);
         modEventBus.addListener(ModDataGenerators::gatherData);
         NeoForge.EVENT_BUS.addListener(ClientRecipes::onRecipesReceived);
