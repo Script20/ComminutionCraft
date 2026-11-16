@@ -10,6 +10,7 @@ import com.script.comminutioncraft.common.cable.PipeFluidHandler;
 import com.script.comminutioncraft.common.compat.patchouli.GuideBook;
 import com.script.comminutioncraft.common.config.ComminutionConfig;
 import com.script.comminutioncraft.common.config.MachineConfig;
+import com.script.comminutioncraft.common.item.tool.AreaBreaker;
 import com.script.comminutioncraft.common.item.tool.OreHammer;
 import com.script.comminutioncraft.common.item.tool.PoweredTool;
 import com.script.comminutioncraft.common.item.tool.ToolTier;
@@ -27,6 +28,7 @@ import com.script.comminutioncraft.common.machine.OreWasherBlockEntity;
 import com.script.comminutioncraft.common.machine.PelletPressBlockEntity;
 import com.script.comminutioncraft.common.machine.PlasmaMachineBlockEntity;
 import com.script.comminutioncraft.common.machine.ReactorPortBlockEntity;
+import com.script.comminutioncraft.common.network.SwitchDrillModePayload;
 import com.script.comminutioncraft.common.network.SwitchWrenchModePayload;
 import com.script.comminutioncraft.common.recipe.RecipeSync;
 import com.script.comminutioncraft.common.registry.ModBlockEntities;
@@ -91,10 +93,12 @@ public class ComminutionCraft {
         modEventBus.addListener(ModDataMaps::register);
         modEventBus.addListener(ModGameTests::registerTests);
         modEventBus.addListener(SwitchWrenchModePayload::register);
+        modEventBus.addListener(SwitchDrillModePayload::register);
         ModWoods.register(modEventBus);
 
         NeoForge.EVENT_BUS.addListener(RecipeSync::sendToClients);
         NeoForge.EVENT_BUS.addListener(OreHammer::onBlockDrops);
+        NeoForge.EVENT_BUS.addListener(AreaBreaker::onBlockDrops);
     }
 
     /**

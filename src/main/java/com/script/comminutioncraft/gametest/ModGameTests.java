@@ -11,6 +11,7 @@ import com.script.comminutioncraft.common.data.ProcessedMetal;
 import com.script.comminutioncraft.common.energy.MachineEnergyStorage;
 import com.script.comminutioncraft.common.item.WrenchItem;
 import com.script.comminutioncraft.common.item.WrenchMode;
+import com.script.comminutioncraft.common.item.tool.DrillItem;
 import com.script.comminutioncraft.common.item.tool.PoweredTool;
 import com.script.comminutioncraft.common.item.tool.ToolTier;
 import com.script.comminutioncraft.common.machine.AcceleratorPortBlock;
@@ -201,6 +202,7 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("tall_fusion_chainsaw_fells_trees_only", () -> ModGameTests::fusionChainsawFellsTreesOnly);
         TEST_FUNCTIONS.register("tall_singularity_chainsaw_clears_and_replants", () -> ModGameTests::singularityChainsawClearsAndReplants);
         TEST_FUNCTIONS.register("singularity_drill_vein_mines", () -> ModGameTests::singularityDrillVeinMines);
+        TEST_FUNCTIONS.register("tall_drill_1x1_mode_mines_one", () -> ModGameTests::drillSingleModeMinesOne);
         TEST_FUNCTIONS.register("paxel_strips_paths_and_tills", () -> ModGameTests::paxelStripsPathsAndTills);
         TEST_FUNCTIONS.register("battery_charges_drill_and_upgrade_keeps_fe", () -> ModGameTests::batteryChargesDrillAndUpgradeKeepsFe);
     }
@@ -1364,6 +1366,29 @@ public final class ModGameTests {
                 new BlockHitResult(Vec3.atCenterOf(clicked), Direction.UP, clicked, false));
         vein.forEach(p -> helper.assertBlockPresent(Blocks.AIR, p));
         helper.assertBlockPresent(Blocks.IRON_ORE, new BlockPos(0, 1, 4));
+        // the drops land on the player's head (raw iron, with Fortune III often more than one each)
+        int atPlayer = helper.getLevel().getEntitiesOfClass(ItemEntity.class, new AABB(player.blockPosition()).inflate(1.5))
+                .stream().filter(e -> e.getItem().is(Items.RAW_IRON)).mapToInt(e -> e.getItem().getCount()).sum();
+        helper.assertTrue(atPlayer >= vein.size(), "The vein's raw iron should land on the player, found " + atPlayer);
+        helper.succeed();
+    }
+
+    /** Switched to 1x1, a Fusion Drill breaks only the block it hits. */
+    private static void drillSingleModeMinesOne(GameTestHelper helper) {
+        int z = 4;
+        for (int x = 3; x <= 5; x++) {
+            for (int y = 1; y <= 3; y++) {
+                helper.setBlock(new BlockPos(x, y, z), Blocks.STONE);
+            }
+        }
+        ItemStack drill = charged(ModItems.FUSION_DRILL.get());
+        ServerPlayer player = toolPlayer(helper, drill);
+        DrillItem.switchMode(helper.getLevel(), player, player.getMainHandItem());
+        helper.assertFalse(((DrillItem) drill.getItem()).minesArea(player.getMainHandItem()), "It should be in 1x1 mode now");
+        player.gameMode.destroyBlock(helper.absolutePos(new BlockPos(4, 2, z)));
+        helper.assertBlockPresent(Blocks.AIR, new BlockPos(4, 2, z));
+        helper.assertBlockPresent(Blocks.STONE, new BlockPos(3, 2, z));
+        helper.assertBlockPresent(Blocks.STONE, new BlockPos(4, 3, z));
         helper.succeed();
     }
 

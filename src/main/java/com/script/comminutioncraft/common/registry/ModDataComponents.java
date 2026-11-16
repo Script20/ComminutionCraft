@@ -1,5 +1,6 @@
 package com.script.comminutioncraft.common.registry;
 
+import com.mojang.serialization.Codec;
 import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.item.WrenchMode;
 import com.script.comminutioncraft.common.machine.control.MachineSettings;
@@ -21,6 +22,12 @@ public final class ModDataComponents {
             DATA_COMPONENTS.registerComponentType("wrench_mode", builder -> builder
                     .persistent(WrenchMode.CODEC)
                     .networkSynchronized(WrenchMode.STREAM_CODEC));
+
+    /** A Fusion or better drill's mode: true = 3x3 (the default when absent), false = 1x1. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> DRILL_AREA =
+            DATA_COMPONENTS.registerComponentType("drill_area", builder -> builder
+                    .persistent(Codec.BOOL)
+                    .networkSynchronized(ByteBufCodecs.BOOL));
 
     /** Redstone + side settings of a machine picked up with the wrench; placing the item puts them back. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<MachineSettings>> MACHINE_SETTINGS =

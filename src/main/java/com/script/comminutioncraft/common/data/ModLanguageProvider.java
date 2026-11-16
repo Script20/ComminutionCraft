@@ -2,6 +2,7 @@ package com.script.comminutioncraft.common.data;
 
 import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.config.MachineConfig;
+import com.script.comminutioncraft.common.item.tool.DrillItem;
 import com.script.comminutioncraft.common.registry.ModBlocks;
 import com.script.comminutioncraft.common.registry.ModEntities;
 import com.script.comminutioncraft.common.registry.ModItems;
@@ -250,7 +251,10 @@ public class ModLanguageProvider extends LanguageProvider {
         add("tooltip.comminutioncraft.bit_uses", "Bit: %s / %s uses left");
         add("tooltip.comminutioncraft.bit_worn", "The bit is worn out: craft the drill with a new Drill Bit");
         add("tooltip.comminutioncraft.chainsaw.role", "Cuts like an axe, and through leaves");
-        add("tooltip.comminutioncraft.ability.area", "Mines 3x3");
+        add("tooltip.comminutioncraft.drill_mode.area", "Mode: 3x3");
+        add("tooltip.comminutioncraft.drill_mode.single", "Mode: 1x1");
+        add("tooltip.comminutioncraft.drill_mode.switch", "Press %s to switch mode");
+        add(DrillItem.MODE_KEY, "Switch Drill Mode");
         add("tooltip.comminutioncraft.ability.fortune", "Fortune III");
         add("tooltip.comminutioncraft.ability.vein", "Right-click an ore to mine the whole vein");
         add("tooltip.comminutioncraft.ability.fell", "Fells a whole tree in one swing");

@@ -175,11 +175,14 @@ public final class ModTooltips {
             lines.add(gray("tooltip.comminutioncraft.bit_uses", number(stack.getMaxDamage() - 1 - stack.getDamageValue()),
                     number(stack.getMaxDamage() - 1)));
         }
+        if (tool instanceof DrillItem drillItem && drillItem.hasModes()) {
+            lines.add(Component.translatable(drillItem.minesArea(stack) ? "tooltip.comminutioncraft.drill_mode.area"
+                    : "tooltip.comminutioncraft.drill_mode.single").withStyle(ChatFormatting.AQUA));
+            lines.add(Component.translatable("tooltip.comminutioncraft.drill_mode.switch", Component.keybind(DrillItem.MODE_KEY))
+                    .withStyle(ChatFormatting.DARK_GRAY));
+        }
         List<String> abilities = new ArrayList<>();
         if (drill) {
-            if (tier.level >= 4) {
-                abilities.add("area");
-            }
             if (tier.level >= 5) {
                 abilities.add("fortune");
             }
