@@ -893,7 +893,6 @@
   "tooltip.comminutioncraft.stored_fluid": "%s: %s mB",
   "tooltip.comminutioncraft.tank_amount": "Amount: %s / %s mB",
   "tooltip.comminutioncraft.tank_amount_fluid": "Amount: %s %s / %s mB",
-  "tooltip.comminutioncraft.tool_charge": "Charge it in an Energy Battery's charge slot",
   "tooltip.comminutioncraft.tool_energy": "Energy: %s / %s FE",
   "tooltip.comminutioncraft.upgrade": "Goes in a machine's Upgrades tab, up to %s",
   "tooltip.comminutioncraft.upgrade.energy": "Each: 16% less FE per operation, +50% FE buffer",

@@ -168,7 +168,6 @@ public final class ModTooltips {
         boolean drill = tool instanceof DrillItem;
         if (tier.powered()) {
             lines.add(gray("tooltip.comminutioncraft.tool_energy", number(PoweredTool.energy(stack)), number(tier.capacity())));
-            lines.add(Component.translatable("tooltip.comminutioncraft.tool_charge").withStyle(ChatFormatting.DARK_GRAY));
         } else if (tool.bitWorn(stack)) {
             lines.add(Component.translatable("tooltip.comminutioncraft.bit_worn").withStyle(ChatFormatting.RED));
         } else {

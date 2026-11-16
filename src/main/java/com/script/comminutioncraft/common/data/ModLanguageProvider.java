@@ -247,7 +247,6 @@ public class ModLanguageProvider extends LanguageProvider {
         add("tooltip.comminutioncraft.drill_bit", "Fits a Coal Drill: craft them together to replace a worn bit");
         add("tooltip.comminutioncraft.paxel", "Pickaxe, axe, shovel and hoe in one; sneak to till instead of making a path");
         add("tooltip.comminutioncraft.tool_energy", "Energy: %s / %s FE");
-        add("tooltip.comminutioncraft.tool_charge", "Charge it in an Energy Battery's charge slot");
         add("tooltip.comminutioncraft.bit_uses", "Bit: %s / %s uses left");
         add("tooltip.comminutioncraft.bit_worn", "The bit is worn out: craft the drill with a new Drill Bit");
         add("tooltip.comminutioncraft.chainsaw.role", "Cuts like an axe, and through leaves");
