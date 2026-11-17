@@ -7,6 +7,7 @@ import com.script.comminutioncraft.client.gui.CoalSmelterScreen;
 import com.script.comminutioncraft.client.gui.CreativeChestScreen;
 import com.script.comminutioncraft.client.gui.ElectricGeneratorScreen;
 import com.script.comminutioncraft.client.gui.ElectricMachineScreen;
+import com.script.comminutioncraft.client.gui.ItemPipeScreen;
 import com.script.comminutioncraft.client.gui.MachineScreen;
 import com.script.comminutioncraft.client.gui.PlasmaMachineScreen;
 import com.script.comminutioncraft.common.data.ProcessedMetal;
@@ -28,7 +29,9 @@ import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlockEntity;
 import com.script.comminutioncraft.common.machine.PlasmaGranulatorBlockEntity;
 import com.script.comminutioncraft.common.machine.SingularityProcessorBlockEntity;
 import com.script.comminutioncraft.common.machine.TritiumBreederBlockEntity;
-import com.script.comminutioncraft.common.network.SetCreativeChestItemPayload;
+import com.script.comminutioncraft.common.network.SetGhostItemPayload;
+import com.script.comminutioncraft.common.pipe.ItemPipeMenu;
+import com.script.comminutioncraft.common.pipe.PipeSide;
 import com.script.comminutioncraft.common.recipe.AssemblingRecipe;
 import com.script.comminutioncraft.common.recipe.FlotationRecipe;
 import com.script.comminutioncraft.common.recipe.GranulatingRecipe;
@@ -40,6 +43,7 @@ import com.script.comminutioncraft.common.registry.ModFluids;
 import com.script.comminutioncraft.common.registry.ModItems;
 import com.script.comminutioncraft.common.registry.ModMenus;
 import com.script.comminutioncraft.common.registry.ModRecipes;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -324,9 +328,38 @@ public class ComminutionJeiPlugin implements IModPlugin {
                     @Override
                     public void accept(I dropped) {
                         ingredient.getItemStack().ifPresent(stack ->
-                                ClientPacketDistributor.sendToServer(new SetCreativeChestItemPayload(stack.copyWithCount(1))));
+                                ClientPacketDistributor.sendToServer(new SetGhostItemPayload(0, stack.copyWithCount(1))));
                     }
                 });
+            }
+
+            @Override
+            public void onComplete() {}
+        });
+        registration.addGhostIngredientHandler(ItemPipeScreen.class, new IGhostIngredientHandler<>() {
+            @Override
+            public <I> List<Target<I>> getTargetsTyped(ItemPipeScreen screen, ITypedIngredient<I> ingredient, boolean doStart) {
+                if (ingredient.getItemStack().isEmpty() || !screen.getMenu().hasCircuit()) {
+                    return List.of();
+                }
+                List<Target<I>> targets = new ArrayList<>();
+                for (int i = 0; i < PipeSide.FILTER_SLOTS; i++) {
+                    int slot = ItemPipeMenu.FILTER_START + i;
+                    Rect2i area = new Rect2i(screen.filterScreenX(i), screen.filterScreenY(), 16, 16);
+                    targets.add(new Target<>() {
+                        @Override
+                        public Rect2i getArea() {
+                            return area;
+                        }
+
+                        @Override
+                        public void accept(I dropped) {
+                            ingredient.getItemStack().ifPresent(stack ->
+                                    ClientPacketDistributor.sendToServer(new SetGhostItemPayload(slot, stack.copyWithCount(1))));
+                        }
+                    });
+                }
+                return targets;
             }
 
             @Override
@@ -338,6 +371,13 @@ public class ComminutionJeiPlugin implements IModPlugin {
         registration.addRecipeClickArea(CoalGranulatorScreen.class, 56, 36, 14, 14, RecipeTypes.SMELTING_FUEL);
         registration.addRecipeClickArea(CoalSmelterScreen.class, 56, 36, 14, 14, RecipeTypes.SMELTING_FUEL);
         registration.addRecipeClickArea(ElectricGeneratorScreen.class, 81, 34, 14, 14, RecipeTypes.SMELTING_FUEL);
+
+        registration.addGuiContainerHandler(ItemPipeScreen.class, new IGuiContainerHandler<>() {
+            @Override
+            public List<Rect2i> getGuiExtraAreas(ItemPipeScreen screen) {
+                return screen.extraAreas();
+            }
+        });
 
         // The redstone / side config tabs stick out of the GUI's right edge.
         registration.addGenericGuiContainerHandler(MachineScreen.class, new IGuiContainerHandler<MachineScreen<?>>() {

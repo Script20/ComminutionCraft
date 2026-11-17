@@ -8,6 +8,7 @@ import com.script.comminutioncraft.common.machine.control.RelativeSide;
 import com.script.comminutioncraft.common.machine.control.SideMode;
 import com.script.comminutioncraft.common.machine.upgrade.UpgradeHolder;
 import com.script.comminutioncraft.common.network.SwitchWrenchModePayload;
+import com.script.comminutioncraft.common.pipe.ItemPipeBlock;
 import com.script.comminutioncraft.common.registry.ModDataComponents;
 import com.script.comminutioncraft.common.registry.ModItems;
 import net.minecraft.core.BlockPos;
@@ -100,6 +101,19 @@ public class WrenchItem extends Item {
         // The arm (or core face) that was clicked: whichever way the hit point sticks out from the centre most.
         Vec3 offset = context.getClickLocation().subtract(Vec3.atCenterOf(pos));
         Direction side = Direction.getApproximateNearest(offset.x, offset.y, offset.z);
+        if (level.getBlockState(pos).getBlock() instanceof ItemPipeBlock) {
+            if (level.isClientSide()) {
+                return InteractionResult.SUCCESS;
+            }
+            ItemPipeBlock.Mode mode = ItemPipeBlock.cycleMode(level, pos, side);
+            if (mode != null) {
+                if (context.getPlayer() != null) {
+                    context.getPlayer().sendOverlayMessage(Component.translatable("message.comminutioncraft.wrench.pipe_mode", mode.displayName()));
+                }
+                level.playSound(null, pos, SoundEvents.UI_BUTTON_CLICK.value(), SoundSource.BLOCKS, 0.4F, 1.2F);
+                return InteractionResult.SUCCESS;
+            }
+        }
         if (!level.isClientSide()) {
             boolean restored = ConduitBlock.toggleSide(level, pos, side);
             if (context.getPlayer() != null) {

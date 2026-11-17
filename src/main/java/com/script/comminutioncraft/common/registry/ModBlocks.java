@@ -46,6 +46,7 @@ import com.script.comminutioncraft.common.machine.ReactorGlassBlock;
 import com.script.comminutioncraft.common.machine.ReactorPortBlock;
 import com.script.comminutioncraft.common.machine.SingularityProcessorBlock;
 import com.script.comminutioncraft.common.machine.TritiumBreederBlock;
+import com.script.comminutioncraft.common.pipe.ItemPipeBlock;
 import com.script.comminutioncraft.common.storage.SoarynChestBlock;
 import com.script.comminutioncraft.common.worldgen.ModTrees;
 import java.util.List;
@@ -129,6 +130,14 @@ public final class ModBlocks {
 
     public static final DeferredBlock<FluidPipeBlock> FLUID_PIPE = BLOCKS.registerBlock(
             "fluid_pipe", properties -> new FluidPipeBlock(properties, FluidPipeBlock.FLUID_PIPE_RATE), properties -> properties
+                    .mapColor(MapColor.METAL)
+                    .strength(0.5F)
+                    .sound(SoundType.COPPER)
+                    .noOcclusion());
+
+    /** Item Pipe (tier 2): see-through, so it mustn't hide its neighbours' faces. */
+    public static final DeferredBlock<ItemPipeBlock> ITEM_PIPE = BLOCKS.registerBlock(
+            "item_pipe", ItemPipeBlock::new, properties -> properties
                     .mapColor(MapColor.METAL)
                     .strength(0.5F)
                     .sound(SoundType.COPPER)

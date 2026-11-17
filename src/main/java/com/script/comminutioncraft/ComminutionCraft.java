@@ -29,7 +29,7 @@ import com.script.comminutioncraft.common.machine.OreWasherBlockEntity;
 import com.script.comminutioncraft.common.machine.PelletPressBlockEntity;
 import com.script.comminutioncraft.common.machine.PlasmaMachineBlockEntity;
 import com.script.comminutioncraft.common.machine.ReactorPortBlockEntity;
-import com.script.comminutioncraft.common.network.SetCreativeChestItemPayload;
+import com.script.comminutioncraft.common.network.SetGhostItemPayload;
 import com.script.comminutioncraft.common.network.SwitchDrillModePayload;
 import com.script.comminutioncraft.common.network.SwitchWrenchModePayload;
 import com.script.comminutioncraft.common.recipe.RecipeSync;
@@ -96,7 +96,7 @@ public class ComminutionCraft {
         modEventBus.addListener(ModGameTests::registerTests);
         modEventBus.addListener(SwitchWrenchModePayload::register);
         modEventBus.addListener(SwitchDrillModePayload::register);
-        modEventBus.addListener(SetCreativeChestItemPayload::register);
+        modEventBus.addListener(SetGhostItemPayload::register);
         ModWoods.register(modEventBus);
 
         NeoForge.EVENT_BUS.addListener(RecipeSync::sendToClients);

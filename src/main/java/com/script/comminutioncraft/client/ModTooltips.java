@@ -21,6 +21,7 @@ import com.script.comminutioncraft.common.machine.FluidTankBlockEntity;
 import com.script.comminutioncraft.common.machine.HorizonControllerBlock;
 import com.script.comminutioncraft.common.machine.HorizonPortBlock;
 import com.script.comminutioncraft.common.machine.upgrade.UpgradeType;
+import com.script.comminutioncraft.common.pipe.ItemPipeBlock;
 import com.script.comminutioncraft.common.registry.ModDataComponents;
 import com.script.comminutioncraft.common.registry.ModFluids;
 import com.script.comminutioncraft.common.registry.ModItems;
@@ -101,6 +102,9 @@ public final class ModTooltips {
 
         if (block instanceof EnergyCableBlock cable) {
             lines.add(gray("tooltip.comminutioncraft.cable_rate", number(cable.getTransferRate())));
+        } else if (block instanceof ItemPipeBlock) {
+            lines.add(gray("tooltip.comminutioncraft.item_pipe"));
+            lines.add(gray("tooltip.comminutioncraft.item_pipe_circuit"));
         } else if (block instanceof FluidPipeBlock pipe) {
             lines.add(gray("tooltip.comminutioncraft.pipe_rate", number(pipe.getTransferRate())));
             if (pipe.carries(FluidResource.of(ModFluids.ANTIMATTER.get()))) {

@@ -17,6 +17,7 @@ import com.script.comminutioncraft.client.gui.EventHorizonScreen;
 import com.script.comminutioncraft.client.gui.FluidMachineScreen;
 import com.script.comminutioncraft.client.gui.FrothFlotationCellScreen;
 import com.script.comminutioncraft.client.gui.FusionReactorScreen;
+import com.script.comminutioncraft.client.gui.ItemPipeScreen;
 import com.script.comminutioncraft.client.gui.OrePurifierScreen;
 import com.script.comminutioncraft.client.gui.OreWasherScreen;
 import com.script.comminutioncraft.client.gui.ParticleAcceleratorScreen;
@@ -29,6 +30,7 @@ import com.script.comminutioncraft.client.render.BlackHoleEntityRenderer;
 import com.script.comminutioncraft.client.render.BlackHoleRenderer;
 import com.script.comminutioncraft.client.render.FluidTankRenderer;
 import com.script.comminutioncraft.client.render.FusionReactorRenderer;
+import com.script.comminutioncraft.client.render.ItemPipeRenderer;
 import com.script.comminutioncraft.client.render.TankItemRenderer;
 import com.script.comminutioncraft.client.render.WoodRenderers;
 import com.script.comminutioncraft.client.sound.MachineSounds;
@@ -109,6 +111,7 @@ public class ComminutionCraftClient {
         event.register(ModMenus.PARTICLE_ACCELERATOR.get(), ParticleAcceleratorScreen::new);
         event.register(ModMenus.CREATIVE_FLUID_TANK.get(), CreativeFluidTankScreen::new);
         event.register(ModMenus.CREATIVE_CHEST.get(), CreativeChestScreen::new);
+        event.register(ModMenus.ITEM_PIPE.get(), ItemPipeScreen::new);
         event.<ElectricMachineMenu, OrePurifierScreen>register(ModMenus.ORE_PURIFIER.get(),
                 (menu, inventory, title) -> new OrePurifierScreen((OrePurifierMenu) menu, inventory, title));
         event.register(ModMenus.FUSION_ENERGY_BATTERY.get(), EnergyBatteryScreen::fusion);
@@ -140,6 +143,7 @@ public class ComminutionCraftClient {
     private static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(ModBlockEntities.FLUID_TANK.get(), context -> new FluidTankRenderer(context.sprites()));
         event.registerBlockEntityRenderer(ModBlockEntities.CREATIVE_FLUID_TANK.get(), context -> new FluidTankRenderer(context.sprites()));
+        event.registerBlockEntityRenderer(ModBlockEntities.ITEM_PIPE.get(), ItemPipeRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.CONTAINMENT_CELL.get(), context -> new FluidTankRenderer(context.sprites()));
         event.registerBlockEntityRenderer(ModBlockEntities.FUSION_REACTOR.get(), context -> new FusionReactorRenderer(context.sprites()));
         event.registerEntityRenderer(ModEntities.BLACK_HOLE.get(),

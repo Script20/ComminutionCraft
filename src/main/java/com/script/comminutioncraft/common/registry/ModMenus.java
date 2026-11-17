@@ -24,9 +24,11 @@ import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlockEntity;
 import com.script.comminutioncraft.common.machine.PlasmaMachineMenu;
 import com.script.comminutioncraft.common.machine.SingularityProcessorMenu;
 import com.script.comminutioncraft.common.machine.TritiumBreederBlockEntity;
+import com.script.comminutioncraft.common.pipe.ItemPipeMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.MenuType;
+import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -137,6 +139,10 @@ public final class ModMenus {
 
     public static final DeferredHolder<MenuType<?>, MenuType<CreativeFluidTankMenu>> CREATIVE_FLUID_TANK =
             MENUS.register("creative_fluid_tank", () -> new MenuType<>(CreativeFluidTankMenu::client, FeatureFlags.VANILLA_SET));
+
+    /** Opened with the pipe's position and the clicked side (see ItemPipeBlock.useWithoutItem). */
+    public static final DeferredHolder<MenuType<?>, MenuType<ItemPipeMenu>> ITEM_PIPE =
+            MENUS.register("item_pipe", () -> IMenuTypeExtension.create(ItemPipeMenu::client));
 
     public static final DeferredHolder<MenuType<?>, MenuType<CreativeChestMenu>> CREATIVE_CHEST =
             MENUS.register("creative_chest", () -> new MenuType<>(CreativeChestMenu::client, FeatureFlags.VANILLA_SET));

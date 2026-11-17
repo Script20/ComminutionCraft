@@ -200,7 +200,7 @@ public abstract class MachineScreen<M extends AbstractContainerMenu & Controllab
         }
     }
 
-    private static Item redstoneIcon(RedstoneMode mode) {
+    static Item redstoneIcon(RedstoneMode mode) {
         return switch (mode) {
             case IGNORE -> Items.GUNPOWDER;
             case HIGH -> Items.REDSTONE_TORCH;

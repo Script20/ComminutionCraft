@@ -37,6 +37,7 @@ import com.script.comminutioncraft.common.machine.PlasmaSmelterBlockEntity;
 import com.script.comminutioncraft.common.machine.ReactorPortBlockEntity;
 import com.script.comminutioncraft.common.machine.SingularityProcessorBlockEntity;
 import com.script.comminutioncraft.common.machine.TritiumBreederBlockEntity;
+import com.script.comminutioncraft.common.pipe.ItemPipeBlockEntity;
 import com.script.comminutioncraft.common.storage.SoarynChestBlockEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -146,6 +147,10 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CreativeFluidTankBlockEntity>> CREATIVE_FLUID_TANK =
             BLOCK_ENTITY_TYPES.register("creative_fluid_tank",
                     () -> new BlockEntityType<>(CreativeFluidTankBlockEntity::new, ModBlocks.CREATIVE_FLUID_TANK.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ItemPipeBlockEntity>> ITEM_PIPE =
+            BLOCK_ENTITY_TYPES.register("item_pipe",
+                    () -> new BlockEntityType<>(ItemPipeBlockEntity::new, ModBlocks.ITEM_PIPE.get()));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CreativeChestBlockEntity>> CREATIVE_CHEST =
             BLOCK_ENTITY_TYPES.register("creative_chest",

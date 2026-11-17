@@ -6,6 +6,7 @@ import com.script.comminutioncraft.client.render.TankItemRenderer;
 import com.script.comminutioncraft.common.block.StoneSet;
 import com.script.comminutioncraft.common.cable.CableConnection;
 import com.script.comminutioncraft.common.cable.ConduitBlock;
+import com.script.comminutioncraft.common.pipe.ItemPipeBlock;
 import com.script.comminutioncraft.common.item.WrenchMode;
 import com.script.comminutioncraft.common.machine.AcceleratorPortBlock;
 import com.script.comminutioncraft.common.machine.EnergyBatteryBlock;
@@ -80,6 +81,51 @@ public class ModModelProvider extends ModelProvider {
                     .face(Direction.DOWN, face -> face.texture(CABLE).uvs(8, 0, 16, 1)))
             .build();
 
+    // Item Pipe: thicker (core 8, arms 6, plate 10) so the travelling items show. Textures: item_pipe (core 8x8 at (0,0),
+    // its middle 6x6 = the arm's end, tube strip 16x6 at (0,8)) and item_pipe_plate (the Insert plate 10x10 at (0,0)).
+    private static final TextureSlot PIPE_PLATE = TextureSlot.create("plate");
+
+    private static final ModelTemplate ITEM_PIPE_CORE = ExtendedModelTemplateBuilder.builder()
+            .requiredTextureSlot(CABLE).requiredTextureSlot(TextureSlot.PARTICLE)
+            .element(e -> e.from(4, 4, 4).to(12, 12, 12)
+                    .allFaces((dir, face) -> face.texture(CABLE).uvs(0, 0, 8, 8)))
+            .build();
+
+    private static final ModelTemplate ITEM_PIPE_ARM = ExtendedModelTemplateBuilder.builder()
+            .requiredTextureSlot(CABLE).requiredTextureSlot(TextureSlot.PARTICLE)
+            .element(e -> e.from(5, 5, 0).to(11, 11, 4)
+                    .face(Direction.NORTH, face -> face.texture(CABLE).uvs(1, 1, 7, 7).cullface(Direction.NORTH))
+                    .face(Direction.EAST, face -> face.texture(CABLE).uvs(0, 8, 4, 14))
+                    .face(Direction.WEST, face -> face.texture(CABLE).uvs(0, 8, 4, 14))
+                    .face(Direction.UP, face -> face.texture(CABLE).uvs(0, 8, 4, 14).rotation(Quadrant.R90))
+                    .face(Direction.DOWN, face -> face.texture(CABLE).uvs(0, 8, 4, 14).rotation(Quadrant.R90)))
+            .build();
+
+    private static final ModelTemplate ITEM_PIPE_PLATE = ExtendedModelTemplateBuilder.builder()
+            .requiredTextureSlot(PIPE_PLATE).requiredTextureSlot(TextureSlot.PARTICLE)
+            .element(e -> e.from(3, 3, 0).to(13, 13, 1)
+                    .face(Direction.NORTH, face -> face.texture(PIPE_PLATE).uvs(0, 0, 10, 10).cullface(Direction.NORTH))
+                    .face(Direction.SOUTH, face -> face.texture(PIPE_PLATE).uvs(0, 0, 10, 10))
+                    .face(Direction.EAST, face -> face.texture(PIPE_PLATE).uvs(0, 0, 1, 10))
+                    .face(Direction.WEST, face -> face.texture(PIPE_PLATE).uvs(0, 0, 1, 10))
+                    .face(Direction.UP, face -> face.texture(PIPE_PLATE).uvs(0, 0, 10, 1))
+                    .face(Direction.DOWN, face -> face.texture(PIPE_PLATE).uvs(0, 0, 10, 1)))
+            .build();
+
+    private static final ModelTemplate ITEM_PIPE_INVENTORY = ExtendedModelTemplateBuilder.builder()
+            .parent(Identifier.withDefaultNamespace("block/block"))
+            .requiredTextureSlot(CABLE).requiredTextureSlot(TextureSlot.PARTICLE)
+            .element(e -> e.from(4, 4, 4).to(12, 12, 12)
+                    .allFaces((dir, face) -> face.texture(CABLE).uvs(0, 0, 8, 8)))
+            .element(e -> e.from(0, 5, 5).to(16, 11, 11)
+                    .face(Direction.NORTH, face -> face.texture(CABLE).uvs(0, 8, 16, 14))
+                    .face(Direction.SOUTH, face -> face.texture(CABLE).uvs(0, 8, 16, 14))
+                    .face(Direction.UP, face -> face.texture(CABLE).uvs(0, 8, 16, 14))
+                    .face(Direction.DOWN, face -> face.texture(CABLE).uvs(0, 8, 16, 14))
+                    .face(Direction.EAST, face -> face.texture(CABLE).uvs(1, 1, 7, 7))
+                    .face(Direction.WEST, face -> face.texture(CABLE).uvs(1, 1, 7, 7)))
+            .build();
+
     /** Item form: the core with a straight run of cable through it, east to west. */
     private static final ModelTemplate CABLE_INVENTORY = ExtendedModelTemplateBuilder.builder()
             .parent(Identifier.withDefaultNamespace("block/block"))
@@ -149,6 +195,7 @@ public class ModModelProvider extends ModelProvider {
         itemModels.generateFlatItem(ModItems.REACTOR_PLATING.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.FUSION_FUEL_PELLET.get(), ModelTemplates.FLAT_ITEM);
         conduit(blockModels, itemModels, ModBlocks.FLUID_PIPE.get(), ModItems.FLUID_PIPE.get());
+        itemPipe(blockModels, itemModels);
         // fluid_tank_side has a transparent window, so the model renders cutout; the contents are a renderer
         blockModels.createTrivialBlock(ModBlocks.FLUID_TANK.get(), TexturedModel.COLUMN);
         blockModels.createTrivialBlock(ModBlocks.CONTAINMENT_CELL.get(), TexturedModel.COLUMN);
@@ -307,6 +354,35 @@ public class ModModelProvider extends ModelProvider {
 
         Identifier inventory = CABLE_INVENTORY.createWithSuffix(cable, "_inventory", textures, blockModels.modelOutput);
         itemModels.itemModelOutput.accept(item, ItemModelUtils.plainModel(inventory));
+    }
+
+    /** Like {@link #conduit} with the Item Pipe's thicker parts and its own plate texture (Extract plates: ItemPipeRenderer). */
+    private static void itemPipe(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
+        ItemPipeBlock pipe = ModBlocks.ITEM_PIPE.get();
+        TextureMapping textures = new TextureMapping()
+                .put(CABLE, TextureMapping.getBlockTexture(pipe))
+                .put(PIPE_PLATE, TextureMapping.getBlockTexture(pipe, "_plate"))
+                .put(TextureSlot.PARTICLE, TextureMapping.getBlockTexture(pipe));
+        MultiVariant core = BlockModelGenerators.plainVariant(ITEM_PIPE_CORE.createWithSuffix(pipe, "_core", textures, blockModels.modelOutput));
+        MultiVariant arm = BlockModelGenerators.plainVariant(ITEM_PIPE_ARM.createWithSuffix(pipe, "_arm", textures, blockModels.modelOutput));
+        MultiVariant plate = BlockModelGenerators.plainVariant(ITEM_PIPE_PLATE.createWithSuffix(pipe, "_plate", textures, blockModels.modelOutput));
+        MultiPartGenerator generator = MultiPartGenerator.multiPart(pipe).with(core);
+        for (Direction direction : Direction.values()) {
+            VariantMutator rotation = switch (direction) {
+                case NORTH -> BlockModelGenerators.NOP;
+                case EAST -> BlockModelGenerators.Y_ROT_90;
+                case SOUTH -> BlockModelGenerators.Y_ROT_180;
+                case WEST -> BlockModelGenerators.Y_ROT_270;
+                case UP -> BlockModelGenerators.X_ROT_270;
+                case DOWN -> BlockModelGenerators.X_ROT_90;
+            };
+            var property = ConduitBlock.CONNECTIONS.get(direction);
+            generator.with(BlockModelGenerators.condition().term(property, CableConnection.CABLE, CableConnection.MACHINE), arm.with(rotation));
+            generator.with(BlockModelGenerators.condition().term(property, CableConnection.MACHINE), plate.with(rotation));
+        }
+        blockModels.blockStateOutput.accept(generator);
+        Identifier inventory = ITEM_PIPE_INVENTORY.createWithSuffix(pipe, "_inventory", textures, blockModels.modelOutput);
+        itemModels.itemModelOutput.accept(ModItems.ITEM_PIPE.get(), ItemModelUtils.plainModel(inventory));
     }
 
     /** One texture per mode: copper grip (Rotate), blue (Cable), green (Configure); no component = Rotate. */

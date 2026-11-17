@@ -58,6 +58,7 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
                 .add(ModBlocks.ANTIMATTER_CABLE.get())
                 .add(ModBlocks.ANTIMATTER_ENERGY_BATTERY.get())
                 .add(ModBlocks.FLUID_PIPE.get())
+                .add(ModBlocks.ITEM_PIPE.get())
                 .add(ModBlocks.FLUID_TANK.get())
                 .add(ModBlocks.CONTAINMENT_CELL.get())
                 .add(ModBlocks.MAGNETIC_CONDUIT.get())

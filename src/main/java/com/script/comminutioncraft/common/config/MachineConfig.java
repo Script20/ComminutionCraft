@@ -117,6 +117,9 @@ public final class MachineConfig {
     public static final ConfigInt CREATIVE_ENERGY_BATTERY_PUSH_PER_FACE;
     public static final ConfigInt FLUID_TANK_CAPACITY;
     public static final ConfigInt FLUID_TANK_OUTPUT_RATE;
+    public static final ConfigInt ITEM_PIPE_EXTRACT_INTERVAL;
+    public static final ConfigInt ITEM_PIPE_EXTRACT_AMOUNT;
+    public static final ConfigInt ITEM_PIPE_TICKS_PER_BLOCK;
     public static final ConfigInt FLUID_MACHINES_TANK_CAPACITY;
     public static final ConfigInt FLUID_MACHINES_MAX_FLUID_OUTPUT;
     public static final ConfigDouble ATMOSPHERIC_WATER_GENERATOR_WATER_PER_OPEN_FACE;
@@ -265,6 +268,11 @@ public final class MachineConfig {
         builder.pop();
         section(builder, "creative_energy_battery", "Creative Energy Battery");
         CREATIVE_ENERGY_BATTERY_PUSH_PER_FACE = integer(builder, "creative_energy_battery", "pushPerFace", "Push per face", "FE per tick pushed into each face", 1_000_000);
+        builder.pop();
+        section(builder, "item_pipe", "Item Pipe");
+        ITEM_PIPE_EXTRACT_INTERVAL = integer(builder, "item_pipe", "extractInterval", "Extract interval", "Ticks between pulls on each Extract side", 10);
+        ITEM_PIPE_EXTRACT_AMOUNT = integer(builder, "item_pipe", "extractAmount", "Items per pull", "Most items an Extract side pulls at once", 8);
+        ITEM_PIPE_TICKS_PER_BLOCK = integer(builder, "item_pipe", "ticksPerBlock", "Ticks per block", "How long items take to cross one pipe (5 = 4 blocks a second)", 5);
         builder.pop();
         section(builder, "fluid_tank", "Fluid Tank");
         FLUID_TANK_CAPACITY = integer(builder, "fluid_tank", "capacity", "Capacity", "mB stored", 32_000);
@@ -432,7 +440,8 @@ public final class MachineConfig {
     /** Times, sizes and ratios the code divides by can't be 0; costs, outputs and rates can (0 = free / none). */
     private static boolean atLeastOne(String key) {
         for (String part : new String[] {"processTime", "apacity", "energyPerMb", "energyPerHydrogen", "waterPerHydrogen",
-                "waterPerDeuterium", "waterPerFilterWear", "pelletBurnTicks", "ignitionPlasmaPerTick", "TicksPerMb", "RingSide"}) {
+                "waterPerDeuterium", "waterPerFilterWear", "pelletBurnTicks", "ignitionPlasmaPerTick", "TicksPerMb", "RingSide",
+                "extractInterval", "ticksPerBlock"}) {
             if (key.contains(part)) {
                 return true;
             }

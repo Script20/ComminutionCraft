@@ -1,5 +1,6 @@
 package com.script.comminutioncraft.common.machine;
 
+import com.script.comminutioncraft.common.menu.GhostItemMenu;
 import com.script.comminutioncraft.common.registry.ModMenus;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -15,9 +16,9 @@ import org.jspecify.annotations.Nullable;
 /**
  * Creative Chest GUI: one "ghost" slot showing the picked item. Clicking it with an item picks that item (the item
  * stays in your hand), clicking it empty-handed clears it, shift-clicking an inventory stack picks that stack's item.
- * JEI drags go through {@link com.script.comminutioncraft.common.network.SetCreativeChestItemPayload}.
+ * JEI drags go through {@link GhostItemMenu} (creative-mode players only).
  */
-public class CreativeChestMenu extends AbstractContainerMenu {
+public class CreativeChestMenu extends AbstractContainerMenu implements GhostItemMenu {
     public static final int SLOT_X = 80;
     public static final int SLOT_Y = 35;
     private static final int PICK = 0;
@@ -54,6 +55,14 @@ public class CreativeChestMenu extends AbstractContainerMenu {
     public void pick(ItemStack stack) {
         if (chest != null) {
             chest.setItem(stack.isEmpty() ? ItemResource.EMPTY : ItemResource.of(stack));
+        }
+    }
+
+    /** JEI drag onto the slot: only creative-mode players may pick an item they don't hold. */
+    @Override
+    public void setGhost(Player player, int slot, ItemStack stack) {
+        if (slot == PICK && player.isCreative()) {
+            pick(stack);
         }
     }
 

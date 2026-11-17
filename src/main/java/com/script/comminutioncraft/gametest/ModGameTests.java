@@ -50,6 +50,9 @@ import com.script.comminutioncraft.common.machine.TritiumBreederBlockEntity;
 import com.script.comminutioncraft.common.machine.control.RedstoneMode;
 import com.script.comminutioncraft.common.machine.control.RelativeSide;
 import com.script.comminutioncraft.common.machine.control.SideMode;
+import com.script.comminutioncraft.common.pipe.ItemPipeBlock;
+import com.script.comminutioncraft.common.pipe.ItemPipeBlockEntity;
+import com.script.comminutioncraft.common.pipe.ItemPipeMenu;
 import com.script.comminutioncraft.common.recipe.DrillBitRecipe;
 import com.script.comminutioncraft.common.recipe.TagResult;
 import com.script.comminutioncraft.common.recipe.TagSmeltingRecipe;
@@ -94,11 +97,13 @@ import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FlowerPotBlock;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.SaplingBlock;
+import net.minecraft.world.level.block.entity.BarrelBlockEntity;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.entity.HangingSignBlockEntity;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
@@ -180,6 +185,9 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("creative_battery_powers_every_side", () -> ModGameTests::creativeBatteryPowersEverySide);
         TEST_FUNCTIONS.register("creative_tank_fills_and_stays_full", () -> ModGameTests::creativeTankFillsAndStaysFull);
         TEST_FUNCTIONS.register("creative_chest_picks_and_fills", () -> ModGameTests::creativeChestPicksAndFills);
+        TEST_FUNCTIONS.register("item_pipe_extracts_with_redstone", () -> ModGameTests::itemPipeExtractsWithRedstone);
+        TEST_FUNCTIONS.register("item_pipe_filter_round_robin", () -> ModGameTests::itemPipeFilterRoundRobin);
+        TEST_FUNCTIONS.register("item_pipe_wrench_cycles_mode", () -> ModGameTests::itemPipeWrenchCyclesMode);
         TEST_FUNCTIONS.register("creative_chest_endless_takes_nothing", () -> ModGameTests::creativeChestEndless);
         TEST_FUNCTIONS.register("accelerator_ring_forms_and_unforms", () -> ModGameTests::acceleratorRingFormsAndUnforms);
         TEST_FUNCTIONS.register("accelerator_makes_antimatter", () -> ModGameTests::acceleratorMakesAntimatter);
@@ -1712,6 +1720,85 @@ public final class ModGameTests {
             menu.clicked(0, 0, ContainerInput.PICKUP, player);
             helper.assertTrue(creative.getItem().isEmpty(), "Clicking empty-handed should clear it");
         });
+    }
+
+    /** Barrel -> 3 Item Pipes -> chest. The pipe is set to Extract from the barrel. */
+    private static BlockPos itemPipeLine(GameTestHelper helper) {
+        BlockPos barrel = new BlockPos(0, 1, 2);
+        helper.setBlock(barrel, Blocks.BARREL);
+        for (int x = 1; x <= 3; x++) {
+            helper.setBlock(new BlockPos(x, 1, 2), ModBlocks.ITEM_PIPE.get());
+        }
+        helper.setBlock(new BlockPos(4, 1, 2), Blocks.CHEST);
+        ItemPipeBlock.setMode(helper.getLevel(), helper.absolutePos(new BlockPos(1, 1, 2)), Direction.WEST, ItemPipeBlock.Mode.EXTRACT);
+        return barrel;
+    }
+
+    /**
+     * An Extract side starts at redstone High: nothing moves until the pipe is powered; then the barrel's 16 raw iron
+     * travel down the line into the chest.
+     */
+    private static void itemPipeExtractsWithRedstone(GameTestHelper helper) {
+        BlockPos barrel = itemPipeLine(helper);
+        BarrelBlockEntity source = helper.getBlockEntity(barrel, BarrelBlockEntity.class);
+        source.setItem(0, new ItemStack(Items.RAW_IRON, 16));
+        helper.runAfterDelay(40, () -> {
+            helper.assertTrue(source.countItem(Items.RAW_IRON) == 16, "Without a signal nothing should be pulled");
+            helper.setBlock(new BlockPos(1, 2, 2), Blocks.REDSTONE_BLOCK);
+            helper.succeedWhen(() -> {
+                ChestBlockEntity chest = helper.getBlockEntity(new BlockPos(4, 1, 2), ChestBlockEntity.class);
+                helper.assertTrue(chest.countItem(Items.RAW_IRON) == 16, "The chest should get all 16 raw iron, has "
+                        + chest.countItem(Items.RAW_IRON));
+                helper.assertTrue(source.countItem(Items.RAW_IRON) == 0, "The barrel should be empty");
+            });
+        });
+    }
+
+    /**
+     * With a circuit, a whitelist of raw iron and round robin, the Extract side leaves the cobblestone and shares the
+     * iron between a near chest and a far one, 8 each.
+     */
+    private static void itemPipeFilterRoundRobin(GameTestHelper helper) {
+        BlockPos barrel = itemPipeLine(helper);
+        helper.setBlock(new BlockPos(2, 1, 3), Blocks.CHEST); // next to the middle pipe: nearer than the end chest
+        BarrelBlockEntity source = helper.getBlockEntity(barrel, BarrelBlockEntity.class);
+        source.setItem(0, new ItemStack(Items.COBBLESTONE, 16));
+        source.setItem(1, new ItemStack(Items.RAW_IRON, 16));
+        ItemPipeBlockEntity pipe = helper.getBlockEntity(new BlockPos(1, 1, 2), ItemPipeBlockEntity.class);
+        Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+        ItemPipeMenu menu = new ItemPipeMenu(0, player.getInventory(), pipe, Direction.WEST);
+        menu.getSlot(ItemPipeMenu.CIRCUIT_SLOT).set(new ItemStack(ModItems.ELECTRONIC_CIRCUIT.get()));
+        menu.setGhost(player, ItemPipeMenu.FILTER_START, new ItemStack(Items.RAW_IRON));
+        helper.assertTrue(pipe.side(Direction.WEST).hasCircuit() && pipe.side(Direction.WEST).spreads(),
+                "The circuit should turn on round robin");
+        helper.setBlock(new BlockPos(1, 2, 2), Blocks.REDSTONE_BLOCK);
+        helper.succeedWhen(() -> {
+            ChestBlockEntity near = helper.getBlockEntity(new BlockPos(2, 1, 3), ChestBlockEntity.class);
+            ChestBlockEntity far = helper.getBlockEntity(new BlockPos(4, 1, 2), ChestBlockEntity.class);
+            helper.assertTrue(near.countItem(Items.RAW_IRON) == 8 && far.countItem(Items.RAW_IRON) == 8,
+                    "Round robin should give 8 raw iron to each chest, got " + near.countItem(Items.RAW_IRON) + " / " + far.countItem(Items.RAW_IRON));
+            helper.assertTrue(source.countItem(Items.COBBLESTONE) == 16, "The whitelist should leave the cobblestone");
+        });
+    }
+
+    /** The wrench's Cables/Pipes mode on a side touching a chest: Insert -> Extract -> None (cut) -> Insert. */
+    private static void itemPipeWrenchCyclesMode(GameTestHelper helper) {
+        BlockPos pipePos = new BlockPos(2, 1, 2);
+        helper.setBlock(pipePos, ModBlocks.ITEM_PIPE.get());
+        helper.setBlock(pipePos.east(), Blocks.CHEST);
+        BlockPos abs = helper.absolutePos(pipePos);
+        Level level = helper.getLevel();
+        helper.assertTrue(ItemPipeBlock.mode(level, abs, Direction.EAST) == ItemPipeBlock.Mode.INSERT, "A new side should be Insert");
+        helper.assertTrue(ItemPipeBlock.cycleMode(level, abs, Direction.EAST) == ItemPipeBlock.Mode.EXTRACT, "Insert -> Extract");
+        helper.assertTrue(helper.getBlockEntity(pipePos, ItemPipeBlockEntity.class).side(Direction.EAST).redstone() == RedstoneMode.HIGH,
+                "Extract should start at redstone High");
+        helper.assertTrue(ItemPipeBlock.cycleMode(level, abs, Direction.EAST) == ItemPipeBlock.Mode.NONE, "Extract -> None");
+        helper.assertTrue(helper.getBlockState(pipePos).getValue(ConduitBlock.CONNECTIONS.get(Direction.EAST)) == CableConnection.DISABLED,
+                "None should cut the side");
+        helper.assertTrue(ItemPipeBlock.cycleMode(level, abs, Direction.EAST) == ItemPipeBlock.Mode.INSERT, "None -> Insert");
+        helper.assertTrue(helper.getBlockState(pipePos).getValue(ConduitBlock.CONNECTIONS.get(Direction.EAST)) == CableConnection.MACHINE,
+                "Insert should connect the side again");
+        helper.succeed();
     }
 
     /** The Creative Chest gives any amount of its item through its capability, of nothing else, and takes nothing in. */

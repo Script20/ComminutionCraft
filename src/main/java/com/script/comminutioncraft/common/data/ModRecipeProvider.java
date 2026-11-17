@@ -696,6 +696,17 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_plasma_generator", has(ModItems.PLASMA_GENERATOR.get()))
                 .save(output, key("fluid_pipe"));
 
+        // Item Pipe (owner): iron top and bottom, glass either side of an Electronic Circuit
+        shaped(RecipeCategory.MISC, ModItems.ITEM_PIPE.get(), 8)
+                .pattern("III")
+                .pattern("GCG")
+                .pattern("III")
+                .define('I', tag(ProcessedMetal.commonItemTag("ingots/iron")))
+                .define('G', tag(ProcessedMetal.commonItemTag("glass_blocks")))
+                .define('C', ModItems.ELECTRONIC_CIRCUIT.get())
+                .unlockedBy("has_electronic_circuit", has(ModItems.ELECTRONIC_CIRCUIT.get()))
+                .save(output, key("item_pipe"));
+
         shaped(RecipeCategory.MISC, ModItems.FLUID_TANK.get())
                 .pattern("IGI")
                 .pattern("GBG")
