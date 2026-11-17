@@ -415,13 +415,20 @@ public class ModModelProvider extends ModelProvider {
                 .put(PIPE_PLATE, TextureMapping.getBlockTexture(pipe, "_plate"))
                 .put(TextureSlot.PARTICLE, TextureMapping.getBlockTexture(pipe));
         MultiVariant core = BlockModelGenerators.plainVariant(ITEM_PIPE_CORE.createWithSuffix(pipe, "_core", textures, blockModels.modelOutput));
+        // stuffed: the same core with the red-ringed texture
+        TextureMapping stuffedTextures = new TextureMapping()
+                .put(CABLE, TextureMapping.getBlockTexture(pipe, "_stuffed"))
+                .put(TextureSlot.PARTICLE, TextureMapping.getBlockTexture(pipe));
+        MultiVariant stuffedCore = BlockModelGenerators.plainVariant(ITEM_PIPE_CORE.createWithSuffix(pipe, "_core_stuffed", stuffedTextures, blockModels.modelOutput));
         MultiVariant arm = BlockModelGenerators.plainVariant(ITEM_PIPE_ARM.createWithSuffix(pipe, "_arm", textures, blockModels.modelOutput));
         MultiVariant armFar = BlockModelGenerators.plainVariant(ITEM_PIPE_ARM_FAR.createWithSuffix(pipe, "_arm_far", textures, blockModels.modelOutput));
         MultiVariant stub = BlockModelGenerators.plainVariant(ITEM_PIPE_STUB.createWithSuffix(pipe, "_stub", textures, blockModels.modelOutput));
         MultiVariant stubFar = BlockModelGenerators.plainVariant(ITEM_PIPE_STUB_FAR.createWithSuffix(pipe, "_stub_far", textures, blockModels.modelOutput));
         MultiVariant plate = BlockModelGenerators.plainVariant(ITEM_PIPE_PLATE.createWithSuffix(pipe, "_plate", textures, blockModels.modelOutput));
+        // the core shows where it isn't straight, and always while stuffed (then red); arms stop at it whenever it shows
         MultiPartGenerator generator = MultiPartGenerator.multiPart(pipe)
-                .with(BlockModelGenerators.condition().term(ConduitBlock.STRAIGHT, false), core);
+                .with(BlockModelGenerators.condition().term(ConduitBlock.STRAIGHT, false).term(ItemPipeBlock.STUFFED, false), core)
+                .with(BlockModelGenerators.condition().term(ItemPipeBlock.STUFFED, true), stuffedCore);
         for (Direction direction : Direction.values()) {
             VariantMutator rotation = switch (direction) {
                 case NORTH -> BlockModelGenerators.NOP;
@@ -433,9 +440,11 @@ public class ModModelProvider extends ModelProvider {
             };
             var property = ConduitBlock.CONNECTIONS.get(direction);
             generator.with(BlockModelGenerators.condition().term(property, CableConnection.CABLE, CableConnection.MACHINE)
-                    .term(ConduitBlock.STRAIGHT, true), arm(direction, arm, armFar));
+                    .term(ConduitBlock.STRAIGHT, true).term(ItemPipeBlock.STUFFED, false), arm(direction, arm, armFar));
             generator.with(BlockModelGenerators.condition().term(property, CableConnection.CABLE, CableConnection.MACHINE)
                     .term(ConduitBlock.STRAIGHT, false), arm(direction, stub, stubFar));
+            generator.with(BlockModelGenerators.condition().term(property, CableConnection.CABLE, CableConnection.MACHINE)
+                    .term(ConduitBlock.STRAIGHT, true).term(ItemPipeBlock.STUFFED, true), arm(direction, stub, stubFar));
             generator.with(BlockModelGenerators.condition().term(property, CableConnection.MACHINE), plate.with(rotation));
         }
         blockModels.blockStateOutput.accept(generator);

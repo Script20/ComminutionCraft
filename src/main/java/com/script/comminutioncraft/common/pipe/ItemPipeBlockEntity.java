@@ -35,8 +35,10 @@ import org.jspecify.annotations.Nullable;
  * Item Pipe (tier 2): its six sides' settings and the stacks travelling through it. Extract sides pull a stack every
  * {@link #EXTRACT_INTERVAL} ticks (when redstone allows) and send it to the nearest Insert side with room, or, with a
  * circuit and round robin on, to each target in turn. Stacks cross a pipe in {@link #TICKS_PER_BLOCK} ticks and are
- * handed from pipe to pipe along their route. If the target is gone or full they find another; failing that they go
- * back where they came from, and failing that they drop out of the pipe.
+ * handed from pipe to pipe along their route. Pulls only take what the target can hold, counting what's already on its
+ * way. If the target is gone or full anyway they find another, or go back where they came from; failing both they stay
+ * in the pipe's core and the pipe is stuffed ({@link ItemPipeBlock#STUFFED}) until somewhere takes them (tried every
+ * {@link #RETRY_TICKS} ticks).
  */
 public class ItemPipeBlockEntity extends BlockEntity {
     public static final ConfigInt EXTRACT_INTERVAL = MachineConfig.ITEM_PIPE_EXTRACT_INTERVAL;
@@ -44,7 +46,12 @@ public class ItemPipeBlockEntity extends BlockEntity {
     public static final ConfigInt TICKS_PER_BLOCK = MachineConfig.ITEM_PIPE_TICKS_PER_BLOCK;
 
     private final Map<Direction, PipeSide> sides = new EnumMap<>(Direction.class);
+    public static final int RETRY_TICKS = 20;
+
     private final List<TravellingItem> items = new ArrayList<>();
+    /** Items with nowhere to go, waiting in the core. */
+    private final List<TravellingItem> stuck = new ArrayList<>();
+    private int retry;
     private boolean syncNeeded;
 
     public ItemPipeBlockEntity(BlockPos pos, BlockState state) {
@@ -58,9 +65,25 @@ public class ItemPipeBlockEntity extends BlockEntity {
         return sides.get(direction);
     }
 
-    /** What's in the pipe right now (read-only view, for the renderer and tests). */
+    /** What's moving through the pipe right now (read-only view, for the renderer and tests). */
     public List<TravellingItem> items() {
         return List.copyOf(items);
+    }
+
+    /** What's stuck in the core (nowhere to go yet). */
+    public List<ItemStack> stuck() {
+        return stuck.stream().map(TravellingItem::stack).toList();
+    }
+
+    /** How many of {@code stack}'s item are travelling through this pipe towards that pipe side. */
+    int comingTo(BlockPos pipe, Direction side, ItemStack stack) {
+        int count = 0;
+        for (TravellingItem item : items) {
+            if (item.headsFor(pipe, side) && ItemStack.isSameItemSameComponents(item.stack, stack)) {
+                count += item.stack.getCount();
+            }
+        }
+        return count;
     }
 
     /** Settings changed (mode, filter...): save and tell clients (the renderer draws Extract plates). */
@@ -100,10 +123,32 @@ public class ItemPipeBlockEntity extends BlockEntity {
                 syncNeeded = true;
             }
         }
+        if (!stuck.isEmpty() && ++retry >= RETRY_TICKS) {
+            retry = 0;
+            unstick(level, pos);
+        }
+        boolean stuffed = !stuck.isEmpty();
+        if (state.getValue(ItemPipeBlock.STUFFED) != stuffed) {
+            level.setBlock(pos, state.setValue(ItemPipeBlock.STUFFED, stuffed), Block.UPDATE_ALL);
+            syncNeeded = true;
+        }
         if (syncNeeded) {
             syncNeeded = false;
             setChanged();
-            level.sendBlockUpdated(pos, state, state, Block.UPDATE_CLIENTS);
+            BlockState now = level.getBlockState(pos);
+            level.sendBlockUpdated(pos, now, now, Block.UPDATE_CLIENTS);
+        }
+    }
+
+    /** Sends stuck items on wherever they can go now. */
+    private void unstick(ServerLevel level, BlockPos pos) {
+        for (TravellingItem item : List.copyOf(stuck)) {
+            ItemPipeRouting.Target target = destination(level, pos, item, item.stack);
+            if (target != null) {
+                stuck.remove(item);
+                items.add(item.rerouted(item.stack, target));
+                syncNeeded = true;
+            }
         }
     }
 
@@ -142,7 +187,8 @@ public class ItemPipeBlockEntity extends BlockEntity {
                 transaction.commit();
             }
             if (moved > 0) {
-                items.add(new TravellingItem(resource.toStack(moved), direction, target.route(), 0, pos, direction));
+                items.add(new TravellingItem(resource.toStack(moved), direction, target.route(), 0, pos, direction,
+                        target.pipe(), target.side()));
                 syncNeeded = true;
                 setChanged();
                 return;
@@ -190,16 +236,19 @@ public class ItemPipeBlockEntity extends BlockEntity {
         return stack.copyWithCount(stack.getCount() - inserted);
     }
 
-    /** Somewhere else for {@code left}: another target, else back to its source, else it drops out here. */
+    /** Somewhere else for {@code left}: another target, else back to its source, else it waits in this pipe's core. */
     private void reroute(ServerLevel level, BlockPos pos, TravellingItem item, ItemStack left) {
-        List<ItemPipeRouting.Target> targets = ItemPipeRouting.insertTargets(level, pos, left, null, null);
-        ItemPipeRouting.Target target = targets.isEmpty()
-                ? ItemPipeRouting.to(level, pos, left, item.source, item.sourceSide) : targets.getFirst();
+        ItemPipeRouting.Target target = destination(level, pos, item, left);
         if (target != null) {
-            items.add(item.rerouted(left, target.route()));
+            items.add(item.rerouted(left, target));
         } else {
-            Containers.dropItemStack(level, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, left);
+            stuck.add(item.stuck(left));
         }
+    }
+
+    private static ItemPipeRouting.@Nullable Target destination(ServerLevel level, BlockPos pos, TravellingItem item, ItemStack stack) {
+        List<ItemPipeRouting.Target> targets = ItemPipeRouting.insertTargets(level, pos, stack, null, null);
+        return targets.isEmpty() ? ItemPipeRouting.to(level, pos, stack, item.source, item.sourceSide) : targets.getFirst();
     }
 
     // ---- Breaking: the circuits and everything in transit drop ----
@@ -214,7 +263,11 @@ public class ItemPipeBlockEntity extends BlockEntity {
             for (TravellingItem item : items) {
                 Containers.dropItemStack(level, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, item.stack);
             }
+            for (TravellingItem item : stuck) {
+                Containers.dropItemStack(level, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, item.stack);
+            }
             items.clear();
+            stuck.clear();
         }
     }
 
@@ -228,6 +281,8 @@ public class ItemPipeBlockEntity extends BlockEntity {
         }
         items.clear();
         items.addAll(input.read("items", TravellingItem.CODEC.listOf()).orElse(List.of()));
+        stuck.clear();
+        stuck.addAll(input.read("stuck", TravellingItem.CODEC.listOf()).orElse(List.of()));
     }
 
     @Override
@@ -237,6 +292,7 @@ public class ItemPipeBlockEntity extends BlockEntity {
             sides.get(direction).save(output.child(direction.getSerializedName()));
         }
         output.store("items", TravellingItem.CODEC.listOf(), items);
+        output.store("stuck", TravellingItem.CODEC.listOf(), stuck);
     }
 
     @Override

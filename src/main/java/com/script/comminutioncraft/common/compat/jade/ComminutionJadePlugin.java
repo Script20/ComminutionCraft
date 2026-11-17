@@ -11,6 +11,7 @@ import com.script.comminutioncraft.common.machine.EnergyBatteryBlock;
 import com.script.comminutioncraft.common.machine.EnergyBatteryBlockEntity;
 import com.script.comminutioncraft.common.machine.FuelMachineBlockEntity;
 import com.script.comminutioncraft.common.machine.MachineBlock;
+import com.script.comminutioncraft.common.pipe.ItemPipeBlock;
 import snownee.jade.api.IWailaClientRegistration;
 import snownee.jade.api.IWailaCommonRegistration;
 import snownee.jade.api.IWailaPlugin;
@@ -47,5 +48,6 @@ public class ComminutionJadePlugin implements IWailaPlugin {
         registration.registerBlockComponent(GeneratorProvider.Client.INSTANCE, ElectricGeneratorBlock.class);
         registration.registerBlockComponent(BatteryProvider.Client.INSTANCE, EnergyBatteryBlock.class);
         registration.registerBlockComponent(WaterGeneratorProvider.Client.INSTANCE, AtmosphericWaterGeneratorBlock.class);
+        registration.registerBlockComponent(ItemPipeProvider.INSTANCE, ItemPipeBlock.class);
     }
 }

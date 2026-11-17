@@ -237,6 +237,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.comminutioncraft.item_pipe.round_robin.desc", "Takes turns, spreading items evenly");
         add("gui.comminutioncraft.item_pipe.needs_circuit", "Needs an Electronic Circuit");
         add("message.comminutioncraft.wrench.pipe_mode", "Item Pipe side: %s");
+        add("jade.comminutioncraft.item_pipe_stuffed", "Stuffed: Items have no destination.");
         add("tooltip.comminutioncraft.item_pipe", "Moves items; wrench a side touching a block to Extract to pull from it");
         add("tooltip.comminutioncraft.item_pipe_circuit", "An Electronic Circuit in a side's GUI unlocks its filter and round robin");
         add(ModBlocks.FLUID_TANK.get(), "Fluid Tank");

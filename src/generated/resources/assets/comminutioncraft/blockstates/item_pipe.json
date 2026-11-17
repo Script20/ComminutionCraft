@@ -5,7 +5,16 @@
         "model": "comminutioncraft:block/item_pipe_core"
       },
       "when": {
-        "straight": "false"
+        "straight": "false",
+        "stuffed": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/item_pipe_core_stuffed"
+      },
+      "when": {
+        "stuffed": "true"
       }
     },
     {
@@ -15,7 +24,8 @@
       },
       "when": {
         "down": "cable|machine",
-        "straight": "true"
+        "straight": "true",
+        "stuffed": "false"
       }
     },
     {
@@ -26,6 +36,17 @@
       "when": {
         "down": "cable|machine",
         "straight": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/item_pipe_stub_far",
+        "x": 270
+      },
+      "when": {
+        "down": "cable|machine",
+        "straight": "true",
+        "stuffed": "true"
       }
     },
     {
@@ -44,6 +65,7 @@
       },
       "when": {
         "straight": "true",
+        "stuffed": "false",
         "up": "cable|machine"
       }
     },
@@ -54,6 +76,17 @@
       },
       "when": {
         "straight": "false",
+        "up": "cable|machine"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/item_pipe_stub",
+        "x": 270
+      },
+      "when": {
+        "straight": "true",
+        "stuffed": "true",
         "up": "cable|machine"
       }
     },
@@ -72,7 +105,8 @@
       },
       "when": {
         "north": "cable|machine",
-        "straight": "true"
+        "straight": "true",
+        "stuffed": "false"
       }
     },
     {
@@ -82,6 +116,16 @@
       "when": {
         "north": "cable|machine",
         "straight": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/item_pipe_stub"
+      },
+      "when": {
+        "north": "cable|machine",
+        "straight": "true",
+        "stuffed": "true"
       }
     },
     {
@@ -98,7 +142,8 @@
       },
       "when": {
         "south": "cable|machine",
-        "straight": "true"
+        "straight": "true",
+        "stuffed": "false"
       }
     },
     {
@@ -108,6 +153,16 @@
       "when": {
         "south": "cable|machine",
         "straight": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/item_pipe_stub_far"
+      },
+      "when": {
+        "south": "cable|machine",
+        "straight": "true",
+        "stuffed": "true"
       }
     },
     {
@@ -126,6 +181,7 @@
       },
       "when": {
         "straight": "true",
+        "stuffed": "false",
         "west": "cable|machine"
       }
     },
@@ -136,6 +192,17 @@
       },
       "when": {
         "straight": "false",
+        "west": "cable|machine"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/item_pipe_stub_far",
+        "y": 90
+      },
+      "when": {
+        "straight": "true",
+        "stuffed": "true",
         "west": "cable|machine"
       }
     },
@@ -155,7 +222,8 @@
       },
       "when": {
         "east": "cable|machine",
-        "straight": "true"
+        "straight": "true",
+        "stuffed": "false"
       }
     },
     {
@@ -166,6 +234,17 @@
       "when": {
         "east": "cable|machine",
         "straight": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/item_pipe_stub",
+        "y": 90
+      },
+      "when": {
+        "east": "cable|machine",
+        "straight": "true",
+        "stuffed": "true"
       }
     },
     {

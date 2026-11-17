@@ -25,6 +25,7 @@ import net.minecraft.client.resources.model.sprite.SpriteGetter;
 import net.minecraft.client.resources.model.sprite.SpriteId;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
@@ -76,6 +77,12 @@ public class ItemPipeRenderer implements BlockEntityRenderer<ItemPipeBlockEntity
             ItemStackRenderState item = new ItemStackRenderState();
             itemModels.updateForTopItem(item, moving.stack(), ItemDisplayContext.GROUND, pipe.getLevel(), null, seed);
             state.items.add(new Moving(item, at, seed++));
+        }
+        for (ItemStack stuck : pipe.stuck()) { // a little heap in the core
+            ItemStackRenderState item = new ItemStackRenderState();
+            itemModels.updateForTopItem(item, stuck, ItemDisplayContext.GROUND, pipe.getLevel(), null, seed);
+            double spread = (seed % 3 - 1) * 0.08;
+            state.items.add(new Moving(item, new Vec3(0.5 + spread, 0.45 + (seed / 3) * 0.06, 0.5 - spread), seed++));
         }
         BlockState block = pipe.getBlockState();
         for (Direction direction : Direction.values()) {

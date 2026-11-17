@@ -45,35 +45,51 @@ final class ItemPipeRouting {
         return found.isEmpty() ? null : found.getFirst();
     }
 
+    /**
+     * Walks the connected pipes (nearest first), then checks their block sides. What fits a side is what it would take
+     * now minus the same items already on their way to it, so pipes never send more than the end can hold.
+     */
     private static List<Target> search(Level level, BlockPos start, ItemStack stack, Accepts accepts) {
-        List<Target> targets = new ArrayList<>();
         Map<BlockPos, BlockPos> parent = new HashMap<>();
         Map<BlockPos, Direction> step = new HashMap<>();
         Map<BlockPos, Integer> distance = new HashMap<>();
+        List<ItemPipeBlockEntity> pipes = new ArrayList<>();
         ArrayDeque<BlockPos> queue = new ArrayDeque<>();
         queue.add(start);
         distance.put(start, 0);
-        while (!queue.isEmpty() && distance.size() <= MAX_PIPES) {
+        while (!queue.isEmpty() && pipes.size() < MAX_PIPES) {
             BlockPos pos = queue.poll();
             BlockState state = level.getBlockState(pos);
             if (!(state.getBlock() instanceof ItemPipeBlock) || !(level.getBlockEntity(pos) instanceof ItemPipeBlockEntity pipe)) {
                 continue;
             }
+            pipes.add(pipe);
             for (Direction direction : Direction.values()) {
-                CableConnection connection = state.getValue(ConduitBlock.CONNECTIONS.get(direction));
-                if (connection == CableConnection.MACHINE && accepts.test(pos, direction, pipe.side(direction))) {
-                    int fits = simulateInsert(level, pos, direction, stack);
-                    if (fits > 0) {
-                        targets.add(new Target(pos, direction, distance.get(pos), route(pos, direction, parent, step), fits));
-                    }
-                } else if (connection == CableConnection.CABLE) {
-                    BlockPos next = pos.relative(direction);
-                    if (!distance.containsKey(next)) {
-                        distance.put(next, distance.get(pos) + 1);
-                        parent.put(next, pos);
-                        step.put(next, direction);
-                        queue.add(next);
-                    }
+                BlockPos next = pos.relative(direction);
+                if (state.getValue(ConduitBlock.CONNECTIONS.get(direction)) == CableConnection.CABLE && !distance.containsKey(next)) {
+                    distance.put(next, distance.get(pos) + 1);
+                    parent.put(next, pos);
+                    step.put(next, direction);
+                    queue.add(next);
+                }
+            }
+        }
+        List<Target> targets = new ArrayList<>();
+        for (ItemPipeBlockEntity pipe : pipes) {
+            BlockPos pos = pipe.getBlockPos();
+            BlockState state = pipe.getBlockState();
+            for (Direction direction : Direction.values()) {
+                if (state.getValue(ConduitBlock.CONNECTIONS.get(direction)) != CableConnection.MACHINE
+                        || !accepts.test(pos, direction, pipe.side(direction))) {
+                    continue;
+                }
+                int coming = 0;
+                for (ItemPipeBlockEntity other : pipes) {
+                    coming += other.comingTo(pos, direction, stack);
+                }
+                int fits = simulateInsert(level, pos, direction, stack.copyWithCount(stack.getCount() + coming)) - coming;
+                if (fits > 0) {
+                    targets.add(new Target(pos, direction, distance.get(pos), route(pos, direction, parent, step), Math.min(fits, stack.getCount())));
                 }
             }
         }

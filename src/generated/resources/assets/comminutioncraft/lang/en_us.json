@@ -802,6 +802,7 @@
   "jade.comminutioncraft.battery_flow": "In %s FE/t · Out %s FE/t",
   "jade.comminutioncraft.generating": "Generating %s FE/t (%ss left)",
   "jade.comminutioncraft.idle": "Idle",
+  "jade.comminutioncraft.item_pipe_stuffed": "Stuffed: Items have no destination.",
   "jade.comminutioncraft.no_filter": "No Air Filter (half as much water)",
   "jade.comminutioncraft.water_generator": "Intake %s/6 · Humidity %s%% · %s mB/t",
   "jei.comminutioncraft.assembling": "Circuit Assembling",

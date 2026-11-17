@@ -188,6 +188,8 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("item_pipe_extracts_with_redstone", () -> ModGameTests::itemPipeExtractsWithRedstone);
         TEST_FUNCTIONS.register("item_pipe_filter_round_robin", () -> ModGameTests::itemPipeFilterRoundRobin);
         TEST_FUNCTIONS.register("item_pipe_wrench_cycles_mode", () -> ModGameTests::itemPipeWrenchCyclesMode);
+        TEST_FUNCTIONS.register("item_pipe_stuffed_then_recovers", () -> ModGameTests::itemPipeStuffedThenRecovers);
+        TEST_FUNCTIONS.register("item_pipe_pulls_only_what_fits", () -> ModGameTests::itemPipePullsOnlyWhatFits);
         TEST_FUNCTIONS.register("energy_cable_straight_or_node", () -> ModGameTests::energyCableStraightOrNode);
         TEST_FUNCTIONS.register("creative_chest_endless_takes_nothing", () -> ModGameTests::creativeChestEndless);
         TEST_FUNCTIONS.register("accelerator_ring_forms_and_unforms", () -> ModGameTests::acceleratorRingFormsAndUnforms);
@@ -1795,6 +1797,61 @@ public final class ModGameTests {
         helper.setBlock(middle.south(), ModBlocks.ENERGY_CABLE.get());
         helper.assertFalse(helper.getBlockState(middle).getValue(ConduitBlock.STRAIGHT), "A T-junction should have a node");
         helper.succeed();
+    }
+
+    /**
+     * The chest (and the barrel the items came from) disappear while 8 raw iron are on the way: they stay in the last
+     * pipe, which is stuffed. A chest placed back takes them and the pipe is back to normal.
+     */
+    private static void itemPipeStuffedThenRecovers(GameTestHelper helper) {
+        BlockPos barrel = itemPipeLine(helper);
+        helper.getBlockEntity(barrel, BarrelBlockEntity.class).setItem(0, new ItemStack(Items.RAW_IRON, 8));
+        helper.setBlock(new BlockPos(1, 2, 2), Blocks.REDSTONE_BLOCK);
+        BlockPos last = new BlockPos(3, 1, 2);
+        BlockPos chest = new BlockPos(4, 1, 2);
+        helper.runAfterDelay(3, () -> {
+            helper.setBlock(chest, Blocks.AIR);
+            helper.setBlock(barrel, Blocks.AIR);
+        });
+        helper.runAfterDelay(30, () -> {
+            ItemPipeBlockEntity pipe = helper.getBlockEntity(last, ItemPipeBlockEntity.class);
+            helper.assertTrue(helper.getBlockState(last).getValue(ItemPipeBlock.STUFFED), "The last pipe should be stuffed");
+            helper.assertTrue(pipe.stuck().stream().mapToInt(ItemStack::getCount).sum() == 8, "It should hold the 8 raw iron, holds " + pipe.stuck());
+            helper.assertTrue(helper.getLevel().getEntitiesOfClass(ItemEntity.class, new AABB(helper.absolutePos(last)).inflate(3)).isEmpty(),
+                    "Nothing should drop out");
+            helper.setBlock(chest, Blocks.CHEST);
+            helper.succeedWhen(() -> {
+                ChestBlockEntity box = helper.getBlockEntity(chest, ChestBlockEntity.class);
+                helper.assertTrue(box.countItem(Items.RAW_IRON) == 8, "The new chest should get the 8 raw iron, has " + box.countItem(Items.RAW_IRON));
+                helper.assertFalse(helper.getBlockState(last).getValue(ItemPipeBlock.STUFFED), "The pipe should be back to normal");
+            });
+        });
+    }
+
+    /**
+     * The chest at the end has room for 8 raw iron: the pipe pulls 8 once, and while those are on the way it doesn't
+     * pull more (they'd have nowhere to go).
+     */
+    private static void itemPipePullsOnlyWhatFits(GameTestHelper helper) {
+        BlockPos barrel = itemPipeLine(helper);
+        BarrelBlockEntity source = helper.getBlockEntity(barrel, BarrelBlockEntity.class);
+        source.setItem(0, new ItemStack(Items.RAW_IRON, 64));
+        ChestBlockEntity chest = helper.getBlockEntity(new BlockPos(4, 1, 2), ChestBlockEntity.class);
+        for (int slot = 0; slot < 26; slot++) {
+            chest.setItem(slot, new ItemStack(Items.STONE, 64));
+        }
+        chest.setItem(26, new ItemStack(Items.RAW_IRON, 56));
+        helper.setBlock(new BlockPos(1, 2, 2), Blocks.REDSTONE_BLOCK);
+        helper.runAfterDelay(25, () -> helper.assertTrue(source.countItem(Items.RAW_IRON) == 56,
+                "Only one pull of 8 should happen, the barrel has " + source.countItem(Items.RAW_IRON)));
+        helper.runAfterDelay(60, () -> {
+            helper.assertTrue(chest.countItem(Items.RAW_IRON) == 64, "The chest should be full, has " + chest.countItem(Items.RAW_IRON));
+            helper.assertTrue(source.countItem(Items.RAW_IRON) == 56, "Nothing more should leave the barrel, it has " + source.countItem(Items.RAW_IRON));
+            for (int x = 1; x <= 3; x++) {
+                helper.assertFalse(helper.getBlockState(new BlockPos(x, 1, 2)).getValue(ItemPipeBlock.STUFFED), "No pipe should be stuffed");
+            }
+            helper.succeed();
+        });
     }
 
     /** The wrench's Cables/Pipes mode on a side touching a chest: Insert -> Extract -> None (cut) -> Insert. */

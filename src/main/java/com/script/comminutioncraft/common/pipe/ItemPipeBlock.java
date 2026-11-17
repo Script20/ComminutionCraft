@@ -17,11 +17,14 @@ import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -54,15 +57,25 @@ public class ItemPipeBlock extends ConduitBlock implements EntityBlock {
             Direction.DOWN, box(3, 0, 3, 13, 1, 13),
             Direction.UP, box(3, 15, 3, 13, 16, 13)));
 
+    /** Holding items that have nowhere to go: the core shows (even on a straight run) with a red ring. */
+    public static final BooleanProperty STUFFED = BooleanProperty.create("stuffed");
+
     private final Function<BlockState, VoxelShape> pipeShapes;
 
     public ItemPipeBlock(Properties properties) {
         super(properties);
+        registerDefaultState(defaultBlockState().setValue(STUFFED, false));
         pipeShapes = getShapeForEachState(ItemPipeBlock::shapeOf);
     }
 
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
+        builder.add(STUFFED);
+    }
+
     private static VoxelShape shapeOf(BlockState state) {
-        VoxelShape shape = state.getValue(STRAIGHT) ? Shapes.empty() : CORE;
+        VoxelShape shape = state.getValue(STRAIGHT) && !state.getValue(STUFFED) ? Shapes.empty() : CORE;
         for (Direction direction : Direction.values()) {
             CableConnection connection = state.getValue(CONNECTIONS.get(direction));
             if (connection.isConnected()) {
