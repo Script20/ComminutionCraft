@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "comminutioncraft:block/creative_chest_front_on",
+    "side": "comminutioncraft:block/creative_chest_side",
+    "top": "comminutioncraft:block/creative_chest_top"
+  }
+}

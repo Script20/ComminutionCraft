@@ -4,6 +4,7 @@ import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.client.ClientRecipes;
 import com.script.comminutioncraft.client.gui.CoalGranulatorScreen;
 import com.script.comminutioncraft.client.gui.CoalSmelterScreen;
+import com.script.comminutioncraft.client.gui.CreativeChestScreen;
 import com.script.comminutioncraft.client.gui.ElectricGeneratorScreen;
 import com.script.comminutioncraft.client.gui.ElectricMachineScreen;
 import com.script.comminutioncraft.client.gui.MachineScreen;
@@ -27,6 +28,7 @@ import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlockEntity;
 import com.script.comminutioncraft.common.machine.PlasmaGranulatorBlockEntity;
 import com.script.comminutioncraft.common.machine.SingularityProcessorBlockEntity;
 import com.script.comminutioncraft.common.machine.TritiumBreederBlockEntity;
+import com.script.comminutioncraft.common.network.SetCreativeChestItemPayload;
 import com.script.comminutioncraft.common.recipe.AssemblingRecipe;
 import com.script.comminutioncraft.common.recipe.FlotationRecipe;
 import com.script.comminutioncraft.common.recipe.GranulatingRecipe;
@@ -48,8 +50,10 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.types.IRecipeHolderType;
 import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
@@ -72,6 +76,7 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.material.Fluids;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 /**
  * JEI: a Granulating category (both granulators), our smelters and the generator listed as smelting / fuel
@@ -302,6 +307,32 @@ public class ComminutionJeiPlugin implements IModPlugin {
 
     @Override
     public void registerGuiHandlers(IGuiHandlerRegistration registration) {
+        // Creative Chest: drop any item from JEI onto its slot to pick it
+        registration.addGhostIngredientHandler(CreativeChestScreen.class, new IGhostIngredientHandler<>() {
+            @Override
+            public <I> List<Target<I>> getTargetsTyped(CreativeChestScreen screen, ITypedIngredient<I> ingredient, boolean doStart) {
+                if (ingredient.getItemStack().isEmpty()) {
+                    return List.of();
+                }
+                Rect2i area = new Rect2i(screen.slotScreenX(), screen.slotScreenY(), 16, 16);
+                return List.of(new Target<>() {
+                    @Override
+                    public Rect2i getArea() {
+                        return area;
+                    }
+
+                    @Override
+                    public void accept(I dropped) {
+                        ingredient.getItemStack().ifPresent(stack ->
+                                ClientPacketDistributor.sendToServer(new SetCreativeChestItemPayload(stack.copyWithCount(1))));
+                    }
+                });
+            }
+
+            @Override
+            public void onComplete() {}
+        });
+
         registration.addRecipeClickArea(CoalGranulatorScreen.class, ARROW_X, ARROW_Y, ARROW_W, ARROW_H, GRANULATING.get());
         registration.addRecipeClickArea(CoalSmelterScreen.class, ARROW_X, ARROW_Y, ARROW_W, ARROW_H, RecipeTypes.SMELTING);
         registration.addRecipeClickArea(CoalGranulatorScreen.class, 56, 36, 14, 14, RecipeTypes.SMELTING_FUEL);

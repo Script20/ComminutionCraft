@@ -12,6 +12,7 @@ import net.minecraft.util.ExtraCodecs;
 import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 public final class ModDataComponents {
     public static final DeferredRegister.DataComponents DATA_COMPONENTS =
@@ -52,6 +53,12 @@ public final class ModDataComponents {
             DATA_COMPONENTS.registerComponentType("stored_fluid", builder -> builder
                     .persistent(SimpleFluidContent.CODEC)
                     .networkSynchronized(SimpleFluidContent.STREAM_CODEC));
+
+    /** The item a Creative Chest gives, when picked up with the wrench; placing the item puts it back. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ItemResource>> CREATIVE_ITEM =
+            DATA_COMPONENTS.registerComponentType("creative_item", builder -> builder
+                    .persistent(ItemResource.CODEC)
+                    .networkSynchronized(ItemResource.STREAM_CODEC));
 
     private ModDataComponents() {}
 }

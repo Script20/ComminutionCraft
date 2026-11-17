@@ -19,6 +19,7 @@ import com.script.comminutioncraft.common.machine.CoalGranulatorBlock;
 import com.script.comminutioncraft.common.machine.CoalSmelterBlock;
 import com.script.comminutioncraft.common.machine.ContainmentCellBlock;
 import com.script.comminutioncraft.common.machine.ContainmentFrameBlock;
+import com.script.comminutioncraft.common.machine.CreativeChestBlock;
 import com.script.comminutioncraft.common.machine.CreativeEnergyBatteryBlock;
 import com.script.comminutioncraft.common.machine.CreativeFluidTankBlock;
 import com.script.comminutioncraft.common.machine.ElectricGeneratorBlock;
@@ -272,6 +273,9 @@ public final class ModBlocks {
     // Creative only (no recipes): endless FE / endless fluid of a picked kind
     public static final DeferredBlock<CreativeEnergyBatteryBlock> CREATIVE_ENERGY_BATTERY = BLOCKS.registerBlock(
             "creative_energy_battery", CreativeEnergyBatteryBlock::new, ModBlocks::tier2MachineProperties);
+
+    public static final DeferredBlock<CreativeChestBlock> CREATIVE_CHEST = BLOCKS.registerBlock(
+            "creative_chest", CreativeChestBlock::new, ModBlocks::tier2MachineProperties);
 
     /** Soaryn Chest: vanilla chest properties (wood, 2.5 strength, burns in lava). */
     public static final DeferredBlock<SoarynChestBlock> SOARYN_CHEST = BLOCKS.registerBlock(

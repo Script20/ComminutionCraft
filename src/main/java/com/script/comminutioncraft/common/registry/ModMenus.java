@@ -3,6 +3,7 @@ package com.script.comminutioncraft.common.registry;
 import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.machine.AnnihilationGeneratorBlockEntity;
 import com.script.comminutioncraft.common.machine.AtmosphericWaterGeneratorMenu;
+import com.script.comminutioncraft.common.machine.CreativeChestMenu;
 import com.script.comminutioncraft.common.machine.CreativeFluidTankMenu;
 import com.script.comminutioncraft.common.machine.ElectricGeneratorMenu;
 import com.script.comminutioncraft.common.machine.ElectricMachineMenu;
@@ -136,6 +137,9 @@ public final class ModMenus {
 
     public static final DeferredHolder<MenuType<?>, MenuType<CreativeFluidTankMenu>> CREATIVE_FLUID_TANK =
             MENUS.register("creative_fluid_tank", () -> new MenuType<>(CreativeFluidTankMenu::client, FeatureFlags.VANILLA_SET));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<CreativeChestMenu>> CREATIVE_CHEST =
+            MENUS.register("creative_chest", () -> new MenuType<>(CreativeChestMenu::client, FeatureFlags.VANILLA_SET));
 
     private ModMenus() {}
 }

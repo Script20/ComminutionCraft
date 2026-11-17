@@ -193,6 +193,7 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> CREATIVE_ENERGY_BATTERY =
             ITEMS.registerSimpleBlockItem("creative_energy_battery", ModBlocks.CREATIVE_ENERGY_BATTERY);
     public static final DeferredItem<BlockItem> CREATIVE_FLUID_TANK = ITEMS.registerSimpleBlockItem("creative_fluid_tank", ModBlocks.CREATIVE_FLUID_TANK);
+    public static final DeferredItem<BlockItem> CREATIVE_CHEST = ITEMS.registerSimpleBlockItem("creative_chest", ModBlocks.CREATIVE_CHEST);
     public static final DeferredItem<BlockItem> SOARYN_CHEST = ITEMS.registerSimpleBlockItem("soaryn_chest", ModBlocks.SOARYN_CHEST);
     public static final DeferredItem<BlockItem> CONTAINMENT_CELL = ITEMS.registerSimpleBlockItem("containment_cell", ModBlocks.CONTAINMENT_CELL);
     public static final DeferredItem<BlockItem> MAGNETIC_CONDUIT = ITEMS.registerSimpleBlockItem("magnetic_conduit", ModBlocks.MAGNETIC_CONDUIT);

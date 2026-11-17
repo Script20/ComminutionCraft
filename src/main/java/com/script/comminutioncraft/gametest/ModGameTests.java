@@ -21,6 +21,8 @@ import com.script.comminutioncraft.common.machine.AntimatterWasherBlockEntity;
 import com.script.comminutioncraft.common.machine.AtmosphericWaterGeneratorBlockEntity;
 import com.script.comminutioncraft.common.machine.CircuitAssemblerBlockEntity;
 import com.script.comminutioncraft.common.machine.ContainmentCellBlockEntity;
+import com.script.comminutioncraft.common.machine.CreativeChestBlockEntity;
+import com.script.comminutioncraft.common.machine.CreativeChestMenu;
 import com.script.comminutioncraft.common.machine.CreativeFluidTankBlockEntity;
 import com.script.comminutioncraft.common.machine.CreativeFluidTankMenu;
 import com.script.comminutioncraft.common.machine.ElectricGeneratorBlockEntity;
@@ -79,6 +81,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -96,6 +99,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FlowerPotBlock;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.SaplingBlock;
+import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.entity.HangingSignBlockEntity;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -108,8 +112,10 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.RegisterGameTestsEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.energy.EnergyHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 /**
@@ -173,6 +179,8 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("granulator_takes_purified_ore", () -> ModGameTests::granulatorTakesPurifiedOre);
         TEST_FUNCTIONS.register("creative_battery_powers_every_side", () -> ModGameTests::creativeBatteryPowersEverySide);
         TEST_FUNCTIONS.register("creative_tank_fills_and_stays_full", () -> ModGameTests::creativeTankFillsAndStaysFull);
+        TEST_FUNCTIONS.register("creative_chest_picks_and_fills", () -> ModGameTests::creativeChestPicksAndFills);
+        TEST_FUNCTIONS.register("creative_chest_endless_takes_nothing", () -> ModGameTests::creativeChestEndless);
         TEST_FUNCTIONS.register("accelerator_ring_forms_and_unforms", () -> ModGameTests::acceleratorRingFormsAndUnforms);
         TEST_FUNCTIONS.register("accelerator_makes_antimatter", () -> ModGameTests::acceleratorMakesAntimatter);
         TEST_FUNCTIONS.register("wrench_switches_accelerator_port", () -> ModGameTests::wrenchSwitchesAcceleratorPort);
@@ -1675,6 +1683,50 @@ public final class ModGameTests {
             menu.clickMenuButton(helper.makeMockPlayer(GameType.CREATIVE), 0);
             helper.assertTrue(creative.getFluid() == null && creative.getTank().getAmount() == 0, "Button 0 should empty it");
         });
+    }
+
+    /**
+     * Clicking the Creative Chest's slot with diamonds picks diamonds (the player keeps theirs); it then fills a chest
+     * next to it. Shift-clicking an inventory stack picks that item; clicking empty-handed clears it.
+     */
+    private static void creativeChestPicksAndFills(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, ModBlocks.CREATIVE_CHEST.get());
+        helper.setBlock(pos.east(), Blocks.CHEST);
+        CreativeChestBlockEntity creative = helper.getBlockEntity(pos, CreativeChestBlockEntity.class);
+        Player player = helper.makeMockPlayer(GameType.CREATIVE);
+        CreativeChestMenu menu = new CreativeChestMenu(0, player.getInventory(), creative);
+        menu.setCarried(new ItemStack(Items.DIAMOND, 3));
+        menu.clicked(0, 0, ContainerInput.PICKUP, player);
+        helper.assertTrue(creative.getItem().is(Items.DIAMOND), "Clicking the slot with diamonds should pick diamonds");
+        helper.assertTrue(menu.getCarried().getCount() == 3, "The player should keep their diamonds");
+        helper.succeedWhen(() -> {
+            ChestBlockEntity chest = helper.getBlockEntity(pos.east(), ChestBlockEntity.class);
+            helper.assertTrue(chest.countItem(Items.DIAMOND) >= 128, "The chest next to it should fill with diamonds, has "
+                    + chest.countItem(Items.DIAMOND));
+            player.getInventory().setItem(9, new ItemStack(Items.COBBLESTONE));
+            menu.quickMoveStack(player, 1); // slot 1 = the first main inventory slot (inventory index 9)
+            helper.assertTrue(creative.getItem().is(Items.COBBLESTONE), "Shift-clicking cobblestone should pick it");
+            helper.assertTrue(player.getInventory().getItem(9).is(Items.COBBLESTONE), "...without moving it");
+            menu.setCarried(ItemStack.EMPTY);
+            menu.clicked(0, 0, ContainerInput.PICKUP, player);
+            helper.assertTrue(creative.getItem().isEmpty(), "Clicking empty-handed should clear it");
+        });
+    }
+
+    /** The Creative Chest gives any amount of its item through its capability, of nothing else, and takes nothing in. */
+    private static void creativeChestEndless(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, ModBlocks.CREATIVE_CHEST.get());
+        CreativeChestBlockEntity creative = helper.getBlockEntity(pos, CreativeChestBlockEntity.class);
+        creative.setItem(ItemResource.of(Items.IRON_INGOT));
+        ResourceHandler<ItemResource> handler = creative.getItemHandler(Direction.UP);
+        try (Transaction tx = Transaction.openRoot()) {
+            helper.assertTrue(handler.extract(ItemResource.of(Items.IRON_INGOT), 10_000, tx) == 10_000, "It should give 10,000 iron");
+            helper.assertTrue(handler.extract(ItemResource.of(Items.GOLD_INGOT), 5, tx) == 0, "It should give no gold");
+            helper.assertTrue(handler.insert(ItemResource.of(Items.IRON_INGOT), 5, tx) == 0, "It should take nothing in");
+        }
+        helper.succeed();
     }
 
     /**

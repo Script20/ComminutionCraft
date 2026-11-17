@@ -114,6 +114,7 @@ public final class ModCreativeTabs {
                         // Creative only
                         output.accept(ModItems.CREATIVE_ENERGY_BATTERY.get());
                         output.accept(ModItems.CREATIVE_FLUID_TANK.get());
+                        output.accept(ModItems.CREATIVE_CHEST.get());
                         // Decorative stone
                         ModBlocks.STONE_SETS.forEach(set -> set.all().forEach(block -> output.accept(block.get())));
                         // Purpleheart wood

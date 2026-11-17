@@ -40,6 +40,9 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModBlocks.ORE_PURIFIER.get(), "Ore Purifier");
         add(ModBlocks.CREATIVE_ENERGY_BATTERY.get(), "Creative Energy Battery");
         add(ModBlocks.CREATIVE_FLUID_TANK.get(), "Creative Fluid Tank");
+        add(ModBlocks.CREATIVE_CHEST.get(), "Creative Chest");
+        add("gui.comminutioncraft.creative_chest.empty", "Click with an item, or drag one from JEI");
+        add("gui.comminutioncraft.creative_chest.endless", "Endless %s");
         add("gui.comminutioncraft.creative_tank.none", "No fluid");
         add("jei.comminutioncraft.purifying", "Ore Purifying");
         add("jei.comminutioncraft.time.ore_purifier", "Ore Purifier: %s");
@@ -297,6 +300,8 @@ public class ModLanguageProvider extends LanguageProvider {
         add("tooltip.comminutioncraft.hold_shift", "Hold %s for Details");
         add("tooltip.comminutioncraft.shift", "Shift");
         add("tooltip.comminutioncraft.creative_tank", "Endless fluid of the kind picked in its GUI");
+        add("tooltip.comminutioncraft.creative_chest", "Endless items of the kind picked in its GUI, pushed into every block next to it");
+        add("tooltip.comminutioncraft.creative_chest_item", "Item: %s");
         add("tooltip.comminutioncraft.creative_battery", "Endless FE out of every face");
         add("message.comminutioncraft.wrench.cable_cut", "Cable connection cut");
         add("message.comminutioncraft.wrench.cable_restored", "Cable connection restored");

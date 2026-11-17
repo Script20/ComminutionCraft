@@ -12,6 +12,7 @@ import com.script.comminutioncraft.common.machine.CircuitAssemblerBlockEntity;
 import com.script.comminutioncraft.common.machine.CoalGranulatorBlockEntity;
 import com.script.comminutioncraft.common.machine.CoalSmelterBlockEntity;
 import com.script.comminutioncraft.common.machine.ContainmentCellBlockEntity;
+import com.script.comminutioncraft.common.machine.CreativeChestBlockEntity;
 import com.script.comminutioncraft.common.machine.CreativeEnergyBatteryBlockEntity;
 import com.script.comminutioncraft.common.machine.CreativeFluidTankBlockEntity;
 import com.script.comminutioncraft.common.machine.ElectricGeneratorBlockEntity;
@@ -145,6 +146,10 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CreativeFluidTankBlockEntity>> CREATIVE_FLUID_TANK =
             BLOCK_ENTITY_TYPES.register("creative_fluid_tank",
                     () -> new BlockEntityType<>(CreativeFluidTankBlockEntity::new, ModBlocks.CREATIVE_FLUID_TANK.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CreativeChestBlockEntity>> CREATIVE_CHEST =
+            BLOCK_ENTITY_TYPES.register("creative_chest",
+                    () -> new BlockEntityType<>(CreativeChestBlockEntity::new, ModBlocks.CREATIVE_CHEST.get()));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SoarynChestBlockEntity>> SOARYN_CHEST =
             BLOCK_ENTITY_TYPES.register("soaryn_chest",

@@ -16,6 +16,7 @@ import com.script.comminutioncraft.common.item.tool.PoweredTool;
 import com.script.comminutioncraft.common.item.tool.ToolTier;
 import com.script.comminutioncraft.common.machine.AcceleratorPortBlockEntity;
 import com.script.comminutioncraft.common.machine.AtmosphericWaterGeneratorBlockEntity;
+import com.script.comminutioncraft.common.machine.CreativeChestBlockEntity;
 import com.script.comminutioncraft.common.machine.CreativeEnergyBatteryBlockEntity;
 import com.script.comminutioncraft.common.machine.CreativeFluidTankBlockEntity;
 import com.script.comminutioncraft.common.machine.EnergyBatteryBlockEntity;
@@ -28,6 +29,7 @@ import com.script.comminutioncraft.common.machine.OreWasherBlockEntity;
 import com.script.comminutioncraft.common.machine.PelletPressBlockEntity;
 import com.script.comminutioncraft.common.machine.PlasmaMachineBlockEntity;
 import com.script.comminutioncraft.common.machine.ReactorPortBlockEntity;
+import com.script.comminutioncraft.common.network.SetCreativeChestItemPayload;
 import com.script.comminutioncraft.common.network.SwitchDrillModePayload;
 import com.script.comminutioncraft.common.network.SwitchWrenchModePayload;
 import com.script.comminutioncraft.common.recipe.RecipeSync;
@@ -94,6 +96,7 @@ public class ComminutionCraft {
         modEventBus.addListener(ModGameTests::registerTests);
         modEventBus.addListener(SwitchWrenchModePayload::register);
         modEventBus.addListener(SwitchDrillModePayload::register);
+        modEventBus.addListener(SetCreativeChestItemPayload::register);
         ModWoods.register(modEventBus);
 
         NeoForge.EVENT_BUS.addListener(RecipeSync::sendToClients);
@@ -187,6 +190,7 @@ public class ComminutionCraft {
         event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.CREATIVE_ENERGY_BATTERY.get(),
                 (battery, side) -> CreativeEnergyBatteryBlockEntity.ENDLESS);
         event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.CREATIVE_FLUID_TANK.get(), CreativeFluidTankBlockEntity::getFluidHandler);
+        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.CREATIVE_CHEST.get(), CreativeChestBlockEntity::getItemHandler);
         // Ore Purifier: items and FE like any machine, oxygen in through Input faces
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.ORE_PURIFIER.get(), WorldlyContainerWrapper::new);
         event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.ORE_PURIFIER.get(), (machine, side) -> machine.getEnergyHandler());

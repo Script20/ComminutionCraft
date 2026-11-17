@@ -13,6 +13,7 @@ import com.script.comminutioncraft.common.item.tool.ToolTier;
 import com.script.comminutioncraft.common.machine.AcceleratorPortBlock;
 import com.script.comminutioncraft.common.machine.ContainmentCellBlock;
 import com.script.comminutioncraft.common.machine.ContainmentCellBlockEntity;
+import com.script.comminutioncraft.common.machine.CreativeChestBlock;
 import com.script.comminutioncraft.common.machine.CreativeEnergyBatteryBlock;
 import com.script.comminutioncraft.common.machine.CreativeFluidTankBlock;
 import com.script.comminutioncraft.common.machine.FluidTankBlock;
@@ -21,8 +22,8 @@ import com.script.comminutioncraft.common.machine.HorizonControllerBlock;
 import com.script.comminutioncraft.common.machine.HorizonPortBlock;
 import com.script.comminutioncraft.common.machine.upgrade.UpgradeType;
 import com.script.comminutioncraft.common.registry.ModDataComponents;
-import com.script.comminutioncraft.common.registry.ModItems;
 import com.script.comminutioncraft.common.registry.ModFluids;
+import com.script.comminutioncraft.common.registry.ModItems;
 import com.script.comminutioncraft.common.storage.SoarynChestBlock;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +39,7 @@ import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 /**
  * Every tooltip line the mod adds, kept behind Shift: without it an item with details shows only
@@ -108,6 +110,12 @@ public final class ModTooltips {
             }
         } else if (block instanceof CreativeFluidTankBlock) {
             lines.add(gray("tooltip.comminutioncraft.creative_tank"));
+        } else if (block instanceof CreativeChestBlock) {
+            lines.add(gray("tooltip.comminutioncraft.creative_chest"));
+            ItemResource picked = stack.get(ModDataComponents.CREATIVE_ITEM.get());
+            if (picked != null) {
+                lines.add(gray("tooltip.comminutioncraft.creative_chest_item", picked.getHoverName()));
+            }
         } else if (block instanceof FluidTankBlock) {
             boolean cell = block instanceof ContainmentCellBlock;
             String capacity = number(cell ? ContainmentCellBlockEntity.CAPACITY.get()

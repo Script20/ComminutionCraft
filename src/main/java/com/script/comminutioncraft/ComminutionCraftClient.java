@@ -8,6 +8,7 @@ import com.script.comminutioncraft.client.gui.AtmosphericWaterGeneratorScreen;
 import com.script.comminutioncraft.client.gui.CoalGranulatorScreen;
 import com.script.comminutioncraft.client.gui.CoalSmelterScreen;
 import com.script.comminutioncraft.client.gui.ConfigSectionScreen;
+import com.script.comminutioncraft.client.gui.CreativeChestScreen;
 import com.script.comminutioncraft.client.gui.CreativeFluidTankScreen;
 import com.script.comminutioncraft.client.gui.ElectricGeneratorScreen;
 import com.script.comminutioncraft.client.gui.ElectricMachineScreen;
@@ -107,6 +108,7 @@ public class ComminutionCraftClient {
         event.register(ModMenus.EVENT_HORIZON.get(), EventHorizonScreen::new);
         event.register(ModMenus.PARTICLE_ACCELERATOR.get(), ParticleAcceleratorScreen::new);
         event.register(ModMenus.CREATIVE_FLUID_TANK.get(), CreativeFluidTankScreen::new);
+        event.register(ModMenus.CREATIVE_CHEST.get(), CreativeChestScreen::new);
         event.<ElectricMachineMenu, OrePurifierScreen>register(ModMenus.ORE_PURIFIER.get(),
                 (menu, inventory, title) -> new OrePurifierScreen((OrePurifierMenu) menu, inventory, title));
         event.register(ModMenus.FUSION_ENERGY_BATTERY.get(), EnergyBatteryScreen::fusion);
