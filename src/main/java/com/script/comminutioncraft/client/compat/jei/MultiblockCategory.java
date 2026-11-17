@@ -2,8 +2,9 @@ package com.script.comminutioncraft.client.compat.jei;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.script.comminutioncraft.ComminutionCraft;
+import com.script.comminutioncraft.client.multiblock.MultiblockStructure;
+import com.script.comminutioncraft.client.multiblock.MultiblockView;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,14 +32,15 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.block.Block;
 import org.jspecify.annotations.Nullable;
 
 /**
- * A multiblock's JEI page (owner's design, mock-up design/previews/jei_multiblock.png): the structure as a 3D model
- * (each block drawn as its own 3D item icon, back to front), a ▲ button stepping up one layer at a time (past the top
- * it shows the whole structure again) and ▼ stepping down, the layer shown between them, the blocks needed (for the
- * whole thing or the layer: icon + count, name and where it goes on hover), and a row of what goes in and out.
+ * A multiblock's JEI page (owner's design, mock-up design/previews/jei_multiblock.png): the structure in 3D with the
+ * blocks' real models ({@link MultiblockView}: right-drag turns it, scroll zooms, hovering a block names it), a ▲ button
+ * stepping up one layer at a time (past the top it shows the whole structure again) and ▼ stepping down, the layer
+ * shown between them, the blocks needed (for the whole thing or the layer: icon + count, name and where it goes on
+ * hover), and a row of what goes in and out.
  */
 public abstract class MultiblockCategory<T> extends AbstractRecipeCategory<T> {
     protected static final int WIDTH = 170;
@@ -53,54 +55,11 @@ public abstract class MultiblockCategory<T> extends AbstractRecipeCategory<T> {
     protected static final int IO_Y = LIST_Y + 22;
     protected static final int HEIGHT = IO_Y + 19;
 
-    private final int sizeX;
-    private final int sizeY;
-    private final int sizeZ;
-    private final Map<BlockPos, ItemLike> blocks;
-    /** The blocks back to front (drawing order), each with its icon stack - worked out once. */
-    private final List<Map.Entry<BlockPos, ItemStack>> drawOrder = new ArrayList<>();
-    private final Map<Item, Component> rules = new LinkedHashMap<>();
-    /** Pixel steps of the projection (for an item icon drawn at {@link #scale} x 16 px). */
-    private final float scale;
-    private final float originX;
-    private final float originY;
+    private final MultiblockStructure structure;
 
-    protected MultiblockCategory(IRecipeType<T> type, Component title, IDrawable icon, int sizeX, int sizeY, int sizeZ,
-                                 Map<BlockPos, ItemLike> blocks) {
+    protected MultiblockCategory(IRecipeType<T> type, Component title, IDrawable icon, MultiblockStructure structure) {
         super(type, title, icon, WIDTH, HEIGHT);
-        this.sizeX = sizeX;
-        this.sizeY = sizeY;
-        this.sizeZ = sizeZ;
-        this.blocks = blocks;
-        // Fit the whole structure in the model area; the layers keep the same scale and place.
-        float wide = (sizeX + sizeZ) * 7.07F + 6;
-        float tall = (sizeX + sizeZ) * 3.54F + sizeY * 8.66F + 6;
-        scale = Math.min(2.0F, Math.min(MODEL_W / wide, MODEL_H / tall));
-        float minX = Float.MAX_VALUE, maxX = -Float.MAX_VALUE, minY = Float.MAX_VALUE, maxY = -Float.MAX_VALUE;
-        for (BlockPos p : blocks.keySet()) {
-            float[] s = project(p.getX(), p.getY(), p.getZ(), 1);
-            minX = Math.min(minX, s[0]);
-            maxX = Math.max(maxX, s[0]);
-            minY = Math.min(minY, s[1]);
-            maxY = Math.max(maxY, s[1]);
-        }
-        originX = MODEL_W / 2F - (minX + maxX) / 2 * scale;
-        originY = MODEL_H / 2F - (minY + maxY) / 2 * scale;
-        List<BlockPos> order = new ArrayList<>(blocks.keySet());
-        order.sort(Comparator.<BlockPos>comparingInt(p -> p.getX() + p.getZ()).thenComparingInt(BlockPos::getY));
-        for (BlockPos p : order) {
-            drawOrder.add(Map.entry(p, new ItemStack(blocks.get(p))));
-        }
-    }
-
-    /** What may go where, shown when hovering that block in the list. */
-    protected void rule(ItemLike item, Component text) {
-        rules.putIfAbsent(item.asItem(), text);
-    }
-
-    /** Screen offset of a block's middle, for icons drawn at scale k. */
-    private static float[] project(int x, int y, int z, float k) {
-        return new float[] {(x - z) * 7.07F * k, (x + z) * 3.54F * k - y * 8.66F * k};
+        this.structure = structure;
     }
 
     // ---- Subclasses: the in -> out row ----
@@ -114,7 +73,7 @@ public abstract class MultiblockCategory<T> extends AbstractRecipeCategory<T> {
         addIoSlots(builder);
         // The model isn't made of slots, so list its blocks as hidden inputs: U on any of them finds this page.
         var hidden = builder.addInvisibleIngredients(RecipeIngredientRole.INPUT);
-        blocks.values().stream().map(ItemLike::asItem).distinct().forEach(hidden::add);
+        structure.blocks().values().stream().map(state -> state.getBlock().asItem()).distinct().forEach(hidden::add);
     }
 
     @Override
@@ -125,10 +84,10 @@ public abstract class MultiblockCategory<T> extends AbstractRecipeCategory<T> {
         addIoExtras(builder);
     }
 
-    /** The model, the layer buttons and the block list; remembers the layer shown on this page. */
+    /** The model, the layer buttons and the block list; remembers the turn and layer shown on this page. */
     private final class Model implements IRecipeWidget, IJeiInputHandler {
-        /** -1 = the whole structure, else the layer (0 = bottom). */
-        private int layer = -1;
+        /** Starts looking at the front (south) and a little of the east side. */
+        private final MultiblockView view = new MultiblockView(structure, 150, false);
         /** {@link #counts()} for {@link #countsLayer} (the list only changes with the layer). */
         private @Nullable List<Map.Entry<Item, Integer>> counts;
         private int countsLayer;
@@ -143,24 +102,20 @@ public abstract class MultiblockCategory<T> extends AbstractRecipeCategory<T> {
             return new ScreenRectangle(0, 0, WIDTH, LIST_Y + 18);
         }
 
-        private boolean shown(BlockPos p) {
-            return layer < 0 || p.getY() == layer;
-        }
-
         /** Item -> how many, for the layer shown (most first). */
         private List<Map.Entry<Item, Integer>> counts() {
-            if (this.counts == null || countsLayer != layer) {
+            if (this.counts == null || countsLayer != view.layer()) {
                 this.counts = countFor();
-                countsLayer = layer;
+                countsLayer = view.layer();
             }
             return this.counts;
         }
 
         private List<Map.Entry<Item, Integer>> countFor() {
             Map<Item, Integer> counts = new LinkedHashMap<>();
-            blocks.forEach((p, item) -> {
-                if (shown(p)) {
-                    counts.merge(item.asItem(), 1, Integer::sum);
+            structure.blocks().forEach((p, state) -> {
+                if (view.shows(p)) {
+                    counts.merge(state.getBlock().asItem(), 1, Integer::sum);
                 }
             });
             List<Map.Entry<Item, Integer>> list = new ArrayList<>(counts.entrySet());
@@ -172,25 +127,13 @@ public abstract class MultiblockCategory<T> extends AbstractRecipeCategory<T> {
         public void drawWidget(GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
             Font font = Minecraft.getInstance().font;
             graphics.fill(0, 0, MODEL_W, MODEL_H, 0x30000000);
-            // the model, back to front
-            for (Map.Entry<BlockPos, ItemStack> block : drawOrder) {
-                BlockPos p = block.getKey();
-                if (!shown(p)) {
-                    continue;
-                }
-                float[] s = project(p.getX(), p.getY(), p.getZ(), scale);
-                graphics.pose().pushMatrix();
-                graphics.pose().translate(originX + s[0] - 8 * scale, originY + s[1] - 8 * scale);
-                graphics.pose().scale(scale, scale);
-                graphics.fakeItem(block.getValue(), 0, 0);
-                graphics.pose().popMatrix();
-            }
+            view.extract(graphics, 0, 0, MODEL_W, MODEL_H);
             // layer buttons and the layer between them
             button(graphics, UP_Y, true, inside(mouseX, mouseY, BUTTON_X, UP_Y));
             button(graphics, DOWN_Y, false, inside(mouseX, mouseY, BUTTON_X, DOWN_Y));
             Component label = Component.translatable("jei.comminutioncraft.multiblock.layer");
-            Component which = layer < 0 ? Component.translatable("jei.comminutioncraft.multiblock.all")
-                    : Component.literal((layer + 1) + "/" + sizeY);
+            Component which = view.layer() < 0 ? Component.translatable("jei.comminutioncraft.multiblock.all")
+                    : Component.literal((view.layer() + 1) + "/" + structure.sizeY());
             int cx = BUTTON_X + BUTTON / 2;
             graphics.text(font, label, cx - font.width(label) / 2, 36, 0xFF404040, false);
             graphics.text(font, which, cx - font.width(which) / 2, 48, 0xFF404040, false);
@@ -222,7 +165,13 @@ public abstract class MultiblockCategory<T> extends AbstractRecipeCategory<T> {
         @Override
         public boolean handleInput(double mouseX, double mouseY, IJeiUserInput input) {
             InputConstants.Key key = input.getKey();
-            if (key.getType() != InputConstants.Type.MOUSE || key.getValue() != InputConstants.MOUSE_BUTTON_LEFT) {
+            if (key.getType() != InputConstants.Type.MOUSE) {
+                return false;
+            }
+            if (key.getValue() == InputConstants.MOUSE_BUTTON_RIGHT) {
+                return inModel(mouseX, mouseY); // starts a turn (handleMouseDragged)
+            }
+            if (key.getValue() != InputConstants.MOUSE_BUTTON_LEFT) {
                 return false;
             }
             boolean up = inside(mouseX, mouseY, BUTTON_X, UP_Y);
@@ -232,14 +181,34 @@ public abstract class MultiblockCategory<T> extends AbstractRecipeCategory<T> {
             }
             if (!input.isSimulate()) {
                 // up: all -> 1 -> 2 -> ... -> top -> all; down the other way
-                if (up) {
-                    layer = layer + 1 >= sizeY ? -1 : layer + 1;
-                } else {
-                    layer = layer < 0 ? sizeY - 1 : layer - 1;
-                }
+                int layer = view.layer();
+                int top = structure.sizeY();
+                view.setLayer(up ? (layer + 1 >= top ? -1 : layer + 1) : (layer < 0 ? top - 1 : layer - 1));
                 Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(
                         SoundEvents.UI_BUTTON_CLICK, 1.0F));
             }
+            return true;
+        }
+
+        private static boolean inModel(double mouseX, double mouseY) {
+            return mouseX >= 0 && mouseY >= 0 && mouseX < MODEL_W && mouseY < MODEL_H;
+        }
+
+        @Override
+        public boolean handleMouseDragged(double mouseX, double mouseY, InputConstants.Key key, double dragX, double dragY) {
+            if (key.getType() != InputConstants.Type.MOUSE || key.getValue() != InputConstants.MOUSE_BUTTON_RIGHT) {
+                return false;
+            }
+            view.rotate(dragX, dragY);
+            return true;
+        }
+
+        @Override
+        public boolean handleMouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+            if (!inModel(mouseX, mouseY)) {
+                return false;
+            }
+            view.zoom(scrollY);
             return true;
         }
 
@@ -253,6 +222,14 @@ public abstract class MultiblockCategory<T> extends AbstractRecipeCategory<T> {
                 tooltip.add(Component.translatable("jei.comminutioncraft.multiblock.down"));
                 return;
             }
+            if (inModel(mouseX, mouseY)) {
+                BlockPos block = view.blockAt(mouseX, mouseY, MODEL_W, MODEL_H);
+                if (block != null) {
+                    view.tooltip(block).forEach(tooltip::add);
+                    tooltip.add(MultiblockView.hint());
+                }
+                return;
+            }
             if (mouseY < LIST_Y || mouseY >= LIST_Y + 16) {
                 return;
             }
@@ -262,7 +239,7 @@ public abstract class MultiblockCategory<T> extends AbstractRecipeCategory<T> {
                 int width = 18 + font.width("x" + e.getValue());
                 if (mouseX >= x && mouseX < x + width) {
                     tooltip.add(Component.literal(e.getValue() + " x ").append(new ItemStack(e.getKey()).getHoverName()));
-                    Component rule = rules.get(e.getKey());
+                    Component rule = structure.rule(Block.byItem(e.getKey()));
                     if (rule != null) {
                         tooltip.add(rule.copy().withStyle(ChatFormatting.GRAY));
                     }
@@ -271,11 +248,6 @@ public abstract class MultiblockCategory<T> extends AbstractRecipeCategory<T> {
                 x += width + 6;
             }
         }
-    }
-
-    /** Helper for subclasses: an empty block map to fill. */
-    protected static Map<BlockPos, ItemLike> structure() {
-        return new LinkedHashMap<>();
     }
 
     protected static IDrawable energyIcon(IGuiHelper guiHelper) {

@@ -9,82 +9,9 @@
       "text": "A 7x7x7 cage: $(item)Containment Frame$() on all twelve edges and the $(item)Event Horizon Controller$() in the middle of a bottom edge, facing out. $(item)Horizon Ports$() go anywhere in the frame.$(br2)The inner 5x5x5 must be empty. The faces between the edges can be left open or filled with anything, like glass."
     },
     {
-      "type": "patchouli:multiblock",
+      "type": "comminutioncraft:multiblock",
       "name": "Event Horizon Reactor",
-      "multiblock": {
-        "pattern": [
-          [
-            "FFFFFFF",
-            "F_____F",
-            "F_____F",
-            "F_____F",
-            "F_____F",
-            "F_____F",
-            "FFFFFFF"
-          ],
-          [
-            "F_____F",
-            "_     _",
-            "_     _",
-            "_     _",
-            "_     _",
-            "_     _",
-            "F_____F"
-          ],
-          [
-            "F_____F",
-            "_     _",
-            "_     _",
-            "_     _",
-            "_     _",
-            "_     _",
-            "F_____F"
-          ],
-          [
-            "F_____F",
-            "_     _",
-            "_     _",
-            "_  0  _",
-            "_     _",
-            "_     _",
-            "F_____F"
-          ],
-          [
-            "F_____F",
-            "_     _",
-            "_     _",
-            "_     _",
-            "_     _",
-            "_     _",
-            "F_____F"
-          ],
-          [
-            "F_____F",
-            "_     _",
-            "_     _",
-            "_     _",
-            "_     _",
-            "_     _",
-            "F_____F"
-          ],
-          [
-            "FFFOFFF",
-            "F_____F",
-            "F_____F",
-            "F_____K",
-            "F_____F",
-            "F_____F",
-            "FFFIFFF"
-          ]
-        ],
-        "mapping": {
-          "F": "comminutioncraft:containment_frame",
-          "K": "comminutioncraft:horizon_controller[facing=south]",
-          "I": "comminutioncraft:horizon_port[output=false]",
-          "O": "comminutioncraft:horizon_port[output=true]"
-        }
-      },
-      "enable_visualize": true,
+      "structure": "event_horizon",
       "text": "Controller in the front bottom edge, an Input port east, an Output port west."
     },
     {

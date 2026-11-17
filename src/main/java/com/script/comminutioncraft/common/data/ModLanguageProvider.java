@@ -54,6 +54,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("jei.comminutioncraft.multiblock.layer", "Layer");
         add("jei.comminutioncraft.multiblock.all", "All");
         add("jei.comminutioncraft.multiblock.up", "Up a layer (past the top: all)");
+        add("gui.comminutioncraft.multiblock.rotate", "Right-drag to turn it");
         add("jei.comminutioncraft.multiblock.down", "Down a layer (past the bottom: all)");
         add("jei.comminutioncraft.multiblock.port_rule", "Input or Output port (switch with the wrench)");
         add("jei.comminutioncraft.fusion_reactor.frame", "Edge or corner: Reactor Casing or a Reactor Port");

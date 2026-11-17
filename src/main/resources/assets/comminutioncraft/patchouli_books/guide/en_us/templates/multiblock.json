@@ -1,0 +1,24 @@
+{
+  "components": [
+    {
+      "type": "patchouli:header",
+      "text": "#name",
+      "x": -1,
+      "y": -1
+    },
+    {
+      "type": "patchouli:custom",
+      "class": "com.script.comminutioncraft.client.compat.patchouli.MultiblockComponent",
+      "x": 5,
+      "y": 7,
+      "structure": "#structure",
+      "name": "#name"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "#text",
+      "x": 0,
+      "y": 115
+    }
+  ]
+}

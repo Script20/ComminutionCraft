@@ -9,28 +9,9 @@
       "text": "A hollow square ring of $(item)Accelerator Segments$(), one block high, between 5x5 and 15x15, with one $(item)Particle Accelerator Controller$() in the ring.$(br2)Bigger rings are faster but use more power."
     },
     {
-      "type": "patchouli:multiblock",
+      "type": "comminutioncraft:multiblock",
       "name": "Particle Accelerator (7x7)",
-      "multiblock": {
-        "pattern": [
-          [
-            "SSSOSSS",
-            "S_____S",
-            "S_____S",
-            "S__0__A",
-            "S_____S",
-            "S_____S",
-            "SSSISSS"
-          ]
-        ],
-        "mapping": {
-          "S": "comminutioncraft:accelerator_segment",
-          "A": "comminutioncraft:accelerator_controller[facing=south]",
-          "I": "comminutioncraft:accelerator_port[output=false]",
-          "O": "comminutioncraft:accelerator_port[output=true]"
-        }
-      },
-      "enable_visualize": true,
+      "structure": "particle_accelerator",
       "text": "A 7x7 ring: an Input port on the east side, an Output port on the west."
     },
     {

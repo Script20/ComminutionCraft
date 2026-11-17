@@ -617,6 +617,7 @@
   "gui.comminutioncraft.humidity": "Humidity: %s%%",
   "gui.comminutioncraft.hydrogen": "Hydrogen: %s / %s mB",
   "gui.comminutioncraft.intake": "Intake: %s/6",
+  "gui.comminutioncraft.multiblock.rotate": "Right-drag to turn it",
   "gui.comminutioncraft.no_filter": "No filter",
   "gui.comminutioncraft.no_filter.desc": "An Air Filter doubles how much water it makes",
   "gui.comminutioncraft.oxygen": "Oxygen: %s / %s mB",

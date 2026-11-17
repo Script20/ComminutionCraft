@@ -22,6 +22,8 @@ import com.script.comminutioncraft.client.gui.ParticleAcceleratorScreen;
 import com.script.comminutioncraft.client.gui.PelletPressScreen;
 import com.script.comminutioncraft.client.gui.PlasmaMachineScreen;
 import com.script.comminutioncraft.client.gui.SingularityProcessorScreen;
+import com.script.comminutioncraft.client.multiblock.MultiblockRenderState;
+import com.script.comminutioncraft.client.multiblock.MultiblockRenderer;
 import com.script.comminutioncraft.client.render.BlackHoleEntityRenderer;
 import com.script.comminutioncraft.client.render.BlackHoleRenderer;
 import com.script.comminutioncraft.client.render.FluidTankRenderer;
@@ -53,6 +55,7 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterFluidModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterSpecialModelRendererEvent;
 import net.neoforged.neoforge.client.fluid.FluidTintSource;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
@@ -77,6 +80,9 @@ public class ComminutionCraftClient {
         modEventBus.addListener((RegisterSpecialModelRendererEvent event) -> event.register(
                 TankItemRenderer.TYPE,
                 TankItemRenderer.Unbaked.MAP_CODEC));
+        // 3D multiblocks on the JEI pages and in the guide book
+        modEventBus.addListener((RegisterPictureInPictureRenderersEvent event) -> event.register(
+                MultiblockRenderState.class, MultiblockRenderer::new));
         NeoForge.EVENT_BUS.addListener(ModKeyMappings::onClientTick);
         NeoForge.EVENT_BUS.addListener(ModTooltips::onTooltip);
         // per-player settings (machine sound volume) and the machines' working sounds

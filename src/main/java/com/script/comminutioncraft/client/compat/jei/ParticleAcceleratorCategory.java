@@ -1,12 +1,12 @@
 package com.script.comminutioncraft.client.compat.jei;
 
 import com.script.comminutioncraft.ComminutionCraft;
+import com.script.comminutioncraft.client.multiblock.MultiblockStructure;
 import com.script.comminutioncraft.common.machine.ParticleAcceleratorBlockEntity;
 import com.script.comminutioncraft.common.registry.ModFluids;
 import com.script.comminutioncraft.common.registry.ModItems;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
@@ -14,9 +14,7 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.level.ItemLike;
 
 /**
  * The Particle Accelerator's page (press U on its controller, a segment or a port): a 7x7 ring as a 3D model with the
@@ -41,32 +39,11 @@ public class ParticleAcceleratorCategory extends MultiblockCategory<ParticleAcce
 
     public ParticleAcceleratorCategory(IGuiHelper guiHelper) {
         super(TYPE, Component.translatable("jei.comminutioncraft.particle_accelerator"),
-                guiHelper.createDrawableItemLike(ModItems.ACCELERATOR_CONTROLLER.get()), SIDE, 1, SIDE, blocks());
+                guiHelper.createDrawableItemLike(ModItems.ACCELERATOR_CONTROLLER.get()), MultiblockStructure.PARTICLE_ACCELERATOR.get());
         this.guiHelper = guiHelper;
         energyIcon = energyIcon(guiHelper);
-        rule(ModItems.ACCELERATOR_SEGMENT.get(), Component.translatable("jei.comminutioncraft.particle_accelerator.sizes",
-                ParticleAcceleratorBlockEntity.MIN_RING_SIDE.get(), ParticleAcceleratorBlockEntity.MAX_RING_SIDE.get()));
-        rule(ModItems.ACCELERATOR_PORT.get(), Component.translatable("jei.comminutioncraft.multiblock.port_rule"));
-        rule(ModItems.ACCELERATOR_CONTROLLER.get(), Component.translatable("jei.comminutioncraft.particle_accelerator.controller"));
     }
 
-    /** A 7x7 ring: the controller in the middle of the front, an Input port on the right, an Output port on the left. */
-    private static Map<BlockPos, ItemLike> blocks() {
-        Map<BlockPos, ItemLike> blocks = structure();
-        int mid = SIDE / 2;
-        for (int z = 0; z < SIDE; z++) {
-            for (int x = 0; x < SIDE; x++) {
-                if (x != 0 && x != SIDE - 1 && z != 0 && z != SIDE - 1) {
-                    continue; // inside the ring
-                }
-                ItemLike block = x == mid && z == SIDE - 1 ? ModItems.ACCELERATOR_CONTROLLER.get()
-                        : (x == SIDE - 1 || x == 0) && z == mid ? ModItems.ACCELERATOR_PORT.get()
-                        : ModItems.ACCELERATOR_SEGMENT.get();
-                blocks.put(new BlockPos(x, 0, z), block);
-            }
-        }
-        return blocks;
-    }
 
     @Override
     protected void addIoSlots(IRecipeLayoutBuilder builder) {
