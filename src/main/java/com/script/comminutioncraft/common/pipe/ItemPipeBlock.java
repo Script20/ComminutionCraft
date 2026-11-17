@@ -60,6 +60,12 @@ public class ItemPipeBlock extends ConduitBlock implements EntityBlock {
         pipeShapes = getShapeForEachState(ItemPipeBlock::shapeOf);
     }
 
+    /** The Item Pipe's own model has its core everywhere, so it doesn't need the straight state. */
+    @Override
+    protected boolean tracksStraight() {
+        return false;
+    }
+
     private static VoxelShape shapeOf(BlockState state) {
         VoxelShape shape = CORE;
         for (Direction direction : Direction.values()) {

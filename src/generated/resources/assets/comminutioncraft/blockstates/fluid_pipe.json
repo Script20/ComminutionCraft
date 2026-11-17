@@ -3,6 +3,9 @@
     {
       "apply": {
         "model": "comminutioncraft:block/fluid_pipe_core"
+      },
+      "when": {
+        "straight": "false"
       }
     },
     {

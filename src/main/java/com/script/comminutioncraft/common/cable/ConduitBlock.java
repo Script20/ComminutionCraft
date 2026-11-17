@@ -15,6 +15,7 @@ import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -35,15 +36,22 @@ public abstract class ConduitBlock extends Block {
         }
     }
 
-    private static final VoxelShape CORE = Block.box(5, 5, 5, 11, 11, 11);
+    /**
+     * True when it runs straight through (connected on exactly two opposite sides and nowhere else): the model then
+     * shows just the even 6x6 run, no node. Only conduits that {@link #tracksStraight()} have it.
+     */
+    public static final BooleanProperty STRAIGHT = BooleanProperty.create("straight");
+
+    private static final VoxelShape NODE = Block.box(4, 4, 4, 12, 12, 12);
+    /** Arms reach the middle, so two opposite ones make a straight run. */
     private static final Map<Direction, VoxelShape> ARMS = new EnumMap<>(Map.of(
-            Direction.NORTH, Block.box(6, 6, 0, 10, 10, 5),
-            Direction.SOUTH, Block.box(6, 6, 11, 10, 10, 16),
-            Direction.WEST, Block.box(0, 6, 6, 5, 10, 10),
-            Direction.EAST, Block.box(11, 6, 6, 16, 10, 10),
-            Direction.DOWN, Block.box(6, 0, 6, 10, 5, 10),
-            Direction.UP, Block.box(6, 11, 6, 10, 16, 10)));
-    /** Connector plate where an arm meets a machine. */
+            Direction.NORTH, Block.box(5, 5, 0, 11, 11, 8),
+            Direction.SOUTH, Block.box(5, 5, 8, 11, 11, 16),
+            Direction.WEST, Block.box(0, 5, 5, 8, 11, 11),
+            Direction.EAST, Block.box(8, 5, 5, 16, 11, 11),
+            Direction.DOWN, Block.box(5, 0, 5, 11, 8, 11),
+            Direction.UP, Block.box(5, 8, 5, 11, 16, 11)));
+    /** Connector plate where an arm meets a block. */
     private static final Map<Direction, VoxelShape> PLATES = new EnumMap<>(Map.of(
             Direction.NORTH, Block.box(4, 4, 0, 12, 12, 1),
             Direction.SOUTH, Block.box(4, 4, 15, 12, 12, 16),
@@ -60,12 +68,23 @@ public abstract class ConduitBlock extends Block {
         for (EnumProperty<CableConnection> property : CONNECTIONS.values()) {
             state = state.setValue(property, CableConnection.NONE);
         }
+        if (tracksStraight()) {
+            state = state.setValue(STRAIGHT, false);
+        }
         registerDefaultState(state);
         shapes = getShapeForEachState(ConduitBlock::calculateShape);
     }
 
+    /**
+     * Whether this conduit has the {@link #STRAIGHT} state (all but the Item Pipe, which has its own thicker model).
+     * Called while the block's states are being built, so it must not read instance fields.
+     */
+    protected boolean tracksStraight() {
+        return true;
+    }
+
     private static VoxelShape calculateShape(BlockState state) {
-        VoxelShape shape = CORE;
+        VoxelShape shape = state.hasProperty(STRAIGHT) && state.getValue(STRAIGHT) ? Shapes.empty() : NODE;
         for (Direction direction : Direction.values()) {
             CableConnection connection = state.getValue(CONNECTIONS.get(direction));
             if (connection.isConnected()) {
@@ -81,6 +100,9 @@ public abstract class ConduitBlock extends Block {
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         CONNECTIONS.values().forEach(builder::add);
+        if (tracksStraight()) {
+            builder.add(STRAIGHT);
+        }
     }
 
     @Override
@@ -112,9 +134,22 @@ public abstract class ConduitBlock extends Block {
         return withShape(state.setValue(property, updated));
     }
 
-    /** Lets a conduit keep extra state in step with its connections (Energy Cables: straight or not). */
+    /** Keeps {@link #STRAIGHT} in step with the connections. */
     protected BlockState withShape(BlockState state) {
-        return state;
+        if (!state.hasProperty(STRAIGHT)) {
+            return state;
+        }
+        Direction first = null;
+        int count = 0;
+        for (Direction direction : Direction.values()) {
+            if (state.getValue(CONNECTIONS.get(direction)).isConnected()) {
+                count++;
+                if (first == null) {
+                    first = direction;
+                }
+            }
+        }
+        return state.setValue(STRAIGHT, count == 2 && state.getValue(CONNECTIONS.get(first.getOpposite())).isConnected());
     }
 
     /** Whether the block at {@code neighbourPos} has this conduit's capability (FE, fluid...) on {@code side}. */

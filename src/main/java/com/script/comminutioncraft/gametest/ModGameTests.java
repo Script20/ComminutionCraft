@@ -1790,10 +1790,10 @@ public final class ModGameTests {
         for (BlockPos pos : List.of(west, middle, east)) {
             helper.setBlock(pos, ModBlocks.ENERGY_CABLE.get());
         }
-        helper.assertTrue(helper.getBlockState(middle).getValue(EnergyCableBlock.STRAIGHT), "A cable between two cables should be straight");
-        helper.assertFalse(helper.getBlockState(west).getValue(EnergyCableBlock.STRAIGHT), "An end should have a node");
+        helper.assertTrue(helper.getBlockState(middle).getValue(ConduitBlock.STRAIGHT), "A cable between two cables should be straight");
+        helper.assertFalse(helper.getBlockState(west).getValue(ConduitBlock.STRAIGHT), "An end should have a node");
         helper.setBlock(middle.south(), ModBlocks.ENERGY_CABLE.get());
-        helper.assertFalse(helper.getBlockState(middle).getValue(EnergyCableBlock.STRAIGHT), "A T-junction should have a node");
+        helper.assertFalse(helper.getBlockState(middle).getValue(ConduitBlock.STRAIGHT), "A T-junction should have a node");
         helper.succeed();
     }
 
