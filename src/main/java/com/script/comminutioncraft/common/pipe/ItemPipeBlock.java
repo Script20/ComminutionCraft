@@ -31,7 +31,8 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Item Pipe (tier 2): a thicker conduit you can see into (core 8x8x8, arms 6x6, a 10x10 plate on blocks). It joins
+ * Item Pipe (tier 2): a conduit you can see into (an even 6x6 run like the other pipes, the 8x8x8 core only at
+ * corners, junctions and ends, a 10x10 plate on blocks). It joins
  * other Item Pipes and any block with an item handler. Each side touching a block is Insert (the default), Extract
  * or None; None is the conduit's cut side, so the wrench's Cables/Pipes mode cycles Insert -> Extract -> None.
  * Right-click opens the GUI on the clicked side.
@@ -39,12 +40,12 @@ import org.jspecify.annotations.Nullable;
 public class ItemPipeBlock extends ConduitBlock implements EntityBlock {
     private static final VoxelShape CORE = box(4, 4, 4, 12, 12, 12);
     private static final Map<Direction, VoxelShape> ARMS = new EnumMap<>(Map.of(
-            Direction.NORTH, box(5, 5, 0, 11, 11, 4),
-            Direction.SOUTH, box(5, 5, 12, 11, 11, 16),
-            Direction.WEST, box(0, 5, 5, 4, 11, 11),
-            Direction.EAST, box(12, 5, 5, 16, 11, 11),
-            Direction.DOWN, box(5, 0, 5, 11, 4, 11),
-            Direction.UP, box(5, 12, 5, 11, 16, 11)));
+            Direction.NORTH, box(5, 5, 0, 11, 11, 8),
+            Direction.SOUTH, box(5, 5, 8, 11, 11, 16),
+            Direction.WEST, box(0, 5, 5, 8, 11, 11),
+            Direction.EAST, box(8, 5, 5, 16, 11, 11),
+            Direction.DOWN, box(5, 0, 5, 11, 8, 11),
+            Direction.UP, box(5, 8, 5, 11, 16, 11)));
     private static final Map<Direction, VoxelShape> PLATES = new EnumMap<>(Map.of(
             Direction.NORTH, box(3, 3, 0, 13, 13, 1),
             Direction.SOUTH, box(3, 3, 15, 13, 13, 16),
@@ -60,14 +61,8 @@ public class ItemPipeBlock extends ConduitBlock implements EntityBlock {
         pipeShapes = getShapeForEachState(ItemPipeBlock::shapeOf);
     }
 
-    /** The Item Pipe's own model has its core everywhere, so it doesn't need the straight state. */
-    @Override
-    protected boolean tracksStraight() {
-        return false;
-    }
-
     private static VoxelShape shapeOf(BlockState state) {
-        VoxelShape shape = CORE;
+        VoxelShape shape = state.getValue(STRAIGHT) ? Shapes.empty() : CORE;
         for (Direction direction : Direction.values()) {
             CableConnection connection = state.getValue(CONNECTIONS.get(direction));
             if (connection.isConnected()) {

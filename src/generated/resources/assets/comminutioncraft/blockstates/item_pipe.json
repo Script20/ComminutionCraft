@@ -3,6 +3,9 @@
     {
       "apply": {
         "model": "comminutioncraft:block/item_pipe_core"
+      },
+      "when": {
+        "straight": "false"
       }
     },
     {

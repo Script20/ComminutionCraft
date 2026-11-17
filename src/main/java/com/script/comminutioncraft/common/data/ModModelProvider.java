@@ -107,7 +107,7 @@ public class ModModelProvider extends ModelProvider {
                     .face(Direction.WEST, face -> face.texture(CABLE).uvs(1, 1, 7, 7)))
             .build();
 
-    // Item Pipe: thicker (core 8, arms 6, plate 10) so the travelling items show. Textures: item_pipe (core 8x8 at (0,0),
+    // Item Pipe: an even 6x6 see-through run, the 8x8 core only where it isn't straight, 10x10 plates. Textures: item_pipe (core 8x8 at (0,0),
     // its middle 6x6 = the arm's end, tube strip 16x6 at (0,8)) and item_pipe_plate (the Insert plate 10x10 at (0,0)).
     private static final TextureSlot PIPE_PLATE = TextureSlot.create("plate");
 
@@ -119,22 +119,22 @@ public class ModModelProvider extends ModelProvider {
 
     private static final ModelTemplate ITEM_PIPE_ARM = ExtendedModelTemplateBuilder.builder()
             .requiredTextureSlot(CABLE).requiredTextureSlot(TextureSlot.PARTICLE)
-            .element(e -> e.from(5, 5, 0).to(11, 11, 4)
+            .element(e -> e.from(5, 5, 0).to(11, 11, 8)
                     .face(Direction.NORTH, face -> face.texture(CABLE).uvs(1, 1, 7, 7).cullface(Direction.NORTH))
-                    .face(Direction.EAST, face -> face.texture(CABLE).uvs(0, 8, 4, 14))
-                    .face(Direction.WEST, face -> face.texture(CABLE).uvs(0, 8, 4, 14))
-                    .face(Direction.UP, face -> face.texture(CABLE).uvs(0, 8, 4, 14).rotation(Quadrant.R90))
-                    .face(Direction.DOWN, face -> face.texture(CABLE).uvs(0, 8, 4, 14).rotation(Quadrant.R90)))
+                    .face(Direction.EAST, face -> face.texture(CABLE).uvs(0, 8, 8, 14))
+                    .face(Direction.WEST, face -> face.texture(CABLE).uvs(0, 8, 8, 14))
+                    .face(Direction.UP, face -> face.texture(CABLE).uvs(0, 8, 8, 14).rotation(Quadrant.R90))
+                    .face(Direction.DOWN, face -> face.texture(CABLE).uvs(0, 8, 8, 14).rotation(Quadrant.R90)))
             .build();
 
     private static final ModelTemplate ITEM_PIPE_ARM_FAR = ExtendedModelTemplateBuilder.builder()
             .requiredTextureSlot(CABLE).requiredTextureSlot(TextureSlot.PARTICLE)
-            .element(e -> e.from(5, 5, 12).to(11, 11, 16)
+            .element(e -> e.from(5, 5, 8).to(11, 11, 16)
                     .face(Direction.SOUTH, face -> face.texture(CABLE).uvs(1, 1, 7, 7).cullface(Direction.SOUTH))
-                    .face(Direction.EAST, face -> face.texture(CABLE).uvs(0, 8, 4, 14))
-                    .face(Direction.WEST, face -> face.texture(CABLE).uvs(0, 8, 4, 14))
-                    .face(Direction.UP, face -> face.texture(CABLE).uvs(0, 8, 4, 14).rotation(Quadrant.R90))
-                    .face(Direction.DOWN, face -> face.texture(CABLE).uvs(0, 8, 4, 14).rotation(Quadrant.R90)))
+                    .face(Direction.EAST, face -> face.texture(CABLE).uvs(8, 8, 16, 14))
+                    .face(Direction.WEST, face -> face.texture(CABLE).uvs(8, 8, 16, 14))
+                    .face(Direction.UP, face -> face.texture(CABLE).uvs(8, 8, 16, 14).rotation(Quadrant.R90))
+                    .face(Direction.DOWN, face -> face.texture(CABLE).uvs(8, 8, 16, 14).rotation(Quadrant.R90)))
             .build();
 
     private static final ModelTemplate ITEM_PIPE_PLATE = ExtendedModelTemplateBuilder.builder()
@@ -151,8 +151,6 @@ public class ModModelProvider extends ModelProvider {
     private static final ModelTemplate ITEM_PIPE_INVENTORY = ExtendedModelTemplateBuilder.builder()
             .parent(Identifier.withDefaultNamespace("block/block"))
             .requiredTextureSlot(CABLE).requiredTextureSlot(TextureSlot.PARTICLE)
-            .element(e -> e.from(4, 4, 4).to(12, 12, 12)
-                    .allFaces((dir, face) -> face.texture(CABLE).uvs(0, 0, 8, 8)))
             .element(e -> e.from(0, 5, 5).to(16, 11, 11)
                     .face(Direction.NORTH, face -> face.texture(CABLE).uvs(0, 8, 16, 14))
                     .face(Direction.SOUTH, face -> face.texture(CABLE).uvs(0, 8, 16, 14))
@@ -393,7 +391,7 @@ public class ModModelProvider extends ModelProvider {
         itemModels.itemModelOutput.accept(item, ItemModelUtils.plainModel(inventory));
     }
 
-    /** Like {@link #conduit} with the Item Pipe's thicker parts and its own plate texture (Extract plates: ItemPipeRenderer). */
+    /** Like {@link #conduit} with the Item Pipe's bigger core and plates and its own plate texture (Extract plates: ItemPipeRenderer). */
     private static void itemPipe(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
         ItemPipeBlock pipe = ModBlocks.ITEM_PIPE.get();
         TextureMapping textures = new TextureMapping()
@@ -404,7 +402,8 @@ public class ModModelProvider extends ModelProvider {
         MultiVariant arm = BlockModelGenerators.plainVariant(ITEM_PIPE_ARM.createWithSuffix(pipe, "_arm", textures, blockModels.modelOutput));
         MultiVariant armFar = BlockModelGenerators.plainVariant(ITEM_PIPE_ARM_FAR.createWithSuffix(pipe, "_arm_far", textures, blockModels.modelOutput));
         MultiVariant plate = BlockModelGenerators.plainVariant(ITEM_PIPE_PLATE.createWithSuffix(pipe, "_plate", textures, blockModels.modelOutput));
-        MultiPartGenerator generator = MultiPartGenerator.multiPart(pipe).with(core);
+        MultiPartGenerator generator = MultiPartGenerator.multiPart(pipe)
+                .with(BlockModelGenerators.condition().term(ConduitBlock.STRAIGHT, false), core);
         for (Direction direction : Direction.values()) {
             VariantMutator rotation = switch (direction) {
                 case NORTH -> BlockModelGenerators.NOP;

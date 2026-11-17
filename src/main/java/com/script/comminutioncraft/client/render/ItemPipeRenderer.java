@@ -35,7 +35,8 @@ import org.jspecify.annotations.Nullable;
  */
 public class ItemPipeRenderer implements BlockEntityRenderer<ItemPipeBlockEntity, ItemPipeRenderer.State> {
     private static final SpriteId EXTRACT = new SpriteId(TextureAtlas.LOCATION_BLOCKS, ComminutionCraft.id("block/item_pipe_extract"));
-    private static final float ITEM_SCALE = 0.45F;
+    /** Small enough to ride inside the 6x6 tube. */
+    private static final float ITEM_SCALE = 0.3F;
     private static final float E = 0.004F; // over the model's plate
 
     private final ItemModelResolver itemModels;
@@ -90,7 +91,7 @@ public class ItemPipeRenderer implements BlockEntityRenderer<ItemPipeBlockEntity
     public void submit(State state, PoseStack pose, SubmitNodeCollector collector, CameraRenderState camera) {
         for (Moving moving : state.items) {
             pose.pushPose();
-            pose.translate(moving.at().x, moving.at().y - 0.1, moving.at().z);
+            pose.translate(moving.at().x, moving.at().y - 0.07, moving.at().z);
             pose.mulPose(Axis.YP.rotationDegrees(state.time * 4 + moving.seed() * 47));
             pose.scale(ITEM_SCALE, ITEM_SCALE, ITEM_SCALE);
             moving.item().submit(pose, collector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
