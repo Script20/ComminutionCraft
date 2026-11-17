@@ -422,10 +422,9 @@ public class ModRecipeProvider extends RecipeProvider {
 
         shaped(RecipeCategory.MISC, ModItems.FUSION_CABLE.get(), 8)
                 .pattern("CCC")
-                .pattern("GFG")
+                .pattern("CFC")
                 .pattern("CCC")
                 .define('C', ModItems.ENERGY_CABLE.get())
-                .define('G', tag(ProcessedMetal.commonItemTag("ingots/gold")))
                 .define('F', ModItems.FUSION_CIRCUIT.get())
                 .unlockedBy("has_fusion_circuit", has(ModItems.FUSION_CIRCUIT.get()))
                 .save(output, key("fusion_cable"));
@@ -470,10 +469,9 @@ public class ModRecipeProvider extends RecipeProvider {
                 .save(output, key("singularity_processor"));
         shaped(RecipeCategory.MISC, ModItems.SINGULARITY_CABLE.get(), 8)
                 .pattern("CCC")
-                .pattern("HSH")
+                .pattern("CSC")
                 .pattern("CCC")
                 .define('C', ModItems.ANTIMATTER_CABLE.get())
-                .define('H', ModItems.SINGULARITY_SHARD.get())
                 .define('S', ModItems.SINGULARITY_CIRCUIT.get())
                 .unlockedBy("has_singularity_shard", has(ModItems.SINGULARITY_SHARD.get()))
                 .save(output, key("singularity_cable"));
@@ -532,10 +530,9 @@ public class ModRecipeProvider extends RecipeProvider {
 
         shaped(RecipeCategory.MISC, ModItems.ANTIMATTER_CABLE.get(), 8)
                 .pattern("CCC")
-                .pattern("MAM")
+                .pattern("CAC")
                 .pattern("CCC")
                 .define('C', ModItems.FUSION_CABLE.get())
-                .define('M', ModItems.MAGNETIC_CONDUIT.get())
                 .define('A', ModItems.ANTIMATTER_CIRCUIT.get())
                 .unlockedBy("has_antimatter_circuit", has(ModItems.ANTIMATTER_CIRCUIT.get()))
                 .save(output, key("antimatter_cable"));
@@ -615,10 +612,9 @@ public class ModRecipeProvider extends RecipeProvider {
 
         shaped(RecipeCategory.MISC, ModItems.PLASMA_CABLE.get(), 8)
                 .pattern("CCC")
-                .pattern("GPG")
+                .pattern("CPC")
                 .pattern("CCC")
                 .define('C', ModItems.FLUID_PIPE.get())
-                .define('G', tag(ProcessedMetal.commonItemTag("ingots/gold")))
                 .define('P', ModItems.PLASMA_CIRCUIT.get())
                 .unlockedBy("has_plasma_circuit", has(ModItems.PLASMA_CIRCUIT.get()))
                 .save(output, key("plasma_cable"));
@@ -636,11 +632,10 @@ public class ModRecipeProvider extends RecipeProvider {
                 .save(output, key("containment_cell"));
 
         shaped(RecipeCategory.MISC, ModItems.MAGNETIC_CONDUIT.get(), 8)
-                .pattern("PCP")
-                .pattern("CFC")
-                .pattern("PCP")
+                .pattern("PPP")
+                .pattern("PFP")
+                .pattern("PPP")
                 .define('P', ModItems.FLUID_PIPE.get())
-                .define('C', tag(ProcessedMetal.commonItemTag("ingots/copper")))
                 .define('F', ModItems.FUSION_CIRCUIT.get())
                 .unlockedBy("has_fusion_circuit", has(ModItems.FUSION_CIRCUIT.get()))
                 .save(output, key("magnetic_conduit"));

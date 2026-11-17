@@ -3,12 +3,11 @@
   "category": "misc",
   "key": {
     "C": "comminutioncraft:fluid_pipe",
-    "G": "#c:ingots/gold",
     "P": "comminutioncraft:plasma_circuit"
   },
   "pattern": [
     "CCC",
-    "GPG",
+    "CPC",
     "CCC"
   ],
   "result": {

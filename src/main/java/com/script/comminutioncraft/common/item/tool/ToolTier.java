@@ -29,7 +29,7 @@ public enum ToolTier {
     SINGULARITY(6, "singularity", 24.0F, BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 0xFFBA38, EnergyBatteryBlockEntity.SINGULARITY_CAPACITY);
 
     /** Blocks the tier-1 drill's bit lasts. */
-    public static final int BIT_USES = 250;
+    public static final int BIT_USES = 256;
 
     public final int level;
     public final String id;

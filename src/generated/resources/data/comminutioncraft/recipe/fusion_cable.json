@@ -3,12 +3,11 @@
   "category": "misc",
   "key": {
     "C": "comminutioncraft:energy_cable",
-    "F": "comminutioncraft:fusion_circuit",
-    "G": "#c:ingots/gold"
+    "F": "comminutioncraft:fusion_circuit"
   },
   "pattern": [
     "CCC",
-    "GFG",
+    "CFC",
     "CCC"
   ],
   "result": {

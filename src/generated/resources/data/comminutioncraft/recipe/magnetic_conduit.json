@@ -2,14 +2,13 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "C": "#c:ingots/copper",
     "F": "comminutioncraft:fusion_circuit",
     "P": "comminutioncraft:fluid_pipe"
   },
   "pattern": [
-    "PCP",
-    "CFC",
-    "PCP"
+    "PPP",
+    "PFP",
+    "PPP"
   ],
   "result": {
     "count": 8,

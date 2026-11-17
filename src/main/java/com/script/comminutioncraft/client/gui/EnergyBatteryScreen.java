@@ -73,7 +73,7 @@ public class EnergyBatteryScreen extends MachineScreen<EnergyBatteryMenu> {
         graphics.text(font, Component.translatable("gui.comminutioncraft.battery.output", formatFe(menu.getSent())),
                 TEXT_X, 58, LABEL_COLOR, false);
         Component charge = Component.translatable("gui.comminutioncraft.battery.charge");
-        graphics.text(font, charge, EnergyBatteryMenu.CHARGE_X + 8 - font.width(charge) / 2, EnergyBatteryMenu.CHARGE_Y + 21, LABEL_COLOR, false);
+        graphics.text(font, charge, EnergyBatteryMenu.CHARGE_X + 6 - font.width(charge) / 2, EnergyBatteryMenu.CHARGE_Y + 21, LABEL_COLOR, false);
     }
 
     @Override
