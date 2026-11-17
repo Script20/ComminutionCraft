@@ -5,7 +5,9 @@ import com.script.comminutioncraft.common.machine.CreativeChestMenu;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -33,7 +35,24 @@ public class CreativeChestScreen extends AbstractContainerScreen<CreativeChestMe
         ItemStack picked = menu.getSlot(0).getItem();
         Component line = picked.isEmpty() ? Component.translatable("gui.comminutioncraft.creative_chest.empty")
                 : Component.translatable("gui.comminutioncraft.creative_chest.endless", picked.getHoverName());
-        graphics.text(font, line, (imageWidth - font.width(line)) / 2, 60, LABEL_COLOR, false);
+        int room = imageWidth - 16;
+        if (font.width(line) > room) {
+            line = picked.getHoverName(); // long names: just the name, cut to fit
+        }
+        FormattedText fitted = font.width(line) > room ? FormattedText.composite(font.substrByWidth(line, room - font.width("...")),
+                FormattedText.of("...")) : line;
+        graphics.text(font, Language.getInstance().getVisualOrder(fitted), (imageWidth - font.width(fitted)) / 2, 60, LABEL_COLOR, false);
+    }
+
+    /** Over the empty slot: how to pick an item. */
+    @Override
+    protected void extractTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        super.extractTooltip(graphics, mouseX, mouseY);
+        int x = mouseX - leftPos - CreativeChestMenu.SLOT_X;
+        int y = mouseY - topPos - CreativeChestMenu.SLOT_Y;
+        if (x >= 0 && x < 16 && y >= 0 && y < 16 && menu.getSlot(0).getItem().isEmpty()) {
+            graphics.setTooltipForNextFrame(Component.translatable("gui.comminutioncraft.creative_chest.hint"), mouseX, mouseY);
+        }
     }
 
     /** Where JEI may drop an item: the slot, in screen coordinates. */

@@ -41,7 +41,8 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModBlocks.CREATIVE_ENERGY_BATTERY.get(), "Creative Energy Battery");
         add(ModBlocks.CREATIVE_FLUID_TANK.get(), "Creative Fluid Tank");
         add(ModBlocks.CREATIVE_CHEST.get(), "Creative Chest");
-        add("gui.comminutioncraft.creative_chest.empty", "Click with an item, or drag one from JEI");
+        add("gui.comminutioncraft.creative_chest.empty", "No item picked");
+        add("gui.comminutioncraft.creative_chest.hint", "Click with an item, or drag one from JEI");
         add("gui.comminutioncraft.creative_chest.endless", "Endless %s");
         add("gui.comminutioncraft.creative_tank.none", "No fluid");
         add("jei.comminutioncraft.purifying", "Ore Purifying");
