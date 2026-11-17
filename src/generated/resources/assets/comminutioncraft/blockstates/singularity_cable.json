@@ -3,6 +3,9 @@
     {
       "apply": {
         "model": "comminutioncraft:block/singularity_cable_core"
+      },
+      "when": {
+        "straight": "false"
       }
     },
     {

@@ -97,7 +97,7 @@ public abstract class ConduitBlock extends Block {
             state = state.setValue(CONNECTIONS.get(direction),
                     connectionTo(context.getLevel(), context.getClickedPos(), direction, CableConnection.NONE));
         }
-        return state;
+        return withShape(state);
     }
 
     @Override
@@ -109,7 +109,12 @@ public abstract class ConduitBlock extends Block {
         if (updated != state.getValue(property)) {
             CableNetworks.invalidate(level);
         }
-        return state.setValue(property, updated);
+        return withShape(state.setValue(property, updated));
+    }
+
+    /** Lets a conduit keep extra state in step with its connections (Energy Cables: straight or not). */
+    protected BlockState withShape(BlockState state) {
+        return state;
     }
 
     /** Whether the block at {@code neighbourPos} has this conduit's capability (FE, fluid...) on {@code side}. */
@@ -166,7 +171,7 @@ public abstract class ConduitBlock extends Block {
             state = state.setValue(property, CableConnection.DISABLED);
             restored = false;
         }
-        level.setBlock(pos, state, Block.UPDATE_ALL);
+        level.setBlock(pos, conduit.withShape(state), Block.UPDATE_ALL);
         level.invalidateCapabilities(pos);
         CableNetworks.invalidate(level);
         return restored;

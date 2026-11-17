@@ -6,6 +6,7 @@ import com.script.comminutioncraft.client.render.TankItemRenderer;
 import com.script.comminutioncraft.common.block.StoneSet;
 import com.script.comminutioncraft.common.cable.CableConnection;
 import com.script.comminutioncraft.common.cable.ConduitBlock;
+import com.script.comminutioncraft.common.cable.EnergyCableBlock;
 import com.script.comminutioncraft.common.pipe.ItemPipeBlock;
 import com.script.comminutioncraft.common.item.WrenchMode;
 import com.script.comminutioncraft.common.machine.AcceleratorPortBlock;
@@ -79,6 +80,36 @@ public class ModModelProvider extends ModelProvider {
                     .face(Direction.WEST, face -> face.texture(CABLE).uvs(8, 0, 9, 8))
                     .face(Direction.UP, face -> face.texture(CABLE).uvs(8, 0, 16, 1))
                     .face(Direction.DOWN, face -> face.texture(CABLE).uvs(8, 0, 16, 1)))
+            .build();
+
+    // Energy cables (look B "Light strip"): an even 6x6 cable; arms reach the middle so two opposite ones make a straight
+    // run, and the 8x8 node only shows where it isn't straight. Sheet: node 8x8 at (0,0), plate 8x8 at (8,0), run 16x6 at (0,8).
+    private static final ModelTemplate ENERGY_CABLE_NODE = ExtendedModelTemplateBuilder.builder()
+            .requiredTextureSlot(CABLE).requiredTextureSlot(TextureSlot.PARTICLE)
+            .element(e -> e.from(4, 4, 4).to(12, 12, 12)
+                    .allFaces((dir, face) -> face.texture(CABLE).uvs(0, 0, 8, 8)))
+            .build();
+
+    private static final ModelTemplate ENERGY_CABLE_ARM = ExtendedModelTemplateBuilder.builder()
+            .requiredTextureSlot(CABLE).requiredTextureSlot(TextureSlot.PARTICLE)
+            .element(e -> e.from(5, 5, 0).to(11, 11, 8)
+                    .face(Direction.NORTH, face -> face.texture(CABLE).uvs(1, 1, 7, 7).cullface(Direction.NORTH))
+                    .face(Direction.EAST, face -> face.texture(CABLE).uvs(0, 8, 8, 14))
+                    .face(Direction.WEST, face -> face.texture(CABLE).uvs(0, 8, 8, 14))
+                    .face(Direction.UP, face -> face.texture(CABLE).uvs(0, 8, 8, 14).rotation(Quadrant.R90))
+                    .face(Direction.DOWN, face -> face.texture(CABLE).uvs(0, 8, 8, 14).rotation(Quadrant.R90)))
+            .build();
+
+    private static final ModelTemplate ENERGY_CABLE_INVENTORY = ExtendedModelTemplateBuilder.builder()
+            .parent(Identifier.withDefaultNamespace("block/block"))
+            .requiredTextureSlot(CABLE).requiredTextureSlot(TextureSlot.PARTICLE)
+            .element(e -> e.from(0, 5, 5).to(16, 11, 11)
+                    .face(Direction.NORTH, face -> face.texture(CABLE).uvs(0, 8, 16, 14))
+                    .face(Direction.SOUTH, face -> face.texture(CABLE).uvs(0, 8, 16, 14))
+                    .face(Direction.UP, face -> face.texture(CABLE).uvs(0, 8, 16, 14))
+                    .face(Direction.DOWN, face -> face.texture(CABLE).uvs(0, 8, 16, 14))
+                    .face(Direction.EAST, face -> face.texture(CABLE).uvs(1, 1, 7, 7))
+                    .face(Direction.WEST, face -> face.texture(CABLE).uvs(1, 1, 7, 7)))
             .build();
 
     // Item Pipe: thicker (core 8, arms 6, plate 10) so the travelling items show. Textures: item_pipe (core 8x8 at (0,0),
@@ -162,7 +193,7 @@ public class ModModelProvider extends ModelProvider {
         blockModels.createFurnace(ModBlocks.ELECTRIC_SMELTER.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         blockModels.createFurnace(ModBlocks.ELECTRIC_GENERATOR.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         energyBattery(blockModels, ModBlocks.ENERGY_BATTERY.get());
-        conduit(blockModels, itemModels, ModBlocks.ENERGY_CABLE.get(), ModItems.ENERGY_CABLE.get());
+        energyCable(blockModels, itemModels, ModBlocks.ENERGY_CABLE.get(), ModItems.ENERGY_CABLE.get());
         blockModels.createFurnace(ModBlocks.PLASMA_GENERATOR.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         blockModels.createFurnace(ModBlocks.ATMOSPHERIC_WATER_GENERATOR.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         blockModels.createFurnace(ModBlocks.ELECTROLYSER.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
@@ -180,7 +211,7 @@ public class ModModelProvider extends ModelProvider {
         litCube(blockModels, ModBlocks.REACTOR_PORT.get());
         blockModels.createTrivialCube(ModBlocks.REACTOR_GLASS.get());
         blockModels.createFurnace(ModBlocks.REACTOR_CONTROLLER.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
-        conduit(blockModels, itemModels, ModBlocks.FUSION_CABLE.get(), ModItems.FUSION_CABLE.get());
+        energyCable(blockModels, itemModels, ModBlocks.FUSION_CABLE.get(), ModItems.FUSION_CABLE.get());
         energyBattery(blockModels, ModBlocks.FUSION_ENERGY_BATTERY.get());
         blockModels.createFurnace(ModBlocks.ANTIMATTER_GRANULATOR.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         blockModels.createFurnace(ModBlocks.ANTIMATTER_SMELTER.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
@@ -188,7 +219,7 @@ public class ModModelProvider extends ModelProvider {
         blockModels.createFurnace(ModBlocks.ANTIMATTER_WASHER.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         blockModels.createFurnace(ModBlocks.ANTIMATTER_PURIFIER.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         blockModels.createFurnace(ModBlocks.ANNIHILATION_GENERATOR.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
-        conduit(blockModels, itemModels, ModBlocks.ANTIMATTER_CABLE.get(), ModItems.ANTIMATTER_CABLE.get());
+        energyCable(blockModels, itemModels, ModBlocks.ANTIMATTER_CABLE.get(), ModItems.ANTIMATTER_CABLE.get());
         energyBattery(blockModels, ModBlocks.ANTIMATTER_ENERGY_BATTERY.get());
         itemModels.generateFlatItem(ModItems.ANTIMATTER_CIRCUIT.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.FUSION_CIRCUIT.get(), ModelTemplates.FLAT_ITEM);
@@ -208,7 +239,7 @@ public class ModModelProvider extends ModelProvider {
         // Event Horizon Reactor: frame lights up while the black hole lives; ports like the accelerator's
         litCube(blockModels, ModBlocks.CONTAINMENT_FRAME.get());
         blockModels.createFurnace(ModBlocks.SINGULARITY_PROCESSOR.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
-        conduit(blockModels, itemModels, ModBlocks.SINGULARITY_CABLE.get(), ModItems.SINGULARITY_CABLE.get());
+        energyCable(blockModels, itemModels, ModBlocks.SINGULARITY_CABLE.get(), ModItems.SINGULARITY_CABLE.get());
         energyBattery(blockModels, ModBlocks.SINGULARITY_ENERGY_BATTERY.get());
         itemModels.generateFlatItem(ModItems.SINGULARITY_CIRCUIT.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.SINGULARITY_SHARD.get(), ModelTemplates.FLAT_ITEM);
@@ -353,6 +384,34 @@ public class ModModelProvider extends ModelProvider {
         blockModels.blockStateOutput.accept(generator);
 
         Identifier inventory = CABLE_INVENTORY.createWithSuffix(cable, "_inventory", textures, blockModels.modelOutput);
+        itemModels.itemModelOutput.accept(item, ItemModelUtils.plainModel(inventory));
+    }
+
+    /** Energy cables: arms to the middle, the node only where it isn't straight ({@link EnergyCableBlock#STRAIGHT}). */
+    private static void energyCable(BlockModelGenerators blockModels, ItemModelGenerators itemModels, EnergyCableBlock cable, Item item) {
+        TextureMapping textures = new TextureMapping()
+                .put(CABLE, TextureMapping.getBlockTexture(cable))
+                .put(TextureSlot.PARTICLE, TextureMapping.getBlockTexture(cable));
+        MultiVariant node = BlockModelGenerators.plainVariant(ENERGY_CABLE_NODE.createWithSuffix(cable, "_core", textures, blockModels.modelOutput));
+        MultiVariant arm = BlockModelGenerators.plainVariant(ENERGY_CABLE_ARM.createWithSuffix(cable, "_arm", textures, blockModels.modelOutput));
+        MultiVariant plate = BlockModelGenerators.plainVariant(CABLE_PLATE.createWithSuffix(cable, "_plate", textures, blockModels.modelOutput));
+        MultiPartGenerator generator = MultiPartGenerator.multiPart(cable)
+                .with(BlockModelGenerators.condition().term(EnergyCableBlock.STRAIGHT, false), node);
+        for (Direction direction : Direction.values()) {
+            VariantMutator rotation = switch (direction) {
+                case NORTH -> BlockModelGenerators.NOP;
+                case EAST -> BlockModelGenerators.Y_ROT_90;
+                case SOUTH -> BlockModelGenerators.Y_ROT_180;
+                case WEST -> BlockModelGenerators.Y_ROT_270;
+                case UP -> BlockModelGenerators.X_ROT_270;
+                case DOWN -> BlockModelGenerators.X_ROT_90;
+            };
+            var property = ConduitBlock.CONNECTIONS.get(direction);
+            generator.with(BlockModelGenerators.condition().term(property, CableConnection.CABLE, CableConnection.MACHINE), arm.with(rotation));
+            generator.with(BlockModelGenerators.condition().term(property, CableConnection.MACHINE), plate.with(rotation));
+        }
+        blockModels.blockStateOutput.accept(generator);
+        Identifier inventory = ENERGY_CABLE_INVENTORY.createWithSuffix(cable, "_inventory", textures, blockModels.modelOutput);
         itemModels.itemModelOutput.accept(item, ItemModelUtils.plainModel(inventory));
     }
 

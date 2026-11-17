@@ -3,6 +3,9 @@
     {
       "apply": {
         "model": "comminutioncraft:block/fusion_cable_core"
+      },
+      "when": {
+        "straight": "false"
       }
     },
     {

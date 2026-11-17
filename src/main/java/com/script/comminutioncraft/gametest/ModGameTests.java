@@ -188,6 +188,7 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("item_pipe_extracts_with_redstone", () -> ModGameTests::itemPipeExtractsWithRedstone);
         TEST_FUNCTIONS.register("item_pipe_filter_round_robin", () -> ModGameTests::itemPipeFilterRoundRobin);
         TEST_FUNCTIONS.register("item_pipe_wrench_cycles_mode", () -> ModGameTests::itemPipeWrenchCyclesMode);
+        TEST_FUNCTIONS.register("energy_cable_straight_or_node", () -> ModGameTests::energyCableStraightOrNode);
         TEST_FUNCTIONS.register("creative_chest_endless_takes_nothing", () -> ModGameTests::creativeChestEndless);
         TEST_FUNCTIONS.register("accelerator_ring_forms_and_unforms", () -> ModGameTests::acceleratorRingFormsAndUnforms);
         TEST_FUNCTIONS.register("accelerator_makes_antimatter", () -> ModGameTests::acceleratorMakesAntimatter);
@@ -1779,6 +1780,21 @@ public final class ModGameTests {
                     "Round robin should give 8 raw iron to each chest, got " + near.countItem(Items.RAW_IRON) + " / " + far.countItem(Items.RAW_IRON));
             helper.assertTrue(source.countItem(Items.COBBLESTONE) == 16, "The whitelist should leave the cobblestone");
         });
+    }
+
+    /** An Energy Cable is "straight" (no node) only with exactly two opposite connections; a corner or an end has a node. */
+    private static void energyCableStraightOrNode(GameTestHelper helper) {
+        BlockPos west = new BlockPos(1, 1, 2);
+        BlockPos middle = new BlockPos(2, 1, 2);
+        BlockPos east = new BlockPos(3, 1, 2);
+        for (BlockPos pos : List.of(west, middle, east)) {
+            helper.setBlock(pos, ModBlocks.ENERGY_CABLE.get());
+        }
+        helper.assertTrue(helper.getBlockState(middle).getValue(EnergyCableBlock.STRAIGHT), "A cable between two cables should be straight");
+        helper.assertFalse(helper.getBlockState(west).getValue(EnergyCableBlock.STRAIGHT), "An end should have a node");
+        helper.setBlock(middle.south(), ModBlocks.ENERGY_CABLE.get());
+        helper.assertFalse(helper.getBlockState(middle).getValue(EnergyCableBlock.STRAIGHT), "A T-junction should have a node");
+        helper.succeed();
     }
 
     /** The wrench's Cables/Pipes mode on a side touching a chest: Insert -> Extract -> None (cut) -> Insert. */
