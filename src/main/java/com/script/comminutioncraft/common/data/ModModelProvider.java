@@ -74,10 +74,10 @@ public class ModModelProvider extends ModelProvider {
                     .allFaces((dir, face) -> face.texture(CABLE).uvs(0, 0, 8, 8)))
             .build();
 
+    /** The north half. No end face: an arm only ever ends at another conduit or under a plate (and see-through pipes would show it). */
     private static final ModelTemplate CONDUIT_ARM = ExtendedModelTemplateBuilder.builder()
             .requiredTextureSlot(CABLE).requiredTextureSlot(TextureSlot.PARTICLE)
             .element(e -> e.from(5, 5, 0).to(11, 11, 8)
-                    .face(Direction.NORTH, face -> face.texture(CABLE).uvs(1, 1, 7, 7).cullface(Direction.NORTH))
                     .face(Direction.EAST, face -> face.texture(CABLE).uvs(0, 8, 8, 14))
                     .face(Direction.WEST, face -> face.texture(CABLE).uvs(0, 8, 8, 14))
                     .face(Direction.UP, face -> face.texture(CABLE).uvs(0, 8, 8, 14).rotation(Quadrant.R90))
@@ -88,7 +88,6 @@ public class ModModelProvider extends ModelProvider {
     private static final ModelTemplate CONDUIT_ARM_FAR = ExtendedModelTemplateBuilder.builder()
             .requiredTextureSlot(CABLE).requiredTextureSlot(TextureSlot.PARTICLE)
             .element(e -> e.from(5, 5, 8).to(11, 11, 16)
-                    .face(Direction.SOUTH, face -> face.texture(CABLE).uvs(1, 1, 7, 7).cullface(Direction.SOUTH))
                     .face(Direction.EAST, face -> face.texture(CABLE).uvs(8, 8, 16, 14))
                     .face(Direction.WEST, face -> face.texture(CABLE).uvs(8, 8, 16, 14))
                     .face(Direction.UP, face -> face.texture(CABLE).uvs(8, 8, 16, 14).rotation(Quadrant.R90))
@@ -120,7 +119,6 @@ public class ModModelProvider extends ModelProvider {
     private static final ModelTemplate ITEM_PIPE_ARM = ExtendedModelTemplateBuilder.builder()
             .requiredTextureSlot(CABLE).requiredTextureSlot(TextureSlot.PARTICLE)
             .element(e -> e.from(5, 5, 0).to(11, 11, 8)
-                    .face(Direction.NORTH, face -> face.texture(CABLE).uvs(1, 1, 7, 7).cullface(Direction.NORTH))
                     .face(Direction.EAST, face -> face.texture(CABLE).uvs(0, 8, 8, 14))
                     .face(Direction.WEST, face -> face.texture(CABLE).uvs(0, 8, 8, 14))
                     .face(Direction.UP, face -> face.texture(CABLE).uvs(0, 8, 8, 14).rotation(Quadrant.R90))
@@ -130,7 +128,6 @@ public class ModModelProvider extends ModelProvider {
     private static final ModelTemplate ITEM_PIPE_ARM_FAR = ExtendedModelTemplateBuilder.builder()
             .requiredTextureSlot(CABLE).requiredTextureSlot(TextureSlot.PARTICLE)
             .element(e -> e.from(5, 5, 8).to(11, 11, 16)
-                    .face(Direction.SOUTH, face -> face.texture(CABLE).uvs(1, 1, 7, 7).cullface(Direction.SOUTH))
                     .face(Direction.EAST, face -> face.texture(CABLE).uvs(8, 8, 16, 14))
                     .face(Direction.WEST, face -> face.texture(CABLE).uvs(8, 8, 16, 14))
                     .face(Direction.UP, face -> face.texture(CABLE).uvs(8, 8, 16, 14).rotation(Quadrant.R90))
