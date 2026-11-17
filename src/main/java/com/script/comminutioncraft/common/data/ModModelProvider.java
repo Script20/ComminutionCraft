@@ -84,6 +84,17 @@ public class ModModelProvider extends ModelProvider {
                     .face(Direction.DOWN, face -> face.texture(CABLE).uvs(0, 8, 8, 14).rotation(Quadrant.R90)))
             .build();
 
+    /** The south half: used (with the same turn as the north half) for the arm opposite it. */
+    private static final ModelTemplate CONDUIT_ARM_FAR = ExtendedModelTemplateBuilder.builder()
+            .requiredTextureSlot(CABLE).requiredTextureSlot(TextureSlot.PARTICLE)
+            .element(e -> e.from(5, 5, 8).to(11, 11, 16)
+                    .face(Direction.SOUTH, face -> face.texture(CABLE).uvs(1, 1, 7, 7).cullface(Direction.SOUTH))
+                    .face(Direction.EAST, face -> face.texture(CABLE).uvs(8, 8, 16, 14))
+                    .face(Direction.WEST, face -> face.texture(CABLE).uvs(8, 8, 16, 14))
+                    .face(Direction.UP, face -> face.texture(CABLE).uvs(8, 8, 16, 14).rotation(Quadrant.R90))
+                    .face(Direction.DOWN, face -> face.texture(CABLE).uvs(8, 8, 16, 14).rotation(Quadrant.R90)))
+            .build();
+
     private static final ModelTemplate CONDUIT_INVENTORY = ExtendedModelTemplateBuilder.builder()
             .parent(Identifier.withDefaultNamespace("block/block"))
             .requiredTextureSlot(CABLE).requiredTextureSlot(TextureSlot.PARTICLE)
@@ -110,6 +121,16 @@ public class ModModelProvider extends ModelProvider {
             .requiredTextureSlot(CABLE).requiredTextureSlot(TextureSlot.PARTICLE)
             .element(e -> e.from(5, 5, 0).to(11, 11, 4)
                     .face(Direction.NORTH, face -> face.texture(CABLE).uvs(1, 1, 7, 7).cullface(Direction.NORTH))
+                    .face(Direction.EAST, face -> face.texture(CABLE).uvs(0, 8, 4, 14))
+                    .face(Direction.WEST, face -> face.texture(CABLE).uvs(0, 8, 4, 14))
+                    .face(Direction.UP, face -> face.texture(CABLE).uvs(0, 8, 4, 14).rotation(Quadrant.R90))
+                    .face(Direction.DOWN, face -> face.texture(CABLE).uvs(0, 8, 4, 14).rotation(Quadrant.R90)))
+            .build();
+
+    private static final ModelTemplate ITEM_PIPE_ARM_FAR = ExtendedModelTemplateBuilder.builder()
+            .requiredTextureSlot(CABLE).requiredTextureSlot(TextureSlot.PARTICLE)
+            .element(e -> e.from(5, 5, 12).to(11, 11, 16)
+                    .face(Direction.SOUTH, face -> face.texture(CABLE).uvs(1, 1, 7, 7).cullface(Direction.SOUTH))
                     .face(Direction.EAST, face -> face.texture(CABLE).uvs(0, 8, 4, 14))
                     .face(Direction.WEST, face -> face.texture(CABLE).uvs(0, 8, 4, 14))
                     .face(Direction.UP, face -> face.texture(CABLE).uvs(0, 8, 4, 14).rotation(Quadrant.R90))
@@ -328,6 +349,21 @@ public class ModModelProvider extends ModelProvider {
                         .select(true, true, BlockModelGenerators.plainVariant(models[3]))));
     }
 
+    /**
+     * The arm on one side: the north-half model or the south-half one, turned so that opposite arms share the same
+     * turn (a 180 degree turn would flip the stripe on their top faces every half block).
+     */
+    private static MultiVariant arm(Direction side, MultiVariant near, MultiVariant far) {
+        return switch (side) {
+            case NORTH -> near;
+            case SOUTH -> far;
+            case EAST -> near.with(BlockModelGenerators.Y_ROT_90);
+            case WEST -> far.with(BlockModelGenerators.Y_ROT_90);
+            case UP -> near.with(BlockModelGenerators.X_ROT_270);
+            case DOWN -> far.with(BlockModelGenerators.X_ROT_270);
+        };
+    }
+
     /** Cables and pipes: arms to the middle, the node only where it isn't straight ({@link ConduitBlock#STRAIGHT}), plates on blocks. */
     private static void conduit(BlockModelGenerators blockModels, ItemModelGenerators itemModels, ConduitBlock cable, Item item) {
         TextureMapping textures = new TextureMapping()
@@ -335,6 +371,7 @@ public class ModModelProvider extends ModelProvider {
                 .put(TextureSlot.PARTICLE, TextureMapping.getBlockTexture(cable));
         MultiVariant node = BlockModelGenerators.plainVariant(CONDUIT_NODE.createWithSuffix(cable, "_core", textures, blockModels.modelOutput));
         MultiVariant arm = BlockModelGenerators.plainVariant(CONDUIT_ARM.createWithSuffix(cable, "_arm", textures, blockModels.modelOutput));
+        MultiVariant armFar = BlockModelGenerators.plainVariant(CONDUIT_ARM_FAR.createWithSuffix(cable, "_arm_far", textures, blockModels.modelOutput));
         MultiVariant plate = BlockModelGenerators.plainVariant(CABLE_PLATE.createWithSuffix(cable, "_plate", textures, blockModels.modelOutput));
         MultiPartGenerator generator = MultiPartGenerator.multiPart(cable)
                 .with(BlockModelGenerators.condition().term(ConduitBlock.STRAIGHT, false), node);
@@ -348,7 +385,7 @@ public class ModModelProvider extends ModelProvider {
                 case DOWN -> BlockModelGenerators.X_ROT_90;
             };
             var property = ConduitBlock.CONNECTIONS.get(direction);
-            generator.with(BlockModelGenerators.condition().term(property, CableConnection.CABLE, CableConnection.MACHINE), arm.with(rotation));
+            generator.with(BlockModelGenerators.condition().term(property, CableConnection.CABLE, CableConnection.MACHINE), arm(direction, arm, armFar));
             generator.with(BlockModelGenerators.condition().term(property, CableConnection.MACHINE), plate.with(rotation));
         }
         blockModels.blockStateOutput.accept(generator);
@@ -365,6 +402,7 @@ public class ModModelProvider extends ModelProvider {
                 .put(TextureSlot.PARTICLE, TextureMapping.getBlockTexture(pipe));
         MultiVariant core = BlockModelGenerators.plainVariant(ITEM_PIPE_CORE.createWithSuffix(pipe, "_core", textures, blockModels.modelOutput));
         MultiVariant arm = BlockModelGenerators.plainVariant(ITEM_PIPE_ARM.createWithSuffix(pipe, "_arm", textures, blockModels.modelOutput));
+        MultiVariant armFar = BlockModelGenerators.plainVariant(ITEM_PIPE_ARM_FAR.createWithSuffix(pipe, "_arm_far", textures, blockModels.modelOutput));
         MultiVariant plate = BlockModelGenerators.plainVariant(ITEM_PIPE_PLATE.createWithSuffix(pipe, "_plate", textures, blockModels.modelOutput));
         MultiPartGenerator generator = MultiPartGenerator.multiPart(pipe).with(core);
         for (Direction direction : Direction.values()) {
@@ -377,7 +415,7 @@ public class ModModelProvider extends ModelProvider {
                 case DOWN -> BlockModelGenerators.X_ROT_90;
             };
             var property = ConduitBlock.CONNECTIONS.get(direction);
-            generator.with(BlockModelGenerators.condition().term(property, CableConnection.CABLE, CableConnection.MACHINE), arm.with(rotation));
+            generator.with(BlockModelGenerators.condition().term(property, CableConnection.CABLE, CableConnection.MACHINE), arm(direction, arm, armFar));
             generator.with(BlockModelGenerators.condition().term(property, CableConnection.MACHINE), plate.with(rotation));
         }
         blockModels.blockStateOutput.accept(generator);

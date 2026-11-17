@@ -7,8 +7,8 @@
     },
     {
       "apply": {
-        "model": "comminutioncraft:block/item_pipe_arm",
-        "x": 90
+        "model": "comminutioncraft:block/item_pipe_arm_far",
+        "x": 270
       },
       "when": {
         "down": "cable|machine"
@@ -59,8 +59,7 @@
     },
     {
       "apply": {
-        "model": "comminutioncraft:block/item_pipe_arm",
-        "y": 180
+        "model": "comminutioncraft:block/item_pipe_arm_far"
       },
       "when": {
         "south": "cable|machine"
@@ -77,8 +76,8 @@
     },
     {
       "apply": {
-        "model": "comminutioncraft:block/item_pipe_arm",
-        "y": 270
+        "model": "comminutioncraft:block/item_pipe_arm_far",
+        "y": 90
       },
       "when": {
         "west": "cable|machine"
