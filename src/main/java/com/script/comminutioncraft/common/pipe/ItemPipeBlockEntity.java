@@ -5,10 +5,13 @@ import com.script.comminutioncraft.common.cable.ConduitBlock;
 import com.script.comminutioncraft.common.config.ConfigInt;
 import com.script.comminutioncraft.common.config.MachineConfig;
 import com.script.comminutioncraft.common.registry.ModBlockEntities;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -68,6 +71,28 @@ public class ItemPipeBlockEntity extends BlockEntity {
     /** What's moving through the pipe right now (read-only view, for the renderer and tests). */
     public List<TravellingItem> items() {
         return List.copyOf(items);
+    }
+
+    /** Every Item Pipe joined to the one at {@code start} (itself included), up to 4,096; works on either side. */
+    public static List<ItemPipeBlockEntity> network(Level level, BlockPos start) {
+        List<ItemPipeBlockEntity> pipes = new ArrayList<>();
+        Set<BlockPos> seen = new HashSet<>(List.of(start));
+        ArrayDeque<BlockPos> queue = new ArrayDeque<>(List.of(start));
+        while (!queue.isEmpty() && pipes.size() < 4096) {
+            BlockPos pos = queue.poll();
+            BlockState state = level.getBlockState(pos);
+            if (!(state.getBlock() instanceof ItemPipeBlock) || !(level.getBlockEntity(pos) instanceof ItemPipeBlockEntity pipe)) {
+                continue;
+            }
+            pipes.add(pipe);
+            for (Direction direction : Direction.values()) {
+                BlockPos next = pos.relative(direction);
+                if (state.getValue(ConduitBlock.CONNECTIONS.get(direction)) == CableConnection.CABLE && seen.add(next)) {
+                    queue.add(next);
+                }
+            }
+        }
+        return pipes;
     }
 
     /** What's stuck in the core (nowhere to go yet). */

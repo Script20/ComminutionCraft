@@ -16,7 +16,7 @@ import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.JadeUI;
 
 /**
- * Item Pipe: what's moving through it and, when it's stuffed, says so and shows what's stuck. Both come with the
+ * Item Pipe: what's moving through the pipes joined to it and, when it's stuffed, says so and shows what's stuck. Both come with the
  * pipe's own client sync, so this needs no server data.
  */
 public final class ItemPipeProvider implements IBlockComponentProvider {
@@ -28,7 +28,9 @@ public final class ItemPipeProvider implements IBlockComponentProvider {
         if (!(accessor.getBlockEntity() instanceof ItemPipeBlockEntity pipe)) {
             return;
         }
-        List<ItemStack> moving = pipe.items().stream().map(TravellingItem::stack).toList();
+        // everything moving through the pipes joined to this one, not just this pipe
+        List<ItemStack> moving = ItemPipeBlockEntity.network(accessor.getLevel(), accessor.getPosition()).stream()
+                .flatMap(p -> p.items().stream()).map(TravellingItem::stack).toList();
         if (!moving.isEmpty()) {
             tooltip.add(Component.translatable("jade.comminutioncraft.item_pipe_moving").withStyle(ChatFormatting.AQUA));
             items(tooltip, moving);
