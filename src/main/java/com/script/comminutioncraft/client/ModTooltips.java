@@ -102,9 +102,9 @@ public final class ModTooltips {
 
         if (block instanceof EnergyCableBlock cable) {
             lines.add(gray("tooltip.comminutioncraft.cable_rate", number(cable.getTransferRate())));
-        } else if (block instanceof ItemPipeBlock) {
-            lines.add(gray("tooltip.comminutioncraft.item_pipe"));
-            lines.add(gray("tooltip.comminutioncraft.item_pipe_circuit"));
+        } else if (block instanceof ItemPipeBlock pipe) {
+            lines.add(gray(pipe.isInstant() ? "tooltip.comminutioncraft.fusion_item_pipe" : "tooltip.comminutioncraft.item_pipe"));
+            lines.add(gray("tooltip.comminutioncraft.item_pipe_circuit", pipe.circuit().getName(new ItemStack(pipe.circuit()))));
         } else if (block instanceof FluidPipeBlock pipe) {
             lines.add(gray("tooltip.comminutioncraft.pipe_rate", number(pipe.getTransferRate())));
             if (pipe.carries(FluidResource.of(ModFluids.ANTIMATTER.get()))) {

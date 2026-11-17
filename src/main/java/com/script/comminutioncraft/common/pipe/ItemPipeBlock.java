@@ -7,6 +7,7 @@ import java.util.EnumMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -15,6 +16,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -61,11 +63,27 @@ public class ItemPipeBlock extends ConduitBlock implements EntityBlock {
     public static final BooleanProperty STUFFED = BooleanProperty.create("stuffed");
 
     private final Function<BlockState, VoxelShape> pipeShapes;
+    private final boolean instant;
+    private final Supplier<Item> circuit;
 
-    public ItemPipeBlock(Properties properties) {
+    /**
+     * {@code instant}: items go straight from the source into the target (the Fusion Item Pipe) instead of travelling.
+     * {@code circuit}: the circuit that unlocks a side's filter and round robin.
+     */
+    public ItemPipeBlock(Properties properties, boolean instant, Supplier<Item> circuit) {
         super(properties);
+        this.instant = instant;
+        this.circuit = circuit;
         registerDefaultState(defaultBlockState().setValue(STUFFED, false));
         pipeShapes = getShapeForEachState(ItemPipeBlock::shapeOf);
+    }
+
+    public boolean isInstant() {
+        return instant;
+    }
+
+    public Item circuit() {
+        return circuit.get();
     }
 
     @Override
@@ -188,7 +206,7 @@ public class ItemPipeBlock extends ConduitBlock implements EntityBlock {
             Direction clicked = Direction.getApproximateNearest(offset.x, offset.y, offset.z);
             Direction first = (sides & (1 << clicked.ordinal())) != 0 ? clicked : firstSide(sides);
             serverPlayer.openMenu(new SimpleMenuProvider((id, inventory, p) -> new ItemPipeMenu(id, inventory, pipe, first),
-                    Component.translatable("block.comminutioncraft.item_pipe")), buffer -> {
+                    getName()), buffer -> {
                 buffer.writeBlockPos(pos);
                 buffer.writeEnum(first);
             });
@@ -216,6 +234,10 @@ public class ItemPipeBlock extends ConduitBlock implements EntityBlock {
     public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         if (type != ModBlockEntities.ITEM_PIPE.get()) {
             return null;
+        }
+        if (instant) { // nothing travels, so nothing to animate on the client
+            return level.isClientSide() ? null
+                    : (tickLevel, pos, tickState, entity) -> ((ItemPipeBlockEntity) entity).serverTick((ServerLevel) tickLevel, pos, tickState);
         }
         return level.isClientSide()
                 ? (tickLevel, pos, tickState, entity) -> ((ItemPipeBlockEntity) entity).clientTick()

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "F": "comminutioncraft:fusion_circuit",
+    "P": "comminutioncraft:item_pipe"
+  },
+  "pattern": [
+    "PPP",
+    "PFP",
+    "PPP"
+  ],
+  "result": {
+    "count": 8,
+    "id": "comminutioncraft:fusion_item_pipe"
+  }
+}

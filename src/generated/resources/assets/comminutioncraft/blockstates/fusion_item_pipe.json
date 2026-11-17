@@ -1,0 +1,260 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "comminutioncraft:block/fusion_item_pipe_core"
+      },
+      "when": {
+        "straight": "false",
+        "stuffed": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/fusion_item_pipe_core_stuffed"
+      },
+      "when": {
+        "stuffed": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/fusion_item_pipe_arm_far",
+        "x": 270
+      },
+      "when": {
+        "down": "cable|machine",
+        "straight": "true",
+        "stuffed": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/fusion_item_pipe_stub_far",
+        "x": 270
+      },
+      "when": {
+        "down": "cable|machine",
+        "straight": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/fusion_item_pipe_stub_far",
+        "x": 270
+      },
+      "when": {
+        "down": "cable|machine",
+        "straight": "true",
+        "stuffed": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/fusion_item_pipe_plate",
+        "x": 90
+      },
+      "when": {
+        "down": "machine"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/fusion_item_pipe_arm",
+        "x": 270
+      },
+      "when": {
+        "straight": "true",
+        "stuffed": "false",
+        "up": "cable|machine"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/fusion_item_pipe_stub",
+        "x": 270
+      },
+      "when": {
+        "straight": "false",
+        "up": "cable|machine"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/fusion_item_pipe_stub",
+        "x": 270
+      },
+      "when": {
+        "straight": "true",
+        "stuffed": "true",
+        "up": "cable|machine"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/fusion_item_pipe_plate",
+        "x": 270
+      },
+      "when": {
+        "up": "machine"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/fusion_item_pipe_arm"
+      },
+      "when": {
+        "north": "cable|machine",
+        "straight": "true",
+        "stuffed": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/fusion_item_pipe_stub"
+      },
+      "when": {
+        "north": "cable|machine",
+        "straight": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/fusion_item_pipe_stub"
+      },
+      "when": {
+        "north": "cable|machine",
+        "straight": "true",
+        "stuffed": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/fusion_item_pipe_plate"
+      },
+      "when": {
+        "north": "machine"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/fusion_item_pipe_arm_far"
+      },
+      "when": {
+        "south": "cable|machine",
+        "straight": "true",
+        "stuffed": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/fusion_item_pipe_stub_far"
+      },
+      "when": {
+        "south": "cable|machine",
+        "straight": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/fusion_item_pipe_stub_far"
+      },
+      "when": {
+        "south": "cable|machine",
+        "straight": "true",
+        "stuffed": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/fusion_item_pipe_plate",
+        "y": 180
+      },
+      "when": {
+        "south": "machine"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/fusion_item_pipe_arm_far",
+        "y": 90
+      },
+      "when": {
+        "straight": "true",
+        "stuffed": "false",
+        "west": "cable|machine"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/fusion_item_pipe_stub_far",
+        "y": 90
+      },
+      "when": {
+        "straight": "false",
+        "west": "cable|machine"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/fusion_item_pipe_stub_far",
+        "y": 90
+      },
+      "when": {
+        "straight": "true",
+        "stuffed": "true",
+        "west": "cable|machine"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/fusion_item_pipe_plate",
+        "y": 270
+      },
+      "when": {
+        "west": "machine"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/fusion_item_pipe_arm",
+        "y": 90
+      },
+      "when": {
+        "east": "cable|machine",
+        "straight": "true",
+        "stuffed": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/fusion_item_pipe_stub",
+        "y": 90
+      },
+      "when": {
+        "east": "cable|machine",
+        "straight": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/fusion_item_pipe_stub",
+        "y": 90
+      },
+      "when": {
+        "east": "cable|machine",
+        "straight": "true",
+        "stuffed": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/fusion_item_pipe_plate",
+        "y": 90
+      },
+      "when": {
+        "east": "machine"
+      }
+    }
+  ]
+}

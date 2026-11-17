@@ -1,0 +1,77 @@
+{
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "texture": "#plate",
+          "uv": [
+            0.0,
+            0.0,
+            10.0,
+            1.0
+          ]
+        },
+        "east": {
+          "texture": "#plate",
+          "uv": [
+            0.0,
+            0.0,
+            1.0,
+            10.0
+          ]
+        },
+        "north": {
+          "cullface": "north",
+          "texture": "#plate",
+          "uv": [
+            0.0,
+            0.0,
+            10.0,
+            10.0
+          ]
+        },
+        "south": {
+          "texture": "#plate",
+          "uv": [
+            0.0,
+            0.0,
+            10.0,
+            10.0
+          ]
+        },
+        "up": {
+          "texture": "#plate",
+          "uv": [
+            0.0,
+            0.0,
+            10.0,
+            1.0
+          ]
+        },
+        "west": {
+          "texture": "#plate",
+          "uv": [
+            0.0,
+            0.0,
+            1.0,
+            10.0
+          ]
+        }
+      },
+      "from": [
+        3,
+        3,
+        0
+      ],
+      "to": [
+        13,
+        13,
+        1
+      ]
+    }
+  ],
+  "textures": {
+    "particle": "comminutioncraft:block/fusion_item_pipe",
+    "plate": "comminutioncraft:block/item_pipe_plate"
+  }
+}

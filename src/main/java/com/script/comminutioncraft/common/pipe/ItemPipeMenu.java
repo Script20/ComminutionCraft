@@ -2,6 +2,7 @@ package com.script.comminutioncraft.common.pipe;
 
 import com.script.comminutioncraft.common.machine.control.RedstoneMode;
 import com.script.comminutioncraft.common.menu.GhostItemMenu;
+import com.script.comminutioncraft.common.registry.ModItems;
 import com.script.comminutioncraft.common.registry.ModMenus;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -15,7 +16,9 @@ import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -49,6 +52,9 @@ public class ItemPipeMenu extends AbstractContainerMenu implements GhostItemMenu
 
     private final @Nullable ItemPipeBlockEntity pipe;
     private final BlockPos pos;
+    /** The circuit this pipe takes, and whether it's the instant Fusion Item Pipe (from the block, on both sides). */
+    private final Item circuit;
+    private final boolean instant;
     private Direction selected;
     private final ContainerData data;
 
@@ -70,13 +76,17 @@ public class ItemPipeMenu extends AbstractContainerMenu implements GhostItemMenu
         super(ModMenus.ITEM_PIPE.get(), containerId);
         this.pipe = pipe;
         this.pos = pos;
+        BlockState state = inventory.player.level().getBlockState(pos);
+        ItemPipeBlock block = state.getBlock() instanceof ItemPipeBlock b ? b : null;
+        this.circuit = block != null ? block.circuit() : ModItems.ELECTRONIC_CIRCUIT.get();
+        this.instant = block != null && block.isInstant();
         this.selected = side;
         Container view = clientView != null ? clientView : new SideView();
         this.data = clientData != null ? clientData : new ServerData();
         addSlot(new Slot(view, 0, CIRCUIT_X, CIRCUIT_Y) {
             @Override
             public boolean mayPlace(ItemStack stack) {
-                return PipeSide.isCircuit(stack);
+                return isCircuit(stack);
             }
 
             @Override
@@ -133,13 +143,26 @@ public class ItemPipeMenu extends AbstractContainerMenu implements GhostItemMenu
     }
 
     public boolean hasCircuit() {
-        return PipeSide.isCircuit(getSlot(CIRCUIT_SLOT).getItem());
+        return isCircuit(getSlot(CIRCUIT_SLOT).getItem());
+    }
+
+    public boolean isCircuit(ItemStack stack) {
+        return stack.is(circuit);
+    }
+
+    /** The circuit this pipe takes (for the screen's hints). */
+    public Item circuit() {
+        return circuit;
+    }
+
+    public boolean isInstant() {
+        return instant;
     }
 
     // ---- Server side ----
 
     private PipeSide settings() {
-        return pipe == null ? new PipeSide() : pipe.side(selected);
+        return pipe == null ? new PipeSide(circuit) : pipe.side(selected);
     }
 
     @Override
@@ -207,7 +230,7 @@ public class ItemPipeMenu extends AbstractContainerMenu implements GhostItemMenu
             return original;
         }
         if (index >= INVENTORY_START) {
-            if (PipeSide.isCircuit(stack) && !getSlot(CIRCUIT_SLOT).hasItem()) {
+            if (isCircuit(stack) && !getSlot(CIRCUIT_SLOT).hasItem()) {
                 ItemStack original = stack.copy();
                 moveItemStackTo(stack, CIRCUIT_SLOT, CIRCUIT_SLOT + 1, false);
                 slot.setChanged();

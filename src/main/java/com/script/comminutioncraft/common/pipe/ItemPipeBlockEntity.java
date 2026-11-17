@@ -5,6 +5,7 @@ import com.script.comminutioncraft.common.cable.ConduitBlock;
 import com.script.comminutioncraft.common.config.ConfigInt;
 import com.script.comminutioncraft.common.config.MachineConfig;
 import com.script.comminutioncraft.common.registry.ModBlockEntities;
+import com.script.comminutioncraft.common.registry.ModItems;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -21,6 +22,7 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Containers;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -47,6 +49,8 @@ public class ItemPipeBlockEntity extends BlockEntity {
     public static final ConfigInt EXTRACT_INTERVAL = MachineConfig.ITEM_PIPE_EXTRACT_INTERVAL;
     public static final ConfigInt EXTRACT_AMOUNT = MachineConfig.ITEM_PIPE_EXTRACT_AMOUNT;
     public static final ConfigInt TICKS_PER_BLOCK = MachineConfig.ITEM_PIPE_TICKS_PER_BLOCK;
+    public static final ConfigInt INSTANT_EXTRACT_INTERVAL = MachineConfig.FUSION_ITEM_PIPE_EXTRACT_INTERVAL;
+    public static final ConfigInt INSTANT_EXTRACT_AMOUNT = MachineConfig.FUSION_ITEM_PIPE_EXTRACT_AMOUNT;
 
     private final Map<Direction, PipeSide> sides = new EnumMap<>(Direction.class);
     public static final int RETRY_TICKS = 20;
@@ -59,9 +63,23 @@ public class ItemPipeBlockEntity extends BlockEntity {
 
     public ItemPipeBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.ITEM_PIPE.get(), pos, state);
+        Item circuit = state.getBlock() instanceof ItemPipeBlock pipe ? pipe.circuit() : ModItems.ELECTRONIC_CIRCUIT.get();
         for (Direction direction : Direction.values()) {
-            sides.put(direction, new PipeSide());
+            sides.put(direction, new PipeSide(circuit));
         }
+    }
+
+    /** The Fusion Item Pipe moves items straight into their target. */
+    public boolean isInstant() {
+        return getBlockState().getBlock() instanceof ItemPipeBlock pipe && pipe.isInstant();
+    }
+
+    private int extractInterval() {
+        return (isInstant() ? INSTANT_EXTRACT_INTERVAL : EXTRACT_INTERVAL).get();
+    }
+
+    private int extractAmount() {
+        return (isInstant() ? INSTANT_EXTRACT_AMOUNT : EXTRACT_AMOUNT).get();
     }
 
     public PipeSide side(Direction direction) {
@@ -133,7 +151,7 @@ public class ItemPipeBlockEntity extends BlockEntity {
                 continue;
             }
             if (--side.cooldown <= 0) {
-                side.cooldown = EXTRACT_INTERVAL.get();
+                side.cooldown = extractInterval();
                 if (side.redstone.allows(powered)) {
                     pull(level, pos, direction, side);
                 }
@@ -196,7 +214,7 @@ public class ItemPipeBlockEntity extends BlockEntity {
             if (resource.isEmpty()) {
                 continue;
             }
-            int have = (int) Math.min(Math.min(source.getAmountAsLong(slot), EXTRACT_AMOUNT.get()), resource.getMaxStackSize());
+            int have = (int) Math.min(Math.min(source.getAmountAsLong(slot), extractAmount()), resource.getMaxStackSize());
             ItemStack probe = resource.toStack(Math.max(have, 0));
             if (have <= 0 || !side.passes(probe)) {
                 continue;
@@ -206,6 +224,13 @@ public class ItemPipeBlockEntity extends BlockEntity {
                 continue;
             }
             ItemPipeRouting.Target target = side.spreads() ? targets.get(Math.floorMod(side.robin++, targets.size())) : targets.getFirst();
+            if (isInstant()) {
+                if (moveNow(level, source, slot, resource, Math.min(have, target.fits()), target)) {
+                    setChanged();
+                    return;
+                }
+                continue;
+            }
             int moved;
             try (Transaction transaction = Transaction.openRoot()) {
                 moved = source.extract(slot, resource, Math.min(have, target.fits()), transaction);
@@ -218,6 +243,30 @@ public class ItemPipeBlockEntity extends BlockEntity {
                 setChanged();
                 return;
             }
+        }
+    }
+
+    /**
+     * Fusion Item Pipe: takes {@code amount} out of the source and puts it straight into the target, all in one
+     * transaction (anything the target won't take after all goes back, or nothing moves).
+     */
+    private static boolean moveNow(ServerLevel level, ResourceHandler<ItemResource> source, int slot, ItemResource resource,
+                                   int amount, ItemPipeRouting.Target target) {
+        ResourceHandler<ItemResource> into = level.getCapability(Capabilities.Item.BLOCK, target.pipe().relative(target.side()),
+                target.side().getOpposite());
+        if (into == null || amount <= 0) {
+            return false;
+        }
+        try (Transaction transaction = Transaction.openRoot()) {
+            int taken = source.extract(slot, resource, amount, transaction);
+            int given = taken > 0 ? into.insert(resource, taken, transaction) : 0;
+            if (given < taken && source.insert(resource, taken - given, transaction) < taken - given) {
+                return false; // couldn't put the rest back: move nothing
+            }
+            if (given > 0) {
+                transaction.commit();
+            }
+            return given > 0;
         }
     }
 

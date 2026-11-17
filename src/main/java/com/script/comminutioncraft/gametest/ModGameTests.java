@@ -190,6 +190,8 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("item_pipe_wrench_cycles_mode", () -> ModGameTests::itemPipeWrenchCyclesMode);
         TEST_FUNCTIONS.register("item_pipe_stuffed_then_recovers", () -> ModGameTests::itemPipeStuffedThenRecovers);
         TEST_FUNCTIONS.register("item_pipe_pulls_only_what_fits", () -> ModGameTests::itemPipePullsOnlyWhatFits);
+        TEST_FUNCTIONS.register("fusion_item_pipe_moves_instantly", () -> ModGameTests::fusionItemPipeMovesInstantly);
+        TEST_FUNCTIONS.register("fusion_item_pipe_keeps_to_itself", () -> ModGameTests::fusionItemPipeKeepsToItself);
         TEST_FUNCTIONS.register("energy_cable_straight_or_node", () -> ModGameTests::energyCableStraightOrNode);
         TEST_FUNCTIONS.register("creative_chest_endless_takes_nothing", () -> ModGameTests::creativeChestEndless);
         TEST_FUNCTIONS.register("accelerator_ring_forms_and_unforms", () -> ModGameTests::acceleratorRingFormsAndUnforms);
@@ -1852,6 +1854,41 @@ public final class ModGameTests {
             }
             helper.succeed();
         });
+    }
+
+    /** Barrel -> 3 Fusion Item Pipes -> chest, powered: a whole stack lands in the chest at once, nothing travels. */
+    private static void fusionItemPipeMovesInstantly(GameTestHelper helper) {
+        BlockPos barrel = new BlockPos(0, 1, 2);
+        helper.setBlock(barrel, Blocks.BARREL);
+        for (int x = 1; x <= 3; x++) {
+            helper.setBlock(new BlockPos(x, 1, 2), ModBlocks.FUSION_ITEM_PIPE.get());
+        }
+        helper.setBlock(new BlockPos(4, 1, 2), Blocks.CHEST);
+        BarrelBlockEntity source = helper.getBlockEntity(barrel, BarrelBlockEntity.class);
+        source.setItem(0, new ItemStack(Items.RAW_IRON, 64));
+        source.setItem(1, new ItemStack(Items.RAW_GOLD, 10));
+        ItemPipeBlock.setMode(helper.getLevel(), helper.absolutePos(new BlockPos(1, 1, 2)), Direction.WEST, ItemPipeBlock.Mode.EXTRACT);
+        helper.setBlock(new BlockPos(1, 2, 2), Blocks.REDSTONE_BLOCK);
+        helper.runAfterDelay(3, () -> {
+            ChestBlockEntity chest = helper.getBlockEntity(new BlockPos(4, 1, 2), ChestBlockEntity.class);
+            helper.assertTrue(chest.countItem(Items.RAW_IRON) == 64, "The 64 raw iron should be in the chest at once, it has " + chest.countItem(Items.RAW_IRON));
+            for (int x = 1; x <= 3; x++) {
+                helper.assertTrue(helper.getBlockEntity(new BlockPos(x, 1, 2), ItemPipeBlockEntity.class).items().isEmpty(), "Nothing should travel");
+            }
+            helper.succeed();
+        });
+    }
+
+    /** A Fusion Item Pipe next to an Item Pipe: neither joins the other. */
+    private static void fusionItemPipeKeepsToItself(GameTestHelper helper) {
+        BlockPos fusion = new BlockPos(2, 1, 2);
+        helper.setBlock(fusion, ModBlocks.FUSION_ITEM_PIPE.get());
+        helper.setBlock(fusion.east(), ModBlocks.ITEM_PIPE.get());
+        helper.assertTrue(helper.getBlockState(fusion).getValue(ConduitBlock.CONNECTIONS.get(Direction.EAST)) == CableConnection.NONE,
+                "The Fusion Item Pipe shouldn't join an Item Pipe");
+        helper.assertTrue(helper.getBlockState(fusion.east()).getValue(ConduitBlock.CONNECTIONS.get(Direction.WEST)) == CableConnection.NONE,
+                "The Item Pipe shouldn't join a Fusion Item Pipe");
+        helper.succeed();
     }
 
     /** The wrench's Cables/Pipes mode on a side touching a chest: Insert -> Extract -> None (cut) -> Insert. */

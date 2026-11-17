@@ -208,7 +208,8 @@ public class ModLanguageProvider extends LanguageProvider {
         add("jade.comminutioncraft.water_generator", "Intake %s/6 · Humidity %s%% · %s mB/t");
         add(ModBlocks.FLUID_PIPE.get(), "Fluid Pipe");
         add(ModBlocks.ITEM_PIPE.get(), "Item Pipe");
-        add("gui.comminutioncraft.item_pipe.title", "Item Pipe - %s");
+        add(ModBlocks.FUSION_ITEM_PIPE.get(), "Fusion Item Pipe");
+        add("gui.comminutioncraft.item_pipe.title", "%s - %s");
         add("gui.comminutioncraft.direction.north", "North");
         add("gui.comminutioncraft.direction.south", "South");
         add("gui.comminutioncraft.direction.west", "West");
@@ -219,7 +220,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.comminutioncraft.item_pipe.no_block", "nothing to connect to");
         add("gui.comminutioncraft.item_pipe.filter", "Filter");
         add("gui.comminutioncraft.item_pipe.filter_locked", "Filter (needs a circuit)");
-        add("gui.comminutioncraft.item_pipe.circuit", "Electronic Circuit: unlocks this side's filter and round robin");
+        add("gui.comminutioncraft.item_pipe.circuit", "%s: unlocks this side's filter and round robin");
         add("gui.comminutioncraft.item_pipe.mode.insert", "Insert");
         add("gui.comminutioncraft.item_pipe.mode.extract", "Extract");
         add("gui.comminutioncraft.item_pipe.mode.none", "None");
@@ -235,12 +236,13 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.comminutioncraft.item_pipe.closest.desc", "Fills the nearest target that has room");
         add("gui.comminutioncraft.item_pipe.round_robin", "Round robin");
         add("gui.comminutioncraft.item_pipe.round_robin.desc", "Takes turns, spreading items evenly");
-        add("gui.comminutioncraft.item_pipe.needs_circuit", "Needs an Electronic Circuit");
+        add("gui.comminutioncraft.item_pipe.needs_circuit", "Needs a %s");
         add("message.comminutioncraft.wrench.pipe_mode", "Item Pipe side: %s");
         add("jade.comminutioncraft.item_pipe_stuffed", "Stuffed: Items have no destination.");
         add("jade.comminutioncraft.item_pipe_moving", "Moving through these pipes:");
         add("tooltip.comminutioncraft.item_pipe", "Moves items; wrench a side touching a block to Extract to pull from it");
-        add("tooltip.comminutioncraft.item_pipe_circuit", "An Electronic Circuit in a side's GUI unlocks its filter and round robin");
+        add("tooltip.comminutioncraft.item_pipe_circuit", "A %s in a side's GUI unlocks its filter and round robin");
+        add("tooltip.comminutioncraft.fusion_item_pipe", "Moves items instantly; wrench a side touching a block to Extract to pull from it");
         add(ModBlocks.FLUID_TANK.get(), "Fluid Tank");
         add(ModBlocks.SOARYN_CHEST.get(), "Soaryn Chest");
         add("container.comminutioncraft.soaryn_chest", "Soaryn Chest");

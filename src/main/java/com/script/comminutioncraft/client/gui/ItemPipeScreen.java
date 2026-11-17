@@ -103,7 +103,8 @@ public class ItemPipeScreen extends AbstractContainerScreen<ItemPipeMenu> {
 
     private Component circuitHint(Component text) {
         return menu.hasCircuit() ? text : text.copy().append(CommonComponents.NEW_LINE)
-                .append(Component.translatable("gui.comminutioncraft.item_pipe.needs_circuit").withStyle(ChatFormatting.RED));
+                .append(Component.translatable("gui.comminutioncraft.item_pipe.needs_circuit",
+                        menu.circuit().getName(new ItemStack(menu.circuit()))).withStyle(ChatFormatting.RED));
     }
 
     private boolean live(Direction side) {
@@ -133,14 +134,14 @@ public class ItemPipeScreen extends AbstractContainerScreen<ItemPipeMenu> {
         super.extractBackground(graphics, mouseX, mouseY, partialTick);
         graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight, 256, 256);
         if (!menu.hasCircuit()) {
-            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, ComminutionCraft.id("item_pipe/circuit_ghost"),
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, ComminutionCraft.id(menu.isInstant() ? "item_pipe/circuit_ghost_fusion" : "item_pipe/circuit_ghost"),
                     leftPos + ItemPipeMenu.CIRCUIT_X, topPos + ItemPipeMenu.CIRCUIT_Y, 16, 16);
         }
     }
 
     @Override
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-        Component heading = Component.translatable("gui.comminutioncraft.item_pipe.title", sideName(menu.side()));
+        Component heading = Component.translatable("gui.comminutioncraft.item_pipe.title", title, sideName(menu.side()));
         int x = (imageWidth - font.width(heading)) / 2;
         graphics.text(font, heading, x, titleLabelY, TITLE_COLOR, false);
         graphics.fill(8, titleLabelY + 4, x - 4, titleLabelY + 5, BLUE);
@@ -163,7 +164,8 @@ public class ItemPipeScreen extends AbstractContainerScreen<ItemPipeMenu> {
         int x = mouseX - leftPos - ItemPipeMenu.CIRCUIT_X;
         int y = mouseY - topPos - ItemPipeMenu.CIRCUIT_Y;
         if (x >= 0 && x < 16 && y >= 0 && y < 16 && !menu.hasCircuit()) {
-            graphics.setTooltipForNextFrame(Component.translatable("gui.comminutioncraft.item_pipe.circuit"), mouseX, mouseY);
+            graphics.setTooltipForNextFrame(Component.translatable("gui.comminutioncraft.item_pipe.circuit",
+                    menu.circuit().getName(new ItemStack(menu.circuit()))), mouseX, mouseY);
         }
     }
 

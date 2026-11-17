@@ -1,9 +1,9 @@
 package com.script.comminutioncraft.common.pipe;
 
 import com.script.comminutioncraft.common.machine.control.RedstoneMode;
-import com.script.comminutioncraft.common.registry.ModItems;
 import java.util.List;
 import net.minecraft.core.NonNullList;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -15,6 +15,9 @@ import net.minecraft.world.level.storage.ValueOutput;
  */
 public final class PipeSide {
     public static final int FILTER_SLOTS = 9;
+
+    /** The circuit this pipe takes (Electronic for the Item Pipe, Fusion for the Fusion Item Pipe). */
+    private final Item circuitItem;
 
     boolean extract;
     RedstoneMode redstone = RedstoneMode.HIGH;
@@ -44,12 +47,16 @@ public final class PipeSide {
         return roundRobin;
     }
 
+    PipeSide(Item circuitItem) {
+        this.circuitItem = circuitItem;
+    }
+
     public boolean hasCircuit() {
         return isCircuit(circuit);
     }
 
-    public static boolean isCircuit(ItemStack stack) {
-        return stack.is(ModItems.ELECTRONIC_CIRCUIT.get());
+    public boolean isCircuit(ItemStack stack) {
+        return stack.is(circuitItem);
     }
 
     /** Whether this side lets the item through: always without a circuit, else by its whitelist / blacklist. */

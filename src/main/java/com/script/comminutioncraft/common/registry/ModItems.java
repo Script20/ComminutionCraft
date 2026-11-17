@@ -221,6 +221,7 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> PLASMA_CABLE = ITEMS.registerSimpleBlockItem("plasma_cable", ModBlocks.PLASMA_CABLE);
     public static final DeferredItem<BlockItem> FLUID_PIPE = ITEMS.registerSimpleBlockItem("fluid_pipe", ModBlocks.FLUID_PIPE);
     public static final DeferredItem<BlockItem> ITEM_PIPE = ITEMS.registerSimpleBlockItem("item_pipe", ModBlocks.ITEM_PIPE);
+    public static final DeferredItem<BlockItem> FUSION_ITEM_PIPE = ITEMS.registerSimpleBlockItem("fusion_item_pipe", ModBlocks.FUSION_ITEM_PIPE);
     public static final DeferredItem<BlockItem> FLUID_TANK = ITEMS.registerSimpleBlockItem("fluid_tank", ModBlocks.FLUID_TANK);
     public static final DeferredItem<BlockItem> ENERGY_CABLE = ITEMS.registerSimpleBlockItem("energy_cable", ModBlocks.ENERGY_CABLE);
 

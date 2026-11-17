@@ -231,7 +231,8 @@ public class ModModelProvider extends ModelProvider {
         itemModels.generateFlatItem(ModItems.REACTOR_PLATING.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.FUSION_FUEL_PELLET.get(), ModelTemplates.FLAT_ITEM);
         conduit(blockModels, itemModels, ModBlocks.FLUID_PIPE.get(), ModItems.FLUID_PIPE.get());
-        itemPipe(blockModels, itemModels);
+        itemPipe(blockModels, itemModels, ModBlocks.ITEM_PIPE.get(), ModItems.ITEM_PIPE.get());
+        itemPipe(blockModels, itemModels, ModBlocks.FUSION_ITEM_PIPE.get(), ModItems.FUSION_ITEM_PIPE.get());
         // fluid_tank_side has a transparent window, so the model renders cutout; the contents are a renderer
         blockModels.createTrivialBlock(ModBlocks.FLUID_TANK.get(), TexturedModel.COLUMN);
         blockModels.createTrivialBlock(ModBlocks.CONTAINMENT_CELL.get(), TexturedModel.COLUMN);
@@ -408,11 +409,11 @@ public class ModModelProvider extends ModelProvider {
     }
 
     /** Like {@link #conduit} with the Item Pipe's bigger core and plates and its own plate texture (Extract plates: ItemPipeRenderer). */
-    private static void itemPipe(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
-        ItemPipeBlock pipe = ModBlocks.ITEM_PIPE.get();
+    private static void itemPipe(BlockModelGenerators blockModels, ItemModelGenerators itemModels, ItemPipeBlock pipe, Item item) {
+        // both tiers share the Item Pipe's Insert plate texture
         TextureMapping textures = new TextureMapping()
                 .put(CABLE, TextureMapping.getBlockTexture(pipe))
-                .put(PIPE_PLATE, TextureMapping.getBlockTexture(pipe, "_plate"))
+                .put(PIPE_PLATE, TextureMapping.getBlockTexture(ModBlocks.ITEM_PIPE.get(), "_plate"))
                 .put(TextureSlot.PARTICLE, TextureMapping.getBlockTexture(pipe));
         MultiVariant core = BlockModelGenerators.plainVariant(ITEM_PIPE_CORE.createWithSuffix(pipe, "_core", textures, blockModels.modelOutput));
         // stuffed: the same core with the red-ringed texture
@@ -449,7 +450,7 @@ public class ModModelProvider extends ModelProvider {
         }
         blockModels.blockStateOutput.accept(generator);
         Identifier inventory = ITEM_PIPE_INVENTORY.createWithSuffix(pipe, "_inventory", textures, blockModels.modelOutput);
-        itemModels.itemModelOutput.accept(ModItems.ITEM_PIPE.get(), ItemModelUtils.plainModel(inventory));
+        itemModels.itemModelOutput.accept(item, ItemModelUtils.plainModel(inventory));
     }
 
     /** One texture per mode: copper grip (Rotate), blue (Cable), green (Configure); no component = Rotate. */

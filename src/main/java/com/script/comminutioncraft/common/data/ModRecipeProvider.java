@@ -707,6 +707,16 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_electronic_circuit", has(ModItems.ELECTRONIC_CIRCUIT.get()))
                 .save(output, key("item_pipe"));
 
+        // Fusion Item Pipe: 8 Item Pipes round a Fusion Circuit
+        shaped(RecipeCategory.MISC, ModItems.FUSION_ITEM_PIPE.get(), 8)
+                .pattern("PPP")
+                .pattern("PFP")
+                .pattern("PPP")
+                .define('P', ModItems.ITEM_PIPE.get())
+                .define('F', ModItems.FUSION_CIRCUIT.get())
+                .unlockedBy("has_fusion_circuit", has(ModItems.FUSION_CIRCUIT.get()))
+                .save(output, key("fusion_item_pipe"));
+
         shaped(RecipeCategory.MISC, ModItems.FLUID_TANK.get())
                 .pattern("IGI")
                 .pattern("GBG")

@@ -120,6 +120,8 @@ public final class MachineConfig {
     public static final ConfigInt ITEM_PIPE_EXTRACT_INTERVAL;
     public static final ConfigInt ITEM_PIPE_EXTRACT_AMOUNT;
     public static final ConfigInt ITEM_PIPE_TICKS_PER_BLOCK;
+    public static final ConfigInt FUSION_ITEM_PIPE_EXTRACT_INTERVAL;
+    public static final ConfigInt FUSION_ITEM_PIPE_EXTRACT_AMOUNT;
     public static final ConfigInt FLUID_MACHINES_TANK_CAPACITY;
     public static final ConfigInt FLUID_MACHINES_MAX_FLUID_OUTPUT;
     public static final ConfigDouble ATMOSPHERIC_WATER_GENERATOR_WATER_PER_OPEN_FACE;
@@ -273,6 +275,10 @@ public final class MachineConfig {
         ITEM_PIPE_EXTRACT_INTERVAL = integer(builder, "item_pipe", "extractInterval", "Extract interval", "Ticks between pulls on each Extract side", 10);
         ITEM_PIPE_EXTRACT_AMOUNT = integer(builder, "item_pipe", "extractAmount", "Items per pull", "Most items an Extract side pulls at once", 8);
         ITEM_PIPE_TICKS_PER_BLOCK = integer(builder, "item_pipe", "ticksPerBlock", "Ticks per block", "How long items take to cross one pipe (5 = 4 blocks a second)", 5);
+        builder.pop();
+        section(builder, "fusion_item_pipe", "Fusion Item Pipe (instant)");
+        FUSION_ITEM_PIPE_EXTRACT_INTERVAL = integer(builder, "fusion_item_pipe", "extractInterval", "Extract interval", "Ticks between pulls on each Extract side", 10);
+        FUSION_ITEM_PIPE_EXTRACT_AMOUNT = integer(builder, "fusion_item_pipe", "extractAmount", "Items per pull", "Most items an Extract side moves at once (straight into the target)", 64);
         builder.pop();
         section(builder, "fluid_tank", "Fluid Tank");
         FLUID_TANK_CAPACITY = integer(builder, "fluid_tank", "capacity", "Capacity", "mB stored", 32_000);

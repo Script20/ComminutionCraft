@@ -150,7 +150,7 @@ public final class ModBlockEntities {
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ItemPipeBlockEntity>> ITEM_PIPE =
             BLOCK_ENTITY_TYPES.register("item_pipe",
-                    () -> new BlockEntityType<>(ItemPipeBlockEntity::new, ModBlocks.ITEM_PIPE.get()));
+                    () -> new BlockEntityType<>(ItemPipeBlockEntity::new, ModBlocks.ITEM_PIPE.get(), ModBlocks.FUSION_ITEM_PIPE.get()));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CreativeChestBlockEntity>> CREATIVE_CHEST =
             BLOCK_ENTITY_TYPES.register("creative_chest",

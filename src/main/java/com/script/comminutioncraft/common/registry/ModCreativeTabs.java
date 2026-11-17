@@ -87,6 +87,7 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.SINGULARITY_CABLE.get());
                         output.accept(ModItems.FLUID_PIPE.get());
                         output.accept(ModItems.ITEM_PIPE.get());
+                        output.accept(ModItems.FUSION_ITEM_PIPE.get());
                         output.accept(ModItems.PLASMA_CABLE.get());
                         output.accept(ModItems.MAGNETIC_CONDUIT.get());
                         // Items

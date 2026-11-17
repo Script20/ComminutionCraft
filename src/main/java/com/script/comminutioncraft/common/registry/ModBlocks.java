@@ -137,7 +137,15 @@ public final class ModBlocks {
 
     /** Item Pipe (tier 2): see-through, so it mustn't hide its neighbours' faces. */
     public static final DeferredBlock<ItemPipeBlock> ITEM_PIPE = BLOCKS.registerBlock(
-            "item_pipe", ItemPipeBlock::new, properties -> properties
+            "item_pipe", properties -> new ItemPipeBlock(properties, false, ModItems.ELECTRONIC_CIRCUIT), properties -> properties
+                    .mapColor(MapColor.METAL)
+                    .strength(0.5F)
+                    .sound(SoundType.COPPER)
+                    .noOcclusion());
+
+    /** Fusion Item Pipe (tier 4): moves items instantly; its own network (doesn't join Item Pipes). */
+    public static final DeferredBlock<ItemPipeBlock> FUSION_ITEM_PIPE = BLOCKS.registerBlock(
+            "fusion_item_pipe", properties -> new ItemPipeBlock(properties, true, ModItems.FUSION_CIRCUIT), properties -> properties
                     .mapColor(MapColor.METAL)
                     .strength(0.5F)
                     .sound(SoundType.COPPER)
