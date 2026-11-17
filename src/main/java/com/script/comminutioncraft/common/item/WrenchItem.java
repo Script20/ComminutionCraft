@@ -1,5 +1,6 @@
 package com.script.comminutioncraft.common.item;
 
+import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.cable.ConduitBlock;
 import com.script.comminutioncraft.common.machine.AcceleratorPortBlock;
 import com.script.comminutioncraft.common.machine.HorizonPortBlock;
@@ -11,10 +12,15 @@ import com.script.comminutioncraft.common.network.SwitchWrenchModePayload;
 import com.script.comminutioncraft.common.pipe.ItemPipeBlock;
 import com.script.comminutioncraft.common.registry.ModDataComponents;
 import com.script.comminutioncraft.common.registry.ModItems;
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
@@ -23,7 +29,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Rotation;
@@ -163,27 +171,61 @@ public class WrenchItem extends Item {
      * Sneak + right-click in Configure mode: the machine goes straight into the player's inventory with its settings
      * and stored FE on the item. Its slots and stored XP drop as if it were mined (only a pickaxe drop forgets the rest).
      */
+    /**
+     * Sneak + right-click in Configure mode picks up any Comminution Craft block into the inventory. Machines keep their
+     * FE, fluid and settings on the item (contents drop). Anything else comes up as its drops rolled as if with Silk Touch
+     * (cobbled marble stays marble, leaves stay leaves, a door gives one door), plus whatever its block entity keeps on
+     * its item (e.g. the Creative Chest's item).
+     */
     private static InteractionResult pickUp(UseOnContext context, Player player) {
         Level level = context.getLevel();
         BlockPos pos = context.getClickedPos();
-        if (!(level.getBlockEntity(pos) instanceof BlockEntity machine) || !(machine instanceof ControllableMachine)) {
+        BlockState state = level.getBlockState(pos);
+        if (!ComminutionCraft.MODID.equals(BuiltInRegistries.BLOCK.getKey(state.getBlock()).getNamespace())) {
             return InteractionResult.PASS;
         }
-        if (!level.isClientSide()) {
-            BlockState state = level.getBlockState(pos);
+        if (!(level instanceof ServerLevel server)) {
+            return InteractionResult.SUCCESS;
+        }
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        List<ItemStack> items;
+        if (blockEntity instanceof ControllableMachine) {
             ItemStack item = new ItemStack(state.getBlock());
             // The contents drop on removal below, so they mustn't be copied onto the item too.
-            item.applyComponents(machine.collectComponents().filter(type -> type != DataComponents.CONTAINER));
-            if (machine instanceof UpgradeHolder holder) {
+            item.applyComponents(blockEntity.collectComponents().filter(type -> type != DataComponents.CONTAINER));
+            if (blockEntity instanceof UpgradeHolder holder) {
                 holder.getUpgrades().clearContent(); // they're on the item now; don't drop them too
             }
-            level.removeBlock(pos, false);
+            items = List.of(item);
+        } else {
+            items = new ArrayList<>(Block.getDrops(state, server, pos, blockEntity, player, silkTouch(server, context.getItemInHand())));
+            Item own = state.getBlock().asItem();
+            if (items.isEmpty() && own != Items.AIR) {
+                items.add(new ItemStack(own)); // e.g. a door's upper half (its lower half drops the door)
+            }
+            if (blockEntity != null) {
+                for (ItemStack item : items) {
+                    if (item.is(own)) {
+                        item.applyComponents(blockEntity.collectComponents().filter(type -> type != DataComponents.CONTAINER));
+                    }
+                }
+            }
+        }
+        level.removeBlock(pos, false);
+        for (ItemStack item : items) {
             if (!player.getInventory().add(item)) {
                 player.drop(item, false);
             }
-            level.playSound(null, pos, state.getSoundType(level, pos, player).getBreakSound(), SoundSource.BLOCKS, 0.8F, 1.0F);
         }
+        level.playSound(null, pos, state.getSoundType(level, pos, player).getBreakSound(), SoundSource.BLOCKS, 0.8F, 1.0F);
         return InteractionResult.SUCCESS;
+    }
+
+    /** The wrench as a Silk Touch tool, for rolling a block's drops. */
+    private static ItemStack silkTouch(ServerLevel level, ItemStack wrench) {
+        ItemStack tool = wrench.copy();
+        tool.enchant(level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.SILK_TOUCH), 1);
+        return tool;
     }
 
     // ---- Rotate mode ----

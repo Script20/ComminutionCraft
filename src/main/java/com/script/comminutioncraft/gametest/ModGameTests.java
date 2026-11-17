@@ -192,6 +192,7 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("item_pipe_pulls_only_what_fits", () -> ModGameTests::itemPipePullsOnlyWhatFits);
         TEST_FUNCTIONS.register("fusion_item_pipe_moves_instantly", () -> ModGameTests::fusionItemPipeMovesInstantly);
         TEST_FUNCTIONS.register("fusion_item_pipe_keeps_to_itself", () -> ModGameTests::fusionItemPipeKeepsToItself);
+        TEST_FUNCTIONS.register("wrench_picks_up_any_mod_block", () -> ModGameTests::wrenchPicksUpAnyModBlock);
         TEST_FUNCTIONS.register("energy_cable_straight_or_node", () -> ModGameTests::energyCableStraightOrNode);
         TEST_FUNCTIONS.register("creative_chest_endless_takes_nothing", () -> ModGameTests::creativeChestEndless);
         TEST_FUNCTIONS.register("accelerator_ring_forms_and_unforms", () -> ModGameTests::acceleratorRingFormsAndUnforms);
@@ -1877,6 +1878,34 @@ public final class ModGameTests {
             }
             helper.succeed();
         });
+    }
+
+    /**
+     * Sneak + Configure-mode wrench: an Energy Cable and natural Marble go straight into the inventory (the marble as
+     * itself, like Silk Touch); a vanilla block stays put.
+     */
+    private static void wrenchPicksUpAnyModBlock(GameTestHelper helper) {
+        BlockPos cable = new BlockPos(1, 1, 2);
+        BlockPos marble = new BlockPos(2, 1, 2);
+        BlockPos stone = new BlockPos(3, 1, 2);
+        helper.setBlock(cable, ModBlocks.ENERGY_CABLE.get());
+        helper.setBlock(marble, ModBlocks.MARBLE.stone.get());
+        helper.setBlock(stone, Blocks.STONE);
+        Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+        player.setShiftKeyDown(true);
+        ItemStack wrench = WrenchItem.withMode(WrenchMode.CONFIGURE);
+        for (BlockPos pos : List.of(cable, marble, stone)) {
+            useWrench(helper, player, wrench, pos, new Vec3(0, 0.5, 0), Direction.UP);
+        }
+        helper.assertBlockNotPresent(ModBlocks.ENERGY_CABLE.get(), cable);
+        helper.assertBlockNotPresent(ModBlocks.MARBLE.stone.get(), marble);
+        helper.assertBlockPresent(Blocks.STONE, stone);
+        helper.assertTrue(player.getInventory().countItem(ModItems.ENERGY_CABLE.get()) == 1, "The cable should be in the inventory");
+        helper.assertTrue(player.getInventory().countItem(ModBlocks.MARBLE.stone.get().asItem()) == 1,
+                "The marble should come up as marble, not cobbled");
+        helper.assertTrue(helper.getLevel().getEntitiesOfClass(ItemEntity.class, new AABB(helper.absolutePos(cable)).inflate(3)).isEmpty(),
+                "Nothing should drop on the ground");
+        helper.succeed();
     }
 
     /** A Fusion Item Pipe next to an Item Pipe: neither joins the other. */

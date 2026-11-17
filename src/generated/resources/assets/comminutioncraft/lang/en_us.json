@@ -798,7 +798,7 @@
   "item.comminutioncraft.washed_zinc": "Washed Zinc",
   "item.comminutioncraft.wrench": "Wrench",
   "item.comminutioncraft.wrench.help.cable": "Right-click a cable's or pipe's arm to cut or restore that connection",
-  "item.comminutioncraft.wrench.help.configure": "Right-click a machine face to cycle Input / Output / None; sneak + right-click to pick the machine up",
+  "item.comminutioncraft.wrench.help.configure": "Right-click a machine face to cycle Input / Output / None; sneak + right-click picks up any Comminution Craft block",
   "item.comminutioncraft.wrench.help.rotate": "Right-click a block to rotate it",
   "item.comminutioncraft.wrench.help.switch": "Press %s to switch mode",
   "item.comminutioncraft.wrench.mode.cable": "Mode: Cables/Pipes",
