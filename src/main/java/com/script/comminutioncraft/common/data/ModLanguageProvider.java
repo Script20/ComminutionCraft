@@ -392,6 +392,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("jade.comminutioncraft.generating", "Generating %s FE/t (%ss left)");
         add("jade.comminutioncraft.idle", "Idle");
         add("config.jade.plugin_comminutioncraft.battery", "Comminution Craft energy battery");
+        add("config.jade.plugin_comminutioncraft.item_pipe", "Comminution Craft item pipes");
         add("jade.comminutioncraft.battery_flow", "In %s FE/t · Out %s FE/t");
         add("jade.comminutioncraft.no_filter", "No Air Filter (half as much water)");
         for (ProcessedMetal metal : ProcessedMetal.ALL) {

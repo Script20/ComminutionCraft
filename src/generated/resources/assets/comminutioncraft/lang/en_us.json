@@ -584,6 +584,7 @@
   "comminutioncraft.configuration.tritium_breeder.tritiumPerTick.tooltip": "Max mB of tritium made per tick (1 mB deuterium each)",
   "config.jade.plugin_comminutioncraft.battery": "Comminution Craft energy battery",
   "config.jade.plugin_comminutioncraft.generator": "Comminution Craft generator",
+  "config.jade.plugin_comminutioncraft.item_pipe": "Comminution Craft item pipes",
   "config.jade.plugin_comminutioncraft.machine": "Comminution Craft machines",
   "config.jade.plugin_comminutioncraft.water_generator": "Comminution Craft water generator",
   "container.comminutioncraft.soaryn_chest": "Soaryn Chest",
