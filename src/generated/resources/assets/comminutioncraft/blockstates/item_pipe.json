@@ -14,7 +14,18 @@
         "x": 270
       },
       "when": {
-        "down": "cable|machine"
+        "down": "cable|machine",
+        "straight": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/item_pipe_stub_far",
+        "x": 270
+      },
+      "when": {
+        "down": "cable|machine",
+        "straight": "false"
       }
     },
     {
@@ -32,6 +43,17 @@
         "x": 270
       },
       "when": {
+        "straight": "true",
+        "up": "cable|machine"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/item_pipe_stub",
+        "x": 270
+      },
+      "when": {
+        "straight": "false",
         "up": "cable|machine"
       }
     },
@@ -49,7 +71,17 @@
         "model": "comminutioncraft:block/item_pipe_arm"
       },
       "when": {
-        "north": "cable|machine"
+        "north": "cable|machine",
+        "straight": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/item_pipe_stub"
+      },
+      "when": {
+        "north": "cable|machine",
+        "straight": "false"
       }
     },
     {
@@ -65,7 +97,17 @@
         "model": "comminutioncraft:block/item_pipe_arm_far"
       },
       "when": {
-        "south": "cable|machine"
+        "south": "cable|machine",
+        "straight": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/item_pipe_stub_far"
+      },
+      "when": {
+        "south": "cable|machine",
+        "straight": "false"
       }
     },
     {
@@ -83,6 +125,17 @@
         "y": 90
       },
       "when": {
+        "straight": "true",
+        "west": "cable|machine"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/item_pipe_stub_far",
+        "y": 90
+      },
+      "when": {
+        "straight": "false",
         "west": "cable|machine"
       }
     },
@@ -101,7 +154,18 @@
         "y": 90
       },
       "when": {
-        "east": "cable|machine"
+        "east": "cable|machine",
+        "straight": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "comminutioncraft:block/item_pipe_stub",
+        "y": 90
+      },
+      "when": {
+        "east": "cable|machine",
+        "straight": "false"
       }
     },
     {
