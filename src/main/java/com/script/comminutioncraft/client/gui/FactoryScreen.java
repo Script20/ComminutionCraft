@@ -59,7 +59,7 @@ public class FactoryScreen extends MachineScreen<FactoryMenu> {
             slotFrame(graphics, leftPos + layout.columnX(layout.lanes()), topPos + FactoryMenu.OUTPUT_Y);
         }
         if (layout.fluid() != 0) {
-            drawGauge(graphics, PLASMA_X, layout.fluid() == 1 ? WATER_U : OXYGEN_U, menu.getFluid(), menu.getFluidCapacity());
+            drawGauge(graphics, PLASMA_X, layout.fluid() == 1 ? WATER_FLUID : OXYGEN_FLUID, menu.getFluid(), menu.getFluidCapacity());
         }
     }
 

@@ -26,7 +26,7 @@ public class OrePurifierScreen extends ElectricMachineScreen {
     @Override
     public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         super.extractBackground(graphics, mouseX, mouseY, partialTick);
-        drawGauge(graphics, PLASMA_X, OXYGEN_U, purifier.getOxygen(), purifier.getOxygenCapacity());
+        drawGauge(graphics, PLASMA_X, OXYGEN_FLUID, purifier.getOxygen(), purifier.getOxygenCapacity());
     }
 
     @Override

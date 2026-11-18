@@ -5,19 +5,14 @@ import com.script.comminutioncraft.common.machine.CreativeFluidTankBlockEntity;
 import com.script.comminutioncraft.common.machine.CreativeFluidTankMenu;
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.block.FluidModel;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.FluidState;
-import net.neoforged.neoforge.client.fluid.FluidTintSource;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import org.jspecify.annotations.Nullable;
 
@@ -74,7 +69,7 @@ public class CreativeFluidTankScreen extends AbstractContainerScreen<CreativeFlu
             int y = topPos + BUTTON_Y + (i / 4) * BUTTON_STEP;
             Fluid fluid = choices.get(index);
             if (fluid != null) {
-                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite(fluid), x, y, 16, 16, tint(fluid));
+                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, FluidSprites.sprite(fluid), x, y, 16, 16, FluidSprites.tint(fluid));
             } else {
                 graphics.fill(x + 3, y + 7, x + 13, y + 9, LABEL_COLOR); // a dash for "no fluid"
             }
@@ -86,31 +81,8 @@ public class CreativeFluidTankScreen extends AbstractContainerScreen<CreativeFlu
             }
         }
         if (picked != null) { // the tube, tiled with the fluid's texture
-            TextureAtlasSprite sprite = sprite(picked);
-            int color = tint(picked);
-            for (int y = 0; y < TUBE_H; y += 16) {
-                int h = Math.min(16, TUBE_H - y);
-                graphics.enableScissor(leftPos + TUBE_X, topPos + TUBE_Y + y, leftPos + TUBE_X + TUBE_W, topPos + TUBE_Y + y + h);
-                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, leftPos + TUBE_X, topPos + TUBE_Y + y, 16, 16, color);
-                graphics.disableScissor();
-            }
+            FluidSprites.fill(graphics, picked, leftPos + TUBE_X, topPos + TUBE_Y, TUBE_W, TUBE_H);
         }
-    }
-
-    private static TextureAtlasSprite sprite(Fluid fluid) {
-        FluidModel model = Minecraft.getInstance().getModelManager().getFluidStateModelSet().get(fluid.defaultFluidState());
-        return model.stillMaterial().sprite();
-    }
-
-    private static int tint(Fluid fluid) {
-        Minecraft minecraft = Minecraft.getInstance();
-        FluidState state = fluid.defaultFluidState();
-        FluidTintSource tint = minecraft.getModelManager().getFluidStateModelSet().get(state).fluidTintSource();
-        if (tint == null || minecraft.level == null || minecraft.player == null) {
-            return 0xFFFFFFFF;
-        }
-        return 0xFF000000 | tint.colorInWorld(state, minecraft.level.getBlockState(minecraft.player.blockPosition()),
-                minecraft.level, minecraft.player.blockPosition());
     }
 
     @Override

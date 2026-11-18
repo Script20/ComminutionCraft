@@ -30,7 +30,7 @@ public class PlasmaMachineScreen extends MachineScreen<PlasmaMachineMenu> {
         super.extractBackground(graphics, mouseX, mouseY, partialTick);
         drawEnergyBar(graphics, menu.getEnergy(), menu.getEnergyCapacity());
         drawPlasmaGauge(graphics, menu.getPlasma(), menu.getPlasmaCapacity());
-        drawGauge(graphics, ANTIMATTER_X, ANTIMATTER_U, menu.getAntimatter(), menu.getAntimatterCapacity());
+        drawGauge(graphics, ANTIMATTER_X, ANTIMATTER_FLUID, menu.getAntimatter(), menu.getAntimatterCapacity());
         drawArrow(graphics, 79, 34, menu.getProgress());
     }
 

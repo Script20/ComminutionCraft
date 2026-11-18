@@ -32,7 +32,7 @@ public class AtmosphericWaterGeneratorScreen extends MachineScreen<AtmosphericWa
     @Override
     public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         super.extractBackground(graphics, mouseX, mouseY, partialTick);
-        drawGauge(graphics, PLASMA_X, WATER_U, menu.getWater(), menu.getWaterCapacity());
+        drawGauge(graphics, PLASMA_X, WATER_FLUID, menu.getWater(), menu.getWaterCapacity());
         int litDots = Math.round(menu.getIntake() / 2.0F);
         for (int i = 0; i < 3; i++) {
             if (i < litDots) {

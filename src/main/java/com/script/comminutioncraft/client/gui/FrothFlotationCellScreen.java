@@ -20,8 +20,8 @@ public class FrothFlotationCellScreen extends ElectricMachineScreen {
     @Override
     public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         super.extractBackground(graphics, mouseX, mouseY, partialTick);
-        drawGauge(graphics, WATER_X, WATER_U, cell.getWater(), cell.getWaterCapacity());
-        drawGauge(graphics, PLASMA_X, OXYGEN_U, cell.getOxygen(), cell.getOxygenCapacity());
+        drawGauge(graphics, WATER_X, WATER_FLUID, cell.getWater(), cell.getWaterCapacity());
+        drawGauge(graphics, PLASMA_X, OXYGEN_FLUID, cell.getOxygen(), cell.getOxygenCapacity());
     }
 
     @Override

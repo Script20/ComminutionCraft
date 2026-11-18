@@ -26,7 +26,7 @@ public class OreWasherScreen extends ElectricMachineScreen {
     @Override
     public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         super.extractBackground(graphics, mouseX, mouseY, partialTick);
-        drawGauge(graphics, PLASMA_X, WATER_U, washer.getWater(), washer.getWaterCapacity());
+        drawGauge(graphics, PLASMA_X, WATER_FLUID, washer.getWater(), washer.getWaterCapacity());
     }
 
     @Override

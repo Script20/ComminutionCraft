@@ -20,8 +20,8 @@ public class PelletPressScreen extends ElectricMachineScreen {
     @Override
     public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         super.extractBackground(graphics, mouseX, mouseY, partialTick);
-        drawGauge(graphics, DEUTERIUM_X, DEUTERIUM_U, press.getDeuterium(), press.getDeuteriumCapacity());
-        drawGauge(graphics, PLASMA_X, TRITIUM_U, press.getTritium(), press.getTritiumCapacity());
+        drawGauge(graphics, DEUTERIUM_X, DEUTERIUM_FLUID, press.getDeuterium(), press.getDeuteriumCapacity());
+        drawGauge(graphics, PLASMA_X, TRITIUM_FLUID, press.getTritium(), press.getTritiumCapacity());
     }
 
     @Override

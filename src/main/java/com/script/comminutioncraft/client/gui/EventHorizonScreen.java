@@ -39,7 +39,7 @@ public class EventHorizonScreen extends MachineScreen<EventHorizonMenu> {
     public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         super.extractBackground(graphics, mouseX, mouseY, partialTick);
         drawEnergyBar(graphics, menu.getEnergy(), menu.getEnergyCapacity());
-        drawGauge(graphics, PLASMA_X, ANTIMATTER_U, menu.getAntimatter(), menu.getAntimatterCapacity());
+        drawGauge(graphics, PLASMA_X, ANTIMATTER_FLUID, menu.getAntimatter(), menu.getAntimatterCapacity());
         int width = Math.min(BAR_W, (int) ((long) BAR_W * menu.getMass() / menu.getMassCapacity()));
         if (width > 0) {
             graphics.blit(RenderPipelines.GUI_TEXTURED, texture, leftPos + BAR_X, topPos + BAR_Y, 176, 90, width, BAR_H, TEX_SIZE, TEX_SIZE);

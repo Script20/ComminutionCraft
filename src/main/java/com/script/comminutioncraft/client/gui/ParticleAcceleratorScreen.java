@@ -42,8 +42,8 @@ public class ParticleAcceleratorScreen extends MachineScreen<ParticleAccelerator
     public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         super.extractBackground(graphics, mouseX, mouseY, partialTick);
         drawEnergyBar(graphics, menu.getEnergy(), menu.getEnergyCapacity());
-        drawGauge(graphics, HYDROGEN_X, HYDROGEN_U, menu.getHydrogen(), menu.getHydrogenCapacity());
-        drawGauge(graphics, PLASMA_X, ANTIMATTER_U, menu.getAntimatter(), menu.getAntimatterCapacity());
+        drawGauge(graphics, HYDROGEN_X, HYDROGEN_FLUID, menu.getHydrogen(), menu.getHydrogenCapacity());
+        drawGauge(graphics, PLASMA_X, ANTIMATTER_FLUID, menu.getAntimatter(), menu.getAntimatterCapacity());
         int width = Math.min(BAR_W, Math.round((float) BAR_W * menu.getProgress() / menu.getProgressMax()));
         if (width > 0) {
             graphics.blit(RenderPipelines.GUI_TEXTURED, texture, leftPos + BAR_X, topPos + BAR_Y, 176, 90, width, BAR_H, TEX_SIZE, TEX_SIZE);

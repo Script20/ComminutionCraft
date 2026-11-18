@@ -36,8 +36,8 @@ public class FusionReactorScreen extends MachineScreen<FusionReactorMenu> {
     public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         super.extractBackground(graphics, mouseX, mouseY, partialTick);
         drawEnergyBar(graphics, menu.getEnergy(), menu.getEnergyCapacity());
-        drawGauge(graphics, 50, PLASMA_U, menu.getPlasma(), menu.getPlasmaCapacity());
-        drawGauge(graphics, PLASMA_X, TRITIUM_U, menu.getTritium(), menu.getTritiumCapacity());
+        drawGauge(graphics, 50, PLASMA_FLUID, menu.getPlasma(), menu.getPlasmaCapacity());
+        drawGauge(graphics, PLASMA_X, TRITIUM_FLUID, menu.getTritium(), menu.getTritiumCapacity());
         int width = Math.round((float) HEAT_W * menu.getHeat() / FusionReactorBlockEntity.MAX_HEAT);
         if (width > 0) {
             graphics.blit(RenderPipelines.GUI_TEXTURED, texture, leftPos + HEAT_X, topPos + HEAT_Y, 176, 90, width, HEAT_H, TEX_SIZE, TEX_SIZE);
