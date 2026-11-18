@@ -87,7 +87,7 @@ public class FactoryMenu extends AbstractContainerMenu implements ControllableMe
         this.data = data;
         this.layout = layout;
         for (int lane = 0; lane < layout.lanes(); lane++) {
-            addSlot(new Slot(container, lane, layout.columnX(lane), INPUT_Y));
+            addSlot(new MachineInputSlot(container, lane, layout.columnX(lane), INPUT_Y));
         }
         for (int lane = 0; lane < layout.lanes(); lane++) {
             addSlot(new MachineOutputSlot(inventory.player, container, layout.lanes() + lane, layout.columnX(lane), OUTPUT_Y));
@@ -156,8 +156,11 @@ public class FactoryMenu extends AbstractContainerMenu implements ControllableMe
                 return ItemStack.EMPTY;
             }
             slot.onQuickCraft(stack, original);
-        } else if (UpgradeType.of(stack) != null && moveItemStackTo(stack, upgradeStart, upgradeEnd, false)) {
-            // an upgrade: into its slot
+        } else if (UpgradeType.of(stack) != null) {
+            // an upgrade only ever goes into its upgrade slot, never a lane's input
+            if (!moveItemStackTo(stack, upgradeStart, upgradeEnd, false)) {
+                return ItemStack.EMPTY;
+            }
         } else if (!moveItemStackTo(stack, 0, layout.lanes(), false)) {
             return ItemStack.EMPTY;
         }

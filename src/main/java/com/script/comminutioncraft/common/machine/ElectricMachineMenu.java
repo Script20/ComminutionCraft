@@ -78,7 +78,7 @@ public class ElectricMachineMenu extends AbstractContainerMenu implements Contro
         this.container = container;
         this.data = data;
 
-        addSlot(new Slot(container, ElectricMachineBlockEntity.SLOT_INPUT, 56, 35));
+        addSlot(new MachineInputSlot(container, ElectricMachineBlockEntity.SLOT_INPUT, 56, 35));
         addSlot(new MachineOutputSlot(inventory.player, container, ElectricMachineBlockEntity.SLOT_OUTPUT, 116, outputY));
         addStandardInventorySlots(inventory, 8, 84);
         // Speed / Energy / Gas / Liquid, shown in the Upgrades panel (after the inventory, so other indices stay put)
@@ -138,9 +138,11 @@ public class ElectricMachineMenu extends AbstractContainerMenu implements Contro
             if (!moveItemStackTo(stack, INV_START, HOTBAR_END, false)) {
                 return ItemStack.EMPTY;
             }
-        } else if (index >= INV_START && index < HOTBAR_END && UpgradeType.of(stack) != null
-                && moveItemStackTo(stack, upgradeStart, upgradeEnd, false)) {
-            // an upgrade: into its slot
+        } else if (index >= INV_START && index < HOTBAR_END && UpgradeType.of(stack) != null) {
+            // an upgrade only ever goes into its upgrade slot, never the machine's input
+            if (!moveItemStackTo(stack, upgradeStart, upgradeEnd, false)) {
+                return ItemStack.EMPTY;
+            }
         } else if (index == ElectricMachineBlockEntity.SLOT_OUTPUT) {
             if (!moveItemStackTo(stack, INV_START, HOTBAR_END, true)) {
                 return ItemStack.EMPTY;

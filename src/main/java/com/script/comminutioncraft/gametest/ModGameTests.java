@@ -48,10 +48,12 @@ import com.script.comminutioncraft.common.machine.PlasmaMachineBlockEntity;
 import com.script.comminutioncraft.common.machine.ReactorPortBlockEntity;
 import com.script.comminutioncraft.common.machine.SingularityProcessorBlockEntity;
 import com.script.comminutioncraft.common.machine.TritiumBreederBlockEntity;
+import com.script.comminutioncraft.common.machine.control.ControllableMenu;
 import com.script.comminutioncraft.common.machine.control.MachineControls;
 import com.script.comminutioncraft.common.machine.control.RedstoneMode;
 import com.script.comminutioncraft.common.machine.control.RelativeSide;
 import com.script.comminutioncraft.common.machine.control.SideMode;
+import com.script.comminutioncraft.common.machine.upgrade.UpgradeType;
 import com.script.comminutioncraft.common.pipe.ItemPipeBlock;
 import com.script.comminutioncraft.common.pipe.ItemPipeBlockEntity;
 import com.script.comminutioncraft.common.pipe.ItemPipeMenu;
@@ -86,6 +88,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.Item;
@@ -231,6 +234,7 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("battery_charges_drill_and_upgrade_keeps_fe", () -> ModGameTests::batteryChargesDrillAndUpgradeKeepsFe);
         TEST_FUNCTIONS.register("factory_kit_upgrades_machine", () -> ModGameTests::factoryKitUpgradesMachine);
         TEST_FUNCTIONS.register("factory_lanes_work_side_by_side", () -> ModGameTests::factoryLanesWorkSideBySide);
+        TEST_FUNCTIONS.register("upgrades_shift_click_only_into_upgrade_slots", () -> ModGameTests::upgradesShiftClickOnlyIntoUpgradeSlots);
     }
 
     public static void registerTests(RegisterGameTestsEvent event) {
@@ -1104,6 +1108,38 @@ public final class ModGameTests {
             helper.assertTrue(smelted(four) == 8, "4 lanes should smelt 8 raw iron in two items' time, made " + smelted(four));
             helper.succeed();
         });
+    }
+
+    /**
+     * Shift-clicking upgrades into a machine (owner, 2026-11-18): they go into their upgrade slot only (up to 8) and never
+     * into the input, and one the machine doesn't take (Liquid in a smelter) stays in the inventory. Same for a factory.
+     */
+    private static void upgradesShiftClickOnlyIntoUpgradeSlots(GameTestHelper helper) {
+        BlockPos smelterPos = new BlockPos(1, 1, 2);
+        BlockPos factoryPos = new BlockPos(3, 1, 2);
+        helper.setBlock(smelterPos, ModBlocks.ELECTRIC_SMELTER.get());
+        helper.setBlock(factoryPos, ModBlocks.ELECTRIC_SMELTING_FACTORY.get());
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        player.setGameMode(GameType.SURVIVAL);
+        for (BlockPos pos : List.of(smelterPos, factoryPos)) {
+            ElectricMachineBlockEntity machine = helper.getBlockEntity(pos, ElectricMachineBlockEntity.class);
+            AbstractContainerMenu menu = machine.createMenu(0, player.getInventory(), player);
+            int firstInventorySlot = ((ControllableMenu) menu).upgradeSlotStart() - 36; // the main inventory's first row
+            player.getInventory().setItem(9, new ItemStack(ModItems.SPEED_UPGRADE.get(), 64));
+            player.getInventory().setItem(10, new ItemStack(ModItems.LIQUID_UPGRADE.get(), 64));
+            menu.clicked(firstInventorySlot, 0, ContainerInput.QUICK_MOVE, player);
+            menu.clicked(firstInventorySlot + 1, 0, ContainerInput.QUICK_MOVE, player);
+            helper.assertTrue(machine.getUpgrades().getItem(UpgradeType.SPEED.ordinal()).getCount() == UpgradeType.MAX,
+                    pos + ": 8 Speed upgrades should go into the upgrade slot");
+            helper.assertTrue(player.getInventory().getItem(9).getCount() == 64 - UpgradeType.MAX,
+                    pos + ": the other 56 should stay in the inventory, " + player.getInventory().getItem(9));
+            helper.assertTrue(player.getInventory().getItem(10).getCount() == 64, pos + ": the smelter takes no Liquid upgrades");
+            for (int lane = 0; lane < machine.lanes(); lane++) {
+                helper.assertTrue(machine.getItem(machine.inputSlot(lane)).isEmpty(),
+                        pos + ": an upgrade went into input " + lane + ": " + machine.getItem(machine.inputSlot(lane)));
+            }
+        }
+        helper.succeed();
     }
 
     private static int smelted(ElectricMachineBlockEntity factory) {
