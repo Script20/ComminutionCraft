@@ -48,6 +48,7 @@ import com.script.comminutioncraft.common.machine.PlasmaMachineBlockEntity;
 import com.script.comminutioncraft.common.machine.ReactorPortBlockEntity;
 import com.script.comminutioncraft.common.machine.SingularityProcessorBlockEntity;
 import com.script.comminutioncraft.common.machine.TritiumBreederBlockEntity;
+import com.script.comminutioncraft.common.machine.control.MachineControls;
 import com.script.comminutioncraft.common.machine.control.RedstoneMode;
 import com.script.comminutioncraft.common.machine.control.RelativeSide;
 import com.script.comminutioncraft.common.machine.control.SideMode;
@@ -414,6 +415,12 @@ public final class ModGameTests {
         helper.assertTrue(smelter.getSlotsForFace(Direction.SOUTH).length == 0, "None side didn't turn with the machine");
         helper.assertTrue(smelter.canPlaceItemThroughFace(ElectricMachineBlockEntity.SLOT_INPUT, new ItemStack(Items.RAW_IRON), Direction.EAST),
                 "The new front should accept input");
+
+        // The side screen's Clear All button: every face None
+        helper.assertTrue(smelter.getControls().handleButton(MachineControls.BUTTON_CLEAR_SIDES), "Clear All wasn't handled");
+        for (Direction face : Direction.values()) {
+            helper.assertTrue(smelter.getSlotsForFace(face).length == 0, "After Clear All, " + face + " still exposes slots");
+        }
         helper.succeed();
     }
 

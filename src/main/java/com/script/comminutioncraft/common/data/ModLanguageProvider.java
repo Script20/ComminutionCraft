@@ -380,6 +380,8 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.comminutioncraft.redstone.low.desc", "Runs only without a redstone signal");
         add("gui.comminutioncraft.side_config", "Side Configuration");
         add("gui.comminutioncraft.side_config.help", "Left-click: change · Right-drag: turn");
+        add("gui.comminutioncraft.side_config.clear", "Clear All");
+        add("gui.comminutioncraft.side_config.clear.tooltip", "Set every side to None");
         add("gui.comminutioncraft.side_config.tooltip", "%s: %s");
         add("gui.comminutioncraft.side.front", "Front");
         add("gui.comminutioncraft.side.back", "Back");

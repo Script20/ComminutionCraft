@@ -697,6 +697,8 @@
   "gui.comminutioncraft.side.right": "Right",
   "gui.comminutioncraft.side.top": "Top",
   "gui.comminutioncraft.side_config": "Side Configuration",
+  "gui.comminutioncraft.side_config.clear": "Clear All",
+  "gui.comminutioncraft.side_config.clear.tooltip": "Set every side to None",
   "gui.comminutioncraft.side_config.help": "Left-click: change · Right-drag: turn",
   "gui.comminutioncraft.side_config.tooltip": "%s: %s",
   "gui.comminutioncraft.side_mode.byproduct": "By-product",

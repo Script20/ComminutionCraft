@@ -12,6 +12,7 @@ import java.util.Comparator;
 import java.util.List;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -98,9 +99,19 @@ public class SideConfigScreen extends Screen {
     protected void init() {
         left = (width - WIDTH) / 2;
         top = (height - HEIGHT) / 2;
-        addRenderableWidget(Button.builder(Component.translatable("gui.done"), b -> onClose())
-                .bounds(left + (WIDTH - 70) / 2, top + HEIGHT - 26, 70, 20)
+        // Clear All (every side to None) and Done, side by side at the bottom
+        int buttonsX = left + (WIDTH - 2 * 70 - 6) / 2;
+        addRenderableWidget(Button.builder(Component.translatable("gui.comminutioncraft.side_config.clear"), b -> clearSides())
+                .bounds(buttonsX, top + HEIGHT - 26, 70, 20)
+                .tooltip(Tooltip.create(Component.translatable("gui.comminutioncraft.side_config.clear.tooltip")))
                 .build());
+        addRenderableWidget(Button.builder(Component.translatable("gui.done"), b -> onClose())
+                .bounds(buttonsX + 76, top + HEIGHT - 26, 70, 20)
+                .build());
+    }
+
+    private void clearSides() {
+        minecraft.gameMode.handleInventoryButtonClick(menu.containerId, MachineControls.BUTTON_CLEAR_SIDES);
     }
 
     @Override

@@ -18,9 +18,10 @@ import net.minecraft.world.level.storage.ValueOutput;
  * x 2 bits in one 16-bit slot), and changed from the GUI with menu button clicks ({@link #handleButton}).
  */
 public final class MachineControls {
-    /** Menu button ids: 0 cycles the redstone mode, 1..6 cycle {@code RelativeSide.values()[id - 1]}. */
+    /** Menu button ids: 0 cycles the redstone mode, 1..6 cycle {@code RelativeSide.values()[id - 1]}, 7 sets every side to None. */
     public static final int BUTTON_REDSTONE = 0;
     public static final int BUTTON_FIRST_SIDE = 1;
+    public static final int BUTTON_CLEAR_SIDES = BUTTON_FIRST_SIDE + RelativeSide.values().length;
 
     private final EnumMap<RelativeSide, SideMode> defaults;
     private final EnumMap<RelativeSide, SideMode> sides;
@@ -111,6 +112,13 @@ public final class MachineControls {
     public boolean handleButton(int id) {
         if (id == BUTTON_REDSTONE) {
             setRedstone(redstone.next());
+            return true;
+        }
+        if (id == BUTTON_CLEAR_SIDES) {
+            for (RelativeSide side : RelativeSide.values()) {
+                sides.put(side, SideMode.NONE);
+            }
+            onChanged.run();
             return true;
         }
         int sideIndex = id - BUTTON_FIRST_SIDE;
