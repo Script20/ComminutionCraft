@@ -2,7 +2,6 @@ package com.script.comminutioncraft.common.registry;
 
 import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.data.ProcessedMetal;
-import com.script.comminutioncraft.common.machine.Factories;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -36,17 +35,24 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.COAL_SMELTER.get());
                         output.accept(ModItems.ELECTRIC_GRANULATOR.get());
                         output.accept(ModItems.ELECTRIC_SMELTER.get());
+                        output.accept(ModItems.ELECTRIC_SMELTING_FACTORY.get());
                         output.accept(ModItems.PLASMA_GRANULATOR.get());
                         output.accept(ModItems.PLASMA_SMELTER.get());
                         output.accept(ModItems.ORE_WASHER.get());
+                        output.accept(ModItems.PLASMA_GRANULATING_FACTORY.get());
+                        output.accept(ModItems.PLASMA_SMELTING_FACTORY.get());
                         output.accept(ModItems.ORE_PURIFIER.get());
+                        output.accept(ModItems.PURIFYING_FACTORY.get());
                         output.accept(ModItems.ANTIMATTER_GRANULATOR.get());
                         output.accept(ModItems.ANTIMATTER_SMELTER.get());
                         output.accept(ModItems.FROTH_FLOTATION_CELL.get());
                         output.accept(ModItems.ANTIMATTER_WASHER.get());
                         output.accept(ModItems.ANTIMATTER_PURIFIER.get());
+                        output.accept(ModItems.ANTIMATTER_GRANULATING_FACTORY.get());
+                        output.accept(ModItems.ANTIMATTER_SMELTING_FACTORY.get());
+                        output.accept(ModItems.ANTIMATTER_WASHING_FACTORY.get());
+                        output.accept(ModItems.ANTIMATTER_PURIFYING_FACTORY.get());
                         output.accept(ModItems.SINGULARITY_PROCESSOR.get());
-                        Factories.ALL.forEach(factory -> output.accept(factory.factory().get()));
                         // Machines
                         output.accept(ModItems.ATMOSPHERIC_WATER_GENERATOR.get());
                         output.accept(ModItems.ELECTROLYSER.get());
