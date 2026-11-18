@@ -36,7 +36,7 @@
   ],
   "type": "comminutioncraft:purifying",
   "byproduct": {
-    "id": "comminutioncraft:granulated_lead"
+    "id": "comminutioncraft:purified_lead"
   },
   "ingredient": "comminutioncraft:washed_uranium",
   "result": {

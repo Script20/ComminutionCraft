@@ -36,7 +36,7 @@
   ],
   "type": "comminutioncraft:purifying",
   "byproduct": {
-    "id": "comminutioncraft:granulated_zinc"
+    "id": "comminutioncraft:purified_zinc"
   },
   "ingredient": "comminutioncraft:washed_tin",
   "result": {

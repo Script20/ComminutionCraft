@@ -36,7 +36,7 @@
   ],
   "type": "comminutioncraft:purifying",
   "byproduct": {
-    "id": "comminutioncraft:granulated_nickel"
+    "id": "comminutioncraft:purified_nickel"
   },
   "ingredient": "comminutioncraft:washed_osmium",
   "result": {

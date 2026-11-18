@@ -17,7 +17,7 @@
   ],
   "type": "comminutioncraft:purifying",
   "byproduct": {
-    "id": "comminutioncraft:granulated_iron"
+    "id": "comminutioncraft:purified_iron"
   },
   "ingredient": "comminutioncraft:washed_aluminum",
   "result": {

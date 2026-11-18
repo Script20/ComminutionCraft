@@ -36,7 +36,7 @@
   ],
   "type": "comminutioncraft:purifying",
   "byproduct": {
-    "id": "comminutioncraft:granulated_silver"
+    "id": "comminutioncraft:purified_silver"
   },
   "ingredient": "comminutioncraft:washed_lead",
   "result": {

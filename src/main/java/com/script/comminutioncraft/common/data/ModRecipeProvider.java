@@ -67,15 +67,15 @@ public class ModRecipeProvider extends RecipeProvider {
     private static final float BYPRODUCT_CHANCE = 0.2F;
 
     /**
-     * Washed -> purified ore, sometimes with 1 granulated by-product metal. A by-product from another mod only counts
-     * when that mod is installed; without it the recipe gives a vanilla nugget instead (a gold nugget with iron, an
-     * iron nugget otherwise). Exactly one of the two versions loads.
+     * Washed -> purified ore, sometimes with 1 purified ore of the by-product metal (owner, 2026-11-18: purified ore, not
+     * nuggets). A by-product from another mod only counts when that mod is installed; without it the recipe gives a
+     * vanilla metal's purified ore instead (Purified Gold with iron, Purified Iron otherwise). Exactly one version loads.
      */
     private void purifying(RecipeOutput out, ProcessedMetal metal) {
         ProcessedMetal partner = ProcessedMetal.byName(metal.byproduct());
         ItemStackTemplate result = new ItemStackTemplate(metal.purified());
         Ingredient washed = Ingredient.of(metal.washed());
-        ItemStackTemplate partnerByproduct = new ItemStackTemplate(partner.granulated());
+        ItemStackTemplate partnerByproduct = new ItemStackTemplate(partner.purified());
         if (!partner.fromOtherMods()) {
             out.accept(key("purifying/" + metal.name()), new PurifyingRecipe(washed, result, partnerByproduct, BYPRODUCT_CHANCE), null);
             return;
@@ -85,9 +85,9 @@ public class ModRecipeProvider extends RecipeProvider {
                 new NotCondition(new TagEmptyCondition<>(partner.ingotTag()))));
         out.withConditions(partnerAvailable).accept(key("purifying/" + metal.name()),
                 new PurifyingRecipe(washed, result, partnerByproduct, BYPRODUCT_CHANCE), null);
-        ItemStackTemplate nugget = new ItemStackTemplate(metal.name().equals("iron") ? Items.GOLD_NUGGET : Items.IRON_NUGGET);
+        ItemStackTemplate fallback = new ItemStackTemplate(ProcessedMetal.byName(metal.name().equals("iron") ? "gold" : "iron").purified());
         out.withConditions(new NotCondition(partnerAvailable)).accept(key("purifying/" + metal.name() + "_without_" + partner.name()),
-                new PurifyingRecipe(washed, result, nugget, BYPRODUCT_CHANCE), null);
+                new PurifyingRecipe(washed, result, fallback, BYPRODUCT_CHANCE), null);
     }
 
     /** The Singularity Processor's rare by-products (each rolled on its own chance per operation). */

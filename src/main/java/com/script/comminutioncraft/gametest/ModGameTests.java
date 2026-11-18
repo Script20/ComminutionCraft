@@ -1035,7 +1035,7 @@ public final class ModGameTests {
         helper.setBlock(purifierPos, ModBlocks.ORE_PURIFIER.get());
         OrePurifierBlockEntity purifier = helper.getBlockEntity(purifierPos, OrePurifierBlockEntity.class);
         purifier.getOxygen().fill(FluidResource.of(ModFluids.OXYGEN.get()), 500);
-        purifier.setItem(OrePurifierBlockEntity.SLOT_BYPRODUCT, new ItemStack(Items.GOLD_NUGGET, 4));
+        purifier.setItem(OrePurifierBlockEntity.SLOT_BYPRODUCT, new ItemStack(ModItems.PURIFIED_GOLD.get(), 4));
 
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
         player.setGameMode(GameType.SURVIVAL);
@@ -1062,7 +1062,7 @@ public final class ModGameTests {
         OrePurifierBlockEntity purifying = helper.getBlockEntity(purifierPos, OrePurifierBlockEntity.class);
         helper.assertTrue(purifying.lanes() == 3, "The Purifying Factory should have 3 lanes");
         helper.assertTrue(purifying.getOxygen().getAmount() == 500, "Oxygen not kept: " + purifying.getOxygen().getAmount());
-        helper.assertTrue(purifying.getItem(2 * purifying.lanes()).is(Items.GOLD_NUGGET), "The by-product should be in the factory's by-product slot");
+        helper.assertTrue(purifying.getItem(2 * purifying.lanes()).is(ModItems.PURIFIED_GOLD.get()), "The by-product should be in the factory's by-product slot");
         int drops = helper.getLevel().getEntitiesOfClass(ItemEntity.class, new AABB(helper.absolutePos(pos)).inflate(4)).size();
         helper.assertTrue(drops == 0, "Nothing should drop, " + drops + " item entities did");
         helper.succeed();
@@ -1726,7 +1726,7 @@ public final class ModGameTests {
     }
 
     /**
-     * 5 Washed Iron + 250 mB oxygen -> 5 Purified Iron, using 50 mB oxygen each. Any by-product is a gold nugget (no
+     * 5 Washed Iron + 250 mB oxygen -> 5 Purified Iron, using 50 mB oxygen each. Any by-product is Purified Gold (no
      * mod adds nickel in the test world, so the fallback recipe is the one that loaded).
      */
     private static void orePurifierPurifiesWithOxygen(GameTestHelper helper) {
@@ -1741,7 +1741,7 @@ public final class ModGameTests {
             helper.assertTrue(output.is(ModItems.PURIFIED_IRON.get()) && output.getCount() == 5, "Expected 5 Purified Iron, got " + output);
             helper.assertTrue(purifier.getOxygen().getAmount() == 50, "Expected 50 mB oxygen left, has " + purifier.getOxygen().getAmount());
             ItemStack byproduct = purifier.getItem(OrePurifierBlockEntity.SLOT_BYPRODUCT);
-            helper.assertTrue(byproduct.isEmpty() || byproduct.is(Items.GOLD_NUGGET), "Unexpected by-product " + byproduct);
+            helper.assertTrue(byproduct.isEmpty() || byproduct.is(ModItems.PURIFIED_GOLD.get()), "Unexpected by-product " + byproduct);
         });
     }
 
