@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "comminutioncraft:plasma_granulator",
+    "comminutioncraft:plasma_factory_kit"
+  ],
+  "result": {
+    "id": "comminutioncraft:plasma_granulating_factory"
+  }
+}

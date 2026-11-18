@@ -14,6 +14,7 @@ import com.script.comminutioncraft.client.gui.ElectricGeneratorScreen;
 import com.script.comminutioncraft.client.gui.ElectricMachineScreen;
 import com.script.comminutioncraft.client.gui.EnergyBatteryScreen;
 import com.script.comminutioncraft.client.gui.EventHorizonScreen;
+import com.script.comminutioncraft.client.gui.FactoryScreen;
 import com.script.comminutioncraft.client.gui.FluidMachineScreen;
 import com.script.comminutioncraft.client.gui.FrothFlotationCellScreen;
 import com.script.comminutioncraft.client.gui.FusionReactorScreen;
@@ -112,6 +113,7 @@ public class ComminutionCraftClient {
         event.register(ModMenus.CREATIVE_FLUID_TANK.get(), CreativeFluidTankScreen::new);
         event.register(ModMenus.CREATIVE_CHEST.get(), CreativeChestScreen::new);
         event.register(ModMenus.ITEM_PIPE.get(), ItemPipeScreen::new);
+        event.register(ModMenus.FACTORY.get(), FactoryScreen::new);
         event.<ElectricMachineMenu, OrePurifierScreen>register(ModMenus.ORE_PURIFIER.get(),
                 (menu, inventory, title) -> new OrePurifierScreen((OrePurifierMenu) menu, inventory, title));
         event.register(ModMenus.FUSION_ENERGY_BATTERY.get(), EnergyBatteryScreen::fusion);

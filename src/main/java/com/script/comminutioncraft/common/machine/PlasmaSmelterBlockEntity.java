@@ -16,6 +16,7 @@ import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.item.crafting.SmeltingRecipe;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
@@ -32,6 +33,11 @@ public class PlasmaSmelterBlockEntity extends ElectricMachineBlockEntity {
 
     public PlasmaSmelterBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.PLASMA_SMELTER.get(), pos, state, TIER3_ENERGY_CAPACITY.get(), TIER3_MAX_ENERGY_INPUT.get());
+    }
+
+    /** A factory version: its own block entity type, {@code lanes} lanes. */
+    public PlasmaSmelterBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, int lanes) {
+        super(type, pos, state, TIER3_ENERGY_CAPACITY.get(), TIER3_MAX_ENERGY_INPUT.get(), lanes);
     }
 
     @Override

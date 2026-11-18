@@ -6,6 +6,7 @@ import com.script.comminutioncraft.common.registry.ModBlockEntities;
 import com.script.comminutioncraft.common.registry.ModMenus;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
 /** Tier 5 Ore Washer: the same washing recipes (raw ore -> 3 washed, concentrate -> 1) and water, much faster. */
@@ -17,6 +18,12 @@ public class AntimatterWasherBlockEntity extends OreWasherBlockEntity {
     public AntimatterWasherBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.ANTIMATTER_WASHER.get(), pos, state,
                 MachineConfig.ANTIMATTER_MACHINES_ENERGY_CAPACITY.get(), MachineConfig.ANTIMATTER_MACHINES_MAX_ENERGY_INPUT.get());
+    }
+
+    /** A factory version: its own block entity type, {@code lanes} lanes. */
+    public AntimatterWasherBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, int lanes) {
+        super(type, pos, state, MachineConfig.ANTIMATTER_MACHINES_ENERGY_CAPACITY.get(),
+                MachineConfig.ANTIMATTER_MACHINES_MAX_ENERGY_INPUT.get(), lanes);
     }
 
     @Override

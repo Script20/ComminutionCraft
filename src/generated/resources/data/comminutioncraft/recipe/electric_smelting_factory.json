@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "comminutioncraft:electric_smelter",
+    "comminutioncraft:electric_factory_kit"
+  ],
+  "result": {
+    "id": "comminutioncraft:electric_smelting_factory"
+  }
+}

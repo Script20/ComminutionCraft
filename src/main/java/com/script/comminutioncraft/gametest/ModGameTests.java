@@ -31,6 +31,7 @@ import com.script.comminutioncraft.common.machine.ElectrolyserBlockEntity;
 import com.script.comminutioncraft.common.machine.EnergyBatteryBlock;
 import com.script.comminutioncraft.common.machine.EnergyBatteryBlockEntity;
 import com.script.comminutioncraft.common.machine.EventHorizonReactorBlockEntity;
+import com.script.comminutioncraft.common.machine.Factories;
 import com.script.comminutioncraft.common.machine.FluidTankBlockEntity;
 import com.script.comminutioncraft.common.machine.FrothFlotationCellBlockEntity;
 import com.script.comminutioncraft.common.machine.FuelMachineBlockEntity;
@@ -227,6 +228,8 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("tall_drill_1x1_mode_mines_one", () -> ModGameTests::drillSingleModeMinesOne);
         TEST_FUNCTIONS.register("paxel_strips_paths_and_tills", () -> ModGameTests::paxelStripsPathsAndTills);
         TEST_FUNCTIONS.register("battery_charges_drill_and_upgrade_keeps_fe", () -> ModGameTests::batteryChargesDrillAndUpgradeKeepsFe);
+        TEST_FUNCTIONS.register("factory_kit_upgrades_machine", () -> ModGameTests::factoryKitUpgradesMachine);
+        TEST_FUNCTIONS.register("factory_lanes_work_side_by_side", () -> ModGameTests::factoryLanesWorkSideBySide);
     }
 
     public static void registerTests(RegisterGameTestsEvent event) {
@@ -1012,6 +1015,98 @@ public final class ModGameTests {
      * An Ore Washer with 8 Liquid upgrades uses 62 mB of water a wash instead of 250. Picked up with the wrench, the item
      * carries the upgrades (and the machine drops none); broken normally, it drops them.
      */
+    /**
+     * A Factory Upgrade Kit on a placed Electric Smelter turns it into an Electric Smelting Factory (facing kept, GUI not
+     * opened, kit used up) with its FE, upgrades, input and output; on an Ore Purifier the Fusion kit keeps the oxygen and
+     * the by-product too. The wrong tier's kit does nothing.
+     */
+    private static void factoryKitUpgradesMachine(GameTestHelper helper) {
+        helper.assertTrue(Factories.upgrade(ModBlocks.ELECTRIC_SMELTER.get(), ModItems.PLASMA_FACTORY_KIT.get()) == null,
+                "A Plasma kit mustn't upgrade an Electric Smelter");
+        BlockPos pos = new BlockPos(1, 1, 2);
+        helper.setBlock(pos, ModBlocks.ELECTRIC_SMELTER.get().defaultBlockState().setValue(MachineBlock.FACING, Direction.EAST));
+        ElectricMachineBlockEntity smelter = helper.getBlockEntity(pos, ElectricMachineBlockEntity.class);
+        ((MachineEnergyStorage) smelter.getEnergyHandler()).set(5_000);
+        smelter.getUpgrades().setItem(0, new ItemStack(ModItems.SPEED_UPGRADE.get(), 2));
+        smelter.setItem(ElectricMachineBlockEntity.SLOT_INPUT, new ItemStack(Items.RAW_IRON, 5));
+        smelter.setItem(ElectricMachineBlockEntity.SLOT_OUTPUT, new ItemStack(Items.IRON_INGOT, 3));
+
+        BlockPos purifierPos = new BlockPos(3, 1, 2);
+        helper.setBlock(purifierPos, ModBlocks.ORE_PURIFIER.get());
+        OrePurifierBlockEntity purifier = helper.getBlockEntity(purifierPos, OrePurifierBlockEntity.class);
+        purifier.getOxygen().fill(FluidResource.of(ModFluids.OXYGEN.get()), 500);
+        purifier.setItem(OrePurifierBlockEntity.SLOT_BYPRODUCT, new ItemStack(Items.GOLD_NUGGET, 4));
+
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        player.setGameMode(GameType.SURVIVAL);
+        for (BlockPos at : List.of(pos, purifierPos)) {
+            BlockPos absolute = helper.absolutePos(at);
+            player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(at == pos ? ModItems.ELECTRIC_FACTORY_KIT.get() : ModItems.FUSION_FACTORY_KIT.get()));
+            player.gameMode.useItemOn(player, helper.getLevel(), player.getMainHandItem(), InteractionHand.MAIN_HAND,
+                    new BlockHitResult(Vec3.atCenterOf(absolute).add(0, 0.5, 0), Direction.UP, absolute, false));
+            helper.assertTrue(player.getMainHandItem().isEmpty(), "The kit should be used up");
+        }
+        helper.assertTrue(player.containerMenu == player.inventoryMenu, "Using a kit shouldn't open the GUI");
+        helper.assertBlockPresent(ModBlocks.ELECTRIC_SMELTING_FACTORY.get(), pos);
+        helper.assertTrue(helper.getBlockState(pos).getValue(MachineBlock.FACING) == Direction.EAST, "The factory should face the way the smelter did");
+        ElectricMachineBlockEntity factory = helper.getBlockEntity(pos, ElectricMachineBlockEntity.class);
+        helper.assertTrue(factory.lanes() == 2, "The Electric Smelting Factory should have 2 lanes, has " + factory.lanes());
+        helper.assertTrue(factory.getEnergyHandler().getAmountAsLong() == 5_000, "FE not kept: " + factory.getEnergyHandler().getAmountAsLong());
+        helper.assertTrue(factory.getUpgrades().getItem(0).getCount() == 2, "Speed upgrades not kept");
+        int raw = factory.getItem(factory.inputSlot(0)).getCount() + factory.getItem(factory.inputSlot(1)).getCount();
+        helper.assertTrue(raw == 5, "The 5 raw iron should be in the factory, found " + raw);
+        helper.assertTrue(factory.getItem(factory.outputSlot(0)).is(Items.IRON_INGOT) && factory.getItem(factory.outputSlot(0)).getCount() == 3,
+                "The 3 ingots should be in lane 1's output");
+
+        helper.assertBlockPresent(ModBlocks.PURIFYING_FACTORY.get(), purifierPos);
+        OrePurifierBlockEntity purifying = helper.getBlockEntity(purifierPos, OrePurifierBlockEntity.class);
+        helper.assertTrue(purifying.lanes() == 3, "The Purifying Factory should have 3 lanes");
+        helper.assertTrue(purifying.getOxygen().getAmount() == 500, "Oxygen not kept: " + purifying.getOxygen().getAmount());
+        helper.assertTrue(purifying.getItem(2 * purifying.lanes()).is(Items.GOLD_NUGGET), "The by-product should be in the factory's by-product slot");
+        int drops = helper.getLevel().getEntitiesOfClass(ItemEntity.class, new AABB(helper.absolutePos(pos)).inflate(4)).size();
+        helper.assertTrue(drops == 0, "Nothing should drop, " + drops + " item entities did");
+        helper.succeed();
+    }
+
+    /**
+     * Factory lanes work side by side: 2 raw iron in an Electric Smelting Factory and 8 in an Antimatter Smelting
+     * Factory are spread over the lanes and done in the time one or two items take. Piped-in items go to the emptiest lane.
+     */
+    private static void factoryLanesWorkSideBySide(GameTestHelper helper) {
+        BlockPos twoPos = new BlockPos(1, 1, 2);
+        BlockPos fourPos = new BlockPos(3, 1, 2);
+        helper.setBlock(twoPos, ModBlocks.ELECTRIC_SMELTING_FACTORY.get());
+        helper.setBlock(fourPos, ModBlocks.ANTIMATTER_SMELTING_FACTORY.get());
+        ElectricMachineBlockEntity two = helper.getBlockEntity(twoPos, ElectricMachineBlockEntity.class);
+        ElectricMachineBlockEntity four = helper.getBlockEntity(fourPos, ElectricMachineBlockEntity.class);
+        helper.assertTrue(two.lanes() == 2 && four.lanes() == 4, "Expected 2 and 4 lanes");
+
+        ItemStack raw = new ItemStack(Items.RAW_IRON);
+        two.setItem(two.inputSlot(0), raw.copy());
+        helper.assertTrue(!two.canPlaceItemThroughFace(two.inputSlot(0), raw, Direction.UP)
+                && two.canPlaceItemThroughFace(two.inputSlot(1), raw, Direction.UP), "A piped-in item should go to the empty lane");
+        two.setItem(two.inputSlot(0), raw.copyWithCount(2));
+        four.setItem(four.inputSlot(0), raw.copyWithCount(8));
+        for (ElectricMachineBlockEntity factory : List.of(two, four)) {
+            ((MachineEnergyStorage) factory.getEnergyHandler()).set((int) factory.getEnergyHandler().getCapacityAsLong());
+        }
+        int twoTime = two.getTotalProcessTime();
+        int fourTime = four.getTotalProcessTime();
+        helper.runAfterDelay(Math.max(twoTime + 8, 2 * fourTime + 12), () -> {
+            helper.assertTrue(smelted(two) == 2, "2 lanes should smelt 2 raw iron in one item's time, made " + smelted(two));
+            helper.assertTrue(smelted(four) == 8, "4 lanes should smelt 8 raw iron in two items' time, made " + smelted(four));
+            helper.succeed();
+        });
+    }
+
+    private static int smelted(ElectricMachineBlockEntity factory) {
+        int count = 0;
+        for (int lane = 0; lane < factory.lanes(); lane++) {
+            count += factory.getItem(factory.outputSlot(lane)).getCount();
+        }
+        return count;
+    }
+
     private static void upgradesLiquidAndPickup(GameTestHelper helper) {
         BlockPos pos = new BlockPos(2, 1, 2);
         helper.setBlock(pos, ModBlocks.ORE_WASHER.get());

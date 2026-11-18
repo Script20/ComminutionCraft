@@ -2,6 +2,7 @@ package com.script.comminutioncraft.common.registry;
 
 import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.data.ProcessedMetal;
+import com.script.comminutioncraft.common.machine.Factories;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -45,6 +46,7 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.ANTIMATTER_WASHER.get());
                         output.accept(ModItems.ANTIMATTER_PURIFIER.get());
                         output.accept(ModItems.SINGULARITY_PROCESSOR.get());
+                        Factories.ALL.forEach(factory -> output.accept(factory.factory().get()));
                         // Machines
                         output.accept(ModItems.ATMOSPHERIC_WATER_GENERATOR.get());
                         output.accept(ModItems.ELECTROLYSER.get());
@@ -104,6 +106,10 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.ENERGY_UPGRADE.get());
                         output.accept(ModItems.GAS_UPGRADE.get());
                         output.accept(ModItems.LIQUID_UPGRADE.get());
+                        output.accept(ModItems.ELECTRIC_FACTORY_KIT.get());
+                        output.accept(ModItems.PLASMA_FACTORY_KIT.get());
+                        output.accept(ModItems.FUSION_FACTORY_KIT.get());
+                        output.accept(ModItems.ANTIMATTER_FACTORY_KIT.get());
                         // Ores: washed, purified, granulated per metal. Other mods' metals only appear when some installed mod adds them.
                         ProcessedMetal.ALL.stream()
                                 .filter(ProcessedMetal::isAvailable)

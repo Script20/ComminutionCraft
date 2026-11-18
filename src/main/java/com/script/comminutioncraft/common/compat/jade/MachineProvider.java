@@ -3,6 +3,7 @@ package com.script.comminutioncraft.common.compat.jade;
 import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.machine.ElectricMachineBlockEntity;
 import com.script.comminutioncraft.common.machine.FuelMachineBlockEntity;
+import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -33,15 +34,20 @@ public class MachineProvider implements StreamServerDataProvider<BlockAccessor, 
     @Override
     public @Nullable Data streamData(BlockAccessor accessor) {
         if (accessor.getBlockEntity() instanceof FuelMachineBlockEntity machine) {
-            return new Data(machine.getProgress(), machine.getTotalProcessTime(), List.of(
+            return new Data(List.of(machine.getProgress()), machine.getTotalProcessTime(), List.of(
                     machine.getItem(FuelMachineBlockEntity.SLOT_INPUT),
                     machine.getItem(FuelMachineBlockEntity.SLOT_FUEL),
                     machine.getItem(FuelMachineBlockEntity.SLOT_OUTPUT)));
         }
         if (accessor.getBlockEntity() instanceof ElectricMachineBlockEntity machine) {
-            return new Data(machine.getProgress(), machine.getTotalProcessTime(), List.of(
-                    machine.getItem(ElectricMachineBlockEntity.SLOT_INPUT),
-                    machine.getItem(ElectricMachineBlockEntity.SLOT_OUTPUT)));
+            List<Integer> progress = new ArrayList<>();
+            List<ItemStack> items = new ArrayList<>();
+            for (int lane = 0; lane < machine.lanes(); lane++) {
+                progress.add(machine.getLaneProgress(lane));
+                items.add(machine.getItem(machine.inputSlot(lane)));
+                items.add(machine.getItem(machine.outputSlot(lane)));
+            }
+            return new Data(progress, machine.getTotalProcessTime(), items);
         }
         return null;
     }
@@ -56,10 +62,13 @@ public class MachineProvider implements StreamServerDataProvider<BlockAccessor, 
         return UID;
     }
 
-    /** Inventory is [input, fuel, output] for tier 1 and [input, output] for tier 2. */
-    public record Data(int progress, int total, List<ItemStack> inventory) {
+    /**
+     * One row per lane (a factory has 2-4): each row's progress, and the inventory row after row ([input, fuel, output]
+     * for tier 1, [input, output] for the electric machines).
+     */
+    public record Data(List<Integer> progress, int total, List<ItemStack> inventory) {
         public static final StreamCodec<RegistryFriendlyByteBuf, Data> STREAM_CODEC = StreamCodec.composite(
-                ByteBufCodecs.VAR_INT, Data::progress,
+                ByteBufCodecs.VAR_INT.apply(ByteBufCodecs.list()), Data::progress,
                 ByteBufCodecs.VAR_INT, Data::total,
                 ItemStack.OPTIONAL_LIST_STREAM_CODEC, Data::inventory,
                 Data::new);
@@ -74,14 +83,21 @@ public class MachineProvider implements StreamServerDataProvider<BlockAccessor, 
             if (data == null || data.inventory().stream().allMatch(ItemStack::isEmpty)) {
                 return;
             }
-            List<ItemStack> items = data.inventory();
-            tooltip.add(JadeUI.item(items.getFirst()).alignSelfCenter());
-            for (ItemStack middle : items.subList(1, items.size() - 1)) {
-                tooltip.append(JadeUI.item(middle).alignSelfCenter());
+            int rows = data.progress().size();
+            int perRow = data.inventory().size() / Math.max(1, rows);
+            for (int row = 0; row < rows; row++) {
+                List<ItemStack> items = data.inventory().subList(row * perRow, (row + 1) * perRow);
+                if (rows > 1 && items.stream().allMatch(ItemStack::isEmpty)) {
+                    continue; // an idle factory lane
+                }
+                tooltip.add(JadeUI.item(items.getFirst()).alignSelfCenter());
+                for (ItemStack middle : items.subList(1, items.size() - 1)) {
+                    tooltip.append(JadeUI.item(middle).alignSelfCenter());
+                }
+                float progress = data.total() == 0 ? 0 : (float) data.progress().get(row) / data.total();
+                tooltip.append(JadeUI.progressArrow(progress).alignSelfCenter().settings(s -> s.paddingHorizontal(3)));
+                tooltip.append(JadeUI.item(items.getLast()).alignSelfCenter());
             }
-            float progress = data.total() == 0 ? 0 : (float) data.progress() / data.total();
-            tooltip.append(JadeUI.progressArrow(progress).alignSelfCenter().settings(s -> s.paddingHorizontal(3)));
-            tooltip.append(JadeUI.item(items.getLast()).alignSelfCenter());
         }
 
         @Override

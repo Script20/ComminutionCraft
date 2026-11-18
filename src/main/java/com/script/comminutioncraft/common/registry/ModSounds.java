@@ -1,6 +1,7 @@
 package com.script.comminutioncraft.common.registry;
 
 import com.script.comminutioncraft.ComminutionCraft;
+import com.script.comminutioncraft.common.machine.Factories;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +59,10 @@ public final class ModSounds {
     /** The working loop for this block, or null if it has none. */
     public static @Nullable SoundEvent machineLoop(Block block) {
         String id = BuiltInRegistries.BLOCK.getKey(block).getPath();
+        Factories.Factory factory = Factories.forFactory(block); // a factory sounds like its machine
+        if (factory != null) {
+            id = factory.machine().getId().getPath();
+        }
         DeferredHolder<SoundEvent, SoundEvent> holder = MACHINE.get(ALIASES.getOrDefault(id, id));
         return holder == null || !BuiltInRegistries.BLOCK.getKey(block).getNamespace().equals(ComminutionCraft.MODID)
                 ? null : holder.get();

@@ -27,6 +27,7 @@ import com.script.comminutioncraft.common.machine.ElectricGranulatorBlock;
 import com.script.comminutioncraft.common.machine.ElectricSmelterBlock;
 import com.script.comminutioncraft.common.machine.ElectrolyserBlock;
 import com.script.comminutioncraft.common.machine.EnergyBatteryBlock;
+import com.script.comminutioncraft.common.machine.FactoryBlock;
 import com.script.comminutioncraft.common.machine.FluidTankBlock;
 import com.script.comminutioncraft.common.machine.FrothFlotationCellBlock;
 import com.script.comminutioncraft.common.machine.HorizonControllerBlock;
@@ -46,6 +47,7 @@ import com.script.comminutioncraft.common.machine.ReactorGlassBlock;
 import com.script.comminutioncraft.common.machine.ReactorPortBlock;
 import com.script.comminutioncraft.common.machine.SingularityProcessorBlock;
 import com.script.comminutioncraft.common.machine.TritiumBreederBlock;
+import com.script.comminutioncraft.common.machine.WashingFactoryBlock;
 import com.script.comminutioncraft.common.pipe.ItemPipeBlock;
 import com.script.comminutioncraft.common.storage.SoarynChestBlock;
 import com.script.comminutioncraft.common.worldgen.ModTrees;
@@ -136,6 +138,24 @@ public final class ModBlocks {
                     .noOcclusion());
 
     /** Item Pipe (tier 2): see-through, so it mustn't hide its neighbours' faces. */
+    // ---- Factories: a machine with 2-4 lanes (see Factories), from a Factory Upgrade Kit ----
+    public static final DeferredBlock<FactoryBlock> ELECTRIC_SMELTING_FACTORY = BLOCKS.registerBlock(
+            "electric_smelting_factory", properties -> new FactoryBlock(properties, ModBlockEntities.ELECTRIC_SMELTING_FACTORY), ModBlocks::tier2MachineProperties);
+    public static final DeferredBlock<FactoryBlock> PLASMA_GRANULATING_FACTORY = BLOCKS.registerBlock(
+            "plasma_granulating_factory", properties -> new FactoryBlock(properties, ModBlockEntities.PLASMA_GRANULATING_FACTORY), ModBlocks::tier2MachineProperties);
+    public static final DeferredBlock<FactoryBlock> PLASMA_SMELTING_FACTORY = BLOCKS.registerBlock(
+            "plasma_smelting_factory", properties -> new FactoryBlock(properties, ModBlockEntities.PLASMA_SMELTING_FACTORY), ModBlocks::tier2MachineProperties);
+    public static final DeferredBlock<FactoryBlock> PURIFYING_FACTORY = BLOCKS.registerBlock(
+            "purifying_factory", properties -> new FactoryBlock(properties, ModBlockEntities.PURIFYING_FACTORY), ModBlocks::tier2MachineProperties);
+    public static final DeferredBlock<WashingFactoryBlock> ANTIMATTER_WASHING_FACTORY = BLOCKS.registerBlock(
+            "antimatter_washing_factory", properties -> new WashingFactoryBlock(properties, ModBlockEntities.ANTIMATTER_WASHING_FACTORY), ModBlocks::tier2MachineProperties);
+    public static final DeferredBlock<FactoryBlock> ANTIMATTER_PURIFYING_FACTORY = BLOCKS.registerBlock(
+            "antimatter_purifying_factory", properties -> new FactoryBlock(properties, ModBlockEntities.ANTIMATTER_PURIFYING_FACTORY), ModBlocks::tier2MachineProperties);
+    public static final DeferredBlock<FactoryBlock> ANTIMATTER_GRANULATING_FACTORY = BLOCKS.registerBlock(
+            "antimatter_granulating_factory", properties -> new FactoryBlock(properties, ModBlockEntities.ANTIMATTER_GRANULATING_FACTORY), ModBlocks::tier2MachineProperties);
+    public static final DeferredBlock<FactoryBlock> ANTIMATTER_SMELTING_FACTORY = BLOCKS.registerBlock(
+            "antimatter_smelting_factory", properties -> new FactoryBlock(properties, ModBlockEntities.ANTIMATTER_SMELTING_FACTORY), ModBlocks::tier2MachineProperties);
+
     public static final DeferredBlock<ItemPipeBlock> ITEM_PIPE = BLOCKS.registerBlock(
             "item_pipe", properties -> new ItemPipeBlock(properties, false, ModItems.ELECTRONIC_CIRCUIT), properties -> properties
                     .mapColor(MapColor.METAL)

@@ -148,6 +148,39 @@ public final class ModBlockEntities {
             BLOCK_ENTITY_TYPES.register("creative_fluid_tank",
                     () -> new BlockEntityType<>(CreativeFluidTankBlockEntity::new, ModBlocks.CREATIVE_FLUID_TANK.get()));
 
+    // ---- Factories: the machines' own block entities with more lanes ----
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ElectricSmelterBlockEntity>> ELECTRIC_SMELTING_FACTORY =
+            BLOCK_ENTITY_TYPES.register("electric_smelting_factory", () -> new BlockEntityType<>(
+                    (pos, state) -> new ElectricSmelterBlockEntity(ModBlockEntities.ELECTRIC_SMELTING_FACTORY.get(), pos, state, 2), ModBlocks.ELECTRIC_SMELTING_FACTORY.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PlasmaGranulatorBlockEntity>> PLASMA_GRANULATING_FACTORY =
+            BLOCK_ENTITY_TYPES.register("plasma_granulating_factory", () -> new BlockEntityType<>(
+                    (pos, state) -> new PlasmaGranulatorBlockEntity(ModBlockEntities.PLASMA_GRANULATING_FACTORY.get(), pos, state, 3), ModBlocks.PLASMA_GRANULATING_FACTORY.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PlasmaSmelterBlockEntity>> PLASMA_SMELTING_FACTORY =
+            BLOCK_ENTITY_TYPES.register("plasma_smelting_factory", () -> new BlockEntityType<>(
+                    (pos, state) -> new PlasmaSmelterBlockEntity(ModBlockEntities.PLASMA_SMELTING_FACTORY.get(), pos, state, 3), ModBlocks.PLASMA_SMELTING_FACTORY.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<OrePurifierBlockEntity>> PURIFYING_FACTORY =
+            BLOCK_ENTITY_TYPES.register("purifying_factory", () -> new BlockEntityType<>(
+                    (pos, state) -> new OrePurifierBlockEntity(ModBlockEntities.PURIFYING_FACTORY.get(), pos, state, 3), ModBlocks.PURIFYING_FACTORY.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AntimatterWasherBlockEntity>> ANTIMATTER_WASHING_FACTORY =
+            BLOCK_ENTITY_TYPES.register("antimatter_washing_factory", () -> new BlockEntityType<>(
+                    (pos, state) -> new AntimatterWasherBlockEntity(ModBlockEntities.ANTIMATTER_WASHING_FACTORY.get(), pos, state, 4), ModBlocks.ANTIMATTER_WASHING_FACTORY.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AntimatterPurifierBlockEntity>> ANTIMATTER_PURIFYING_FACTORY =
+            BLOCK_ENTITY_TYPES.register("antimatter_purifying_factory", () -> new BlockEntityType<>(
+                    (pos, state) -> new AntimatterPurifierBlockEntity(ModBlockEntities.ANTIMATTER_PURIFYING_FACTORY.get(), pos, state, 4), ModBlocks.ANTIMATTER_PURIFYING_FACTORY.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AntimatterGranulatorBlockEntity>> ANTIMATTER_GRANULATING_FACTORY =
+            BLOCK_ENTITY_TYPES.register("antimatter_granulating_factory", () -> new BlockEntityType<>(
+                    (pos, state) -> new AntimatterGranulatorBlockEntity(ModBlockEntities.ANTIMATTER_GRANULATING_FACTORY.get(), pos, state, 4), ModBlocks.ANTIMATTER_GRANULATING_FACTORY.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AntimatterSmelterBlockEntity>> ANTIMATTER_SMELTING_FACTORY =
+            BLOCK_ENTITY_TYPES.register("antimatter_smelting_factory", () -> new BlockEntityType<>(
+                    (pos, state) -> new AntimatterSmelterBlockEntity(ModBlockEntities.ANTIMATTER_SMELTING_FACTORY.get(), pos, state, 4), ModBlocks.ANTIMATTER_SMELTING_FACTORY.get()));
+
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ItemPipeBlockEntity>> ITEM_PIPE =
             BLOCK_ENTITY_TYPES.register("item_pipe",
                     () -> new BlockEntityType<>(ItemPipeBlockEntity::new, ModBlocks.ITEM_PIPE.get(), ModBlocks.FUSION_ITEM_PIPE.get()));

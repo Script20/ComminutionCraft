@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "comminutioncraft:antimatter_granulator",
+    "comminutioncraft:antimatter_factory_kit"
+  ],
+  "result": {
+    "id": "comminutioncraft:antimatter_granulating_factory"
+  }
+}

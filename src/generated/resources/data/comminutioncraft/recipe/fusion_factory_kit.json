@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": "comminutioncraft:reactor_plating",
+    "C": "comminutioncraft:fusion_circuit",
+    "G": "#c:ingots/gold",
+    "S": "comminutioncraft:speed_upgrade"
+  },
+  "pattern": [
+    "GCG",
+    "SBS",
+    "GCG"
+  ],
+  "result": {
+    "id": "comminutioncraft:fusion_factory_kit"
+  }
+}

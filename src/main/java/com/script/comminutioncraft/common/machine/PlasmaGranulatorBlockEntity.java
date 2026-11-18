@@ -16,6 +16,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
@@ -32,6 +33,11 @@ public class PlasmaGranulatorBlockEntity extends ElectricMachineBlockEntity {
 
     public PlasmaGranulatorBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.PLASMA_GRANULATOR.get(), pos, state, TIER3_ENERGY_CAPACITY.get(), TIER3_MAX_ENERGY_INPUT.get());
+    }
+
+    /** A factory version: its own block entity type, {@code lanes} lanes. */
+    public PlasmaGranulatorBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, int lanes) {
+        super(type, pos, state, TIER3_ENERGY_CAPACITY.get(), TIER3_MAX_ENERGY_INPUT.get(), lanes);
     }
 
     @Override

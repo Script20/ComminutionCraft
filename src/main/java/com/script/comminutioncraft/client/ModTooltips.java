@@ -4,6 +4,7 @@ import com.script.comminutioncraft.common.cable.EnergyCableBlock;
 import com.script.comminutioncraft.common.cable.FluidPipeBlock;
 import com.script.comminutioncraft.common.config.ComminutionConfig;
 import com.script.comminutioncraft.common.item.EnergyBatteryItem;
+import com.script.comminutioncraft.common.item.FactoryKitItem;
 import com.script.comminutioncraft.common.item.WrenchItem;
 import com.script.comminutioncraft.common.item.WrenchMode;
 import com.script.comminutioncraft.common.item.tool.DrillItem;
@@ -16,6 +17,7 @@ import com.script.comminutioncraft.common.machine.ContainmentCellBlockEntity;
 import com.script.comminutioncraft.common.machine.CreativeChestBlock;
 import com.script.comminutioncraft.common.machine.CreativeEnergyBatteryBlock;
 import com.script.comminutioncraft.common.machine.CreativeFluidTankBlock;
+import com.script.comminutioncraft.common.machine.Factories;
 import com.script.comminutioncraft.common.machine.FluidTankBlock;
 import com.script.comminutioncraft.common.machine.FluidTankBlockEntity;
 import com.script.comminutioncraft.common.machine.HorizonControllerBlock;
@@ -92,6 +94,14 @@ public final class ModTooltips {
             lines.add(gray("tooltip.comminutioncraft.drill_bit"));
             return lines;
         }
+        if (stack.getItem() instanceof FactoryKitItem) {
+            lines.add(gray("tooltip.comminutioncraft.factory_kit"));
+            for (Factories.Factory factory : Factories.forKit(stack.getItem())) {
+                lines.add(Component.translatable("tooltip.comminutioncraft.factory_kit.upgrades",
+                        factory.machine().get().getName(), factory.factory().get().getName()).withStyle(ChatFormatting.DARK_GRAY));
+            }
+            return lines;
+        }
         if (stack.getItem() instanceof PaxelItem) {
             lines.add(gray("tooltip.comminutioncraft.paxel"));
             return lines;
@@ -100,6 +110,10 @@ public final class ModTooltips {
         SimpleFluidContent fluid = stack.get(ModDataComponents.STORED_FLUID.get());
         FluidStack contents = fluid == null ? FluidStack.EMPTY : fluid.copy();
 
+        Factories.Factory factory = block == null ? null : Factories.forFactory(block);
+        if (factory != null) {
+            lines.add(gray("tooltip.comminutioncraft.factory", factory.lanes(), factory.lanes()));
+        }
         if (block instanceof EnergyCableBlock cable) {
             lines.add(gray("tooltip.comminutioncraft.cable_rate", number(cable.getTransferRate())));
         } else if (block instanceof ItemPipeBlock pipe) {

@@ -2,6 +2,7 @@ package com.script.comminutioncraft.common.data;
 
 import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.block.StoneSet;
+import com.script.comminutioncraft.common.machine.Factories;
 import com.script.comminutioncraft.common.recipe.AssemblingRecipe;
 import com.script.comminutioncraft.common.recipe.DrillBitRecipe;
 import com.script.comminutioncraft.common.recipe.FlotationRecipe;
@@ -678,6 +679,19 @@ public class ModRecipeProvider extends RecipeProvider {
         upgrade(output, ModItems.GAS_UPGRADE.get(), Items.GLASS_BOTTLE, "gas_upgrade");
         upgrade(output, ModItems.LIQUID_UPGRADE.get(), Items.LAPIS_LAZULI, "liquid_upgrade");
 
+        // Factory Upgrade Kits: Speed Upgrades and the tier's circuits round a block; kit + machine also crafts the factory
+        factoryKit(ModItems.ELECTRIC_FACTORY_KIT.get(), ModItems.ELECTRONIC_CIRCUIT.get(), Items.IRON_BLOCK);
+        factoryKit(ModItems.PLASMA_FACTORY_KIT.get(), ModItems.PLASMA_CIRCUIT.get(), Items.GOLD_BLOCK);
+        factoryKit(ModItems.FUSION_FACTORY_KIT.get(), ModItems.FUSION_CIRCUIT.get(), ModItems.REACTOR_PLATING.get());
+        factoryKit(ModItems.ANTIMATTER_FACTORY_KIT.get(), ModItems.ANTIMATTER_CIRCUIT.get(), Items.DIAMOND_BLOCK);
+        for (Factories.Factory factory : Factories.ALL) {
+            shapeless(RecipeCategory.MISC, factory.factory().get())
+                    .requires(factory.machine().get())
+                    .requires(factory.kit().get())
+                    .unlockedBy("has_kit", has(factory.kit().get()))
+                    .save(output, key(factory.factory().getId().getPath()));
+        }
+
         shaped(RecipeCategory.MISC, ModItems.AIR_FILTER.get())
                 .pattern(" P ")
                 .pattern("PCP")
@@ -929,6 +943,19 @@ public class ModRecipeProvider extends RecipeProvider {
     }
 
     /** A machine upgrade: RXR / XCX / RXR (redstone, the upgrade's ingredient, an Electronic Circuit). */
+    private void factoryKit(Item kit, Item circuit, ItemLike core) {
+        shaped(RecipeCategory.MISC, kit)
+                .pattern("GCG")
+                .pattern("SBS")
+                .pattern("GCG")
+                .define('G', tag(ProcessedMetal.commonItemTag("ingots/gold")))
+                .define('C', circuit)
+                .define('S', ModItems.SPEED_UPGRADE.get())
+                .define('B', core)
+                .unlockedBy("has_circuit", has(circuit))
+                .save(output, key(BuiltInRegistries.ITEM.getKey(kit).getPath()));
+    }
+
     private void upgrade(RecipeOutput out, Item upgrade, ItemLike ingredient, String name) {
         shaped(RecipeCategory.MISC, upgrade)
                 .pattern("RXR")

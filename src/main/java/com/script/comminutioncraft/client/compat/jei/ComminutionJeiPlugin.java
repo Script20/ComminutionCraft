@@ -210,16 +210,19 @@ public class ComminutionJeiPlugin implements IModPlugin {
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
         registration.addCraftingStation(GRANULATING.get(),
                 ModItems.COAL_GRANULATOR.get(), ModItems.ELECTRIC_GRANULATOR.get(), ModItems.PLASMA_GRANULATOR.get(),
-                ModItems.ANTIMATTER_GRANULATOR.get());
+                ModItems.ANTIMATTER_GRANULATOR.get(), ModItems.PLASMA_GRANULATING_FACTORY.get(), ModItems.ANTIMATTER_GRANULATING_FACTORY.get());
         registration.addCraftingStation(RecipeTypes.SMELTING,
                 ModItems.COAL_SMELTER.get(), ModItems.ELECTRIC_SMELTER.get(), ModItems.PLASMA_SMELTER.get(),
-                ModItems.ANTIMATTER_SMELTER.get());
+                ModItems.ANTIMATTER_SMELTER.get(), ModItems.ELECTRIC_SMELTING_FACTORY.get(), ModItems.PLASMA_SMELTING_FACTORY.get(),
+                ModItems.ANTIMATTER_SMELTING_FACTORY.get());
         registration.addCraftingStation(ASSEMBLING.get(), ModItems.CIRCUIT_ASSEMBLER.get());
-        registration.addCraftingStation(WASHING.get(), ModItems.ORE_WASHER.get(), ModItems.ANTIMATTER_WASHER.get());
+        registration.addCraftingStation(WASHING.get(), ModItems.ORE_WASHER.get(), ModItems.ANTIMATTER_WASHER.get(),
+                ModItems.ANTIMATTER_WASHING_FACTORY.get());
         registration.addCraftingStation(FLOTATION.get(), ModItems.FROTH_FLOTATION_CELL.get());
         registration.addCraftingStation(SINGULARITY.get(), ModItems.SINGULARITY_PROCESSOR.get());
         registration.addCraftingStation(PRESSING.get(), ModItems.PELLET_PRESS.get());
-        registration.addCraftingStation(PURIFYING.get(), ModItems.ORE_PURIFIER.get(), ModItems.ANTIMATTER_PURIFIER.get());
+        registration.addCraftingStation(PURIFYING.get(), ModItems.ORE_PURIFIER.get(), ModItems.ANTIMATTER_PURIFIER.get(),
+                ModItems.PURIFYING_FACTORY.get(), ModItems.ANTIMATTER_PURIFYING_FACTORY.get());
         registration.addCraftingStation(FusionReactorCategory.TYPE, ModItems.REACTOR_CONTROLLER.get());
         // the multiblocks' other blocks find their page through its hidden inputs (MultiblockCategory)
         registration.addCraftingStation(EventHorizonCategory.TYPE, ModItems.HORIZON_CONTROLLER.get());

@@ -47,8 +47,8 @@ public class OrePurifierBlockEntity extends ElectricMachineBlockEntity {
     public static final ConfigInt OXYGEN_PER_OPERATION = MachineConfig.ORE_PURIFIER_OXYGEN_PER_OPERATION;
     public static final ConfigInt OXYGEN_CAPACITY = MachineConfig.ORE_PURIFIER_OXYGEN_CAPACITY;
 
+    /** The by-product slot of a plain (one-lane) purifier; a factory's comes after all its lanes ({@link #extraSlot()}). */
     public static final int SLOT_BYPRODUCT = SLOT_COUNT;
-    private static final int[] SLOTS_OUTPUTS = {SLOT_OUTPUT, SLOT_BYPRODUCT};
 
     public static final int DATA_OXYGEN = ElectricMachineBlockEntity.DATA_COUNT;
     public static final int DATA_OXYGEN_CAPACITY = DATA_OXYGEN + 1;
@@ -64,10 +64,24 @@ public class OrePurifierBlockEntity extends ElectricMachineBlockEntity {
         this(ModBlockEntities.ORE_PURIFIER.get(), pos, state, TIER3_ENERGY_CAPACITY.get(), TIER3_MAX_ENERGY_INPUT.get());
     }
 
+    /** A factory version: its own block entity type, {@code lanes} lanes. */
+    public OrePurifierBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, int lanes) {
+        this(type, pos, state, TIER3_ENERGY_CAPACITY.get(), TIER3_MAX_ENERGY_INPUT.get(), lanes);
+    }
+
     /** For faster purifiers (the Antimatter Purifier): their own type and FE buffer. */
     protected OrePurifierBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, int energyCapacity, int maxEnergyInput) {
-        super(type, pos, state, energyCapacity, maxEnergyInput);
-        items = NonNullList.withSize(SLOT_COUNT + 1, ItemStack.EMPTY);
+        this(type, pos, state, energyCapacity, maxEnergyInput, 1);
+    }
+
+    protected OrePurifierBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, int energyCapacity, int maxEnergyInput,
+                                     int lanes) {
+        super(type, pos, state, energyCapacity, maxEnergyInput, lanes);
+    }
+
+    @Override
+    protected int factoryFluid() {
+        return 2;
     }
 
     /** mB of oxygen one operation uses. */
@@ -91,14 +105,10 @@ public class OrePurifierBlockEntity extends ElectricMachineBlockEntity {
         return sideMode(side) == SideMode.INPUT ? oxygen.insertOnly() : null;
     }
 
+    /** The by-product can be waiting on its own (finished items always go out, even when switched off). */
     @Override
-    public void serverTick(ServerLevel level, BlockPos pos, BlockState state) {
-        super.serverTick(level, pos, state);
-        // The parent pushes when the main output has something; the by-product can be waiting on its own.
-        // (even when switched off by redstone: finished items always go out)
-        if (items.get(SLOT_OUTPUT).isEmpty() && !items.get(SLOT_BYPRODUCT).isEmpty()) {
-            pushItemsOut(level, pos);
-        }
+    protected boolean hasItemsToPush() {
+        return super.hasItemsToPush() || !items.get(extraSlot()).isEmpty();
     }
 
     @Override
@@ -116,8 +126,8 @@ public class OrePurifierBlockEntity extends ElectricMachineBlockEntity {
         oxygen.drain(fluidCost(ModFluids.OXYGEN.get(), oxygenPerOperation()));
         if (recipe.value() instanceof PurifyingRecipe purifying && level != null && level.getRandom().nextFloat() < purifying.getChance()) {
             ItemStack byproduct = purifying.getByproduct().create();
-            if (MachineSlots.canFit(items, SLOT_BYPRODUCT, byproduct, getMaxStackSize())) {
-                MachineSlots.addTo(items, SLOT_BYPRODUCT, byproduct);
+            if (MachineSlots.canFit(items, extraSlot(), byproduct, getMaxStackSize())) {
+                MachineSlots.addTo(items, extraSlot(), byproduct);
             }
             if (level instanceof ServerLevel server) {
                 MachineEventTrigger.fireNear(server, worldPosition, MachineEventTrigger.PURIFIER_BYPRODUCT, 16);
@@ -154,26 +164,43 @@ public class OrePurifierBlockEntity extends ElectricMachineBlockEntity {
         return DATA_COUNT;
     }
 
-    // ---- Three slots: input, output, by-product ----
+    /** The oxygen goes along too (the wrench doesn't keep it, so it isn't in the item components). */
+    @Override
+    public void moveInto(ElectricMachineBlockEntity factory) {
+        super.moveInto(factory);
+        if (factory instanceof OrePurifierBlockEntity purifier && oxygen.getAmount() > 0) {
+            purifier.oxygen.fill(oxygen.getFluid(), oxygen.getAmount());
+        }
+    }
+
+    // ---- The lanes' inputs and outputs, then the by-product ----
 
     @Override
     public int getContainerSize() {
-        return SLOT_COUNT + 1;
+        return 2 * lanes() + 1;
     }
 
     @Override
     public boolean canPlaceItem(int slot, ItemStack stack) {
-        return slot != SLOT_BYPRODUCT && super.canPlaceItem(slot, stack);
+        return slot != extraSlot() && super.canPlaceItem(slot, stack);
     }
 
     @Override
     public int[] getSlotsForFace(Direction side) {
-        return sideMode(side) == SideMode.OUTPUT ? SLOTS_OUTPUTS : super.getSlotsForFace(side);
+        if (sideMode(side) != SideMode.OUTPUT) {
+            return super.getSlotsForFace(side);
+        }
+        int[] outputs = new int[lanes() + 1];
+        for (int lane = 0; lane < lanes(); lane++) {
+            outputs[lane] = outputSlot(lane);
+        }
+        outputs[lanes()] = extraSlot();
+        return outputs;
     }
 
     @Override
     public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction side) {
-        return (slot == SLOT_OUTPUT || slot == SLOT_BYPRODUCT) && sideMode(side) == SideMode.OUTPUT;
+        return slot >= lanes() && slot <= extraSlot() && sideMode(side) == SideMode.OUTPUT;
     }
 
     // ---- Saving ----

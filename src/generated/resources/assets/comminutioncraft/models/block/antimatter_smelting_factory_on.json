@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "comminutioncraft:block/antimatter_smelting_factory_front_on",
+    "side": "comminutioncraft:block/antimatter_smelting_factory_side",
+    "top": "comminutioncraft:block/antimatter_smelting_factory_top"
+  }
+}

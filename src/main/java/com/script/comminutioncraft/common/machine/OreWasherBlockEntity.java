@@ -65,7 +65,13 @@ public class OreWasherBlockEntity extends ElectricMachineBlockEntity {
 
     /** For faster washers (the Antimatter Washer): their own type and FE buffer. */
     protected OreWasherBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, int energyCapacity, int maxEnergyInput) {
-        super(type, pos, state, energyCapacity, maxEnergyInput);
+        this(type, pos, state, energyCapacity, maxEnergyInput, 1);
+    }
+
+    /** With {@code lanes} lanes (the washing factories). */
+    protected OreWasherBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, int energyCapacity, int maxEnergyInput,
+                                   int lanes) {
+        super(type, pos, state, energyCapacity, maxEnergyInput, lanes);
     }
 
     /** mB of water one operation uses. */
@@ -172,6 +178,11 @@ public class OreWasherBlockEntity extends ElectricMachineBlockEntity {
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
         water.serialize(output.child("water"));
+    }
+
+    @Override
+    protected int factoryFluid() {
+        return 1;
     }
 
     @Override

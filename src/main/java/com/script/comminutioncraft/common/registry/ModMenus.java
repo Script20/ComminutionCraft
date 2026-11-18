@@ -10,6 +10,7 @@ import com.script.comminutioncraft.common.machine.ElectricMachineMenu;
 import com.script.comminutioncraft.common.machine.ElectrolyserBlockEntity;
 import com.script.comminutioncraft.common.machine.EnergyBatteryMenu;
 import com.script.comminutioncraft.common.machine.EventHorizonMenu;
+import com.script.comminutioncraft.common.machine.FactoryMenu;
 import com.script.comminutioncraft.common.machine.FluidMachineMenu;
 import com.script.comminutioncraft.common.machine.FrothFlotationCellMenu;
 import com.script.comminutioncraft.common.machine.FuelMachineMenu;
@@ -143,6 +144,9 @@ public final class ModMenus {
     /** Opened with the pipe's position and the clicked side (see ItemPipeBlock.useWithoutItem). */
     public static final DeferredHolder<MenuType<?>, MenuType<ItemPipeMenu>> ITEM_PIPE =
             MENUS.register("item_pipe", () -> IMenuTypeExtension.create(ItemPipeMenu::client));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<FactoryMenu>> FACTORY =
+            MENUS.register("factory", () -> IMenuTypeExtension.create(FactoryMenu::client));
 
     public static final DeferredHolder<MenuType<?>, MenuType<CreativeChestMenu>> CREATIVE_CHEST =
             MENUS.register("creative_chest", () -> new MenuType<>(CreativeChestMenu::client, FeatureFlags.VANILLA_SET));

@@ -2,6 +2,7 @@ package com.script.comminutioncraft.common.registry;
 
 import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.item.EnergyBatteryItem;
+import com.script.comminutioncraft.common.item.FactoryKitItem;
 import com.script.comminutioncraft.common.item.WrenchItem;
 import com.script.comminutioncraft.common.item.tool.ChainsawItem;
 import com.script.comminutioncraft.common.item.tool.DrillItem;
@@ -222,6 +223,20 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> FLUID_PIPE = ITEMS.registerSimpleBlockItem("fluid_pipe", ModBlocks.FLUID_PIPE);
     public static final DeferredItem<BlockItem> ITEM_PIPE = ITEMS.registerSimpleBlockItem("item_pipe", ModBlocks.ITEM_PIPE);
     public static final DeferredItem<BlockItem> FUSION_ITEM_PIPE = ITEMS.registerSimpleBlockItem("fusion_item_pipe", ModBlocks.FUSION_ITEM_PIPE);
+
+    // Factories and the kits that make them
+    public static final DeferredItem<BlockItem> ELECTRIC_SMELTING_FACTORY = ITEMS.registerSimpleBlockItem("electric_smelting_factory", ModBlocks.ELECTRIC_SMELTING_FACTORY);
+    public static final DeferredItem<BlockItem> PLASMA_GRANULATING_FACTORY = ITEMS.registerSimpleBlockItem("plasma_granulating_factory", ModBlocks.PLASMA_GRANULATING_FACTORY);
+    public static final DeferredItem<BlockItem> PLASMA_SMELTING_FACTORY = ITEMS.registerSimpleBlockItem("plasma_smelting_factory", ModBlocks.PLASMA_SMELTING_FACTORY);
+    public static final DeferredItem<BlockItem> PURIFYING_FACTORY = ITEMS.registerSimpleBlockItem("purifying_factory", ModBlocks.PURIFYING_FACTORY);
+    public static final DeferredItem<BlockItem> ANTIMATTER_WASHING_FACTORY = ITEMS.registerSimpleBlockItem("antimatter_washing_factory", ModBlocks.ANTIMATTER_WASHING_FACTORY);
+    public static final DeferredItem<BlockItem> ANTIMATTER_PURIFYING_FACTORY = ITEMS.registerSimpleBlockItem("antimatter_purifying_factory", ModBlocks.ANTIMATTER_PURIFYING_FACTORY);
+    public static final DeferredItem<BlockItem> ANTIMATTER_GRANULATING_FACTORY = ITEMS.registerSimpleBlockItem("antimatter_granulating_factory", ModBlocks.ANTIMATTER_GRANULATING_FACTORY);
+    public static final DeferredItem<BlockItem> ANTIMATTER_SMELTING_FACTORY = ITEMS.registerSimpleBlockItem("antimatter_smelting_factory", ModBlocks.ANTIMATTER_SMELTING_FACTORY);
+    public static final DeferredItem<FactoryKitItem> ELECTRIC_FACTORY_KIT = ITEMS.registerItem("electric_factory_kit", FactoryKitItem::new);
+    public static final DeferredItem<FactoryKitItem> PLASMA_FACTORY_KIT = ITEMS.registerItem("plasma_factory_kit", FactoryKitItem::new);
+    public static final DeferredItem<FactoryKitItem> FUSION_FACTORY_KIT = ITEMS.registerItem("fusion_factory_kit", FactoryKitItem::new);
+    public static final DeferredItem<FactoryKitItem> ANTIMATTER_FACTORY_KIT = ITEMS.registerItem("antimatter_factory_kit", FactoryKitItem::new);
     public static final DeferredItem<BlockItem> FLUID_TANK = ITEMS.registerSimpleBlockItem("fluid_tank", ModBlocks.FLUID_TANK);
     public static final DeferredItem<BlockItem> ENERGY_CABLE = ITEMS.registerSimpleBlockItem("energy_cable", ModBlocks.ENERGY_CABLE);
 

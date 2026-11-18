@@ -17,11 +17,17 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.Containers;
 import net.minecraft.world.WorldlyContainer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -44,6 +50,10 @@ import org.jspecify.annotations.Nullable;
  * slot, one output slot and an FE buffer. Each tick of work costs {@link #getEnergyPerTick()} FE; without power (or
  * whatever else {@link #hasOperationResources()} asks for) the machine pauses (progress is kept). Finished items are
  * pushed out of Output faces into the block there (e.g. the next machine's Input face).
+ * <p>
+ * Factories are the same machines with several {@link #lanes() lanes} working side by side: slots are the lanes'
+ * inputs, then their outputs, then anything extra (a by-product). One lane = the usual input 0, output 1. Inputs
+ * piped in are spread over the lanes, and a lane that runs dry takes half of the fullest one.
  */
 public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntity
         implements WorldlyContainer, TickingMachine, MachineExperience.Holder, ControllableMachine,
@@ -52,8 +62,6 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
     public static final int SLOT_OUTPUT = 1;
     public static final int SLOT_COUNT = 2;
 
-    private static final int[] SLOTS_INPUT = {SLOT_INPUT};
-    private static final int[] SLOTS_OUTPUT = {SLOT_OUTPUT};
     private static final int[] SLOTS_NONE = {};
 
     // ContainerData indices, synced to the open GUI (energy split in two, see EnergySync)
@@ -77,11 +85,15 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
     /** How long the front stays lit after work stops, so a machine on a thin power supply doesn't flicker. */
     private static final int LIT_COOLDOWN = 10;
 
-    protected NonNullList<ItemStack> items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
+    private final int lanes;
+    private final int[] inputSlots;
+    private final int[] outputSlots;
+    protected NonNullList<ItemStack> items;
     private final MachineEnergyStorage energy;
-    private int progress;
+    /** Ticks of work done on each lane's current item. */
+    private final int[] progress;
     private int litCooldown;
-    private @Nullable Item lastInputItem;
+    private final @Nullable Item[] lastInputItem;
     private final MachineExperience experience = new MachineExperience();
     private final MachineControls controls = new MachineControls(MachineControls.outputBelow(), this::onControlsChanged);
     private final MachineUpgrades upgrades =
@@ -90,19 +102,20 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
     protected final ContainerData dataAccess = new ContainerData() {
         @Override
         public int get(int index) {
-            return getData(index);
+            // after the machine's own values: the progress of lanes 1, 2, ... (lane 0 is DATA_PROGRESS)
+            return index >= getDataCount() ? progress[index - getDataCount() + 1] : getData(index);
         }
 
         @Override
         public void set(int index, int value) {
             if (index == DATA_PROGRESS) {
-                progress = value;
+                progress[0] = value;
             }
         }
 
         @Override
         public int getCount() {
-            return getDataCount();
+            return getDataCount() + lanes - 1;
         }
     };
 
@@ -112,14 +125,74 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
 
     protected ElectricMachineBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state,
                                          int energyCapacity, int maxEnergyInput) {
+        this(type, pos, state, energyCapacity, maxEnergyInput, 1);
+    }
+
+    /** A factory: {@code lanes} inputs and outputs working side by side; its FE buffer and intake scale with them. */
+    protected ElectricMachineBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state,
+                                         int energyCapacity, int maxEnergyInput, int lanes) {
         super(type, pos, state);
-        energy = new MachineEnergyStorage(energyCapacity, maxEnergyInput, 0, this::setChanged);
+        this.lanes = lanes;
+        inputSlots = new int[lanes];
+        outputSlots = new int[lanes];
+        for (int i = 0; i < lanes; i++) {
+            inputSlots[i] = i;
+            outputSlots[i] = lanes + i;
+        }
+        progress = new int[lanes];
+        lastInputItem = new Item[lanes];
+        items = NonNullList.withSize(getContainerSize(), ItemStack.EMPTY);
+        energy = new MachineEnergyStorage(energyCapacity * lanes, maxEnergyInput * lanes, 0, this::setChanged);
+    }
+
+    /** How many lanes work side by side (1 for a plain machine, 2-4 for a factory). */
+    public int lanes() {
+        return lanes;
+    }
+
+    public boolean isFactory() {
+        return lanes > 1;
+    }
+
+    /** A lane's input and output slots. */
+    public int inputSlot(int lane) {
+        return lane;
+    }
+
+    public int outputSlot(int lane) {
+        return lanes + lane;
+    }
+
+    /** The first slot after the lanes (a purifier's by-product). */
+    protected int extraSlot() {
+        return 2 * lanes;
+    }
+
+    /** What a factory's GUI needs to lay itself out (sent when it opens): lanes, fluid gauge, by-product slot. */
+    public void writeFactoryLayout(RegistryFriendlyByteBuf buffer) {
+        buffer.writeVarInt(lanes);
+        buffer.writeVarInt(factoryFluid());
+        buffer.writeBoolean(getContainerSize() > 2 * lanes);
+    }
+
+    /** Which fluid gauge a factory shows: 0 none, 1 water, 2 oxygen (their amounts are at DATA_COUNT, +1 = capacity). */
+    protected int factoryFluid() {
+        return 0;
+    }
+
+    @Override
+    public @Nullable AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player player) {
+        if (!isFactory()) {
+            return super.createMenu(containerId, inventory, player);
+        }
+        return canOpen(player) ? new FactoryMenu(containerId, inventory, this, dataAccess,
+                new FactoryMenu.Layout(lanes, factoryFluid(), getContainerSize() > 2 * lanes)) : null;
     }
 
     /** One synced GUI value (see the DATA_ constants); subclasses add theirs after {@link #DATA_COUNT}. */
     protected int getData(int index) {
         return switch (index) {
-            case DATA_PROGRESS -> progress;
+            case DATA_PROGRESS -> progress[0];
             case DATA_PROGRESS_TOTAL -> effectiveProcessTime();
             case DATA_ENERGY_LOW -> EnergySync.low(energy.getEnergy());
             case DATA_ENERGY_HIGH -> EnergySync.high(energy.getEnergy());
@@ -203,9 +276,9 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
         return upgrades.fluidCost(fluid, amount);
     }
 
-    /** Ticks of work done on the current item (for tooltips like Jade). */
+    /** Ticks of work done on the current item (for tooltips like Jade; a factory's first lane). */
     public int getProgress() {
-        return progress;
+        return progress[0];
     }
 
     /** Ticks one item takes (for tooltips like Jade). */
@@ -243,8 +316,11 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
             level.setBlock(pos, state.setValue(MachineBlock.LIT, lit), Block.UPDATE_ALL);
         }
 
-        if (!items.get(SLOT_OUTPUT).isEmpty()) {
+        if (hasItemsToPush()) {
             pushItemsOut(level, pos);
+        }
+        if (isFactory() && spreadInputs()) {
+            changed = true;
         }
 
         if (changed) {
@@ -252,37 +328,108 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
         }
     }
 
-    /** One tick of work on the input slot; true if the slots changed. */
+    /** Whether something is waiting to go out of Output faces. */
+    protected boolean hasItemsToPush() {
+        for (int slot : outputSlots) {
+            if (!items.get(slot).isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** A factory lane that's run dry takes half of the fullest lane's input, so one stack keeps every lane busy. */
+    private boolean spreadInputs() {
+        for (int empty = 0; empty < lanes; empty++) {
+            if (!items.get(inputSlot(empty)).isEmpty()) {
+                continue;
+            }
+            int fullest = -1;
+            for (int lane = 0; lane < lanes; lane++) {
+                ItemStack stack = items.get(inputSlot(lane));
+                if (stack.getCount() >= 2 && (fullest < 0 || stack.getCount() > items.get(inputSlot(fullest)).getCount())) {
+                    fullest = lane;
+                }
+            }
+            if (fullest < 0) {
+                return false;
+            }
+            ItemStack from = items.get(inputSlot(fullest));
+            items.set(inputSlot(empty), from.split(from.getCount() / 2));
+            return true;
+        }
+        return false;
+    }
+
+    /** One tick of work on every lane; true if the slots changed. */
     private boolean process(ServerLevel level) {
         boolean changed = false;
-        ItemStack input = items.get(SLOT_INPUT);
+        for (int lane = 0; lane < lanes; lane++) {
+            changed |= processLane(level, lane);
+        }
+        return changed;
+    }
+
+    private boolean processLane(ServerLevel level, int lane) {
+        ItemStack input = items.get(inputSlot(lane));
 
         // Swapping the input item restarts progress, like a vanilla furnace.
         Item inputItem = input.isEmpty() ? null : input.getItem();
-        if (inputItem != lastInputItem) {
-            lastInputItem = inputItem;
-            progress = 0;
+        if (inputItem != lastInputItem[lane]) {
+            lastInputItem[lane] = inputItem;
+            progress[lane] = 0;
         }
 
         RecipeHolder<? extends Recipe<SingleRecipeInput>> recipe = input.isEmpty() ? null : findRecipe(level, input).orElse(null);
         ItemStack result = recipe != null ? recipe.value().assemble(new SingleRecipeInput(input)) : ItemStack.EMPTY;
-        boolean canProcess = !result.isEmpty() && MachineSlots.canFit(items, SLOT_OUTPUT, result, getMaxStackSize());
+        boolean canProcess = !result.isEmpty() && MachineSlots.canFit(items, outputSlot(lane), result, getMaxStackSize());
 
         if (!canProcess) {
-            progress = 0;
+            progress[lane] = 0;
         } else if (hasOperationResources(recipe) && energy.consume(effectiveEnergyPerTick())) {
             litCooldown = LIT_COOLDOWN;
-            progress++;
-            if (progress >= effectiveProcessTime()) {
-                progress = 0;
-                MachineSlots.addTo(items, SLOT_OUTPUT, result);
+            progress[lane]++;
+            if (progress[lane] >= effectiveProcessTime()) {
+                progress[lane] = 0;
+                MachineSlots.addTo(items, outputSlot(lane), result);
                 input.shrink(1);
                 experience.recordRecipe(recipe);
                 onOperationDone(recipe);
-                changed = true;
+                return true;
             }
         }
-        return changed;
+        return false;
+    }
+
+    /** Ticks of work done on one lane's item (factory GUIs). */
+    public int getLaneProgress(int lane) {
+        return progress[lane];
+    }
+
+    // ---- Factory Upgrade Kit: this machine becomes its factory ----
+
+    /**
+     * Hands everything to the factory replacing this machine: FE, settings, upgrades and the tanks the wrench keeps (the
+     * item components), the input and output into its first lane, a by-product into its by-product slot.
+     */
+    public void moveInto(ElectricMachineBlockEntity factory) {
+        ItemStack carrier = new ItemStack(factory.getBlockState().getBlock());
+        carrier.applyComponents(collectComponents().filter(type -> type != DataComponents.CONTAINER));
+        factory.applyComponentsFromItemStack(carrier);
+        upgrades.clearContent();
+        factory.items.set(factory.inputSlot(0), removeItemNoUpdate(inputSlot(0)));
+        factory.items.set(factory.outputSlot(0), removeItemNoUpdate(outputSlot(0)));
+        if (getContainerSize() > 2 * lanes && factory.getContainerSize() > 2 * factory.lanes) {
+            factory.items.set(factory.extraSlot(), removeItemNoUpdate(extraSlot()));
+        }
+        factory.progress[0] = progress[0];
+        factory.setChanged();
+    }
+
+    /** A factory is named after its block (the machine classes name themselves after the plain machine). */
+    @Override
+    public Component getName() {
+        return isFactory() && getCustomName() == null ? getBlockState().getBlock().getName() : super.getName();
     }
 
     // ---- Experience ----
@@ -329,8 +476,12 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
         ContainerHelper.loadAllItems(input, items);
         upgrades.load(input); // first: it sets the buffer size the FE is loaded into
         energy.deserialize(input);
-        progress = input.getIntOr("progress", 0);
-        lastInputItem = items.get(SLOT_INPUT).isEmpty() ? null : items.get(SLOT_INPUT).getItem();
+        int[] saved = input.getIntArray("lane_progress").orElse(new int[] {input.getIntOr("progress", 0)});
+        for (int lane = 0; lane < lanes; lane++) {
+            progress[lane] = lane < saved.length ? saved[lane] : 0;
+            ItemStack laneInput = items.get(inputSlot(lane));
+            lastInputItem[lane] = laneInput.isEmpty() ? null : laneInput.getItem();
+        }
         experience.load(input);
         controls.load(input);
     }
@@ -341,7 +492,8 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
         ContainerHelper.saveAllItems(output, items);
         energy.serialize(output);
         upgrades.save(output);
-        output.putInt("progress", progress);
+        output.putInt("progress", progress[0]);
+        output.putIntArray("lane_progress", progress);
         experience.save(output);
         controls.save(output);
     }
@@ -350,7 +502,7 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
 
     @Override
     public int getContainerSize() {
-        return SLOT_COUNT;
+        return 2 * lanes;
     }
 
     @Override
@@ -365,8 +517,8 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
 
     @Override
     public boolean canPlaceItem(int slot, ItemStack stack) {
-        if (slot == SLOT_OUTPUT) {
-            return false;
+        if (slot >= lanes) {
+            return false; // outputs (and anything after them)
         }
         return !(level instanceof ServerLevel serverLevel) || findRecipe(serverLevel, stack).isPresent();
     }
@@ -376,19 +528,34 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
     @Override
     public int[] getSlotsForFace(Direction side) {
         return switch (sideMode(side)) {
-            case INPUT -> SLOTS_INPUT;
-            case OUTPUT -> SLOTS_OUTPUT;
+            case INPUT -> inputSlots;
+            case OUTPUT -> outputSlots;
             case NONE, BYPRODUCT -> SLOTS_NONE;
         };
     }
 
     @Override
     public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction side) {
-        return sideMode(side) == SideMode.INPUT && canPlaceItem(slot, stack);
+        return sideMode(side) == SideMode.INPUT && canPlaceItem(slot, stack) && isLeastFull(slot, stack);
+    }
+
+    /**
+     * A factory spreads what's piped in: a lane only takes more when no other lane that could hold the item has less
+     * (an empty lane counts as nothing).
+     */
+    private boolean isLeastFull(int slot, ItemStack stack) {
+        int count = items.get(slot).getCount();
+        for (int lane = 0; lane < lanes; lane++) {
+            ItemStack other = items.get(inputSlot(lane));
+            if ((other.isEmpty() || ItemStack.isSameItemSameComponents(other, stack)) && other.getCount() < count) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
     public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction side) {
-        return slot == SLOT_OUTPUT && sideMode(side) == SideMode.OUTPUT;
+        return slot >= lanes && slot < 2 * lanes && sideMode(side) == SideMode.OUTPUT;
     }
 }

@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "comminutioncraft:antimatter_washer",
+    "comminutioncraft:antimatter_factory_kit"
+  ],
+  "result": {
+    "id": "comminutioncraft:antimatter_washing_factory"
+  }
+}

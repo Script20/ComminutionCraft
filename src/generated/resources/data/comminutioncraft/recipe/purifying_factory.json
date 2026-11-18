@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "comminutioncraft:ore_purifier",
+    "comminutioncraft:fusion_factory_kit"
+  ],
+  "result": {
+    "id": "comminutioncraft:purifying_factory"
+  }
+}

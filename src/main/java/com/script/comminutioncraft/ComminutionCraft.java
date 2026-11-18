@@ -225,6 +225,23 @@ public class ComminutionCraft {
         event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.FROTH_FLOTATION_CELL.get(), (machine, side) -> machine.getEnergyHandler());
         event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.FROTH_FLOTATION_CELL.get(),
                 FrothFlotationCellBlockEntity::getFluidHandler);
+        // Factories: like their machines
+        for (var type : List.of(ModBlockEntities.ELECTRIC_SMELTING_FACTORY.get(), ModBlockEntities.PLASMA_GRANULATING_FACTORY.get(),
+                ModBlockEntities.PLASMA_SMELTING_FACTORY.get(), ModBlockEntities.ANTIMATTER_GRANULATING_FACTORY.get(),
+                ModBlockEntities.ANTIMATTER_SMELTING_FACTORY.get())) {
+            event.registerBlockEntity(Capabilities.Item.BLOCK, type, WorldlyContainerWrapper::new);
+            event.registerBlockEntity(Capabilities.Energy.BLOCK, type, (machine, side) -> machine.getEnergyHandler());
+        }
+        for (var type : List.of(ModBlockEntities.PURIFYING_FACTORY.get(), ModBlockEntities.ANTIMATTER_PURIFYING_FACTORY.get())) {
+            event.registerBlockEntity(Capabilities.Item.BLOCK, type, WorldlyContainerWrapper::new);
+            event.registerBlockEntity(Capabilities.Energy.BLOCK, type, (machine, side) -> machine.getEnergyHandler());
+            event.registerBlockEntity(Capabilities.Fluid.BLOCK, type, OrePurifierBlockEntity::getFluidHandler);
+        }
+        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.ANTIMATTER_WASHING_FACTORY.get(), WorldlyContainerWrapper::new);
+        event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.ANTIMATTER_WASHING_FACTORY.get(),
+                (machine, side) -> machine.getEnergyHandler());
+        event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.ANTIMATTER_WASHING_FACTORY.get(),
+                OreWasherBlockEntity::getFluidHandler);
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.PELLET_PRESS.get(), WorldlyContainerWrapper::new);
         event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.PELLET_PRESS.get(), (machine, side) -> machine.getEnergyHandler());
         event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.PELLET_PRESS.get(), PelletPressBlockEntity::getFluidHandler);

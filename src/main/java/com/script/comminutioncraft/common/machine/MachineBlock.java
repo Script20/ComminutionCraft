@@ -69,7 +69,12 @@ public abstract class MachineBlock extends Block implements EntityBlock {
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
-        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof MenuProvider machine) {
+        if (level.isClientSide()) {
+            return InteractionResult.SUCCESS;
+        }
+        if (level.getBlockEntity(pos) instanceof ElectricMachineBlockEntity factory && factory.isFactory()) {
+            player.openMenu(factory, factory::writeFactoryLayout);
+        } else if (level.getBlockEntity(pos) instanceof MenuProvider machine) {
             player.openMenu(machine);
         }
         return InteractionResult.SUCCESS;

@@ -16,6 +16,7 @@ import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.item.crafting.SmeltingRecipe;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
@@ -33,6 +34,11 @@ public class ElectricSmelterBlockEntity extends ElectricMachineBlockEntity {
 
     public ElectricSmelterBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.ELECTRIC_SMELTER.get(), pos, state);
+    }
+
+    /** A factory version: its own block entity type, {@code lanes} lanes. */
+    public ElectricSmelterBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, int lanes) {
+        super(type, pos, state, ENERGY_CAPACITY.get(), MAX_ENERGY_INPUT.get(), lanes);
     }
 
     @Override

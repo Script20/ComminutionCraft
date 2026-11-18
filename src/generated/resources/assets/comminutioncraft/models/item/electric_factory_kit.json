@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "comminutioncraft:item/electric_factory_kit"
+  }
+}

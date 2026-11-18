@@ -253,6 +253,18 @@ public class ModModelProvider extends ModelProvider {
         itemModels.generateFlatItem(ModItems.ENERGY_UPGRADE.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.GAS_UPGRADE.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.LIQUID_UPGRADE.get(), ModelTemplates.FLAT_ITEM);
+        blockModels.createFurnace(ModBlocks.ELECTRIC_SMELTING_FACTORY.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
+        blockModels.createFurnace(ModBlocks.PLASMA_GRANULATING_FACTORY.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
+        blockModels.createFurnace(ModBlocks.PLASMA_SMELTING_FACTORY.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
+        blockModels.createFurnace(ModBlocks.PURIFYING_FACTORY.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
+        blockModels.createFurnace(ModBlocks.ANTIMATTER_WASHING_FACTORY.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
+        blockModels.createFurnace(ModBlocks.ANTIMATTER_PURIFYING_FACTORY.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
+        blockModels.createFurnace(ModBlocks.ANTIMATTER_GRANULATING_FACTORY.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
+        blockModels.createFurnace(ModBlocks.ANTIMATTER_SMELTING_FACTORY.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
+        itemModels.generateFlatItem(ModItems.ELECTRIC_FACTORY_KIT.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.PLASMA_FACTORY_KIT.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.FUSION_FACTORY_KIT.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.ANTIMATTER_FACTORY_KIT.get(), ModelTemplates.FLAT_ITEM);
         acceleratorPort(blockModels, ModBlocks.HORIZON_PORT.get());
         blockModels.createFurnace(ModBlocks.HORIZON_CONTROLLER.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         blockModels.createFurnace(ModBlocks.ACCELERATOR_CONTROLLER.get(), TexturedModel.ORIENTABLE_ONLY_TOP);

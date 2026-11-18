@@ -16,6 +16,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
 /** Tier 5 smelter: normal furnace (smelting) recipes on FE alone, the fastest. */
@@ -28,6 +29,12 @@ public class AntimatterSmelterBlockEntity extends ElectricMachineBlockEntity {
     public AntimatterSmelterBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.ANTIMATTER_SMELTER.get(), pos, state,
                 MachineConfig.ANTIMATTER_MACHINES_ENERGY_CAPACITY.get(), MachineConfig.ANTIMATTER_MACHINES_MAX_ENERGY_INPUT.get());
+    }
+
+    /** A factory version: its own block entity type, {@code lanes} lanes. */
+    public AntimatterSmelterBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, int lanes) {
+        super(type, pos, state, MachineConfig.ANTIMATTER_MACHINES_ENERGY_CAPACITY.get(),
+                MachineConfig.ANTIMATTER_MACHINES_MAX_ENERGY_INPUT.get(), lanes);
     }
 
     @Override
