@@ -18,6 +18,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -168,11 +169,18 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
         return 2 * lanes;
     }
 
-    /** What a factory's GUI needs to lay itself out (sent when it opens): lanes, fluid gauge, by-product slot. */
+    /** What a factory's GUI needs to lay itself out (sent when it opens): lanes, fluid gauge, by-product slot, block id. */
     public void writeFactoryLayout(RegistryFriendlyByteBuf buffer) {
-        buffer.writeVarInt(lanes);
-        buffer.writeVarInt(factoryFluid());
-        buffer.writeBoolean(getContainerSize() > 2 * lanes);
+        FactoryMenu.Layout layout = factoryLayout();
+        buffer.writeVarInt(layout.lanes());
+        buffer.writeVarInt(layout.fluid());
+        buffer.writeBoolean(layout.byproduct());
+        buffer.writeUtf(layout.block());
+    }
+
+    private FactoryMenu.Layout factoryLayout() {
+        return new FactoryMenu.Layout(lanes, factoryFluid(), getContainerSize() > 2 * lanes,
+                BuiltInRegistries.BLOCK.getKey(getBlockState().getBlock()).getPath());
     }
 
     /** Which fluid gauge a factory shows: 0 none, 1 water, 2 oxygen (their amounts are at DATA_COUNT, +1 = capacity). */
@@ -185,8 +193,7 @@ public abstract class ElectricMachineBlockEntity extends BaseContainerBlockEntit
         if (!isFactory()) {
             return super.createMenu(containerId, inventory, player);
         }
-        return canOpen(player) ? new FactoryMenu(containerId, inventory, this, dataAccess,
-                new FactoryMenu.Layout(lanes, factoryFluid(), getContainerSize() > 2 * lanes)) : null;
+        return canOpen(player) ? new FactoryMenu(containerId, inventory, this, dataAccess, factoryLayout()) : null;
     }
 
     /** One synced GUI value (see the DATA_ constants); subclasses add theirs after {@link #DATA_COUNT}. */

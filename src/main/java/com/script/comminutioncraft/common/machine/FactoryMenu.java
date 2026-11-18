@@ -31,12 +31,12 @@ public class FactoryMenu extends AbstractContainerMenu implements ControllableMe
     public static final int OUTPUT_Y = 52;
 
     /**
-     * How a factory's GUI is laid out: lanes, which fluid gauge (0 none, 1 water, 2 oxygen) and whether it has a
-     * by-product slot.
+     * How a factory's GUI is laid out: lanes, which fluid gauge (0 none, 1 water, 2 oxygen), whether it has a
+     * by-product slot, and the factory's block id (its textures, for the side config cube).
      */
-    public record Layout(int lanes, int fluid, boolean byproduct) {
+    public record Layout(int lanes, int fluid, boolean byproduct, String block) {
         public static Layout read(RegistryFriendlyByteBuf buffer) {
-            return new Layout(buffer.readVarInt(), buffer.readVarInt(), buffer.readBoolean());
+            return new Layout(buffer.readVarInt(), buffer.readVarInt(), buffer.readBoolean(), buffer.readUtf());
         }
 
         public int slots() {
