@@ -397,7 +397,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.comminutioncraft.ore_miner.waiting.loading", "Loading the chunk...");
         add("gui.comminutioncraft.ore_miner.waiting.stopped", "Stopped: press Start");
         add("gui.comminutioncraft.ore_miner.start", "Start");
-        add("gui.comminutioncraft.ore_miner.start.desc", "The miner is stopped: set it up, then start it");
+        add("gui.comminutioncraft.ore_miner.start.desc", "The miner is stopped: Click to start");
         add("gui.comminutioncraft.ore_miner.stop", "Stop");
         add("gui.comminutioncraft.ore_miner.stop.desc", "Pauses the miner; it carries on from where it was");
         add("gui.comminutioncraft.ore_miner.fill.stone", "Fill: Stone");
@@ -405,9 +405,9 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.comminutioncraft.ore_miner.fill.air", "Fill: Air");
         add("gui.comminutioncraft.ore_miner.fill.air.desc", "Mined ores leave air behind");
         add("gui.comminutioncraft.ore_miner.drops.raw", "Drops: Raw ore");
-        add("gui.comminutioncraft.ore_miner.drops.raw.desc", "Ores drop what a pickaxe would give (raw ore, coal, diamonds...)");
+        add("gui.comminutioncraft.ore_miner.drops.raw.desc", "Ores drop Raw ores.");
         add("gui.comminutioncraft.ore_miner.drops.block", "Drops: Ore blocks");
-        add("gui.comminutioncraft.ore_miner.drops.block.desc", "Ores come out as blocks, as with Silk Touch");
+        add("gui.comminutioncraft.ore_miner.drops.block.desc", "Ores get silk touched.");
         add("gui.comminutioncraft.ore_miner.whitelist", "Whitelist");
         add("gui.comminutioncraft.ore_miner.whitelist.desc", "Only mines the ores in the filter");
         add("gui.comminutioncraft.ore_miner.blacklist", "Blacklist");
