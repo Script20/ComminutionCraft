@@ -198,6 +198,7 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("item_pipe_stuffed_then_recovers", () -> ModGameTests::itemPipeStuffedThenRecovers);
         TEST_FUNCTIONS.register("item_pipe_pulls_only_what_fits", () -> ModGameTests::itemPipePullsOnlyWhatFits);
         TEST_FUNCTIONS.register("item_pipe_goes_round_the_slots", () -> ModGameTests::itemPipeGoesRoundTheSlots);
+        TEST_FUNCTIONS.register("item_pipe_tops_up_from_the_next_slot", () -> ModGameTests::itemPipeTopsUpFromTheNextSlot);
         TEST_FUNCTIONS.register("fusion_item_pipe_moves_instantly", () -> ModGameTests::fusionItemPipeMovesInstantly);
         TEST_FUNCTIONS.register("fusion_item_pipe_keeps_to_itself", () -> ModGameTests::fusionItemPipeKeepsToItself);
         TEST_FUNCTIONS.register("wrench_picks_up_any_mod_block", () -> ModGameTests::wrenchPicksUpAnyModBlock);
@@ -1968,6 +1969,21 @@ public final class ModGameTests {
             helper.assertTrue(source.countItem(Items.RAW_IRON) > 64 - 3 * ItemPipeBlockEntity.EXTRACT_AMOUNT.get(),
                     "It shouldn't empty the first slot before turning to the second");
         });
+    }
+
+    /**
+     * One pull always moves the full amount when there's enough (owner, 2026-11-22): 2 raw iron in the first slot and
+     * coal in the next, the first pull takes the 2 iron and tops up with 6 coal.
+     */
+    private static void itemPipeTopsUpFromTheNextSlot(GameTestHelper helper) {
+        BlockPos barrel = itemPipeLine(helper);
+        BarrelBlockEntity source = helper.getBlockEntity(barrel, BarrelBlockEntity.class);
+        source.setItem(0, new ItemStack(Items.RAW_IRON, 2));
+        source.setItem(1, new ItemStack(Items.COAL, 64));
+        helper.setBlock(new BlockPos(1, 2, 2), Blocks.REDSTONE_BLOCK);
+        helper.succeedWhen(() -> helper.assertTrue(source.countItem(Items.RAW_IRON) == 0 && source.countItem(Items.COAL) == 64 - 6,
+                "The first pull should take the 2 raw iron and 6 coal; left " + source.countItem(Items.RAW_IRON) + " iron, "
+                        + source.countItem(Items.COAL) + " coal"));
     }
 
     private static void itemPipeExtractsWithRedstone(GameTestHelper helper) {

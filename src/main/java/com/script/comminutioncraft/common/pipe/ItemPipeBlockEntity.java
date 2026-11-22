@@ -204,8 +204,9 @@ public class ItemPipeBlockEntity extends BlockEntity {
     }
 
     /**
-     * Pulls one stack (up to the config amount, what the target takes) out of the block on {@code direction}, starting
-     * at the slot after the one it last pulled from and going round all of them.
+     * Pulls up to the config amount out of the block on {@code direction}: starting at the slot after the one it last
+     * pulled from, it goes round the slots until the pull is full (2 from one slot, 6 from the next...). Each slot's
+     * items travel as their own stack, to whatever target takes them.
      */
     private void pull(ServerLevel level, BlockPos pos, Direction direction, PipeSide side) {
         ResourceHandler<ItemResource> source = level.getCapability(Capabilities.Item.BLOCK, pos.relative(direction), direction.getOpposite());
@@ -213,13 +214,15 @@ public class ItemPipeBlockEntity extends BlockEntity {
             return;
         }
         int size = source.size();
-        for (int i = 0; i < size; i++) {
-            int slot = Math.floorMod(side.nextSlot + i, size);
+        int budget = extractAmount();
+        int start = side.nextSlot;
+        for (int i = 0; i < size && budget > 0; i++) {
+            int slot = Math.floorMod(start + i, size);
             ItemResource resource = source.getResource(slot);
             if (resource.isEmpty()) {
                 continue;
             }
-            int have = (int) Math.min(Math.min(source.getAmountAsLong(slot), extractAmount()), resource.getMaxStackSize());
+            int have = (int) Math.min(Math.min(source.getAmountAsLong(slot), budget), resource.getMaxStackSize());
             ItemStack probe = resource.toStack(Math.max(have, 0));
             if (have <= 0 || !side.passes(probe)) {
                 continue;
@@ -229,51 +232,49 @@ public class ItemPipeBlockEntity extends BlockEntity {
                 continue;
             }
             ItemPipeRouting.Target target = side.spreads() ? targets.get(Math.floorMod(side.robin++, targets.size())) : targets.getFirst();
-            if (isInstant()) {
-                if (moveNow(level, source, slot, resource, Math.min(have, target.fits()), target)) {
-                    side.nextSlot = slot + 1;
-                    setChanged();
-                    return;
-                }
-                continue;
-            }
             int moved;
-            try (Transaction transaction = Transaction.openRoot()) {
-                moved = source.extract(slot, resource, Math.min(have, target.fits()), transaction);
-                transaction.commit();
+            if (isInstant()) {
+                moved = moveNow(level, source, slot, resource, Math.min(have, target.fits()), target);
+            } else {
+                try (Transaction transaction = Transaction.openRoot()) {
+                    moved = source.extract(slot, resource, Math.min(have, target.fits()), transaction);
+                    transaction.commit();
+                }
+                if (moved > 0) {
+                    items.add(new TravellingItem(resource.toStack(moved), direction, target.route(), 0, pos, direction,
+                            target.pipe(), target.side()));
+                    syncNeeded = true;
+                }
             }
             if (moved > 0) {
+                budget -= moved;
                 side.nextSlot = slot + 1;
-                items.add(new TravellingItem(resource.toStack(moved), direction, target.route(), 0, pos, direction,
-                        target.pipe(), target.side()));
-                syncNeeded = true;
                 setChanged();
-                return;
             }
         }
     }
 
     /**
      * Fusion Item Pipe: takes {@code amount} out of the source and puts it straight into the target, all in one
-     * transaction (anything the target won't take after all goes back, or nothing moves).
+     * transaction (anything the target won't take after all goes back, or nothing moves); returns how many moved.
      */
-    private static boolean moveNow(ServerLevel level, ResourceHandler<ItemResource> source, int slot, ItemResource resource,
-                                   int amount, ItemPipeRouting.Target target) {
+    private static int moveNow(ServerLevel level, ResourceHandler<ItemResource> source, int slot, ItemResource resource,
+                               int amount, ItemPipeRouting.Target target) {
         ResourceHandler<ItemResource> into = level.getCapability(Capabilities.Item.BLOCK, target.pipe().relative(target.side()),
                 target.side().getOpposite());
         if (into == null || amount <= 0) {
-            return false;
+            return 0;
         }
         try (Transaction transaction = Transaction.openRoot()) {
             int taken = source.extract(slot, resource, amount, transaction);
             int given = taken > 0 ? into.insert(resource, taken, transaction) : 0;
             if (given < taken && source.insert(resource, taken - given, transaction) < taken - given) {
-                return false; // couldn't put the rest back: move nothing
+                return 0; // couldn't put the rest back: move nothing
             }
             if (given > 0) {
                 transaction.commit();
             }
-            return given > 0;
+            return given;
         }
     }
 
