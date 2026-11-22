@@ -28,6 +28,11 @@ public final class PipeSide {
     boolean roundRobin = true;
     /** Round robin: which target is next. */
     int robin;
+    /**
+     * Which slot of the source the next pull starts at: pulls go round all the slots instead of always taking the first
+     * one with anything in it (a machine topping that slot up kept the others from ever draining - owner, 2026-11-22).
+     */
+    int nextSlot;
     /** Ticks until this Extract side pulls again. */
     int cooldown;
 

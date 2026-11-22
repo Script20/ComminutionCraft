@@ -197,6 +197,7 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("item_pipe_wrench_cycles_mode", () -> ModGameTests::itemPipeWrenchCyclesMode);
         TEST_FUNCTIONS.register("item_pipe_stuffed_then_recovers", () -> ModGameTests::itemPipeStuffedThenRecovers);
         TEST_FUNCTIONS.register("item_pipe_pulls_only_what_fits", () -> ModGameTests::itemPipePullsOnlyWhatFits);
+        TEST_FUNCTIONS.register("item_pipe_goes_round_the_slots", () -> ModGameTests::itemPipeGoesRoundTheSlots);
         TEST_FUNCTIONS.register("fusion_item_pipe_moves_instantly", () -> ModGameTests::fusionItemPipeMovesInstantly);
         TEST_FUNCTIONS.register("fusion_item_pipe_keeps_to_itself", () -> ModGameTests::fusionItemPipeKeepsToItself);
         TEST_FUNCTIONS.register("wrench_picks_up_any_mod_block", () -> ModGameTests::wrenchPicksUpAnyModBlock);
@@ -1950,6 +1951,25 @@ public final class ModGameTests {
      * An Extract side starts at redstone High: nothing moves until the pipe is powered; then the barrel's 16 raw iron
      * travel down the line into the chest.
      */
+    /**
+     * An Extract side goes round the source's slots (owner, 2026-11-22: an Ore Miner kept topping up its first slot, so
+     * the pipe never got to the others): with raw iron in slot 1 and coal in slot 2, the second pull already takes coal.
+     */
+    private static void itemPipeGoesRoundTheSlots(GameTestHelper helper) {
+        BlockPos barrel = itemPipeLine(helper);
+        BarrelBlockEntity source = helper.getBlockEntity(barrel, BarrelBlockEntity.class);
+        source.setItem(0, new ItemStack(Items.RAW_IRON, 64));
+        source.setItem(1, new ItemStack(Items.COAL, 64));
+        helper.setBlock(new BlockPos(1, 2, 2), Blocks.REDSTONE_BLOCK);
+        helper.succeedWhen(() -> {
+            helper.assertTrue(source.countItem(Items.RAW_IRON) < 64 && source.countItem(Items.COAL) < 64,
+                    "Both slots should be pulled from, raw iron left " + source.countItem(Items.RAW_IRON)
+                            + ", coal left " + source.countItem(Items.COAL));
+            helper.assertTrue(source.countItem(Items.RAW_IRON) > 64 - 3 * ItemPipeBlockEntity.EXTRACT_AMOUNT.get(),
+                    "It shouldn't empty the first slot before turning to the second");
+        });
+    }
+
     private static void itemPipeExtractsWithRedstone(GameTestHelper helper) {
         BlockPos barrel = itemPipeLine(helper);
         BarrelBlockEntity source = helper.getBlockEntity(barrel, BarrelBlockEntity.class);

@@ -203,13 +203,18 @@ public class ItemPipeBlockEntity extends BlockEntity {
         }
     }
 
-    /** Pulls one stack (up to the config amount, what the target takes) out of the block on {@code direction}. */
+    /**
+     * Pulls one stack (up to the config amount, what the target takes) out of the block on {@code direction}, starting
+     * at the slot after the one it last pulled from and going round all of them.
+     */
     private void pull(ServerLevel level, BlockPos pos, Direction direction, PipeSide side) {
         ResourceHandler<ItemResource> source = level.getCapability(Capabilities.Item.BLOCK, pos.relative(direction), direction.getOpposite());
         if (source == null) {
             return;
         }
-        for (int slot = 0; slot < source.size(); slot++) {
+        int size = source.size();
+        for (int i = 0; i < size; i++) {
+            int slot = Math.floorMod(side.nextSlot + i, size);
             ItemResource resource = source.getResource(slot);
             if (resource.isEmpty()) {
                 continue;
@@ -226,6 +231,7 @@ public class ItemPipeBlockEntity extends BlockEntity {
             ItemPipeRouting.Target target = side.spreads() ? targets.get(Math.floorMod(side.robin++, targets.size())) : targets.getFirst();
             if (isInstant()) {
                 if (moveNow(level, source, slot, resource, Math.min(have, target.fits()), target)) {
+                    side.nextSlot = slot + 1;
                     setChanged();
                     return;
                 }
@@ -237,6 +243,7 @@ public class ItemPipeBlockEntity extends BlockEntity {
                 transaction.commit();
             }
             if (moved > 0) {
+                side.nextSlot = slot + 1;
                 items.add(new TravellingItem(resource.toStack(moved), direction, target.route(), 0, pos, direction,
                         target.pipe(), target.side()));
                 syncNeeded = true;
