@@ -84,20 +84,22 @@ public class FennecFoxModel extends EntityModel<FennecFoxRenderer.State> {
         }
     }
 
-    /** Sitting: the body tips up from the hips, the head rises with it, the hind legs fold forward and the tail lies flat. */
+    /**
+     * Sitting: the body tips up but drops with it, so its front stays on the front legs and the hips sit on the ground
+     * (tipping it up from the hips alone left a gap above the front legs); the hind legs fold under the hips and the tail
+     * lies behind on the ground.
+     */
     private void sit() {
         body.xRot = -0.4F;
-        head.y -= 3.5F;
-        head.z += 0.6F;
-        leftFrontLeg.y -= 1.5F;
-        rightFrontLeg.y -= 1.5F;
-        leftFrontLeg.xRot = -0.15F;
-        rightFrontLeg.xRot = -0.15F;
+        body.y += 3.5F;
+        leftFrontLeg.xRot = 0.0F;
+        rightFrontLeg.xRot = 0.0F;
         leftHindLeg.xRot = -1.45F;
         rightHindLeg.xRot = -1.45F;
         leftHindLeg.y += 2.5F;
         rightHindLeg.y += 2.5F;
         tail.y += 3.0F;
+        tail.z += 1.5F;
         tail.xRot = -0.05F;
         tail.yRot = 0.0F;
     }
