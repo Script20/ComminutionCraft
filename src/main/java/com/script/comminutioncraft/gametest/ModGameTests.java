@@ -1189,7 +1189,11 @@ public final class ModGameTests {
         miner.filterView.setItem(1, new ItemStack(Items.DEEPSLATE_EMERALD_ORE));
         miner.filterView.setItem(2, new ItemStack(Items.NETHER_QUARTZ_ORE));
         miner.getControls().setSide(RelativeSide.BOTTOM, SideMode.NONE); // keep the drops in to count them
-        helper.runAfterDelay(1, () -> miner.jumpTo(1)); // its own chunk (the first tick sets it up)
+        helper.runAfterDelay(20, () -> { // placed miners wait for Start
+            helper.assertBlockPresent(Blocks.DEEPSLATE_EMERALD_ORE, emerald);
+            miner.jumpTo(1); // its own chunk
+            miner.handleButton(OreMinerBlockEntity.BUTTON_RUN);
+        });
         helper.succeedWhen(() -> {
             helper.assertBlockPresent(Blocks.DEEPSLATE, emerald);
             helper.assertBlockPresent(Blocks.STONE, quartz);

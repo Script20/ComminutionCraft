@@ -33,7 +33,7 @@ import org.jspecify.annotations.Nullable;
  */
 public class OreMinerMenu extends AbstractContainerMenu implements ControllableMenu, GhostItemMenu {
     public static final int OUTPUT_X = 116;
-    public static final int OUTPUT_Y = 44;
+    public static final int OUTPUT_Y = 66;
     public static final int CIRCUIT_X = 73;
     public static final int CIRCUIT_Y = 42;
     public static final int FILTER_X = 28;
@@ -170,6 +170,10 @@ public class OreMinerMenu extends AbstractContainerMenu implements ControllableM
 
     public boolean oreBlocks() {
         return flag(OreMinerBlockEntity.FLAG_ORE_BLOCKS);
+    }
+
+    public boolean running() {
+        return flag(OreMinerBlockEntity.FLAG_RUNNING);
     }
 
     public boolean blacklist() {

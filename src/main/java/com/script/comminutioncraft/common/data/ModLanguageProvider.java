@@ -395,6 +395,11 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.comminutioncraft.ore_miner.waiting.output_full", "Output full");
         add("gui.comminutioncraft.ore_miner.waiting.redstone", "Switched off by redstone");
         add("gui.comminutioncraft.ore_miner.waiting.loading", "Loading the chunk...");
+        add("gui.comminutioncraft.ore_miner.waiting.stopped", "Stopped: press Start");
+        add("gui.comminutioncraft.ore_miner.start", "Start");
+        add("gui.comminutioncraft.ore_miner.start.desc", "The miner is stopped: set it up, then start it");
+        add("gui.comminutioncraft.ore_miner.stop", "Stop");
+        add("gui.comminutioncraft.ore_miner.stop.desc", "Pauses the miner; it carries on from where it was");
         add("gui.comminutioncraft.ore_miner.fill.stone", "Fill: Stone");
         add("gui.comminutioncraft.ore_miner.fill.stone.desc", "Mined ores are replaced with matching stone, so nothing caves in or floods");
         add("gui.comminutioncraft.ore_miner.fill.air", "Fill: Air");

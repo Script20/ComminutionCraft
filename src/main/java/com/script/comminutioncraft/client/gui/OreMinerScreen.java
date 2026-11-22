@@ -44,6 +44,11 @@ public class OreMinerScreen extends MachineScreen<OreMinerMenu> {
     @Override
     protected void init() {
         super.init();
+        addRenderableWidget(new IconButton(leftPos + 148, topPos + 40,
+                () -> icon(menu.running() ? "ore_miner/stop" : "ore_miner/start"),
+                () -> withDesc("gui.comminutioncraft.ore_miner." + (menu.running() ? "stop" : "start")),
+                () -> true,
+                () -> clickButton(OreMinerBlockEntity.BUTTON_RUN)));
         addRenderableWidget(new IconButton(leftPos + 28, topPos + 40,
                 () -> icon(menu.fillStone() ? "ore_miner/fill_stone" : "ore_miner/fill_air"),
                 () -> withDesc("gui.comminutioncraft.ore_miner.fill." + (menu.fillStone() ? "stone" : "air")),

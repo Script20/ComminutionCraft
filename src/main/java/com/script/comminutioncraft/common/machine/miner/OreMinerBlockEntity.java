@@ -94,17 +94,19 @@ public class OreMinerBlockEntity extends BaseContainerBlockEntity
     public static final int FLAG_FILL_STONE = 1;
     public static final int FLAG_ORE_BLOCKS = 2;
     public static final int FLAG_BLACKLIST = 4;
+    public static final int FLAG_RUNNING = 8;
 
     /** Menu buttons after the machine controls' own (redstone, sides, clear sides). */
     public static final int BUTTON_FILL = 20;
     public static final int BUTTON_DROPS = 21;
     public static final int BUTTON_LIST = 22;
+    public static final int BUTTON_RUN = 23;
 
     /** What the miner is doing: scanning a chunk, mining its ores, or done with the whole area. */
     public enum Phase { SCANNING, MINING, FINISHED }
 
     /** Why it isn't working right now (shown in the GUI). */
-    public enum Waiting { NONE, NO_POWER, OUTPUT_FULL, REDSTONE, LOADING }
+    public enum Waiting { NONE, NO_POWER, OUTPUT_FULL, REDSTONE, LOADING, STOPPED }
 
     /** How long the front keeps showing work after it stops, so a thin power supply doesn't flicker it. */
     private static final int SCREEN_COOLDOWN = 10;
@@ -115,6 +117,8 @@ public class OreMinerBlockEntity extends BaseContainerBlockEntity
     private boolean blacklist;
     private boolean fillStone = true;
     private boolean oreBlocks;
+    /** Placed miners start stopped, so they can be set up first (owner, 2026-11-22); the Start button runs them. */
+    private boolean running;
 
     private final MachineEnergyStorage energy;
     private final MachineControls controls = new MachineControls(MachineControls.outputBelow(), this::onControlsChanged);
@@ -156,7 +160,8 @@ public class OreMinerBlockEntity extends BaseContainerBlockEntity
                 case DATA_Y -> shownY;
                 case DATA_MINED_LOW -> EnergySync.low((int) Math.min(mined, Integer.MAX_VALUE));
                 case DATA_MINED_HIGH -> EnergySync.high((int) Math.min(mined, Integer.MAX_VALUE));
-                case DATA_FLAGS -> (fillStone ? FLAG_FILL_STONE : 0) | (oreBlocks ? FLAG_ORE_BLOCKS : 0) | (blacklist ? FLAG_BLACKLIST : 0);
+                case DATA_FLAGS -> (fillStone ? FLAG_FILL_STONE : 0) | (oreBlocks ? FLAG_ORE_BLOCKS : 0) | (blacklist ? FLAG_BLACKLIST : 0)
+                        | (running ? FLAG_RUNNING : 0);
                 case DATA_WAITING -> waiting.ordinal();
                 default -> 0;
             };
@@ -283,7 +288,10 @@ public class OreMinerBlockEntity extends BaseContainerBlockEntity
         }
         waiting = Waiting.NONE;
         boolean worked = false;
-        if (phase != Phase.FINISHED) {
+        if (phase != Phase.FINISHED && !running) {
+            waiting = Waiting.STOPPED;
+            releaseTickets(level);
+        } else if (phase != Phase.FINISHED) {
             keepLoaded(level);
             if (!controls.canRun(level, pos)) {
                 waiting = Waiting.REDSTONE;
@@ -540,6 +548,7 @@ public class OreMinerBlockEntity extends BaseContainerBlockEntity
 
     public boolean handleButton(int id) {
         switch (id) {
+            case BUTTON_RUN -> running = !running;
             case BUTTON_FILL -> fillStone = !fillStone;
             case BUTTON_DROPS -> {
                 if (!tier().hasOptions()) {
@@ -680,6 +689,7 @@ public class OreMinerBlockEntity extends BaseContainerBlockEntity
         blacklist = input.getBooleanOr("blacklist", false);
         fillStone = input.getBooleanOr("fill_stone", true);
         oreBlocks = input.getBooleanOr("ore_blocks", false);
+        running = input.getBooleanOr("running", false);
         startFacing = input.read("start_facing", Direction.CODEC).orElse(null);
         phase = Phase.values()[Math.floorMod(input.getIntOr("phase", 0), Phase.values().length)];
         chunkIndex = input.getIntOr("chunk", 0);
@@ -707,6 +717,7 @@ public class OreMinerBlockEntity extends BaseContainerBlockEntity
         output.putBoolean("blacklist", blacklist);
         output.putBoolean("fill_stone", fillStone);
         output.putBoolean("ore_blocks", oreBlocks);
+        output.putBoolean("running", running);
         if (startFacing != null) {
             output.store("start_facing", Direction.CODEC, startFacing);
         }
