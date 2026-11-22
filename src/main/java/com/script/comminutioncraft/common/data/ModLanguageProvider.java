@@ -405,9 +405,9 @@ public class ModLanguageProvider extends LanguageProvider {
         add("gui.comminutioncraft.ore_miner.fill.air", "Fill: Air");
         add("gui.comminutioncraft.ore_miner.fill.air.desc", "Mined ores leave air behind");
         add("gui.comminutioncraft.ore_miner.drops.raw", "Drops: Raw ore");
-        add("gui.comminutioncraft.ore_miner.drops.raw.desc", "Ores drop Raw ores.");
+        add("gui.comminutioncraft.ore_miner.drops.raw.desc", "Ores drop Raw ores");
         add("gui.comminutioncraft.ore_miner.drops.block", "Drops: Ore blocks");
-        add("gui.comminutioncraft.ore_miner.drops.block.desc", "Ores get silk touched.");
+        add("gui.comminutioncraft.ore_miner.drops.block.desc", "Ores get silk touched");
         add("gui.comminutioncraft.ore_miner.whitelist", "Whitelist");
         add("gui.comminutioncraft.ore_miner.whitelist.desc", "Only mines the ores in the filter");
         add("gui.comminutioncraft.ore_miner.blacklist", "Blacklist");
