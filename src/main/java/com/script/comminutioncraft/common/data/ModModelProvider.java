@@ -305,6 +305,7 @@ public class ModModelProvider extends ModelProvider {
         blockModels.createTrivialBlock(wood.leaves.get(), TexturedModel.LEAVES);
         itemModels.generateFlatItem(ModItems.PURPLEHEART_BOAT.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.PURPLEHEART_CHEST_BOAT.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.FENNEC_FOX_SPAWN_EGG.get(), ModelTemplates.FLAT_ITEM);
 
         for (ProcessedMetal metal : ProcessedMetal.ALL) {
             itemModels.generateFlatItem(metal.granulated().get(), ModelTemplates.FLAT_ITEM);

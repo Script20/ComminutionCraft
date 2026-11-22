@@ -332,6 +332,8 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModItems.PURPLEHEART_CHEST_BOAT.get(), "Purpleheart Boat with Chest");
         add(ModEntities.PURPLEHEART_BOAT.get(), "Purpleheart Boat");
         add(ModEntities.PURPLEHEART_CHEST_BOAT.get(), "Purpleheart Boat with Chest");
+        add(ModEntities.FENNEC_FOX.get(), "Fennec Fox");
+        add(ModItems.FENNEC_FOX_SPAWN_EGG.get(), "Fennec Fox Spawn Egg");
 
         add(ModItems.WRENCH.get(), "Wrench");
         add("item.comminutioncraft.wrench.mode.rotate", "Mode: Rotate");

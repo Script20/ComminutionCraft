@@ -139,6 +139,8 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.PURPLEHEART_HANGING_SIGN.get());
                         output.accept(ModItems.PURPLEHEART_BOAT.get());
                         output.accept(ModItems.PURPLEHEART_CHEST_BOAT.get());
+                        // Mobs
+                        output.accept(ModItems.FENNEC_FOX_SPAWN_EGG.get());
                     })
                     .build());
 

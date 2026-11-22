@@ -9,6 +9,7 @@ import com.script.comminutioncraft.common.config.MachineConfig;
 import com.script.comminutioncraft.common.data.ModWorldGen;
 import com.script.comminutioncraft.common.data.ProcessedMetal;
 import com.script.comminutioncraft.common.energy.MachineEnergyStorage;
+import com.script.comminutioncraft.common.entity.FennecFox;
 import com.script.comminutioncraft.common.item.WrenchItem;
 import com.script.comminutioncraft.common.item.WrenchMode;
 import com.script.comminutioncraft.common.item.tool.DrillItem;
@@ -64,6 +65,7 @@ import com.script.comminutioncraft.common.recipe.TagSmeltingRecipe;
 import com.script.comminutioncraft.common.registry.ModBlocks;
 import com.script.comminutioncraft.common.registry.ModDataComponents;
 import com.script.comminutioncraft.common.registry.ModDataMaps;
+import com.script.comminutioncraft.common.registry.ModEntities;
 import com.script.comminutioncraft.common.registry.ModFluids;
 import com.script.comminutioncraft.common.registry.ModItems;
 import com.script.comminutioncraft.common.storage.SoarynChestBlockEntity;
@@ -241,6 +243,8 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("upgrades_shift_click_only_into_upgrade_slots", () -> ModGameTests::upgradesShiftClickOnlyIntoUpgradeSlots);
         TEST_FUNCTIONS.register("ore_miner_snake_order", () -> ModGameTests::oreMinerSnakeOrder);
         TEST_FUNCTIONS.register("ore_miner_mines_its_chunk", () -> ModGameTests::oreMinerMinesItsChunk);
+        TEST_FUNCTIONS.register("fennec_fox_tames_only_when_sneaking", () -> ModGameTests::fennecFoxTamesOnlyWhenSneaking);
+        TEST_FUNCTIONS.register("fennec_fox_breeds_when_tamed", () -> ModGameTests::fennecFoxBreedsWhenTamed);
     }
 
     public static void registerTests(RegisterGameTestsEvent event) {
@@ -1210,6 +1214,44 @@ public final class ModGameTests {
             helper.assertTrue(emeralds == 1 && quartzes == 1, "Expected an emerald and a quartz in the outputs, got " + emeralds + " / " + quartzes);
             miner.getControls().setRedstone(RedstoneMode.HIGH); // stop it before it reaches the next chunk
         });
+    }
+
+    /**
+     * Fennec Fox taming (owner, 2026-11-22): raw rabbit does nothing for a player who isn't sneaking; sneaking, each one
+     * is a 1 in 3 chance, and a tamed fox belongs to that player and sits.
+     */
+    private static void fennecFoxTamesOnlyWhenSneaking(GameTestHelper helper) {
+        FennecFox fox = helper.spawn(ModEntities.FENNEC_FOX.get(), new BlockPos(2, 1, 2));
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        player.setGameMode(GameType.SURVIVAL);
+        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.RABBIT, 64));
+        fox.mobInteract(player, InteractionHand.MAIN_HAND);
+        helper.assertTrue(!fox.isTame() && player.getMainHandItem().getCount() == 64, "Standing up, the fox shouldn't take the rabbit");
+        player.setShiftKeyDown(true);
+        for (int i = 0; i < 60 && !fox.isTame(); i++) {
+            fox.mobInteract(player, InteractionHand.MAIN_HAND);
+        }
+        helper.assertTrue(fox.isTame() && fox.isOwnedBy(player) && fox.isOrderedToSit(), "Sneaking with raw rabbit should tame it (and it sits)");
+        helper.assertTrue(player.getMainHandItem().getCount() < 64, "Taming should use up rabbit");
+        helper.succeed();
+    }
+
+    /** Two tamed Fennec Foxes in love can breed, and the baby belongs to the same owner; a wild one can't breed. */
+    private static void fennecFoxBreedsWhenTamed(GameTestHelper helper) {
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        FennecFox a = helper.spawn(ModEntities.FENNEC_FOX.get(), new BlockPos(1, 1, 2));
+        FennecFox b = helper.spawn(ModEntities.FENNEC_FOX.get(), new BlockPos(3, 1, 2));
+        FennecFox wild = helper.spawn(ModEntities.FENNEC_FOX.get(), new BlockPos(2, 1, 3));
+        a.tame(player);
+        b.tame(player);
+        for (FennecFox fox : List.of(a, b, wild)) {
+            fox.setInLove(player);
+        }
+        helper.assertTrue(a.canMate(b), "Two tamed foxes in love should be able to breed");
+        helper.assertTrue(!a.canMate(wild) && !wild.canMate(b), "A wild fox mustn't breed");
+        FennecFox baby = a.getBreedOffspring(helper.getLevel(), b);
+        helper.assertTrue(baby != null && baby.isTame() && baby.isOwnedBy(player), "The baby should be tame and the same player's");
+        helper.succeed();
     }
 
     private static int smelted(ElectricMachineBlockEntity factory) {

@@ -3,6 +3,7 @@ package com.script.comminutioncraft.common.data;
 import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.registry.ModBlocks;
 import com.script.comminutioncraft.common.registry.ModDamageTypes;
+import com.script.comminutioncraft.common.registry.ModEntities;
 import com.script.comminutioncraft.common.registry.ModFeatures;
 import com.script.comminutioncraft.common.worldgen.LavaCrustFeature;
 import com.script.comminutioncraft.common.worldgen.ModTrees;
@@ -17,8 +18,10 @@ import net.minecraft.data.worldgen.placement.VegetationPlacements;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.util.random.Weighted;
 import net.minecraft.util.valueproviders.ConstantInt;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.VerticalAnchor;
@@ -38,6 +41,7 @@ import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.level.levelgen.placement.PlacementModifier;
 import net.minecraft.world.level.levelgen.placement.RarityFilter;
 import net.minecraft.world.level.levelgen.structure.templatesystem.TagMatchTest;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.world.BiomeModifier;
 import net.neoforged.neoforge.common.world.BiomeModifiers;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -116,6 +120,9 @@ public final class ModWorldGen {
                 GenerationStep.Decoration.UNDERGROUND_DECORATION));
         context.register(biomeModifier("add_purpleheart"), new BiomeModifiers.AddFeaturesBiomeModifier(biomes.getOrThrow(BiomeTags.IS_JUNGLE),
                 HolderSet.direct(placed.getOrThrow(PURPLEHEART_PLACED)), GenerationStep.Decoration.VEGETAL_DECORATION));
+        context.register(biomeModifier("add_fennec_fox"), BiomeModifiers.AddSpawnsBiomeModifier.singleSpawn(
+                biomes.getOrThrow(Tags.Biomes.IS_DESERT),
+                new Weighted<>(new MobSpawnSettings.SpawnerData(ModEntities.FENNEC_FOX.get(), 2, 3), 5)));
     }
 
     private static ResourceKey<ConfiguredFeature<?, ?>> configured(String name) {

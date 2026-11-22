@@ -2,6 +2,7 @@ package com.script.comminutioncraft.common.registry;
 
 import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.entity.BlackHoleEntity;
+import com.script.comminutioncraft.common.entity.FennecFox;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
@@ -36,6 +37,15 @@ public final class ModEntities {
                     .sized(1.375F, 0.5625F)
                     .eyeHeight(0.5625F)
                     .clientTrackingRange(10)
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
+
+    /** Fennec Fox: a small tamable desert fox (0.5 x 0.6 blocks; a vanilla fox is 0.6 x 0.7). */
+    public static final DeferredHolder<EntityType<?>, EntityType<FennecFox>> FENNEC_FOX = ENTITY_TYPES.register("fennec_fox",
+            id -> EntityType.Builder.<FennecFox>of(FennecFox::new, MobCategory.CREATURE)
+                    .noLootTable()
+                    .sized(0.5F, 0.6F)
+                    .eyeHeight(0.5F)
+                    .clientTrackingRange(8)
                     .build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
 
     private ModEntities() {}

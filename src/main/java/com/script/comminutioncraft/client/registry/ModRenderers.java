@@ -5,6 +5,7 @@ import com.script.comminutioncraft.client.multiblock.MultiblockRenderState;
 import com.script.comminutioncraft.client.multiblock.MultiblockRenderer;
 import com.script.comminutioncraft.client.render.BlackHoleEntityRenderer;
 import com.script.comminutioncraft.client.render.BlackHoleRenderer;
+import com.script.comminutioncraft.client.render.FennecFoxRenderer;
 import com.script.comminutioncraft.client.render.FluidTankRenderer;
 import com.script.comminutioncraft.client.render.FusionReactorRenderer;
 import com.script.comminutioncraft.client.render.ItemPipeRenderer;
@@ -39,6 +40,7 @@ public final class ModRenderers {
         event.registerBlockEntityRenderer(ModBlockEntities.FUSION_REACTOR.get(), context -> new FusionReactorRenderer(context.sprites()));
         event.registerBlockEntityRenderer(ModBlockEntities.EVENT_HORIZON_REACTOR.get(), context -> new BlackHoleRenderer());
         event.registerEntityRenderer(ModEntities.BLACK_HOLE.get(), BlackHoleEntityRenderer::new);
+        event.registerEntityRenderer(ModEntities.FENNEC_FOX.get(), FennecFoxRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.SOARYN_CHEST.get(), ChestRenderer::new);
     }
 

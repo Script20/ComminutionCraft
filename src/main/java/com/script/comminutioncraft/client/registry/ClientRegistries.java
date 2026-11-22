@@ -1,6 +1,7 @@
 package com.script.comminutioncraft.client.registry;
 
 import com.script.comminutioncraft.client.ModKeyMappings;
+import com.script.comminutioncraft.client.render.FennecFoxRenderer;
 import com.script.comminutioncraft.client.render.WoodRenderers;
 import net.neoforged.bus.api.IEventBus;
 
@@ -15,6 +16,7 @@ public final class ClientRegistries {
         modEventBus.addListener(ModRenderers::registerFluidModels);
         modEventBus.addListener(ModRenderers::registerItemRenderers);
         modEventBus.addListener(ModRenderers::registerGuiRenderers);
+        modEventBus.addListener(FennecFoxRenderer::registerLayers);
         WoodRenderers.register(modEventBus); // purpleheart boats and signs
         modEventBus.addListener(ModKeyMappings::register);
     }

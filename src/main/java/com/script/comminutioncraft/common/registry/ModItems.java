@@ -22,6 +22,7 @@ import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.item.SignItem;
+import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.ToolMaterial;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -260,6 +261,8 @@ public final class ModItems {
             properties -> new BoatItem(ModEntities.PURPLEHEART_BOAT.get(), properties), properties -> properties.stacksTo(1));
     public static final DeferredItem<BoatItem> PURPLEHEART_CHEST_BOAT = ITEMS.registerItem("purpleheart_chest_boat",
             properties -> new BoatItem(ModEntities.PURPLEHEART_CHEST_BOAT.get(), properties), properties -> properties.stacksTo(1));
+    public static final DeferredItem<SpawnEggItem> FENNEC_FOX_SPAWN_EGG = ITEMS.registerItem("fennec_fox_spawn_egg",
+            SpawnEggItem::new, properties -> properties.spawnEgg(ModEntities.FENNEC_FOX.get()));
 
     // Block items for every decorative stone block and the plain Purpleheart blocks
     static {

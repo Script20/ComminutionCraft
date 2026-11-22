@@ -2,6 +2,7 @@ package com.script.comminutioncraft.common.registry;
 
 import com.script.comminutioncraft.common.block.ModWoods;
 import com.script.comminutioncraft.common.compat.patchouli.GuideBook;
+import com.script.comminutioncraft.common.entity.FennecFox;
 import com.script.comminutioncraft.common.machine.miner.OreMinerBlockEntity;
 import com.script.comminutioncraft.common.network.SetGhostItemPayload;
 import com.script.comminutioncraft.common.network.SwitchDrillModePayload;
@@ -35,6 +36,8 @@ public final class ModRegistries {
         modEventBus.addListener(ModCapabilities::register);
         modEventBus.addListener(ModDataMaps::register);
         modEventBus.addListener(OreMinerBlockEntity::registerTickets);
+        modEventBus.addListener(FennecFox::registerAttributes);
+        modEventBus.addListener(FennecFox::registerSpawnPlacements);
         modEventBus.addListener(ModGameTests::registerTests);
         modEventBus.addListener(SwitchWrenchModePayload::register);
         modEventBus.addListener(SwitchDrillModePayload::register);

@@ -1,0 +1,10 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": "#c:is_desert",
+  "spawners": {
+    "type": "comminutioncraft:fennec_fox",
+    "maxCount": 3,
+    "minCount": 2,
+    "weight": 5
+  }
+}
