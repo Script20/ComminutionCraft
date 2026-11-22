@@ -95,8 +95,8 @@ public class FennecFoxModel extends EntityModel<FennecFoxRenderer.State> {
         body.y += 3.5F;
         leftFrontLeg.xRot = 0.0F;
         rightFrontLeg.xRot = 0.0F;
-        leftHindLeg.xRot = -1.45F;
-        rightHindLeg.xRot = -1.45F;
+        leftHindLeg.xRot = 1.45F; // feet forward, under the body
+        rightHindLeg.xRot = 1.45F;
         leftHindLeg.y += 2.5F;
         rightHindLeg.y += 2.5F;
         tail.y += 3.0F;
