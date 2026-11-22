@@ -7,6 +7,7 @@ import com.script.comminutioncraft.client.gui.CoalSmelterScreen;
 import com.script.comminutioncraft.client.gui.CreativeChestScreen;
 import com.script.comminutioncraft.client.gui.ElectricGeneratorScreen;
 import com.script.comminutioncraft.client.gui.ElectricMachineScreen;
+import com.script.comminutioncraft.client.gui.FactoryScreen;
 import com.script.comminutioncraft.client.gui.ItemPipeScreen;
 import com.script.comminutioncraft.client.gui.MachineScreen;
 import com.script.comminutioncraft.client.gui.OreMinerScreen;
@@ -446,6 +447,21 @@ public class ComminutionJeiPlugin implements IModPlugin {
                     type = RecipeTypes.SMELTING;
                 }
                 return List.of(IGuiClickableArea.createBasic(ARROW_X, ARROW_Y, ARROW_W, ARROW_H, type));
+            }
+        });
+
+        // Factories: each lane's progress bar shows the recipes of the factory's machine.
+        registration.addGuiContainerHandler(FactoryScreen.class, new IGuiContainerHandler<>() {
+            @Override
+            public List<IGuiClickableArea> getGuiClickableAreas(FactoryScreen screen, double mouseX, double mouseY) {
+                String block = screen.getMenu().layout().block();
+                IRecipeType<?> type = block.contains("smelting") ? RecipeTypes.SMELTING
+                        : block.contains("granulating") ? GRANULATING.get()
+                        : block.contains("washing") ? WASHING.get()
+                        : PURIFYING.get();
+                return screen.laneBars().stream()
+                        .map(bar -> IGuiClickableArea.createBasic(bar.getX(), bar.getY(), bar.getWidth(), bar.getHeight(), type))
+                        .toList();
             }
         });
 

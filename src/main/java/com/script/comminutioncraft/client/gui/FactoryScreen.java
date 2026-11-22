@@ -2,7 +2,10 @@ package com.script.comminutioncraft.client.gui;
 
 import com.script.comminutioncraft.ComminutionCraft;
 import com.script.comminutioncraft.common.machine.FactoryMenu;
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
@@ -61,6 +64,15 @@ public class FactoryScreen extends MachineScreen<FactoryMenu> {
         if (layout.fluid() != 0) {
             drawGauge(graphics, PLASMA_X, layout.fluid() == 1 ? WATER_FLUID : OXYGEN_FLUID, menu.getFluid(), menu.getFluidCapacity());
         }
+    }
+
+    /** Each lane's progress bar, a little wider to be easy to click (GUI coordinates): JEI's "show recipes" areas. */
+    public List<Rect2i> laneBars() {
+        List<Rect2i> bars = new ArrayList<>();
+        for (int lane = 0; lane < menu.layout().lanes(); lane++) {
+            bars.add(new Rect2i(menu.layout().columnX(lane) + 3, BAR_TOP - 1, 10, BAR_HEIGHT + 2));
+        }
+        return bars;
     }
 
     /** A recessed 18x18 slot round an item at (x, y). */
