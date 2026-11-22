@@ -22,6 +22,7 @@ import com.script.comminutioncraft.common.machine.FluidTankBlock;
 import com.script.comminutioncraft.common.machine.FluidTankBlockEntity;
 import com.script.comminutioncraft.common.machine.HorizonControllerBlock;
 import com.script.comminutioncraft.common.machine.HorizonPortBlock;
+import com.script.comminutioncraft.common.machine.miner.OreMinerBlock;
 import com.script.comminutioncraft.common.machine.upgrade.UpgradeType;
 import com.script.comminutioncraft.common.pipe.ItemPipeBlock;
 import com.script.comminutioncraft.common.registry.ModDataComponents;
@@ -110,6 +111,9 @@ public final class ModTooltips {
         SimpleFluidContent fluid = stack.get(ModDataComponents.STORED_FLUID.get());
         FluidStack contents = fluid == null ? FluidStack.EMPTY : fluid.copy();
 
+        if (block instanceof OreMinerBlock miner) {
+            lines.add(gray("tooltip.comminutioncraft.ore_miner", miner.tier().width(), miner.tier().width()));
+        }
         Factories.Factory factory = block == null ? null : Factories.forFactory(block);
         if (factory != null) {
             lines.add(gray("tooltip.comminutioncraft.factory", factory.lanes(), factory.lanes()));

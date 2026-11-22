@@ -58,6 +58,7 @@ public final class ModCapabilities {
         tier5(event);
         tier6(event);
         factories(event);
+        oreMiners(event);
         conduits(event);
         creative(event);
     }
@@ -159,6 +160,12 @@ public final class ModCapabilities {
         processing(event, ModBlockEntities.PURIFYING_FACTORY.get(), OrePurifierBlockEntity::getFluidHandler);
         processing(event, ModBlockEntities.ANTIMATTER_PURIFYING_FACTORY.get(), OrePurifierBlockEntity::getFluidHandler);
         processing(event, ModBlockEntities.ANTIMATTER_WASHING_FACTORY.get(), OreWasherBlockEntity::getFluidHandler);
+    }
+
+    /** Ore Miners: their outputs come out of Output faces; FE on every face. */
+    private static void oreMiners(RegisterCapabilitiesEvent event) {
+        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.ORE_MINER.get(), WorldlyContainerWrapper::new);
+        event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.ORE_MINER.get(), (miner, side) -> miner.getEnergyHandler());
     }
 
     /** Pipes and cables store nothing: their handlers route straight to the network (not through a cut arm). */

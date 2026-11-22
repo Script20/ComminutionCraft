@@ -446,6 +446,47 @@ public class ModRecipeProvider extends RecipeProvider {
         antimatterMachine(ModItems.ANTIMATTER_SMELTER.get(), ModItems.PLASMA_SMELTER.get());
         antimatterMachine(ModItems.ANTIMATTER_WASHER.get(), ModItems.ORE_WASHER.get());
         antimatterMachine(ModItems.ANTIMATTER_PURIFIER.get(), ModItems.ORE_PURIFIER.get());
+        // Ore Miners: an Electric one from a diamond pickaxe, then each tier from the one below
+        shaped(RecipeCategory.MISC, ModItems.ELECTRIC_ORE_MINER.get())
+                .pattern("ICI")
+                .pattern("DPD")
+                .pattern("ICI")
+                .define('I', tag(ProcessedMetal.commonItemTag("ingots/iron")))
+                .define('C', ModItems.ELECTRONIC_CIRCUIT.get())
+                .define('D', tag(ProcessedMetal.commonItemTag("gems/diamond")))
+                .define('P', Items.DIAMOND_PICKAXE)
+                .unlockedBy("has_electronic_circuit", has(ModItems.ELECTRONIC_CIRCUIT.get()))
+                .save(output, key("electric_ore_miner"));
+        shaped(RecipeCategory.MISC, ModItems.PLASMA_ORE_MINER.get())
+                .pattern("IPI")
+                .pattern("GMG")
+                .pattern("IPI")
+                .define('I', tag(ProcessedMetal.commonItemTag("ingots/iron")))
+                .define('P', ModItems.PLASMA_CIRCUIT.get())
+                .define('G', tag(ProcessedMetal.commonItemTag("ingots/gold")))
+                .define('M', ModItems.ELECTRIC_ORE_MINER.get())
+                .unlockedBy("has_plasma_circuit", has(ModItems.PLASMA_CIRCUIT.get()))
+                .save(output, key("plasma_ore_miner"));
+        shaped(RecipeCategory.MISC, ModItems.FUSION_ORE_MINER.get())
+                .pattern("RFR")
+                .pattern("FMF")
+                .pattern("RFR")
+                .define('R', ModItems.REACTOR_PLATING.get())
+                .define('F', ModItems.FUSION_CIRCUIT.get())
+                .define('M', ModItems.PLASMA_ORE_MINER.get())
+                .unlockedBy("has_fusion_circuit", has(ModItems.FUSION_CIRCUIT.get()))
+                .save(output, key("fusion_ore_miner"));
+        antimatterMachine(ModItems.ANTIMATTER_ORE_MINER.get(), ModItems.FUSION_ORE_MINER.get());
+        shaped(RecipeCategory.MISC, ModItems.SINGULARITY_ORE_MINER.get())
+                .pattern("FSF")
+                .pattern("GMG")
+                .pattern("FSF")
+                .define('F', ModItems.CONTAINMENT_FRAME.get())
+                .define('S', ModItems.SINGULARITY_CIRCUIT.get())
+                .define('G', tag(ProcessedMetal.commonItemTag("storage_blocks/gold")))
+                .define('M', ModItems.ANTIMATTER_ORE_MINER.get())
+                .unlockedBy("has_singularity_circuit", has(ModItems.SINGULARITY_CIRCUIT.get()))
+                .save(output, key("singularity_ore_miner"));
         shaped(RecipeCategory.MISC, ModItems.FROTH_FLOTATION_CELL.get())
                 .pattern("PAP")
                 .pattern("GWG")

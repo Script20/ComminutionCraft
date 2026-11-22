@@ -9,6 +9,7 @@ import com.script.comminutioncraft.client.gui.ElectricGeneratorScreen;
 import com.script.comminutioncraft.client.gui.ElectricMachineScreen;
 import com.script.comminutioncraft.client.gui.ItemPipeScreen;
 import com.script.comminutioncraft.client.gui.MachineScreen;
+import com.script.comminutioncraft.client.gui.OreMinerScreen;
 import com.script.comminutioncraft.client.gui.PlasmaMachineScreen;
 import com.script.comminutioncraft.common.data.ProcessedMetal;
 import com.script.comminutioncraft.common.machine.AnnihilationGeneratorBlockEntity;
@@ -29,6 +30,8 @@ import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlockEntity;
 import com.script.comminutioncraft.common.machine.PlasmaGranulatorBlockEntity;
 import com.script.comminutioncraft.common.machine.SingularityProcessorBlockEntity;
 import com.script.comminutioncraft.common.machine.TritiumBreederBlockEntity;
+import com.script.comminutioncraft.common.machine.miner.OreMinerBlockEntity;
+import com.script.comminutioncraft.common.machine.miner.OreMinerMenu;
 import com.script.comminutioncraft.common.network.SetGhostItemPayload;
 import com.script.comminutioncraft.common.pipe.ItemPipeMenu;
 import com.script.comminutioncraft.common.pipe.PipeSide;
@@ -349,6 +352,36 @@ public class ComminutionJeiPlugin implements IModPlugin {
                 for (int i = 0; i < PipeSide.FILTER_SLOTS; i++) {
                     int slot = ItemPipeMenu.FILTER_START + i;
                     Rect2i area = new Rect2i(screen.filterScreenX(i), screen.filterScreenY(), 16, 16);
+                    targets.add(new Target<>() {
+                        @Override
+                        public Rect2i getArea() {
+                            return area;
+                        }
+
+                        @Override
+                        public void accept(I dropped) {
+                            ingredient.getItemStack().ifPresent(stack ->
+                                    ClientPacketDistributor.sendToServer(new SetGhostItemPayload(slot, stack.copyWithCount(1))));
+                        }
+                    });
+                }
+                return targets;
+            }
+
+            @Override
+            public void onComplete() {}
+        });
+
+        registration.addGhostIngredientHandler(OreMinerScreen.class, new IGhostIngredientHandler<>() {
+            @Override
+            public <I> List<Target<I>> getTargetsTyped(OreMinerScreen screen, ITypedIngredient<I> ingredient, boolean doStart) {
+                if (ingredient.getItemStack().isEmpty() || !screen.getMenu().hasCircuit()) {
+                    return List.of();
+                }
+                List<Target<I>> targets = new ArrayList<>();
+                for (int i = 0; i < OreMinerBlockEntity.FILTER_SLOTS; i++) {
+                    int slot = OreMinerMenu.FILTER_START + i;
+                    Rect2i area = new Rect2i(screen.filterScreenX(i), screen.filterScreenY(i), 16, 16);
                     targets.add(new Target<>() {
                         @Override
                         public Rect2i getArea() {

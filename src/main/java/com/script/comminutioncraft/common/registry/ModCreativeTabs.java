@@ -53,6 +53,8 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.ANTIMATTER_WASHING_FACTORY.get());
                         output.accept(ModItems.ANTIMATTER_PURIFYING_FACTORY.get());
                         output.accept(ModItems.SINGULARITY_PROCESSOR.get());
+                        // Ore Miners, by tier
+                        ModBlocks.ORE_MINERS.forEach(miner -> output.accept(miner.get()));
                         // Machines
                         output.accept(ModItems.ATMOSPHERIC_WATER_GENERATOR.get());
                         output.accept(ModItems.ELECTROLYSER.get());

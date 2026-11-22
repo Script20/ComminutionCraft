@@ -54,6 +54,7 @@ public class ModLootTableProvider extends LootTableProvider {
             dropSelf(ModBlocks.FROTH_FLOTATION_CELL.get());
             dropSelf(ModBlocks.ANTIMATTER_WASHER.get());
             dropSelf(ModBlocks.ANTIMATTER_PURIFIER.get());
+            ModBlocks.ORE_MINERS.forEach(miner -> dropSelf(miner.get()));
             dropSelf(ModBlocks.ELECTRIC_SMELTING_FACTORY.get());
             dropSelf(ModBlocks.PLASMA_GRANULATING_FACTORY.get());
             dropSelf(ModBlocks.PLASMA_SMELTING_FACTORY.get());

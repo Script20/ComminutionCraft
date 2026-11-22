@@ -53,6 +53,7 @@ import com.script.comminutioncraft.common.machine.control.MachineControls;
 import com.script.comminutioncraft.common.machine.control.RedstoneMode;
 import com.script.comminutioncraft.common.machine.control.RelativeSide;
 import com.script.comminutioncraft.common.machine.control.SideMode;
+import com.script.comminutioncraft.common.machine.miner.OreMinerBlockEntity;
 import com.script.comminutioncraft.common.machine.upgrade.UpgradeType;
 import com.script.comminutioncraft.common.pipe.ItemPipeBlock;
 import com.script.comminutioncraft.common.pipe.ItemPipeBlockEntity;
@@ -101,6 +102,7 @@ import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biomes;
@@ -235,6 +237,8 @@ public final class ModGameTests {
         TEST_FUNCTIONS.register("factory_kit_upgrades_machine", () -> ModGameTests::factoryKitUpgradesMachine);
         TEST_FUNCTIONS.register("factory_lanes_work_side_by_side", () -> ModGameTests::factoryLanesWorkSideBySide);
         TEST_FUNCTIONS.register("upgrades_shift_click_only_into_upgrade_slots", () -> ModGameTests::upgradesShiftClickOnlyIntoUpgradeSlots);
+        TEST_FUNCTIONS.register("ore_miner_snake_order", () -> ModGameTests::oreMinerSnakeOrder);
+        TEST_FUNCTIONS.register("ore_miner_mines_its_chunk", () -> ModGameTests::oreMinerMinesItsChunk);
     }
 
     public static void registerTests(RegisterGameTestsEvent event) {
@@ -1140,6 +1144,66 @@ public final class ModGameTests {
             }
         }
         helper.succeed();
+    }
+
+    /**
+     * The Ore Miner's snake (owner, 2026-11-22): facing north, chunk 1 is west of its own, then its own, then east; the
+     * next row runs back east to west, one chunk north; the last is the far right. Facing east the area turns with it.
+     */
+    private static void oreMinerSnakeOrder(GameTestHelper helper) {
+        ChunkPos home = new ChunkPos(0, 0);
+        int[][] north = {{-1, 0}, {0, 0}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, -2}, {0, -2}, {1, -2}};
+        for (int i = 0; i < 9; i++) {
+            ChunkPos at = OreMinerBlockEntity.chunkAt(home, Direction.NORTH, 3, i);
+            helper.assertTrue(at.x() == north[i][0] && at.z() == north[i][1], "Facing north, chunk " + (i + 1) + " is " + at);
+        }
+        ChunkPos first = OreMinerBlockEntity.chunkAt(home, Direction.EAST, 3, 0);
+        ChunkPos last = OreMinerBlockEntity.chunkAt(home, Direction.EAST, 3, 8);
+        helper.assertTrue(first.x() == 0 && first.z() == -1 && last.x() == 2 && last.z() == 1,
+                "Facing east, the area should turn with it: first " + first + ", last " + last);
+        ChunkPos biggest = OreMinerBlockEntity.chunkAt(home, Direction.NORTH, 11, 120);
+        helper.assertTrue(biggest.x() == 5 && biggest.z() == -10, "The Singularity miner's last chunk is " + biggest);
+        helper.succeed();
+    }
+
+    /**
+     * A Plasma Ore Miner with its circuit and a whitelist (deepslate emerald ore, nether quartz ore) pulls those two out of
+     * its own chunk, no digging: their drops land in its outputs, deepslate and stone fill the spots, and an iron ore it
+     * isn't told to mine stays. (A whitelist of ores no other test uses keeps it off their blocks.)
+     */
+    private static void oreMinerMinesItsChunk(GameTestHelper helper) {
+        BlockPos minerPos = new BlockPos(2, 1, 2);
+        helper.setBlock(minerPos, ModBlocks.PLASMA_ORE_MINER.get().defaultBlockState().setValue(MachineBlock.FACING, Direction.NORTH));
+        helper.setBlock(minerPos.above(), ModBlocks.CREATIVE_ENERGY_BATTERY.get());
+        BlockPos absolute = helper.absolutePos(minerPos);
+        int dx = (absolute.getX() & 15) == 15 ? -1 : 1; // stay inside the miner's own chunk
+        int dz = (absolute.getZ() & 15) == 15 ? -1 : 1;
+        BlockPos emerald = minerPos.offset(dx, 0, 0);
+        BlockPos quartz = minerPos.offset(0, 0, dz);
+        BlockPos iron = minerPos.offset(dx, 0, dz);
+        helper.setBlock(emerald, Blocks.DEEPSLATE_EMERALD_ORE);
+        helper.setBlock(quartz, Blocks.NETHER_QUARTZ_ORE);
+        helper.setBlock(iron, Blocks.IRON_ORE);
+        OreMinerBlockEntity miner = helper.getBlockEntity(minerPos, OreMinerBlockEntity.class);
+        miner.filterView.setItem(0, new ItemStack(ModItems.PLASMA_CIRCUIT.get()));
+        miner.filterView.setItem(1, new ItemStack(Items.DEEPSLATE_EMERALD_ORE));
+        miner.filterView.setItem(2, new ItemStack(Items.NETHER_QUARTZ_ORE));
+        miner.getControls().setSide(RelativeSide.BOTTOM, SideMode.NONE); // keep the drops in to count them
+        helper.runAfterDelay(1, () -> miner.jumpTo(1)); // its own chunk (the first tick sets it up)
+        helper.succeedWhen(() -> {
+            helper.assertBlockPresent(Blocks.DEEPSLATE, emerald);
+            helper.assertBlockPresent(Blocks.STONE, quartz);
+            helper.assertBlockPresent(Blocks.IRON_ORE, iron);
+            int emeralds = 0;
+            int quartzes = 0;
+            for (int slot = 0; slot < miner.getContainerSize(); slot++) {
+                ItemStack stack = miner.getItem(slot);
+                emeralds += stack.is(Items.EMERALD) ? stack.getCount() : 0;
+                quartzes += stack.is(Items.QUARTZ) ? stack.getCount() : 0;
+            }
+            helper.assertTrue(emeralds == 1 && quartzes == 1, "Expected an emerald and a quartz in the outputs, got " + emeralds + " / " + quartzes);
+            miner.getControls().setRedstone(RedstoneMode.HIGH); // stop it before it reaches the next chunk
+        });
     }
 
     private static int smelted(ElectricMachineBlockEntity factory) {

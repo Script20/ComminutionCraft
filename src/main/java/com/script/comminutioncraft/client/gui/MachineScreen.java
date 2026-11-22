@@ -106,7 +106,12 @@ public abstract class MachineScreen<M extends AbstractContainerMenu & Controllab
     private boolean openingSubScreen;
 
     protected MachineScreen(M menu, Inventory inventory, Component title, Identifier texture, Tier tier) {
-        super(menu, inventory, title);
+        this(menu, inventory, title, texture, tier, 166);
+    }
+
+    /** A taller panel than the usual 166 (the player inventory moves down with it). */
+    protected MachineScreen(M menu, Inventory inventory, Component title, Identifier texture, Tier tier, int imageHeight) {
+        super(menu, inventory, title, 176, imageHeight);
         this.texture = texture;
         this.tier = tier;
     }

@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "comminutioncraft:block/electric_ore_miner_front_on",
+    "side": "comminutioncraft:block/electric_ore_miner_side",
+    "top": "comminutioncraft:block/electric_ore_miner_top"
+  }
+}

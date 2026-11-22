@@ -224,6 +224,12 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> ITEM_PIPE = ITEMS.registerSimpleBlockItem("item_pipe", ModBlocks.ITEM_PIPE);
     public static final DeferredItem<BlockItem> FUSION_ITEM_PIPE = ITEMS.registerSimpleBlockItem("fusion_item_pipe", ModBlocks.FUSION_ITEM_PIPE);
 
+    // Ore Miners
+    public static final DeferredItem<BlockItem> ELECTRIC_ORE_MINER = ITEMS.registerSimpleBlockItem("electric_ore_miner", ModBlocks.ELECTRIC_ORE_MINER);
+    public static final DeferredItem<BlockItem> PLASMA_ORE_MINER = ITEMS.registerSimpleBlockItem("plasma_ore_miner", ModBlocks.PLASMA_ORE_MINER);
+    public static final DeferredItem<BlockItem> FUSION_ORE_MINER = ITEMS.registerSimpleBlockItem("fusion_ore_miner", ModBlocks.FUSION_ORE_MINER);
+    public static final DeferredItem<BlockItem> ANTIMATTER_ORE_MINER = ITEMS.registerSimpleBlockItem("antimatter_ore_miner", ModBlocks.ANTIMATTER_ORE_MINER);
+    public static final DeferredItem<BlockItem> SINGULARITY_ORE_MINER = ITEMS.registerSimpleBlockItem("singularity_ore_miner", ModBlocks.SINGULARITY_ORE_MINER);
     // Factories and the kits that make them
     public static final DeferredItem<BlockItem> ELECTRIC_SMELTING_FACTORY = ITEMS.registerSimpleBlockItem("electric_smelting_factory", ModBlocks.ELECTRIC_SMELTING_FACTORY);
     public static final DeferredItem<BlockItem> PLASMA_GRANULATING_FACTORY = ITEMS.registerSimpleBlockItem("plasma_granulating_factory", ModBlocks.PLASMA_GRANULATING_FACTORY);

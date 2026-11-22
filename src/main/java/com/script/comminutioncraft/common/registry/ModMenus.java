@@ -25,6 +25,7 @@ import com.script.comminutioncraft.common.machine.PlasmaGeneratorBlockEntity;
 import com.script.comminutioncraft.common.machine.PlasmaMachineMenu;
 import com.script.comminutioncraft.common.machine.SingularityProcessorMenu;
 import com.script.comminutioncraft.common.machine.TritiumBreederBlockEntity;
+import com.script.comminutioncraft.common.machine.miner.OreMinerMenu;
 import com.script.comminutioncraft.common.pipe.ItemPipeMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.flag.FeatureFlags;
@@ -144,6 +145,9 @@ public final class ModMenus {
     /** Opened with the pipe's position and the clicked side (see ItemPipeBlock.useWithoutItem). */
     public static final DeferredHolder<MenuType<?>, MenuType<ItemPipeMenu>> ITEM_PIPE =
             MENUS.register("item_pipe", () -> IMenuTypeExtension.create(ItemPipeMenu::client));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<OreMinerMenu>> ORE_MINER =
+            MENUS.register("ore_miner", () -> IMenuTypeExtension.create(OreMinerMenu::client));
 
     public static final DeferredHolder<MenuType<?>, MenuType<FactoryMenu>> FACTORY =
             MENUS.register("factory", () -> IMenuTypeExtension.create(FactoryMenu::client));

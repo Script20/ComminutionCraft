@@ -1,0 +1,64 @@
+{
+  "variants": {
+    "facing=east,screen=finished": {
+      "model": "comminutioncraft:block/electric_ore_miner_finished",
+      "y": 90
+    },
+    "facing=east,screen=idle": {
+      "model": "comminutioncraft:block/electric_ore_miner",
+      "y": 90
+    },
+    "facing=east,screen=mining": {
+      "model": "comminutioncraft:block/electric_ore_miner_mining",
+      "y": 90
+    },
+    "facing=east,screen=scanning": {
+      "model": "comminutioncraft:block/electric_ore_miner_scanning",
+      "y": 90
+    },
+    "facing=north,screen=finished": {
+      "model": "comminutioncraft:block/electric_ore_miner_finished"
+    },
+    "facing=north,screen=idle": {
+      "model": "comminutioncraft:block/electric_ore_miner"
+    },
+    "facing=north,screen=mining": {
+      "model": "comminutioncraft:block/electric_ore_miner_mining"
+    },
+    "facing=north,screen=scanning": {
+      "model": "comminutioncraft:block/electric_ore_miner_scanning"
+    },
+    "facing=south,screen=finished": {
+      "model": "comminutioncraft:block/electric_ore_miner_finished",
+      "y": 180
+    },
+    "facing=south,screen=idle": {
+      "model": "comminutioncraft:block/electric_ore_miner",
+      "y": 180
+    },
+    "facing=south,screen=mining": {
+      "model": "comminutioncraft:block/electric_ore_miner_mining",
+      "y": 180
+    },
+    "facing=south,screen=scanning": {
+      "model": "comminutioncraft:block/electric_ore_miner_scanning",
+      "y": 180
+    },
+    "facing=west,screen=finished": {
+      "model": "comminutioncraft:block/electric_ore_miner_finished",
+      "y": 270
+    },
+    "facing=west,screen=idle": {
+      "model": "comminutioncraft:block/electric_ore_miner",
+      "y": 270
+    },
+    "facing=west,screen=mining": {
+      "model": "comminutioncraft:block/electric_ore_miner_mining",
+      "y": 270
+    },
+    "facing=west,screen=scanning": {
+      "model": "comminutioncraft:block/electric_ore_miner_scanning",
+      "y": 270
+    }
+  }
+}

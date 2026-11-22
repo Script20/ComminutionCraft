@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "F": "comminutioncraft:fusion_circuit",
+    "M": "comminutioncraft:plasma_ore_miner",
+    "R": "comminutioncraft:reactor_plating"
+  },
+  "pattern": [
+    "RFR",
+    "FMF",
+    "RFR"
+  ],
+  "result": {
+    "id": "comminutioncraft:fusion_ore_miner"
+  }
+}

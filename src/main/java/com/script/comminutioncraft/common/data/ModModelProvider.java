@@ -6,6 +6,7 @@ import com.script.comminutioncraft.client.render.TankItemRenderer;
 import com.script.comminutioncraft.common.block.StoneSet;
 import com.script.comminutioncraft.common.cable.CableConnection;
 import com.script.comminutioncraft.common.cable.ConduitBlock;
+import com.script.comminutioncraft.common.machine.miner.OreMinerBlock;
 import com.script.comminutioncraft.common.pipe.ItemPipeBlock;
 import com.script.comminutioncraft.common.item.WrenchMode;
 import com.script.comminutioncraft.common.machine.AcceleratorPortBlock;
@@ -253,6 +254,7 @@ public class ModModelProvider extends ModelProvider {
         itemModels.generateFlatItem(ModItems.ENERGY_UPGRADE.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.GAS_UPGRADE.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.LIQUID_UPGRADE.get(), ModelTemplates.FLAT_ITEM);
+        ModBlocks.ORE_MINERS.forEach(miner -> oreMiner(blockModels, miner.get()));
         blockModels.createFurnace(ModBlocks.ELECTRIC_SMELTING_FACTORY.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         blockModels.createFurnace(ModBlocks.PLASMA_GRANULATING_FACTORY.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
         blockModels.createFurnace(ModBlocks.PLASMA_SMELTING_FACTORY.get(), TexturedModel.ORIENTABLE_ONLY_TOP);
@@ -317,6 +319,22 @@ public class ModModelProvider extends ModelProvider {
      * One model per charge level, each with its own front (<block>_front_0 .. _front_6). The plain model, with the
      * full _front, is what the item (and the side config screen) shows.
      */
+    /** An Ore Miner: the front shows its screen (idle = _front, scanning = _front_scan, mining = _front_on, finished = _front_done). */
+    private static void oreMiner(BlockModelGenerators blockModels, OreMinerBlock miner) {
+        Identifier idle = TexturedModel.ORIENTABLE_ONLY_TOP.create(miner, blockModels.modelOutput);
+        blockModels.blockStateOutput.accept(MultiVariantGenerator.dispatch(miner)
+                .with(PropertyDispatch.initial(OreMinerBlock.SCREEN).generate(screen -> BlockModelGenerators.plainVariant(
+                        screen == OreMinerBlock.Screen.IDLE ? idle
+                                : TexturedModel.ORIENTABLE_ONLY_TOP.get(miner)
+                                .updateTextures(t -> t.put(TextureSlot.FRONT, TextureMapping.getBlockTexture(miner, switch (screen) {
+                                    case SCANNING -> "_front_scan";
+                                    case MINING -> "_front_on";
+                                    default -> "_front_done";
+                                })))
+                                .createWithSuffix(miner, "_" + screen.getSerializedName(), blockModels.modelOutput))))
+                .with(BlockModelGenerators.ROTATION_HORIZONTAL_FACING));
+    }
+
     private static void energyBattery(BlockModelGenerators blockModels, EnergyBatteryBlock battery) {
         TexturedModel.ORIENTABLE_ONLY_TOP.create(battery, blockModels.modelOutput);
         blockModels.blockStateOutput.accept(MultiVariantGenerator.dispatch(battery)

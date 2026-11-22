@@ -48,6 +48,8 @@ import com.script.comminutioncraft.common.machine.ReactorPortBlock;
 import com.script.comminutioncraft.common.machine.SingularityProcessorBlock;
 import com.script.comminutioncraft.common.machine.TritiumBreederBlock;
 import com.script.comminutioncraft.common.machine.WashingFactoryBlock;
+import com.script.comminutioncraft.common.machine.miner.OreMinerBlock;
+import com.script.comminutioncraft.common.machine.miner.OreMinerTier;
 import com.script.comminutioncraft.common.pipe.ItemPipeBlock;
 import com.script.comminutioncraft.common.storage.SoarynChestBlock;
 import com.script.comminutioncraft.common.worldgen.ModTrees;
@@ -138,6 +140,19 @@ public final class ModBlocks {
                     .noOcclusion());
 
     /** Item Pipe (tier 2): see-through, so it mustn't hide its neighbours' faces. */
+    // ---- Ore Miners: one per tier 2-6 (see OreMinerTier) ----
+    public static final DeferredBlock<OreMinerBlock> ELECTRIC_ORE_MINER = BLOCKS.registerBlock(
+            "electric_ore_miner", properties -> new OreMinerBlock(properties, OreMinerTier.ELECTRIC), ModBlocks::tier2MachineProperties);
+    public static final DeferredBlock<OreMinerBlock> PLASMA_ORE_MINER = BLOCKS.registerBlock(
+            "plasma_ore_miner", properties -> new OreMinerBlock(properties, OreMinerTier.PLASMA), ModBlocks::tier2MachineProperties);
+    public static final DeferredBlock<OreMinerBlock> FUSION_ORE_MINER = BLOCKS.registerBlock(
+            "fusion_ore_miner", properties -> new OreMinerBlock(properties, OreMinerTier.FUSION), ModBlocks::tier2MachineProperties);
+    public static final DeferredBlock<OreMinerBlock> ANTIMATTER_ORE_MINER = BLOCKS.registerBlock(
+            "antimatter_ore_miner", properties -> new OreMinerBlock(properties, OreMinerTier.ANTIMATTER), ModBlocks::tier2MachineProperties);
+    public static final DeferredBlock<OreMinerBlock> SINGULARITY_ORE_MINER = BLOCKS.registerBlock(
+            "singularity_ore_miner", properties -> new OreMinerBlock(properties, OreMinerTier.SINGULARITY), ModBlocks::tier2MachineProperties);
+    public static final List<DeferredBlock<OreMinerBlock>> ORE_MINERS = List.of(ELECTRIC_ORE_MINER, PLASMA_ORE_MINER, FUSION_ORE_MINER, ANTIMATTER_ORE_MINER, SINGULARITY_ORE_MINER);
+
     // ---- Factories: a machine with 2-4 lanes (see Factories), from a Factory Upgrade Kit ----
     public static final DeferredBlock<FactoryBlock> ELECTRIC_SMELTING_FACTORY = BLOCKS.registerBlock(
             "electric_smelting_factory", properties -> new FactoryBlock(properties, ModBlockEntities.ELECTRIC_SMELTING_FACTORY), ModBlocks::tier2MachineProperties);

@@ -37,10 +37,13 @@ import com.script.comminutioncraft.common.machine.PlasmaSmelterBlockEntity;
 import com.script.comminutioncraft.common.machine.ReactorPortBlockEntity;
 import com.script.comminutioncraft.common.machine.SingularityProcessorBlockEntity;
 import com.script.comminutioncraft.common.machine.TritiumBreederBlockEntity;
+import com.script.comminutioncraft.common.machine.miner.OreMinerBlockEntity;
 import com.script.comminutioncraft.common.pipe.ItemPipeBlockEntity;
 import com.script.comminutioncraft.common.storage.SoarynChestBlockEntity;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -147,6 +150,11 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CreativeFluidTankBlockEntity>> CREATIVE_FLUID_TANK =
             BLOCK_ENTITY_TYPES.register("creative_fluid_tank",
                     () -> new BlockEntityType<>(CreativeFluidTankBlockEntity::new, ModBlocks.CREATIVE_FLUID_TANK.get()));
+
+    /** Every Ore Miner (the tier comes from the block). */
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<OreMinerBlockEntity>> ORE_MINER =
+            BLOCK_ENTITY_TYPES.register("ore_miner", () -> new BlockEntityType<>(OreMinerBlockEntity::new,
+                    ModBlocks.ORE_MINERS.stream().map(DeferredBlock::get).toArray(Block[]::new)));
 
     // ---- Factories: the machines' own block entities with more lanes ----
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ElectricSmelterBlockEntity>> ELECTRIC_SMELTING_FACTORY =

@@ -14,6 +14,7 @@ import com.script.comminutioncraft.client.gui.FluidMachineScreen;
 import com.script.comminutioncraft.client.gui.FrothFlotationCellScreen;
 import com.script.comminutioncraft.client.gui.FusionReactorScreen;
 import com.script.comminutioncraft.client.gui.ItemPipeScreen;
+import com.script.comminutioncraft.client.gui.OreMinerScreen;
 import com.script.comminutioncraft.client.gui.OrePurifierScreen;
 import com.script.comminutioncraft.client.gui.OreWasherScreen;
 import com.script.comminutioncraft.client.gui.ParticleAcceleratorScreen;
@@ -89,7 +90,8 @@ public final class ModScreens {
                 (menu, inventory, title) -> new SingularityProcessorScreen((SingularityProcessorMenu) menu, inventory, title));
         event.register(ModMenus.SINGULARITY_ENERGY_BATTERY.get(), EnergyBatteryScreen::singularity);
 
-        // Every tier: factories, item pipes, creative blocks
+        // Every tier: ore miners, factories, item pipes, creative blocks
+        event.register(ModMenus.ORE_MINER.get(), OreMinerScreen::new);
         event.register(ModMenus.FACTORY.get(), FactoryScreen::new);
         event.register(ModMenus.ITEM_PIPE.get(), ItemPipeScreen::new);
         event.register(ModMenus.CREATIVE_FLUID_TANK.get(), CreativeFluidTankScreen::new);

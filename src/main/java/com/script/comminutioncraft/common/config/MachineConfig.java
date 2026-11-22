@@ -122,6 +122,12 @@ public final class MachineConfig {
     public static final ConfigInt ITEM_PIPE_TICKS_PER_BLOCK;
     public static final ConfigInt FUSION_ITEM_PIPE_EXTRACT_INTERVAL;
     public static final ConfigInt FUSION_ITEM_PIPE_EXTRACT_AMOUNT;
+    public static final ConfigInt ORE_MINER_SCAN_PER_TICK;
+    /** Per Ore Miner tier (OreMinerTier order: electric, plasma, fusion, antimatter, singularity). */
+    public static final ConfigInt[] ORE_MINER_TICKS_PER_ORE = new ConfigInt[5];
+    public static final ConfigInt[] ORE_MINER_ENERGY_PER_ORE = new ConfigInt[5];
+    public static final ConfigInt[] ORE_MINER_ENERGY_CAPACITY = new ConfigInt[5];
+    public static final ConfigInt[] ORE_MINER_MAX_ENERGY_INPUT = new ConfigInt[5];
     public static final ConfigInt FLUID_MACHINES_TANK_CAPACITY;
     public static final ConfigInt FLUID_MACHINES_MAX_FLUID_OUTPUT;
     public static final ConfigDouble ATMOSPHERIC_WATER_GENERATOR_WATER_PER_OPEN_FACE;
@@ -427,6 +433,26 @@ public final class MachineConfig {
         TOOL_TREE_MAX = integer(builder, "tools", "treeMax", "Tree felling limit", "Most logs a Fusion or better chainsaw fells at once", 256);
         TOOL_LEAVES_MAX = integer(builder, "tools", "leavesMax", "Tree clearing leaves limit", "Most leaves a Singularity Chainsaw clears at once", 1_024);
         builder.pop();
+        section(builder, "ore_miner", "Ore Miners");
+        ORE_MINER_SCAN_PER_TICK = integer(builder, "ore_miner", "scanPerTick", "Blocks scanned per tick",
+                "How many blocks a miner looks at each tick while scanning a chunk (scanning costs no FE)", 2_048);
+        String[] minerTiers = {"electric", "plasma", "fusion", "antimatter", "singularity"};
+        int[] minerTicks = {40, 20, 10, 5, 2};
+        int[] minerEnergy = {1_600, 3_000, 6_000, 12_000, 24_000};
+        int[] minerCapacity = {40_000, 100_000, 400_000, 2_000_000, 10_000_000};
+        int[] minerInput = {400, 1_000, 4_000, 16_000, 64_000};
+        for (int i = 0; i < minerTiers.length; i++) {
+            String t = minerTiers[i];
+            ORE_MINER_TICKS_PER_ORE[i] = integer(builder, "ore_miner", t + "TicksPerOre", "Ticks per ore (" + t + ")",
+                    "How long the " + t + " miner takes to pull out one ore", minerTicks[i]);
+            ORE_MINER_ENERGY_PER_ORE[i] = integer(builder, "ore_miner", t + "EnergyPerOre", "FE per ore (" + t + ")",
+                    "FE the " + t + " miner uses per ore", minerEnergy[i]);
+            ORE_MINER_ENERGY_CAPACITY[i] = integer(builder, "ore_miner", t + "EnergyCapacity", "Energy capacity (" + t + ")",
+                    "FE stored", minerCapacity[i]);
+            ORE_MINER_MAX_ENERGY_INPUT[i] = integer(builder, "ore_miner", t + "MaxEnergyInput", "Max energy input (" + t + ")",
+                    "Max FE per tick it takes in", minerInput[i]);
+        }
+        builder.pop();
         SPEC = builder.build();
     }
 
@@ -447,7 +473,7 @@ public final class MachineConfig {
     private static boolean atLeastOne(String key) {
         for (String part : new String[] {"processTime", "apacity", "energyPerMb", "energyPerHydrogen", "waterPerHydrogen",
                 "waterPerDeuterium", "waterPerFilterWear", "pelletBurnTicks", "ignitionPlasmaPerTick", "TicksPerMb", "RingSide",
-                "extractInterval", "ticksPerBlock"}) {
+                "extractInterval", "ticksPerBlock", "TicksPerOre", "scanPerTick"}) {
             if (key.contains(part)) {
                 return true;
             }
