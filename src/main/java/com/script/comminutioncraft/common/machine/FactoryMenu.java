@@ -111,6 +111,11 @@ public class FactoryMenu extends AbstractContainerMenu implements ControllableMe
     }
 
     @Override
+    public String blockName() {
+        return layout.block();
+    }
+
+    @Override
     public int upgradeSlotStart() {
         return upgradeStart;
     }

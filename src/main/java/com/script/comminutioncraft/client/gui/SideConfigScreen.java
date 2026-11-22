@@ -1,7 +1,6 @@
 package com.script.comminutioncraft.client.gui;
 
 import com.script.comminutioncraft.ComminutionCraft;
-import com.script.comminutioncraft.common.machine.FactoryMenu;
 import com.script.comminutioncraft.common.machine.control.ControllableMenu;
 import com.script.comminutioncraft.common.machine.control.MachineControls;
 import com.script.comminutioncraft.common.machine.control.RelativeSide;
@@ -89,9 +88,10 @@ public class SideConfigScreen extends Screen {
         this.parent = parent;
         this.menu = menu;
         this.controls = menu;
-        // Menu ids match block ids (coal_granulator, electric_generator...), which name the textures; the factories
-        // share one menu, so theirs comes with the menu's layout.
-        this.machineName = menu instanceof FactoryMenu factory ? factory.layout().block() : BuiltInRegistries.MENU.getKey(menu.getType()).getPath();
+        // Menu ids match block ids (coal_granulator, electric_generator...), which name the textures; menus shared by
+        // several blocks (factories, ore miners) name their block themselves.
+        String block = menu.blockName();
+        this.machineName = block != null ? block : BuiltInRegistries.MENU.getKey(menu.getType()).getPath();
         this.accent = accent;
     }
 

@@ -12,6 +12,7 @@ import com.script.comminutioncraft.common.machine.upgrade.UpgradeSlot;
 import com.script.comminutioncraft.common.machine.upgrade.UpgradeType;
 import com.script.comminutioncraft.common.menu.GhostItemMenu;
 import com.script.comminutioncraft.common.registry.ModMenus;
+import java.util.Locale;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -120,6 +121,11 @@ public class OreMinerMenu extends AbstractContainerMenu implements ControllableM
 
     public OreMinerTier tier() {
         return tier;
+    }
+
+    @Override
+    public String blockName() {
+        return tier.name().toLowerCase(Locale.ROOT) + "_ore_miner";
     }
 
     public boolean isCircuit(ItemStack stack) {
