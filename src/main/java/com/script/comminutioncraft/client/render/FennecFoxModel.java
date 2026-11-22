@@ -18,7 +18,8 @@ import net.minecraft.util.Mth;
 public class FennecFoxModel extends EntityModel<FennecFoxRenderer.State> {
     /** Babies: a bigger head on a half-size body. */
     public static final BabyModelTransform BABY = new BabyModelTransform(true, 11.0F, 1.7F, Set.of("head"));
-    private static final float TAIL_DROOP = -0.6F;
+    /** Positive xRot swings a part's far (+z) end down in model space: the tail hangs back and down. */
+    private static final float TAIL_DROOP = 0.6F;
 
     private final ModelPart head;
     private final ModelPart body;
@@ -90,7 +91,7 @@ public class FennecFoxModel extends EntityModel<FennecFoxRenderer.State> {
      * lies behind on the ground.
      */
     private void sit() {
-        body.xRot = -0.4F;
+        body.xRot = 0.4F; // front up (a negative tilt dipped the front into the ground)
         body.y += 3.5F;
         leftFrontLeg.xRot = 0.0F;
         rightFrontLeg.xRot = 0.0F;
@@ -100,7 +101,7 @@ public class FennecFoxModel extends EntityModel<FennecFoxRenderer.State> {
         rightHindLeg.y += 2.5F;
         tail.y += 3.0F;
         tail.z += 1.5F;
-        tail.xRot = -0.05F;
+        tail.xRot = 0.05F;
         tail.yRot = 0.0F;
     }
 }
